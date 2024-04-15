@@ -172,7 +172,7 @@ public class DialogConverterLatest : LayeredConverterBase, IDialogConverterLates
                     dialogReadModel.ReadInboxMaxId,
                     dialogReadModel.ChannelHistoryMinId
                 }.Max();
-
+                tDialog.TopMessage = channelReadModel.TopMessageId;
                 tDialog.Pts = channelReadModel.Pts;
                 tDialog.UnreadCount = channelReadModel.TopMessageId - maxId;
                 if (tDialog.UnreadCount < 0)
@@ -210,7 +210,7 @@ public class DialogConverterLatest : LayeredConverterBase, IDialogConverterLates
         }
         else
         {
-            tDialog.Pts = 0;
+            tDialog.Pts = null;
         }
 
         return tDialog;

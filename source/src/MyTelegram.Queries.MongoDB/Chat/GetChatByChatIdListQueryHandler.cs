@@ -1,21 +1,10 @@
 ﻿namespace MyTelegram.QueryHandlers.MongoDB.Chat;
 
-// ReSharper disable once UnusedMember.Global
-public class GetChatByChatIdListQueryHandler : IQueryHandler<GetChatByChatIdListQuery, IReadOnlyList<IChatReadModel>>
+public class GetChatByChatIdListQueryHandler(IQueryOnlyReadModelStore<ChatReadModel> store) : IQueryHandler<GetChatByChatIdListQuery, IReadOnlyCollection<IChatReadModel>>
 {
-    private readonly IMongoDbReadModelStore<ChatReadModel> _store;
-
-    public GetChatByChatIdListQueryHandler(IMongoDbReadModelStore<ChatReadModel> store)
-    {
-        _store = store;
-    }
-
-    public async Task<IReadOnlyList<IChatReadModel>> ExecuteQueryAsync(GetChatByChatIdListQuery query,
+    public async Task<IReadOnlyCollection<IChatReadModel>> ExecuteQueryAsync(GetChatByChatIdListQuery query,
         CancellationToken cancellationToken)
     {
-        var cursor = await _store
-                .FindAsync(p => query.ChatIdList.Contains(p.ChatId), cancellationToken: cancellationToken)
-            ;
-        return await cursor.ToListAsync(cancellationToken);
+        return await store.FindAsync(p => query.ChatIdList.Contains(p.ChatId), cancellationToken: cancellationToken);
     }
 }

@@ -7,6 +7,7 @@ namespace MyTelegram.Schema.Photos;
 /// Upload a custom profile picture for a contact, or suggest a new profile picture to a contact.The <code>file</code>, <code>video</code> and <code>video_emoji_markup</code> flags are mutually exclusive.
 /// <para>Possible errors</para>
 /// Code Type Description
+/// 400 CONTACT_MISSING The specified user is not a contact.
 /// 400 USER_ID_INVALID The provided user ID is invalid.
 /// See <a href="https://corefork.telegram.org/method/photos.uploadContactProfilePhoto" />
 ///</summary>

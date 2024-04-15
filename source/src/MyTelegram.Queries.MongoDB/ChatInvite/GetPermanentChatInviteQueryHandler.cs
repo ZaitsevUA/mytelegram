@@ -1,18 +1,9 @@
 ﻿namespace MyTelegram.QueryHandlers.MongoDB.ChatInvite;
 
-public class GetPermanentChatInviteQueryHandler : IQueryHandler<GetPermanentChatInviteQuery, IChatInviteReadModel?>
+public class GetPermanentChatInviteQueryHandler(IQueryOnlyReadModelStore<ChatInviteReadModel> store) : IQueryHandler<GetPermanentChatInviteQuery, IChatInviteReadModel?>
 {
-    private readonly IMyMongoDbReadModelStore<ChatInviteReadModel> _store;
-
-    public GetPermanentChatInviteQueryHandler(IMyMongoDbReadModelStore<ChatInviteReadModel> store)
-    {
-        _store = store;
-    }
-
     public async Task<IChatInviteReadModel?> ExecuteQueryAsync(GetPermanentChatInviteQuery query, CancellationToken cancellationToken)
     {
-        var cursor = await _store.FindAsync(p => p.PeerId == query.PeerId && p.Permanent && !p.Revoked, cancellationToken: cancellationToken);
-
-        return await cursor.FirstOrDefaultAsync(cancellationToken);
+        return await store.FirstOrDefaultAsync(p => p.PeerId == query.PeerId && p.Permanent && !p.Revoked, cancellationToken: cancellationToken);
     }
 }

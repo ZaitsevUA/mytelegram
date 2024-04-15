@@ -1,6 +1,6 @@
 ﻿namespace MyTelegram.Domain.Events.User;
 
-public class UserCreatedEvent : AggregateEvent<UserAggregate, UserId>
+public class UserCreatedEvent : RequestAggregateEvent2<UserAggregate, UserId>
 {
     public UserCreatedEvent(
         RequestInfo requestInfo,
@@ -14,9 +14,8 @@ public class UserCreatedEvent : AggregateEvent<UserAggregate, UserId>
         int? botInfoVersion,
         int accountTtl,
         DateTime creationTime
-    ) //: base(requestInfo)
+    ) : base(requestInfo)
     {
-        RequestInfo = requestInfo;
         UserId = userId;
         AccessHash = accessHash;
         PhoneNumber = phoneNumber;
@@ -39,6 +38,5 @@ public class UserCreatedEvent : AggregateEvent<UserAggregate, UserId>
     public string? UserName { get; }
 
     public string PhoneNumber { get; }
-    public RequestInfo RequestInfo { get; }
     public long UserId { get; }
 }

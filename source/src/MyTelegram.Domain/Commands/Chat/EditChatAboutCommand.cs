@@ -3,7 +3,7 @@
 public class EditChatAboutCommand : RequestCommand2<ChatAggregate, ChatId, IExecutionResult>
 {
     public EditChatAboutCommand(ChatId aggregateId,
-        RequestInfo requestInfo,
+        RequestInfo  requestInfo,
         long selfUserId,
         string? about) : base(aggregateId, requestInfo)
     {

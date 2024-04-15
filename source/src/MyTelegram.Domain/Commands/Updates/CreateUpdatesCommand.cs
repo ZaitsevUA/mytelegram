@@ -16,6 +16,7 @@ public class CreateUpdatesCommand : Command<UpdatesAggregate, UpdatesId, IExecut
     public int Date { get; }
     public long SeqNo { get; }
     public IList<IUpdate>? Updates { get; }
+
     public List<long>? Users { get; }
     public List<long>? Chats { get; }
 

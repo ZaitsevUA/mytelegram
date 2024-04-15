@@ -4,18 +4,52 @@
 namespace MyTelegram.Schema.Stories;
 
 ///<summary>
+/// Get the <a href="https://corefork.telegram.org/api/reactions">reaction</a> and interaction list of a <a href="https://corefork.telegram.org/api/stories">story</a> posted to a channel, along with the sender of each reaction.Can only be used by channel admins.
+/// <para>Possible errors</para>
+/// Code Type Description
+/// 400 PEER_ID_INVALID The provided peer id is invalid.
 /// See <a href="https://corefork.telegram.org/method/stories.getStoryReactionsList" />
 ///</summary>
 [TlObject(0xb9b2881f)]
 public sealed class RequestGetStoryReactionsList : IRequest<MyTelegram.Schema.Stories.IStoryReactionsList>
 {
     public uint ConstructorId => 0xb9b2881f;
+    ///<summary>
+    /// Flags, see <a href="https://corefork.telegram.org/mtproto/TL-combinators#conditional-fields">TL conditional fields</a>
+    ///</summary>
     public BitArray Flags { get; set; } = new BitArray(32);
+
+    ///<summary>
+    /// If set, returns forwards and reposts first, then reactions, then other views; otherwise returns interactions sorted just by interaction date.
+    /// See <a href="https://corefork.telegram.org/type/true" />
+    ///</summary>
     public bool ForwardsFirst { get; set; }
+
+    ///<summary>
+    /// Channel
+    /// See <a href="https://corefork.telegram.org/type/InputPeer" />
+    ///</summary>
     public MyTelegram.Schema.IInputPeer Peer { get; set; }
+
+    ///<summary>
+    /// <a href="https://corefork.telegram.org/api/stories">Story</a> ID
+    ///</summary>
     public int Id { get; set; }
+
+    ///<summary>
+    /// Get only reactions of this type
+    /// See <a href="https://corefork.telegram.org/type/Reaction" />
+    ///</summary>
     public MyTelegram.Schema.IReaction? Reaction { get; set; }
+
+    ///<summary>
+    /// Offset for pagination (taken from the <code>next_offset</code> field of the returned <a href="https://corefork.telegram.org/type/stories.StoryReactionsList">stories.StoryReactionsList</a>); empty in the first request.
+    ///</summary>
     public string? Offset { get; set; }
+
+    ///<summary>
+    /// Maximum number of results to return, <a href="https://corefork.telegram.org/api/offsets">see pagination</a>
+    ///</summary>
     public int Limit { get; set; }
 
     public void ComputeFlag()

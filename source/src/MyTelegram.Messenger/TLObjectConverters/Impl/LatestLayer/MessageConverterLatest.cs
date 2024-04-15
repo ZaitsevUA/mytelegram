@@ -15,26 +15,14 @@ public class MessageConverterLatest : LayeredConverterBase, IMessageConverterLat
 
     public override int Layer => Layers.LayerLatest;
 
-    public IMessage ToDiscussionMessage(IMessageReadModel messageReadModel,
-        int maxId,
-        int readMaxId,
-        int readInboxMaxId,
-        int readOutboxMaxId,
-        long selfUserId
-    )
+    public IMessage ToDiscussionMessage(long selfUserId, IMessageReadModel messageReadModel/*, IReplyReadModel? replyReadModel*/)
     {
         var m = ToMessage(messageReadModel, null, null, selfUserId);
         if (m is TMessage tMessage)
         {
-            var replies = ToMessageReplies(messageReadModel.Post,
-                messageReadModel.LinkedChannelId,
-                messageReadModel.Pts);
-            if (replies != null)
-            {
-                replies.MaxId = maxId;
-                replies.ReadMaxId = readMaxId;
+            var replies = ToMessageReplies(messageReadModel.Post, messageReadModel.Reply);
                 tMessage.Replies = replies;
-            }
+
         }
 
         return m;
@@ -134,8 +122,15 @@ public class MessageConverterLatest : LayeredConverterBase, IMessageConverterLat
                         {
                             m.FromId = null;
                         }
+                        else
+                        {
+                            if (item.SendAs != null)
+                            {
+                                m.FromId = item.SendAs.ToPeer();
+                            }
+                        }
 
-                        m.Replies = ToMessageReplies(item.Post, linkedChannelId, pts);
+                        m.Replies = ToMessageReplies(item.Post, item.Reply);
                         if (m.Replies != null && item.FwdHeader?.SavedFromPeer != null) // forward from linked channel
                         {
                             //m.FromId = _peerHelper.ToPeer(PeerType.Channel, item.FwdHeader.SavedFromPeer.PeerId);
@@ -178,7 +173,8 @@ public class MessageConverterLatest : LayeredConverterBase, IMessageConverterLat
             Id = aggregateEvent.MessageId,
             Out = false,
             Message = aggregateEvent.Message,
-            Media = aggregateEvent.Media.ToTObject<IMessageMedia>()
+            Media = aggregateEvent.Media.ToTObject<IMessageMedia>(),
+            FwdFrom = ToMessageFwdHeader(aggregateEvent.FwdHeader)
         };
     }
 
@@ -198,7 +194,9 @@ public class MessageConverterLatest : LayeredConverterBase, IMessageConverterLat
             Views = aggregateEvent.Views,
             Forwards = aggregateEvent.Views.HasValue ? 0 : null,
             Post = aggregateEvent.Post,
-            Media = aggregateEvent.Media.ToTObject<IMessageMedia>()
+            Media = aggregateEvent.Media.ToTObject<IMessageMedia>(),
+            FwdFrom = ToMessageFwdHeader(aggregateEvent.FwdHeader),
+            Replies = ToMessageReplies(aggregateEvent.Post, aggregateEvent.Reply)
         };
         if (aggregateEvent.Post)
         {
@@ -273,7 +271,7 @@ public class MessageConverterLatest : LayeredConverterBase, IMessageConverterLat
 
     //public IMessage ToDiscussionMessage(IMessageReadModel readModel,long selfUserId,long from)
 
-    private IMessage ToMessage(IMessageReadModel readModel,
+    public IMessage ToMessage(IMessageReadModel readModel,
         IPollReadModel? pollReadModel,
         List<string>? chosenOptions,
         long selfUserId)
@@ -286,7 +284,7 @@ public class MessageConverterLatest : LayeredConverterBase, IMessageConverterLat
 
                     var bytes = readModel.MessageActionData.ToBytes();
                     var fromId = _peerHelper.ToPeer(PeerType.User, readModel.SenderPeerId);
-                    if (readModel.ToPeerType == PeerType.Channel && readModel.Post &&
+                    if (readModel is { ToPeerType: PeerType.Channel, Post: true } &&
                         readModel.MessageActionType != MessageActionType.ChatAddUser)
                     {
                         fromId = null;
@@ -354,12 +352,20 @@ public class MessageConverterLatest : LayeredConverterBase, IMessageConverterLat
 
                     if (readModel.ToPeerType == PeerType.Channel)
                     {
+                        m.Replies = ToMessageReplies(readModel.Post, readModel.Reply);
                         if (readModel.Post)
                         {
                             m.FromId = null;
                         }
+                        else
+                        {
+                            if (readModel.SendAs != null)
+                            {
+                                m.FromId = readModel.SendAs.ToPeer();
+                            }
+                        }
 
-                        m.Replies = ToMessageReplies(readModel.Post, readModel.LinkedChannelId, readModel.Pts);
+                        //m.Replies = ToMessageReplies(readModel.Post, readModel.LinkedChannelId, readModel.Pts);
                         if (m.Replies != null && readModel.FwdHeader != null) // forward from linked channel
                         {
                             //m.FromId = _peerHelper.ToPeer(PeerType.Channel, readModel.LinkedChannelId!.Value);
@@ -374,25 +380,38 @@ public class MessageConverterLatest : LayeredConverterBase, IMessageConverterLat
         }
     }
 
-    private IMessageReplies? ToMessageReplies(bool post,
-        long? linkedChannelId,
-        int pts)
+    private IMessageReplies? ToMessageReplies(bool post/*, long? channelId,*/ , MessageReply? reply)
     {
+        if (reply == null)
+    {
+            return null;
+        }
         if (post)
         {
-            if (linkedChannelId.HasValue)
+            if (reply.ChannelId == null)
             {
-                return new TMessageReplies { ChannelId = linkedChannelId, Comments = true };
-            }
-        }
-        else
-        {
-            if (linkedChannelId.HasValue)
-            {
-                return new TMessageReplies { RepliesPts = pts };
+                return null;
             }
         }
 
-        return null;
+        var messageReplies = new TMessageReplies
+        {
+            Comments = post,
+            MaxId = reply.MaxId,
+            Replies = reply.Replies,
+            RepliesPts = reply.RepliesPts,
+        };
+
+        if (post)
+            {
+            messageReplies.ChannelId = reply.ChannelId;
+            messageReplies.RecentRepliers = new();
+            if (reply.RecentRepliers?.Count > 0)
+            {
+                messageReplies.RecentRepliers = new TVector<IPeer>(reply.RecentRepliers.Select(p => p.ToPeer()));
+            }
+        }
+
+        return messageReplies;
     }
 }

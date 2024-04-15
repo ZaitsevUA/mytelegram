@@ -2,22 +2,13 @@
 
 // ReSharper disable once UnusedMember.Global
 public class
-    GetReadHistoryMessageQueryHandler : IQueryHandler<GetReadHistoryMessageQuery, IMessageReadModel?>
+    GetReadHistoryMessageQueryHandler(IQueryOnlyReadModelStore<MessageReadModel> store) : IQueryHandler<GetReadHistoryMessageQuery, IMessageReadModel?>
 {
-    private readonly IMongoDbReadModelStore<MessageReadModel> _store;
-
-    public GetReadHistoryMessageQueryHandler(IMongoDbReadModelStore<MessageReadModel> store)
-    {
-        _store = store;
-    }
-
     public async Task<IMessageReadModel?> ExecuteQueryAsync(GetReadHistoryMessageQuery query,
         CancellationToken cancellationToken)
     {
-        var cursor = await _store.FindAsync(
+        return await store.FirstOrDefaultAsync(
             p => p.OwnerPeerId == query.OwnerPeerId && p.MessageId == query.MessageId && p.ToPeerId == query.ToPeerId,
             cancellationToken: cancellationToken);
-
-        return await cursor.SingleOrDefaultAsync(cancellationToken);
     }
 }

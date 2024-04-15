@@ -1,7 +1,7 @@
 ﻿namespace MyTelegram.Domain.Aggregates.UserName;
 
 [JsonConverter(typeof(SystemTextJsonSingleValueObjectConverter<UserNameId>))]
-public class UserNameId : MyIdentity<UserNameId>
+public class UserNameId : Identity<UserNameId>
 {
     public UserNameId(string value) : base(value)
     {

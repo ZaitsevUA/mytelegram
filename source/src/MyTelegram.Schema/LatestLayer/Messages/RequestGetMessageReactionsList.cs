@@ -32,13 +32,13 @@ public sealed class RequestGetMessageReactionsList : IRequest<MyTelegram.Schema.
     public int Id { get; set; }
 
     ///<summary>
-    /// Get only reactions of this type (UTF8 emoji)
+    /// Get only reactions of this type
     /// See <a href="https://corefork.telegram.org/type/Reaction" />
     ///</summary>
     public MyTelegram.Schema.IReaction? Reaction { get; set; }
 
     ///<summary>
-    /// Offset (typically taken from the <code>next_offset</code> field of the returned <a href="https://corefork.telegram.org/type/messages.MessageReactionsList">messages.MessageReactionsList</a>)
+    /// Offset for pagination (taken from the <code>next_offset</code> field of the returned <a href="https://corefork.telegram.org/type/messages.MessageReactionsList">messages.MessageReactionsList</a>); empty in the first request.
     ///</summary>
     public string? Offset { get; set; }
 

@@ -1,21 +1,22 @@
 ﻿namespace MyTelegram.Domain.Events.Pts;
 
-public class QtsIncrementedEvent : AggregateEvent<PtsAggregate, PtsId>, IHasCorrelationId
+public class QtsIncrementedEvent : RequestAggregateEvent2<PtsAggregate, PtsId>
 {
-    public QtsIncrementedEvent(long peerId,
+    public QtsIncrementedEvent(
+        RequestInfo requestInfo,
+        long peerId,
         int qts,
-        string encryptedMessageBoxId,
-        Guid correlationId)
+        string encryptedMessageBoxId) : base(requestInfo)
     {
         PeerId = peerId;
         Qts = qts;
         EncryptedMessageBoxId = encryptedMessageBoxId;
-        CorrelationId = correlationId;
+
     }
 
     public string EncryptedMessageBoxId { get; }
 
     public long PeerId { get; }
     public int Qts { get; }
-    public Guid CorrelationId { get; }
+
 }

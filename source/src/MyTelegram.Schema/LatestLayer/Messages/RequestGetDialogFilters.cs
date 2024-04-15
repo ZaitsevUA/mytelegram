@@ -7,10 +7,10 @@ namespace MyTelegram.Schema.Messages;
 /// Get <a href="https://corefork.telegram.org/api/folders">folders</a>
 /// See <a href="https://corefork.telegram.org/method/messages.getDialogFilters" />
 ///</summary>
-[TlObject(0xf19ed96d)]
-public sealed class RequestGetDialogFilters : IRequest<TVector<MyTelegram.Schema.IDialogFilter>>
+[TlObject(0xefd48c89)]
+public sealed class RequestGetDialogFilters : IRequest<MyTelegram.Schema.Messages.IDialogFilters>
 {
-    public uint ConstructorId => 0xf19ed96d;
+    public uint ConstructorId => 0xefd48c89;
 
     public void ComputeFlag()
     {

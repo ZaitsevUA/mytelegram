@@ -14,16 +14,20 @@ public class MessengerEventHandler :
     private readonly ILogger<MessengerEventHandler> _logger;
     private readonly IObjectMessageSender _objectMessageSender;
     private readonly IMessageQueueProcessor<MessengerCommandDataReceivedEvent> _processor;
+    private readonly IMessageQueueProcessor<NewDeviceCreatedEvent> _newDeviceCreatedProcessor;
 
     public MessengerEventHandler(ICommandBus commandBus,
         IMessageQueueProcessor<MessengerCommandDataReceivedEvent> processor,
         IObjectMessageSender objectMessageSender,
-        ILogger<MessengerEventHandler> logger)
+        ILogger<MessengerEventHandler> logger,
+		IMessageQueueProcessor<NewDeviceCreatedEvent> newDeviceCreatedProcessor
+		)
     {
         _commandBus = commandBus;
         _processor = processor;
         _objectMessageSender = objectMessageSender;
         _logger = logger;
+		_newDeviceCreatedProcessor = newDeviceCreatedProcessor;
     }
 
     public Task HandleEventAsync(AuthKeyUnRegisteredIntegrationEvent eventData)
@@ -48,36 +52,38 @@ public class MessengerEventHandler :
         return Task.CompletedTask;
     }
 
-    public async Task HandleEventAsync(NewDeviceCreatedEvent eventData)
+    public Task HandleEventAsync(NewDeviceCreatedEvent eventData)
     {
-        try
-        {
-            var createDeviceCommand = new CreateDeviceCommand(DeviceId.Create(eventData.PermAuthKeyId),
-                eventData.RequestInfo,
-                eventData.PermAuthKeyId,
-                eventData.TempAuthKeyId,
-                eventData.UserId,
-                eventData.ApiId,
-                eventData.AppVersion,
-                eventData.AppVersion,
-                eventData.Hash,
-                eventData.OfficialApp,
-                eventData.PasswordPending,
-                eventData.DeviceModel,
-                eventData.Platform,
-                eventData.SystemVersion,
-                eventData.SystemLangCode,
-                eventData.LangPack,
-                eventData.LangCode,
-                eventData.Ip,
-                eventData.Layer
-            );
-            await _commandBus.PublishAsync(createDeviceCommand, default);
-        }
-        catch (DuplicateOperationException)
-        {
+        _newDeviceCreatedProcessor.Enqueue(eventData, 0);
+        return Task.CompletedTask;
+        //try
+        //{
+        //    var createDeviceCommand = new CreateDeviceCommand(DeviceId.Create(eventData.PermAuthKeyId),
+        //        eventData.RequestInfo,
+        //        eventData.PermAuthKeyId,
+        //        eventData.TempAuthKeyId,
+        //        eventData.UserId,
+        //        eventData.ApiId,
+        //        eventData.AppVersion,
+        //        eventData.AppVersion,
+        //        eventData.Hash,
+        //        eventData.OfficialApp,
+        //        eventData.PasswordPending,
+        //        eventData.DeviceModel,
+        //        eventData.Platform,
+        //        eventData.SystemVersion,
+        //        eventData.SystemLangCode,
+        //        eventData.LangPack,
+        //        eventData.LangCode,
+        //        eventData.Ip,
+        //        eventData.Layer
+        //    );
+        //    await _commandBus.PublishAsync(createDeviceCommand, default);
+        //}
+        //catch (DuplicateOperationException)
+        //{
             // Ignore duplicate exception
-        }
+        //}
     }
 
     public Task HandleEventAsync(UserIsOnlineEvent eventData)

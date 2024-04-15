@@ -1,7 +1,7 @@
 ﻿namespace MyTelegram.Domain.Aggregates.AppCode;
 
 [JsonConverter(typeof(SystemTextJsonSingleValueObjectConverter<AppCodeId>))]
-public class AppCodeId : MyIdentity<AppCodeId>
+public class AppCodeId : Identity<AppCodeId>
 {
     public AppCodeId(string value) : base(value)
     {

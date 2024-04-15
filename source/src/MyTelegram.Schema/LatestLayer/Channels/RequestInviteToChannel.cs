@@ -27,10 +27,10 @@ namespace MyTelegram.Schema.Channels;
 /// 403 USER_PRIVACY_RESTRICTED The user's privacy settings do not allow you to do this.
 /// See <a href="https://corefork.telegram.org/method/channels.inviteToChannel" />
 ///</summary>
-[TlObject(0x199f3a6c)]
-public sealed class RequestInviteToChannel : IRequest<MyTelegram.Schema.IUpdates>
+[TlObject(0xc9e33d54)]
+public sealed class RequestInviteToChannel : IRequest<MyTelegram.Schema.Messages.IInvitedUsers>
 {
-    public uint ConstructorId => 0x199f3a6c;
+    public uint ConstructorId => 0xc9e33d54;
     ///<summary>
     /// Channel/supergroup
     /// See <a href="https://corefork.telegram.org/type/InputChannel" />

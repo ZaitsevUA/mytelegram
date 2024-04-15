@@ -41,7 +41,7 @@ public class ChatAndChannelMemberStateChangedEventHandler :
 
         return _eventBus.PublishAsync(new ChannelMemberChangedEvent(domainEvent.AggregateEvent.ChannelId,
             memberStateChangeType,
-            new[] { domainEvent.AggregateEvent.MemberUid }));
+            new[] { domainEvent.AggregateEvent.MemberUserId }));
     }
 
     public Task HandleAsync(

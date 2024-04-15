@@ -1,13 +1,14 @@
 ﻿namespace MyTelegram.Domain.Commands.Messaging;
 
-public class ReplyToMessageCommand : RequestCommand2<MessageAggregate, MessageId, IExecutionResult>
-{
-    public int MessageId { get; }
-    public ReplyToMessageCommand(MessageId aggregateId,
+public class ReplyToMessageCommand(MessageId aggregateId,
         RequestInfo requestInfo,
-        int messageId
-    ) : base(aggregateId, requestInfo)
-    {
-        MessageId = messageId;
-    }
+        Peer replierPeer,
+        int repliesPts,
+        int messageId)
+    : Command<MessageAggregate, MessageId, IExecutionResult>(aggregateId), IHasRequestInfo
+{
+    public RequestInfo RequestInfo { get; } = requestInfo;
+    public Peer ReplierPeer { get; } = replierPeer;
+    public int MessageId { get; } = messageId;
+    public int RepliesPts { get; } = repliesPts;
 }

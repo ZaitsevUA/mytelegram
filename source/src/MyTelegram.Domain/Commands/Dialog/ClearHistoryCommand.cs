@@ -1,6 +1,6 @@
 ﻿namespace MyTelegram.Domain.Commands.Dialog;
 
-public class ClearHistoryCommand : RequestCommand2<DialogAggregate, DialogId, IExecutionResult>, IHasCorrelationId
+public class ClearHistoryCommand : RequestCommand2<DialogAggregate, DialogId, IExecutionResult>//, IHasCorrelationId
 {
     //public bool Revoke { get; }
 
@@ -10,8 +10,7 @@ public class ClearHistoryCommand : RequestCommand2<DialogAggregate, DialogId, IE
         string messageActionData,
         long randomId,
         List<int> messageIdListToBeDelete,
-        int nextMaxId,
-        Guid correlationId) : base(aggregateId, requestInfo)
+        int nextMaxId) : base(aggregateId, requestInfo)
     {
         //Revoke = revoke; 
         Revoke = revoke;
@@ -19,7 +18,6 @@ public class ClearHistoryCommand : RequestCommand2<DialogAggregate, DialogId, IE
         RandomId = randomId;
         MessageIdListToBeDelete = messageIdListToBeDelete;
         NextMaxId = nextMaxId;
-        CorrelationId = correlationId;
     }
 
     public string MessageActionData { get; }
@@ -27,5 +25,4 @@ public class ClearHistoryCommand : RequestCommand2<DialogAggregate, DialogId, IE
     public int NextMaxId { get; }
     public long RandomId { get; }
     public bool Revoke { get; }
-    public Guid CorrelationId { get; }
 }

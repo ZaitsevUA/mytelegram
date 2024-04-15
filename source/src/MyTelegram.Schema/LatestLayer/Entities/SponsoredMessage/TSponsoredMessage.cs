@@ -27,6 +27,7 @@ public sealed class TSponsoredMessage : ISponsoredMessage
     /// See <a href="https://corefork.telegram.org/type/true" />
     ///</summary>
     public bool ShowPeerPhoto { get; set; }
+    public bool CanReport { get; set; }
 
     ///<summary>
     /// Message ID
@@ -101,6 +102,7 @@ public sealed class TSponsoredMessage : ISponsoredMessage
     {
         if (Recommended) { Flags[5] = true; }
         if (ShowPeerPhoto) { Flags[6] = true; }
+        if (CanReport) { Flags[12] = true; }
         if (FromId != null) { Flags[3] = true; }
         if (ChatInvite != null) { Flags[4] = true; }
         if (ChatInviteHash != null) { Flags[4] = true; }
@@ -139,6 +141,7 @@ public sealed class TSponsoredMessage : ISponsoredMessage
         Flags = reader.ReadBitArray();
         if (Flags[5]) { Recommended = true; }
         if (Flags[6]) { ShowPeerPhoto = true; }
+        if (Flags[12]) { CanReport = true; }
         RandomId = reader.ReadBytes();
         if (Flags[3]) { FromId = reader.Read<MyTelegram.Schema.IPeer>(); }
         if (Flags[4]) { ChatInvite = reader.Read<MyTelegram.Schema.IChatInvite>(); }

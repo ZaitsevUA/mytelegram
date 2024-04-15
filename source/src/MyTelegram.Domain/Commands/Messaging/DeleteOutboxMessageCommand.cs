@@ -1,12 +1,8 @@
 ﻿namespace MyTelegram.Domain.Commands.Messaging;
 
-public class DeleteOutboxMessageCommand : Command<MessageAggregate, MessageId, IExecutionResult>, IHasCorrelationId
+public class DeleteOutboxMessageCommand(
+    MessageId aggregateId,
+    RequestInfo requestInfo) : Command<MessageAggregate, MessageId, IExecutionResult>(aggregateId), IHasRequestInfo
 {
-    public DeleteOutboxMessageCommand(MessageId aggregateId,
-        Guid correlationId) : base(aggregateId)
-    {
-        CorrelationId = correlationId;
-    }
-
-    public Guid CorrelationId { get; }
+    public RequestInfo RequestInfo { get; } = requestInfo;
 }

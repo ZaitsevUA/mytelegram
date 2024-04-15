@@ -21,6 +21,7 @@ public class DeleteChatUserSaga : MyInMemoryAggregateSaga<DeleteChatUserSaga, De
             new Peer(PeerType.User, ownerPeerId),
             new Peer(PeerType.Chat, domainEvent.AggregateEvent.ChatId),
             new Peer(PeerType.User, ownerPeerId),
+            ownerPeerId,
             outMessageId,
             string.Empty,
             DateTime.UtcNow.ToTimestamp(),
@@ -29,8 +30,8 @@ public class DeleteChatUserSaga : MyInMemoryAggregateSaga<DeleteChatUserSaga, De
             SendMessageType.MessageService,
             MessageType.Text,
             MessageSubType.DeleteChatUser,
-            messageActionData: domainEvent.AggregateEvent.MessageActionData,
-            messageActionType: MessageActionType.ChatDeleteUser
+            MessageActionData: domainEvent.AggregateEvent.MessageActionData,
+            MessageActionType: MessageActionType.ChatDeleteUser
         );
         var command = new CreateOutboxMessageCommand(aggregateId,
             domainEvent.AggregateEvent.RequestInfo with { RequestId = Guid.NewGuid() },

@@ -22,7 +22,7 @@ internal sealed class GetWebAuthorizationsHandler : RpcResultObjectHandler<MyTel
         MyTelegram.Schema.Account.RequestGetWebAuthorizations obj)
     {
         var deviceReadModelList = await _queryProcessor
-            .ProcessAsync(new GetDeviceByUidQuery(input.UserId), CancellationToken.None);
+            .ProcessAsync(new GetDeviceByUserIdQuery(input.UserId), CancellationToken.None);
         var r = _layeredService.GetConverter(input.Layer).ToWebAuthorizations(deviceReadModelList, input.PermAuthKeyId);
         return new TWebAuthorizations { Authorizations = new TVector<Schema.IWebAuthorization>(r), Users = new() };
     }

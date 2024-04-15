@@ -23,6 +23,7 @@ public class CreateChatSaga : MyInMemoryAggregateSaga<CreateChatSaga, CreateChat
             new Peer(PeerType.User, ownerPeerId),
             new Peer(PeerType.Chat, chatId),
             new Peer(PeerType.User, ownerPeerId),
+            ownerPeerId,
             outMessageId,
             string.Empty,
             domainEvent.AggregateEvent.Date,

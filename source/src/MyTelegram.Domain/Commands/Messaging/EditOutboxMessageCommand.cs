@@ -11,7 +11,7 @@ public class EditOutboxMessageCommand : RequestCommand2<MessageAggregate, Messag
 
     public EditOutboxMessageCommand(MessageId aggregateId,
         RequestInfo requestInfo,
-        int messageId, string newMessage, byte[]? entities, int editDate, byte[]? media, List<long>? chatMembers) : base(aggregateId, requestInfo)
+        int messageId, string newMessage, byte[]? entities, int editDate, byte[]? media,List<long>? chatMembers) : base(aggregateId, requestInfo)
     {
         MessageId = messageId;
         NewMessage = newMessage;
@@ -19,5 +19,10 @@ public class EditOutboxMessageCommand : RequestCommand2<MessageAggregate, Messag
         EditDate = editDate;
         Media = media;
         ChatMembers = chatMembers;
+    }
+
+    protected override IEnumerable<byte[]> GetSourceIdComponents()
+    {
+        yield return RequestInfo.RequestId.ToByteArray();
     }
 }

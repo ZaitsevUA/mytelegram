@@ -3,6 +3,7 @@
 namespace MyTelegram.Schema;
 
 ///<summary>
+/// How a certain peer reacted to or interacted with a story
 /// See <a href="https://corefork.telegram.org/constructor/StoryReaction" />
 ///</summary>
 [JsonDerivedType(typeof(TStoryReaction), nameof(TStoryReaction))]

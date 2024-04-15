@@ -1,7 +1,7 @@
 ﻿namespace MyTelegram.Domain.Aggregates.Messaging;
 
 [JsonConverter(typeof(SystemTextJsonSingleValueObjectConverter<ReadingHistoryId>))]
-public class ReadingHistoryId : MyIdentity<ReadingHistoryId>
+public class ReadingHistoryId : Identity<ReadingHistoryId>
 {
     public ReadingHistoryId(string value) : base(value)
     {

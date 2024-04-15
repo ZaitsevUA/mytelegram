@@ -7,7 +7,7 @@ public class
         OutboxMessageHasReadCommand command,
         CancellationToken cancellationToken)
     {
-        aggregate.OutboxMessageHasRead(command.RequestInfo, command.MaxMessageId, command.OwnerPeerId, command.ToPeer);
+        aggregate.OutboxMessageHasRead(command.RequestInfo, command.MaxMessageId, command.OwnerPeerId,command.ToPeer);
         return Task.CompletedTask;
     }
 }

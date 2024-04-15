@@ -36,8 +36,7 @@ public class DialogAppService : BaseAppService, IDialogAppService
         if (input.OffsetPeer != null && input.OffsetPeer.PeerType != PeerType.Empty)
         {
             var dialogId = DialogId.Create(input.OwnerId, input.OffsetPeer.PeerType, input.OffsetPeer.PeerId);
-            var dialog = await _queryProcessor.ProcessAsync(new GetDialogByIdQuery(dialogId),
-                CancellationToken.None);
+            var dialog = await _queryProcessor.ProcessAsync(new GetDialogByIdQuery(dialogId));
             offsetDate = dialog?.CreationTime;
         }
 
@@ -47,7 +46,7 @@ public class DialogAppService : BaseAppService, IDialogAppService
             offset,
             input.Limit,
             input.PeerIdList);
-        var dialogList = await _queryProcessor.ProcessAsync(query, CancellationToken.None);
+        var dialogList = await _queryProcessor.ProcessAsync(query);
         if (input.Pinned == true)
         {
             dialogList = dialogList.OrderBy(p => p.PinnedOrder).ToList();
@@ -123,10 +122,9 @@ public class DialogAppService : BaseAppService, IDialogAppService
         var userList =
             await _queryProcessor.ProcessAsync(new GetUsersByUidListQuery(userIdList))
          ;
-        //   var contactList = await _queryProcessor
-        //       .ProcessAsync(new GetContactListQuery(input.OwnerId, userIdList))
-        //;
-        var contactList = new List<IContactReadModel>();
+        var contactList = await _queryProcessor
+            .ProcessAsync(new GetContactListQuery(input.OwnerId, userIdList))
+     ;
 
         var chatList = chatIdList.Count == 0
             ? new List<IChatReadModel>()
@@ -151,8 +149,7 @@ public class DialogAppService : BaseAppService, IDialogAppService
         if (channelIdList.Count > 0)
         {
             channelMemberList = await _queryProcessor
-                .ProcessAsync(new GetChannelMemberListByChannelIdListQuery(input.OwnerId, channelIdList),
-                    default);
+                .ProcessAsync(new GetChannelMemberListByChannelIdListQuery(input.OwnerId, channelIdList));
         }
 
         var pollIdList = messageReadModels.Where(p => p.PollId.HasValue).Select(p => p.PollId!.Value).ToList();
@@ -173,7 +170,7 @@ public class DialogAppService : BaseAppService, IDialogAppService
         photoIds.AddRange(channelList.Select(p => p.PhotoId ?? 0));
         photoIds.AddRange(userList.Select(p => p.ProfilePhotoId ?? 0));
         photoIds.AddRange(userList.Select(p => p.FallbackPhotoId ?? 0));
-        //photoIds.AddRange(contactList.Select(p => p.PhotoId ?? 0));
+        photoIds.AddRange(contactList.Select(p => p.PhotoId ?? 0));
         photoIds.RemoveAll(p => p == 0);
 
         var photos = await _photoAppService.GetPhotosAsync(photoIds);

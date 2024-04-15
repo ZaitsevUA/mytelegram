@@ -1,5 +1,21 @@
 ﻿namespace MyTelegram.Domain.ValueObjects;
 
+public class MessageReply
+{
+    public MessageReply(long? channelId, int replies, int repliesPts, int? maxId, /*long? postChannelId, int? postMessageId,*/ List<Peer>? recentRepliers)
+    {
+        ChannelId = channelId;
+        Replies = replies;
+        RepliesPts = repliesPts;
+        MaxId = maxId;
+        RecentRepliers = recentRepliers;
+    }
+    public long? ChannelId { get; set; }
+    public int Replies { get; set; }
+    public int RepliesPts { get; set; }
+    public int? MaxId { get; set; }
+    public List<Peer>? RecentRepliers { get; set; }
+}
 public class MessageFwdHeader : ValueObject
 {
     public MessageFwdHeader(
@@ -8,14 +24,15 @@ public class MessageFwdHeader : ValueObject
         Peer fromId,
         string? fromName,
         int channelPost,
-        string postAuthor,
+        string? postAuthor,
         int date,
         Peer? savedFromPeer,
         int? savedFromMsgId,
         Peer? savedFromId,
         string? savedFromName,
         int? savedDate,
-        string? psaType
+        string? psaType,
+        bool forwardFromLinkedChannel
         )
     {
         Imported = imported;
@@ -31,6 +48,7 @@ public class MessageFwdHeader : ValueObject
         SavedFromName = savedFromName;
         SavedDate = savedDate;
         PsaType = psaType;
+        ForwardFromLinkedChannel = forwardFromLinkedChannel;
     }
 
     /// <summary>
@@ -59,7 +77,7 @@ public class MessageFwdHeader : ValueObject
     /// <summary>
     ///     For channels and if signatures are enabled, author of the channel message
     /// </summary>
-    public string PostAuthor { get; init; }
+    public string? PostAuthor { get; init; }
 
     /// <summary>
     ///     Only for messages forwarded to the current user (inputPeerSelf), ID of the message that was forwarded from the
@@ -71,6 +89,7 @@ public class MessageFwdHeader : ValueObject
     public string? SavedFromName { get; init; }
     public int? SavedDate { get; init; }
     public string? PsaType { get; }
+    public bool ForwardFromLinkedChannel { get; }
 
     /// <summary>
     ///     Only for messages forwarded to the current user (inputPeerSelf), full info about the user/channel that originally

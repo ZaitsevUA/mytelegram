@@ -26,6 +26,7 @@ public interface IMessageReadModel : IReadModel, IHasReactions
     int? TopMsgId { get; }
     int SenderMessageId { get; }
     long SenderPeerId { get; }
+    long SenderUserId { get; }
     SendMessageType SendMessageType { get; }
     bool Silent { get; }
     long ToPeerId { get; }
@@ -42,4 +43,11 @@ public interface IMessageReadModel : IReadModel, IHasReactions
     //List<ReactionCount>? Reactions { get; }
     //List<Reaction>? RecentReactions { get; }
     IInputReplyTo? ReplyTo { get; }
+    Peer? SendAs { get; }
+    MessageReply? Reply { get; }
+    long? PostChannelId { get; }
+    int? PostMessageId { get; }
+    bool HasQuickReplyShortcut { get; }
+    string? QuickReplyShortcut { get; }
+    Guid BatchId { get; }
 }

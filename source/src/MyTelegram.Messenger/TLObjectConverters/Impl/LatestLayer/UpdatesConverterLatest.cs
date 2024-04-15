@@ -280,14 +280,14 @@ public class UpdatesConverterLatest : LayeredConverterBase, IUpdatesConverterLat
             createUpdatesForSelf
         );
         // privacy restricted updates
-        if (startInviteToChannelEvent.PrivacyRestrictedUserId?.Count > 0)
-        {
-            updateList.AddRange(startInviteToChannelEvent.PrivacyRestrictedUserId.Select(p =>
-                new TUpdateGroupInvitePrivacyForbidden
-                {
-                    UserId = p
-                }));
-        }
+        //if (startInviteToChannelEvent.PrivacyRestrictedUserId?.Count > 0)
+        //{
+        //    updateList.AddRange(startInviteToChannelEvent.PrivacyRestrictedUserId.Select(p =>
+        //        new TUpdateGroupInvitePrivacyForbidden
+        //        {
+        //            UserId = p
+        //        }));
+        //}
 
 #warning Set channel photo
         var channel = GetChatConverter().ToChannel(
@@ -441,6 +441,25 @@ public class UpdatesConverterLatest : LayeredConverterBase, IUpdatesConverterLat
             MaxId = eventData.SenderMessageId,
             PtsCount = 1,
             Peer = peer
+        };
+        var updates = new TUpdates
+        {
+            Chats = new TVector<IChat>(),
+            Date = DateTime.UtcNow.ToTimestamp(),
+            Updates = new TVector<IUpdate>(updateReadHistoryOutbox),
+            Users = new TVector<IUser>(),
+            Seq = 0
+        };
+        return updates;
+    }
+    public IUpdates ToReadHistoryUpdates(UpdateOutboxMaxIdCompletedSagaEvent eventData)
+    {
+        var updateReadHistoryOutbox = new TUpdateReadHistoryOutbox
+        {
+            Pts = eventData.Pts,
+            MaxId = eventData.MaxId,
+            PtsCount = 1,
+            Peer = eventData.ToPeerId.ToUserPeer().ToPeer()
         };
 
         var updates = new TUpdates
@@ -762,7 +781,7 @@ public class UpdatesConverterLatest : LayeredConverterBase, IUpdatesConverterLat
                 PtsCount = 1
             };
 
-            return new TUpdates
+            var updates = new TUpdates
             {
                 Chats = new TVector<IChat>(),
                 Date = DateTime.UtcNow.ToTimestamp(),
@@ -770,6 +789,7 @@ public class UpdatesConverterLatest : LayeredConverterBase, IUpdatesConverterLat
                 Updates = new TVector<IUpdate>(update),
                 Users = new TVector<IUser>()
             };
+            return updates;
         }
 
         switch (item.ToPeer.PeerType)

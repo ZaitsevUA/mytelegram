@@ -4,17 +4,41 @@
 namespace MyTelegram.Schema.Stories;
 
 ///<summary>
+/// List of peers that reacted to or intercated with a specific <a href="https://corefork.telegram.org/api/stories">story</a>
 /// See <a href="https://corefork.telegram.org/constructor/stories.storyReactionsList" />
 ///</summary>
 [TlObject(0xaa5f789c)]
 public sealed class TStoryReactionsList : IStoryReactionsList
 {
     public uint ConstructorId => 0xaa5f789c;
+    ///<summary>
+    /// Flags, see <a href="https://corefork.telegram.org/mtproto/TL-combinators#conditional-fields">TL conditional fields</a>
+    ///</summary>
     public BitArray Flags { get; set; } = new BitArray(32);
+
+    ///<summary>
+    /// Total number of reactions matching query
+    ///</summary>
     public int Count { get; set; }
+
+    ///<summary>
+    /// List of peers that reacted to or interacted with a specific story
+    ///</summary>
     public TVector<MyTelegram.Schema.IStoryReaction> Reactions { get; set; }
+
+    ///<summary>
+    /// Mentioned chats
+    ///</summary>
     public TVector<MyTelegram.Schema.IChat> Chats { get; set; }
+
+    ///<summary>
+    /// Mentioned users
+    ///</summary>
     public TVector<MyTelegram.Schema.IUser> Users { get; set; }
+
+    ///<summary>
+    /// If set, indicates the next offset to use to load more results by invoking <a href="https://corefork.telegram.org/method/stories.getStoryReactionsList">stories.getStoryReactionsList</a>.
+    ///</summary>
     public string? NextOffset { get; set; }
 
     public void ComputeFlag()

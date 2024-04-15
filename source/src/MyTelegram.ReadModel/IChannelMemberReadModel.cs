@@ -15,4 +15,5 @@ public interface IChannelMemberReadModel : IReadModel
     int UntilDate { get; }
     long UserId { get; }
     long? ChatInviteId { get; }
+    ChatJoinType ChatJoinType { get; }
 }

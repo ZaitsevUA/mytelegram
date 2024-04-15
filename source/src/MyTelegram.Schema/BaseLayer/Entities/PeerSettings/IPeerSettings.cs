@@ -58,6 +58,8 @@ public interface IPeerSettings : IObject
     /// This flag is set if <code>request_chat_title</code> and <code>request_chat_date</code> fields are set and the <a href="https://corefork.telegram.org/api/invites#join-requests">join request »</a> is related to a channel (otherwise if only the request fields are set, the <a href="https://corefork.telegram.org/api/invites#join-requests">join request »</a> is related to a chat).
     ///</summary>
     bool RequestChatBroadcast { get; set; }
+    bool BusinessBotPaused { get; set; }
+    bool BusinessBotCanReply { get; set; }
 
     ///<summary>
     /// Distance in meters between us and this peer
@@ -73,4 +75,6 @@ public interface IPeerSettings : IObject
     /// If set, this is a private chat with an administrator of a chat or channel to which the user sent a join request, and this field contains the timestamp when the <a href="https://corefork.telegram.org/api/invites#join-requests">join request »</a> was sent.
     ///</summary>
     int? RequestChatDate { get; set; }
+    long? BusinessBotId { get; set; }
+    string? BusinessBotManageUrl { get; set; }
 }

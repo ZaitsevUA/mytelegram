@@ -19,3 +19,19 @@ public class AuthKeyNotFoundEventHandler : IEventHandler<AuthKeyNotFoundEvent>
         return _clientDataSender.SendAsync(m);
     }
 }
+
+public class TransportErrorEventHandler : IEventHandler<TransportErrorEvent>
+{
+    private readonly IClientDataSender _clientDataSender;
+
+    public TransportErrorEventHandler(IClientDataSender clientDataSender)
+    {
+        _clientDataSender = clientDataSender;
+    }
+
+    public Task HandleEventAsync(TransportErrorEvent eventData)
+    {
+        var m = new EncryptedMessageResponse(eventData.AuthKeyId, BitConverter.GetBytes(eventData.TransportErrorCode), eventData.ConnectionId, 2);
+        return _clientDataSender.SendAsync(m);
+    }
+}

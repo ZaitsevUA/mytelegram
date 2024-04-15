@@ -117,7 +117,6 @@ namespace MyTelegram.Schema;
 [JsonDerivedType(typeof(TUpdateChannelPinnedTopics), nameof(TUpdateChannelPinnedTopics))]
 [JsonDerivedType(typeof(TUpdateUser), nameof(TUpdateUser))]
 [JsonDerivedType(typeof(TUpdateAutoSaveSettings), nameof(TUpdateAutoSaveSettings))]
-[JsonDerivedType(typeof(TUpdateGroupInvitePrivacyForbidden), nameof(TUpdateGroupInvitePrivacyForbidden))]
 [JsonDerivedType(typeof(TUpdateStory), nameof(TUpdateStory))]
 [JsonDerivedType(typeof(TUpdateReadStories), nameof(TUpdateReadStories))]
 [JsonDerivedType(typeof(TUpdateStoryID), nameof(TUpdateStoryID))]
@@ -131,6 +130,16 @@ namespace MyTelegram.Schema;
 [JsonDerivedType(typeof(TUpdateSavedDialogPinned), nameof(TUpdateSavedDialogPinned))]
 [JsonDerivedType(typeof(TUpdatePinnedSavedDialogs), nameof(TUpdatePinnedSavedDialogs))]
 [JsonDerivedType(typeof(TUpdateSavedReactionTags), nameof(TUpdateSavedReactionTags))]
+[JsonDerivedType(typeof(TUpdateSmsJob), nameof(TUpdateSmsJob))]
+[JsonDerivedType(typeof(TUpdateQuickReplies), nameof(TUpdateQuickReplies))]
+[JsonDerivedType(typeof(TUpdateNewQuickReply), nameof(TUpdateNewQuickReply))]
+[JsonDerivedType(typeof(TUpdateDeleteQuickReply), nameof(TUpdateDeleteQuickReply))]
+[JsonDerivedType(typeof(TUpdateQuickReplyMessage), nameof(TUpdateQuickReplyMessage))]
+[JsonDerivedType(typeof(TUpdateDeleteQuickReplyMessages), nameof(TUpdateDeleteQuickReplyMessages))]
+[JsonDerivedType(typeof(TUpdateBotBusinessConnect), nameof(TUpdateBotBusinessConnect))]
+[JsonDerivedType(typeof(TUpdateBotNewBusinessMessage), nameof(TUpdateBotNewBusinessMessage))]
+[JsonDerivedType(typeof(TUpdateBotEditBusinessMessage), nameof(TUpdateBotEditBusinessMessage))]
+[JsonDerivedType(typeof(TUpdateBotDeleteBusinessMessage), nameof(TUpdateBotDeleteBusinessMessage))]
 public interface IUpdate : IObject
 {
 

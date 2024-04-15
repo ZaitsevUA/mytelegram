@@ -19,14 +19,16 @@ internal sealed class ReadHistoryHandler : RpcResultObjectHandler<MyTelegram.Sch
     private readonly IPeerHelper _peerHelper;
     private readonly IAccessHashHelper _accessHashHelper;
     private readonly IQueryProcessor _queryProcessor;
+    private readonly IPtsHelper _ptsHelper;
     public ReadHistoryHandler(ICommandBus commandBus,
         IPeerHelper peerHelper,
-        IAccessHashHelper accessHashHelper, IQueryProcessor queryProcessor)
+        IAccessHashHelper accessHashHelper, IQueryProcessor queryProcessor, IPtsHelper ptsHelper)
     {
         _commandBus = commandBus;
         _peerHelper = peerHelper;
         _accessHashHelper = accessHashHelper;
         _queryProcessor = queryProcessor;
+        _ptsHelper = ptsHelper;
     }
 
     protected override async Task<IAffectedMessages> HandleCoreAsync(IRequestInput input,
@@ -34,22 +36,43 @@ internal sealed class ReadHistoryHandler : RpcResultObjectHandler<MyTelegram.Sch
     {
         await _accessHashHelper.CheckAccessHashAsync(obj.Peer);
         var peer = _peerHelper.GetPeer(obj.Peer, input.UserId);
+        var messageReadModel =
+            await _queryProcessor.ProcessAsync(
+                new GetMessageByIdQuery(MessageId.Create(input.UserId, obj.MaxId).Value));
+
+        if (messageReadModel == null)
+        {
+            RpcErrors.RpcErrors400.MessageIdInvalid.ThrowRpcError();
+        }
+
         var selfDialogId = DialogId.Create(input.UserId, peer);
+        var dialogReadModel = await _queryProcessor.ProcessAsync(new GetDialogByIdQuery(selfDialogId));
+        if (dialogReadModel == null || dialogReadModel.ReadInboxMaxId >= obj.MaxId)
+        {
+            return new TAffectedMessages
+            {
+                Pts = _ptsHelper.GetCachedPts(input.UserId),
+                PtsCount = 0
+            };
+        }
 
-        var unreadCount =
-            await _queryProcessor.ProcessAsync(new GetUnreadCountQuery(input.UserId, peer.PeerId, obj.MaxId), default);
+        var command = new UpdateReadInboxMaxIdCommand(selfDialogId, input.ToRequestInfo(), obj.MaxId, messageReadModel!.SenderUserId, messageReadModel.SenderMessageId);
+        await _commandBus.PublishAsync(command);
 
-        var readInboxMessageCommand = new ReadInboxMessageCommand2(selfDialogId,
-            input.ToRequestInfo(),
-            input.UserId,
-            input.UserId,
-            obj.MaxId,
-            unreadCount,
-            peer,
-            CurrentDate
-            );
-        // Console.WriteLine("SourceId:{0}",readInboxMessageCommand.GetSourceId().Value);
-        await _commandBus.PublishAsync(readInboxMessageCommand, default);
+        //var unreadCount =
+        //    await _queryProcessor.ProcessAsync(new GetUnreadCountQuery(input.UserId, peer.PeerId, obj.MaxId));
+
+        //var readInboxMessageCommand = new ReadInboxMessageCommand2(selfDialogId,
+        //    input.ToRequestInfo(),
+        //    input.UserId,
+        //    input.UserId,
+        //    obj.MaxId,
+        //    unreadCount,
+        //    peer,
+        //    CurrentDate
+        //    );
+
+        //await _commandBus.PublishAsync(readInboxMessageCommand, default);
 
         return null!;
     }

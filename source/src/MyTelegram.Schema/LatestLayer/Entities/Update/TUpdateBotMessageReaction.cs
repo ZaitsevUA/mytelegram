@@ -4,18 +4,48 @@
 namespace MyTelegram.Schema;
 
 ///<summary>
+/// Bots only: a user has changed their reactions on a message with public reactions.
 /// See <a href="https://corefork.telegram.org/constructor/updateBotMessageReaction" />
 ///</summary>
 [TlObject(0xac21d3ce)]
 public sealed class TUpdateBotMessageReaction : IUpdate
 {
     public uint ConstructorId => 0xac21d3ce;
+    ///<summary>
+    /// Peer of the reacted-to message.
+    /// See <a href="https://corefork.telegram.org/type/Peer" />
+    ///</summary>
     public MyTelegram.Schema.IPeer Peer { get; set; }
+
+    ///<summary>
+    /// ID of the reacted-to message.
+    ///</summary>
     public int MsgId { get; set; }
+
+    ///<summary>
+    /// Date of the change.
+    ///</summary>
     public int Date { get; set; }
+
+    ///<summary>
+    /// The user that (un)reacted to the message.
+    /// See <a href="https://corefork.telegram.org/type/Peer" />
+    ///</summary>
     public MyTelegram.Schema.IPeer Actor { get; set; }
+
+    ///<summary>
+    /// Old reactions
+    ///</summary>
     public TVector<MyTelegram.Schema.IReaction> OldReactions { get; set; }
+
+    ///<summary>
+    /// New reactions
+    ///</summary>
     public TVector<MyTelegram.Schema.IReaction> NewReactions { get; set; }
+
+    ///<summary>
+    /// <a href="https://corefork.telegram.org/api/updates">QTS</a> event sequence identifier
+    ///</summary>
     public int Qts { get; set; }
 
     public void ComputeFlag()

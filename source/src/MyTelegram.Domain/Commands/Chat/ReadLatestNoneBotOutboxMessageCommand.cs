@@ -4,7 +4,7 @@ public class ReadLatestNoneBotOutboxMessageCommand : RequestCommand2<ChatAggrega
 {
     public ReadLatestNoneBotOutboxMessageCommand(ChatId aggregateId,
         RequestInfo requestInfo,
-        string sourceCommandId) : base(aggregateId, requestInfo)
+        string sourceCommandId ) : base(aggregateId, requestInfo)
     {
         SourceCommandId = sourceCommandId;
     }

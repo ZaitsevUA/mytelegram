@@ -3,7 +3,7 @@
 namespace MyTelegram.Domain.Aggregates.Pts;
 
 [JsonConverter(typeof(SystemTextJsonSingleValueObjectConverter<PtsId>))]
-public class PtsId : MyIdentity<PtsId>
+public class PtsId : Identity<PtsId>
 {
     public PtsId(string value) : base(value)
     {

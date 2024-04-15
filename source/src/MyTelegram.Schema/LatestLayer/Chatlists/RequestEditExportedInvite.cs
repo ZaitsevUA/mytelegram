@@ -8,6 +8,7 @@ namespace MyTelegram.Schema.Chatlists;
 /// <para>Possible errors</para>
 /// Code Type Description
 /// 400 FILTER_ID_INVALID The specified filter ID is invalid.
+/// 400 FILTER_NOT_SUPPORTED The specified filter cannot be used in this context.
 /// See <a href="https://corefork.telegram.org/method/chatlists.editExportedInvite" />
 ///</summary>
 [TlObject(0x653db63d)]

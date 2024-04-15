@@ -44,13 +44,17 @@ internal sealed class DeleteHistoryHandler : RpcResultObjectHandler<MyTelegram.S
     {
         var peer = _peerHelper.GetPeer(obj.Peer, input.UserId);
         var pageSize = MyTelegramServerDomainConsts.ClearHistoryDefaultPageSize;
-        var messageIdList = await _queryProcessor
-            .ProcessAsync(new GetMessageIdListQuery(input.UserId,
-                    peer.PeerId,
-                    obj.MaxId,
-                    pageSize),
-                default);
-        if (messageIdList.Count == 0)
+        var maxId = obj.MaxId;
+        if (maxId > 0)
+        {
+            maxId = maxId + 1;
+        }
+
+        var messageItemsToBeDeleted =
+            await _queryProcessor.ProcessAsync(
+                new GetMessageItemListToBeDeletedQuery2(input.UserId, peer.PeerId, maxId, pageSize));
+
+        if (messageItemsToBeDeleted.Count == 0)
         {
             var cachedPts = _ptsHelper.GetCachedPts(input.UserId);
             return new TAffectedHistory { Offset = 0, Pts = cachedPts, PtsCount = 0 };
@@ -60,13 +64,6 @@ internal sealed class DeleteHistoryHandler : RpcResultObjectHandler<MyTelegram.S
         {
             case PeerType.Chat:
                 {
-                    var command = new StartDeleteChatMessagesCommand(ChatId.Create(peer.PeerId),
-                        input.ToRequestInfo(),
-                        messageIdList,
-                        obj.Revoke,
-                        true,
-                        Guid.NewGuid());
-                    await _commandBus.PublishAsync(command, default);
                 }
                 break;
             case PeerType.User:
@@ -75,17 +72,13 @@ internal sealed class DeleteHistoryHandler : RpcResultObjectHandler<MyTelegram.S
                     {
                         await _accessHashHelper.CheckAccessHashAsync(inputUser.UserId, inputUser.AccessHash);
                     }
-                    var command = new StartDeleteUserMessagesCommand(DialogId.Create(input.UserId, peer),
-                        input.ToRequestInfo(),
-                        obj.Revoke,
-                        messageIdList,
-                        true,
-                        Guid.NewGuid());
-                    await _commandBus.PublishAsync(command, default);
                 }
                 break;
         }
 
+        var command = new StartDeleteHistoryCommand(TempId.New, input.ToRequestInfo(), messageItemsToBeDeleted,
+            obj.Revoke, obj.Revoke);
+        await _commandBus.PublishAsync(command);
 
         return null!;
     }

@@ -14,6 +14,7 @@ namespace MyTelegram.Schema.Messages;
 /// 403 EDIT_BOT_INVITE_FORBIDDEN Normal users can't edit invites that were created by bots.
 /// 400 INVITE_HASH_EXPIRED The invite link has expired.
 /// 400 PEER_ID_INVALID The provided peer id is invalid.
+/// 400 USAGE_LIMIT_INVALID The specified usage limit is invalid.
 /// See <a href="https://corefork.telegram.org/method/messages.editExportedChatInvite" />
 ///</summary>
 [TlObject(0xbdca2f75)]

@@ -32,5 +32,7 @@ public enum MessageActionType
     SecureValuesSent,
     SecureValuesSentMe,
     SetMessagesTtl,
-    ChannelAddUser
+    ChannelAddUser,
+    ForumTopicCreated,
+    ForumTopicEdited,
 }

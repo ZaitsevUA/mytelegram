@@ -13,7 +13,9 @@ public class UserState : AggregateState<UserAggregate, UserId, UserState>,
     IApply<UserProfilePhotoUploadedEvent>,
     IApply<UserColorUpdatedEvent>,
     IApply<UserGlobalPrivacySettingsChangedEvent>,
-    IApply<UserPremiumStatusChangedEvent>
+    IApply<UserPremiumStatusChangedEvent>,
+    IApply<PersonalChannelUpdatedEvent>,
+    IApply<BirthdayUpdatedEvent>
 {
     public long AccessHash { get; private set; }
     public string FirstName { get; private set; } = default!;
@@ -42,6 +44,8 @@ public class UserState : AggregateState<UserAggregate, UserId, UserState>,
     public PeerColor? ProfileColor { get; private set; }
     public GlobalPrivacySettings GlobalPrivacySettings { get; private set; }
     public bool Premium { get; private set; }
+    public long? PersonalChannelId { get; private set; }
+    public Birthday? Birthday { get; private set; }
 
     public void Apply(CheckUserStatusCompletedEvent aggregateEvent)
     {
@@ -120,6 +124,10 @@ public class UserState : AggregateState<UserAggregate, UserId, UserState>,
         FallbackPhotoId = snapshot.FallbackPhotoId;
         Color = snapshot.Color;
         ProfileColor = snapshot.ProfileColor;
+        GlobalPrivacySettings = snapshot.GlobalPrivacySettings;
+        Premium = snapshot.Premium;
+        PersonalChannelId = snapshot.PersonalChannelId;
+        Birthday = snapshot.Birthday;
     }
 
     public void Apply(UserProfilePhotoUploadedEvent aggregateEvent)
@@ -145,5 +153,13 @@ public class UserState : AggregateState<UserAggregate, UserId, UserState>,
     public void Apply(UserPremiumStatusChangedEvent aggregateEvent)
     {
         Premium=aggregateEvent.Premium;
+    }
+    public void Apply(PersonalChannelUpdatedEvent aggregateEvent)
+    {
+        PersonalChannelId = aggregateEvent.PersonalChannelId;
+    }
+    public void Apply(BirthdayUpdatedEvent aggregateEvent)
+    {
+        Birthday = aggregateEvent.Birthday;
     }
 }

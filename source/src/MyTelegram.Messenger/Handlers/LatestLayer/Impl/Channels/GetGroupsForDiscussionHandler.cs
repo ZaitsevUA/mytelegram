@@ -27,7 +27,7 @@ internal sealed class GetGroupsForDiscussionHandler : RpcResultObjectHandler<MyT
     protected override async Task<MyTelegram.Schema.Messages.IChats> HandleCoreAsync(IRequestInput input,
         MyTelegram.Schema.Channels.RequestGetGroupsForDiscussion obj)
     {
-        var channelReadModels = await _queryProcessor.ProcessAsync(new GetMegaGroupByUidQuery(input.UserId));
+        var channelReadModels = await _queryProcessor.ProcessAsync(new GetMegaGroupByUserIdQuery(input.UserId));
         var photoReadModels = await _photoAppService.GetPhotosAsync(channelReadModels);
 
         var channelList = _layeredService.GetConverter(input.Layer).ToChannelList(

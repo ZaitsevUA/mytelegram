@@ -8,7 +8,6 @@ public class
         CancellationToken cancellationToken)
     {
         aggregate.SetDiscussionGroup(command.RequestInfo,
-            command.SelfUserId,
             command.BroadcastChannelId,
             command.GroupChannelId);
         return Task.CompletedTask;

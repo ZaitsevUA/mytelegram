@@ -5,6 +5,9 @@ namespace MyTelegram.Schema.Contacts;
 
 ///<summary>
 /// Stop getting notifications about <a href="https://corefork.telegram.org/api/discussion">discussion replies</a> of a certain user in <code>@replies</code>
+/// <para>Possible errors</para>
+/// Code Type Description
+/// 400 MSG_ID_INVALID Invalid message ID provided.
 /// See <a href="https://corefork.telegram.org/method/contacts.blockFromReplies" />
 ///</summary>
 [TlObject(0x29a8962c)]

@@ -51,5 +51,6 @@ public class PtsForAuthKeyIdReadModel : IPtsForAuthKeyIdReadModel,
     public virtual long PeerId { get; private set; }
     public virtual long PermAuthKeyId { get; private set; }
     public virtual int Pts { get; private set; }
+    public int Qts { get; private set; }
     public virtual long GlobalSeqNo { get; private set; }
 }

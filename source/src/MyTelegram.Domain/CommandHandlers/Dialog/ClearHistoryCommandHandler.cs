@@ -11,8 +11,7 @@ public class ClearHistoryCommandHandler : CommandHandler<DialogAggregate, Dialog
             command.MessageActionData,
             command.RandomId,
             command.MessageIdListToBeDelete,
-            command.NextMaxId,
-            command.CorrelationId);
+            command.NextMaxId);
         return Task.CompletedTask;
     }
 }

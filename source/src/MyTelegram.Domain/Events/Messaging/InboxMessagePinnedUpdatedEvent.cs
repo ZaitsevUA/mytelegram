@@ -12,7 +12,7 @@ public class InboxMessagePinnedUpdatedEvent : RequestAggregateEvent2<MessageAggr
         bool silent,
         int date,
         Peer toPeer,
-        int pts) : base(requestInfo)
+        int pts):base(requestInfo)
     {
         OwnerPeerId = ownerPeerId;
         MessageId = messageId;

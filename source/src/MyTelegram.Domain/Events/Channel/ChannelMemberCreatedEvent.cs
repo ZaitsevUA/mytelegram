@@ -11,7 +11,8 @@ public class ChannelMemberCreatedEvent : RequestAggregateEvent2<ChannelMemberAgg
         bool isRejoin,
         ChatBannedRights? bannedRights,
         bool isBot,
-        long? chatInviteId) : base(requestInfo)
+        long? chatInviteId,
+        ChatJoinType chatJoinType) : base(requestInfo)
     {
         ChannelId = channelId;
         UserId = userId;
@@ -21,6 +22,7 @@ public class ChannelMemberCreatedEvent : RequestAggregateEvent2<ChannelMemberAgg
         BannedRights = bannedRights;
         IsBot = isBot;
         ChatInviteId = chatInviteId;
+        ChatJoinType = chatJoinType;
     }
 
     public ChatBannedRights? BannedRights { get; }
@@ -29,6 +31,7 @@ public class ChannelMemberCreatedEvent : RequestAggregateEvent2<ChannelMemberAgg
     public long InviterId { get; }
     public bool IsBot { get; }
     public long? ChatInviteId { get; }
+    public ChatJoinType ChatJoinType { get; }
     public bool IsRejoin { get; }
     public long UserId { get; }
 }

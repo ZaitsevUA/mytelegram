@@ -7,10 +7,10 @@ namespace MyTelegram.Schema;
 /// List of actions that are possible when interacting with this user, to be shown as suggested actions in the <a href="https://corefork.telegram.org/api/action-bar">chat action bar »</a>, see <a href="https://corefork.telegram.org/api/action-bar">here »</a> for more info.
 /// See <a href="https://corefork.telegram.org/constructor/peerSettings" />
 ///</summary>
-[TlObject(0xa518110d)]
+[TlObject(0xacd66c5e)]
 public sealed class TPeerSettings : IPeerSettings
 {
-    public uint ConstructorId => 0xa518110d;
+    public uint ConstructorId => 0xacd66c5e;
     ///<summary>
     /// Flags, see <a href="https://corefork.telegram.org/mtproto/TL-combinators#conditional-fields">TL conditional fields</a>
     ///</summary>
@@ -69,6 +69,8 @@ public sealed class TPeerSettings : IPeerSettings
     /// See <a href="https://corefork.telegram.org/type/true" />
     ///</summary>
     public bool RequestChatBroadcast { get; set; }
+    public bool BusinessBotPaused { get; set; }
+    public bool BusinessBotCanReply { get; set; }
 
     ///<summary>
     /// Distance in meters between us and this peer
@@ -84,6 +86,8 @@ public sealed class TPeerSettings : IPeerSettings
     /// If set, this is a private chat with an administrator of a chat or channel to which the user sent a join request, and this field contains the timestamp when the <a href="https://corefork.telegram.org/api/invites#join-requests">join request »</a> was sent.
     ///</summary>
     public int? RequestChatDate { get; set; }
+    public long? BusinessBotId { get; set; }
+    public string? BusinessBotManageUrl { get; set; }
 
     public void ComputeFlag()
     {
@@ -96,9 +100,13 @@ public sealed class TPeerSettings : IPeerSettings
         if (Autoarchived) { Flags[7] = true; }
         if (InviteMembers) { Flags[8] = true; }
         if (RequestChatBroadcast) { Flags[10] = true; }
+        if (BusinessBotPaused) { Flags[11] = true; }
+        if (BusinessBotCanReply) { Flags[12] = true; }
         if (/*GeoDistance != 0 && */GeoDistance.HasValue) { Flags[6] = true; }
         if (RequestChatTitle != null) { Flags[9] = true; }
         if (/*RequestChatDate != 0 && */RequestChatDate.HasValue) { Flags[9] = true; }
+        if (/*BusinessBotId != 0 &&*/ BusinessBotId.HasValue) { Flags[13] = true; }
+        if (BusinessBotManageUrl != null) { Flags[13] = true; }
     }
 
     public void Serialize(IBufferWriter<byte> writer)
@@ -109,6 +117,8 @@ public sealed class TPeerSettings : IPeerSettings
         if (Flags[6]) { writer.Write(GeoDistance.Value); }
         if (Flags[9]) { writer.Write(RequestChatTitle); }
         if (Flags[9]) { writer.Write(RequestChatDate.Value); }
+        if (Flags[13]) { writer.Write(BusinessBotId.Value); }
+        if (Flags[13]) { writer.Write(BusinessBotManageUrl); }
     }
 
     public void Deserialize(ref SequenceReader<byte> reader)
@@ -123,8 +133,12 @@ public sealed class TPeerSettings : IPeerSettings
         if (Flags[7]) { Autoarchived = true; }
         if (Flags[8]) { InviteMembers = true; }
         if (Flags[10]) { RequestChatBroadcast = true; }
+        if (Flags[11]) { BusinessBotPaused = true; }
+        if (Flags[12]) { BusinessBotCanReply = true; }
         if (Flags[6]) { GeoDistance = reader.ReadInt32(); }
         if (Flags[9]) { RequestChatTitle = reader.ReadString(); }
         if (Flags[9]) { RequestChatDate = reader.ReadInt32(); }
+        if (Flags[13]) { BusinessBotId = reader.ReadInt64(); }
+        if (Flags[13]) { BusinessBotManageUrl = reader.ReadString(); }
     }
 }

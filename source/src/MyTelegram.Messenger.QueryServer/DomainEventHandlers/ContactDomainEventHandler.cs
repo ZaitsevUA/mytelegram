@@ -1,4 +1,5 @@
-﻿using MyTelegram.Messenger.Services.Caching;
+﻿using MyTelegram.Messenger.DomainEventHandlers;
+using MyTelegram.Messenger.Services.Caching;
 using MyTelegram.Messenger.Services.Interfaces;
 using MyTelegram.Messenger.TLObjectConverters.Interfaces;
 using MyTelegram.Schema.Contacts;

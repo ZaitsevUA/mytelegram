@@ -1,24 +1,13 @@
 ﻿namespace MyTelegram.QueryHandlers.MongoDB.User;
 
-public class GetGlobalPrivacySettingsListQueryHandler : IQueryHandler<GetGlobalPrivacySettingsListQuery,
+public class GetGlobalPrivacySettingsListQueryHandler(IQueryOnlyReadModelStore<UserReadModel> store) : IQueryHandler<GetGlobalPrivacySettingsListQuery,
     IReadOnlyDictionary<long, GlobalPrivacySettings?>>
 {
-    private readonly IMyMongoDbReadModelStore<UserReadModel> _store;
-
-    public GetGlobalPrivacySettingsListQueryHandler(IMyMongoDbReadModelStore<UserReadModel> store)
-    {
-        _store = store;
-    }
-
     public async Task<IReadOnlyDictionary<long, GlobalPrivacySettings?>> ExecuteQueryAsync(GetGlobalPrivacySettingsListQuery query, CancellationToken cancellationToken)
     {
-        var findOptions = new FindOptions<UserReadModel, GlobalPrivacySettingsWithUserId>
-        {
-            Projection = Builders<UserReadModel>.Projection.Expression(p => new GlobalPrivacySettingsWithUserId(p.UserId, p.GlobalPrivacySettings))
-        };
-        var cursor = await _store.FindAsync(p => query.UserIds.Contains(p.UserId), findOptions, cancellationToken);
+        var readModels = await store.FindAsync(p => query.UserIds.Contains(p.UserId), createResult: p => new GlobalPrivacySettingsWithUserId(p.UserId, p.GlobalPrivacySettings), cancellationToken: cancellationToken);
 
-        return (await cursor.ToListAsync(cancellationToken: cancellationToken)).ToDictionary(k => k.UserId, v => v.GlobalPrivacySettings);
+        return readModels.ToDictionary(k => k.UserId, v => v.GlobalPrivacySettings);
     }
 
     public record GlobalPrivacySettingsWithUserId(long UserId, GlobalPrivacySettings? GlobalPrivacySettings);

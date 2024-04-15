@@ -27,8 +27,23 @@ public sealed class TMessageMediaDocument : IMessageMedia
     /// See <a href="https://corefork.telegram.org/type/true" />
     ///</summary>
     public bool Spoiler { get; set; }
+
+    ///<summary>
+    /// Whether this is a video.
+    /// See <a href="https://corefork.telegram.org/type/true" />
+    ///</summary>
     public bool Video { get; set; }
+
+    ///<summary>
+    /// Whether this is a round video.
+    /// See <a href="https://corefork.telegram.org/type/true" />
+    ///</summary>
     public bool Round { get; set; }
+
+    ///<summary>
+    /// Whether this is a voice message.
+    /// See <a href="https://corefork.telegram.org/type/true" />
+    ///</summary>
     public bool Voice { get; set; }
 
     ///<summary>

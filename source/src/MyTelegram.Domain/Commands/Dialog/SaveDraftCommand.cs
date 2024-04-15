@@ -22,4 +22,9 @@ public class SaveDraftCommand : RequestCommand2<DialogAggregate, DialogId, IExec
     public string Message { get; }
     public bool NoWebpage { get; }
     public int? ReplyToMsgId { get; }
+
+    protected override IEnumerable<byte[]> GetSourceIdComponents()
+    {
+        yield return RequestInfo.RequestId.ToByteArray();
+    }
 }

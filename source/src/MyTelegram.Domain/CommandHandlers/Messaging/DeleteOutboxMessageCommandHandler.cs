@@ -6,7 +6,7 @@ public class DeleteOutboxMessageCommandHandler : CommandHandler<MessageAggregate
         DeleteOutboxMessageCommand command,
         CancellationToken cancellationToken)
     {
-        aggregate.DeleteOutboxMessage(command.CorrelationId);
+        aggregate.DeleteOutboxMessage(command.RequestInfo);
         return Task.CompletedTask;
     }
 }

@@ -4,6 +4,7 @@ public class MessageDeletedEvent : RequestAggregateEvent2<MessageAggregate, Mess
 {
     public MessageDeletedEvent(
         RequestInfo requestInfo,
+        Peer toPeer,
         long ownerPeerId,
         int messageId,
         bool isOut,
@@ -11,6 +12,7 @@ public class MessageDeletedEvent : RequestAggregateEvent2<MessageAggregate, Mess
         int senderMessageId,
         IReadOnlyList<InboxItem>? inboxItems) : base(requestInfo)
     {
+        ToPeer = toPeer;
         OwnerPeerId = ownerPeerId;
         MessageId = messageId;
         IsOut = isOut;
@@ -24,6 +26,7 @@ public class MessageDeletedEvent : RequestAggregateEvent2<MessageAggregate, Mess
     public bool IsOut { get; }
     public int MessageId { get; }
 
+    public Peer ToPeer { get; }
     public long OwnerPeerId { get; }
     public int SenderMessageId { get; }
     public long SenderPeerId { get; }

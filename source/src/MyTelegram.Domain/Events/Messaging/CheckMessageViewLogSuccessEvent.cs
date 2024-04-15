@@ -1,19 +1,35 @@
 ﻿namespace MyTelegram.Domain.Events.Messaging;
 
-public class CheckMessageViewLogSuccessEvent : AggregateEvent<MessageViewLogAggregate, MessageViewLogId>,
-    IHasCorrelationId
+//public class MessageReactionUpdatedEvent : AggregateEvent<MessageAggregate, MessageId>
+//{
+//    public long MessageOwnerPeerId { get; }
+//    public long ReactionSenderUserId { get; }
+//    public List<string>? EmojiReactions { get; }
+//    public List<long>? CustomEmojiRections { get; }
+
+//    public MessageReactionUpdatedEvent(long messageOwnerPeerId, long reactionSenderUserId, List<string>? emojiReactions, List<long>? customEmojiRections)
+//    {
+//        MessageOwnerPeerId = messageOwnerPeerId;
+//        ReactionSenderUserId = reactionSenderUserId;
+//        EmojiReactions = emojiReactions;
+//        CustomEmojiRections = customEmojiRections;
+//    }
+//}
+
+public class CheckMessageViewLogSuccessEvent : RequestAggregateEvent2<MessageViewLogAggregate, MessageViewLogId>
 {
-    public CheckMessageViewLogSuccessEvent(int messageId,
-        bool alreadyIncremented,
-        Guid correlationId)
+    public CheckMessageViewLogSuccessEvent(
+        RequestInfo requestInfo,
+        int messageId,
+        bool alreadyIncremented) : base(requestInfo)
     {
         AlreadyIncremented = alreadyIncremented;
-        CorrelationId = correlationId;
+
         MessageId = messageId;
     }
 
     public bool AlreadyIncremented { get; }
 
     public int MessageId { get; }
-    public Guid CorrelationId { get; }
+
 }

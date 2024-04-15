@@ -13,7 +13,9 @@ public class OutboxMessageEditCompletedEvent : RequestAggregateEvent2<EditMessag
         int date,
         Peer toPeer,
         byte[]? entities,
-        byte[]? media
+        byte[]? media,
+        MessageFwdHeader? fwdHeader,
+        MessageReply? reply
     ) : base(requestInfo)
     {
         OwnerPeerId = ownerPeerId;
@@ -27,12 +29,16 @@ public class OutboxMessageEditCompletedEvent : RequestAggregateEvent2<EditMessag
         ToPeer = toPeer;
         Entities = entities;
         Media = media;
+        FwdHeader = fwdHeader;
+        Reply = reply;
     }
 
     public int Date { get; }
     public Peer ToPeer { get; }
     public byte[]? Entities { get; }
     public byte[]? Media { get; }
+    public MessageFwdHeader? FwdHeader { get; }
+    public MessageReply? Reply { get; }
     public string Message { get; }
     public int MessageId { get; }
     public long OwnerPeerId { get; }

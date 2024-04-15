@@ -1,4 +1,5 @@
 ﻿// ReSharper disable All
+
 using IStickerSet = MyTelegram.Schema.Messages.IStickerSet;
 using TStickerSet = MyTelegram.Schema.TStickerSet;
 
@@ -22,7 +23,7 @@ internal sealed class GetStickerSetHandler : RpcResultObjectHandler<MyTelegram.S
         {
             var set = new TStickerSet
             {
-                Animated = true,
+                //Animated = true,
                 Id = 0,
                 AccessHash = 1035057606959025459,
                 Title = "AnimatedEmojies",
@@ -48,7 +49,7 @@ internal sealed class GetStickerSetHandler : RpcResultObjectHandler<MyTelegram.S
                 Packs = new TVector<IStickerPack>(),
                 Set = new TStickerSet
                 {
-                    Animated = true,
+                    //Animated = true,
                     Count = 0,
                     Masks = false,
                     Archived = true,
@@ -70,7 +71,7 @@ internal sealed class GetStickerSetHandler : RpcResultObjectHandler<MyTelegram.S
                 Packs = new TVector<IStickerPack>(),
                 Set = new TStickerSet
                 {
-                    Animated = true,
+                    //Animated = true,
                     Count = 0,
                     Masks = false,
                     Archived = false,

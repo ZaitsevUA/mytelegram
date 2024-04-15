@@ -4,7 +4,10 @@ public interface IHasRequestMessageId
 {
     long ReqMsgId { get; }
 }
-
+public interface IHasCorrelationId
+{
+    Guid CorrelationId { get; }
+}
 
 public interface IHasRequestInfo : IHasCorrelationId
 {

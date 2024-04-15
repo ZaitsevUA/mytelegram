@@ -15,6 +15,7 @@ namespace MyTelegram.Schema;
 [JsonDerivedType(typeof(TPrivacyValueAllowChatParticipants), nameof(TPrivacyValueAllowChatParticipants))]
 [JsonDerivedType(typeof(TPrivacyValueDisallowChatParticipants), nameof(TPrivacyValueDisallowChatParticipants))]
 [JsonDerivedType(typeof(TPrivacyValueAllowCloseFriends), nameof(TPrivacyValueAllowCloseFriends))]
+[JsonDerivedType(typeof(TPrivacyValueAllowPremium), nameof(TPrivacyValueAllowPremium))]
 public interface IPrivacyRule : IObject
 {
 

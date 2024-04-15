@@ -5,7 +5,7 @@ public class ChannelMemberBannedRightsChangedEvent : RequestAggregateEvent2<Chan
     public ChannelMemberBannedRightsChangedEvent(RequestInfo requestInfo,
         long adminId,
         long channelId,
-        long memberUid,
+        long memberUserId,
         bool kicked,
         long kickedBy,
         bool left,
@@ -16,7 +16,7 @@ public class ChannelMemberBannedRightsChangedEvent : RequestAggregateEvent2<Chan
     {
         AdminId = adminId;
         ChannelId = channelId;
-        MemberUid = memberUid;
+        MemberUserId = memberUserId;
         Kicked = kicked;
         KickedBy = kickedBy;
         Left = left;
@@ -29,7 +29,7 @@ public class ChannelMemberBannedRightsChangedEvent : RequestAggregateEvent2<Chan
     public long AdminId { get; }
     public ChatBannedRights BannedRights { get; }
     public long ChannelId { get; }
-    public long MemberUid { get; }
+    public long MemberUserId { get; }
     public bool Kicked { get; }
     public long KickedBy { get; }
     public bool Left { get; }

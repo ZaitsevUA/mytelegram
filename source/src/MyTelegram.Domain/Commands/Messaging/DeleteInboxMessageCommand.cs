@@ -1,12 +1,7 @@
 ﻿namespace MyTelegram.Domain.Commands.Messaging;
 
-public class DeleteInboxMessageCommand : Command<MessageAggregate, MessageId, IExecutionResult>, IHasCorrelationId
+public class DeleteInboxMessageCommand(MessageId aggregateId, RequestInfo requestInfo)
+    : Command<MessageAggregate, MessageId, IExecutionResult>(aggregateId), IHasRequestInfo
 {
-    public DeleteInboxMessageCommand(MessageId aggregateId,
-        Guid correlationId) : base(aggregateId)
-    {
-        CorrelationId = correlationId;
-    }
-
-    public Guid CorrelationId { get; }
+    public RequestInfo RequestInfo { get; } = requestInfo;
 }

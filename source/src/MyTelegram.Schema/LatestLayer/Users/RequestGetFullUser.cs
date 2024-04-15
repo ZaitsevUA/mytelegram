@@ -7,6 +7,7 @@ namespace MyTelegram.Schema.Users;
 /// Returns extended user info by ID.
 /// <para>Possible errors</para>
 /// Code Type Description
+/// 400 CHANNEL_INVALID The provided channel is invalid.
 /// 400 CHANNEL_PRIVATE You haven't joined this channel/supergroup.
 /// 400 MSG_ID_INVALID Invalid message ID provided.
 /// 400 USERNAME_OCCUPIED The provided username is already occupied.

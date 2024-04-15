@@ -72,17 +72,25 @@ internal sealed class ForwardMessagesHandler : RpcResultObjectHandler<MyTelegram
 
         var fromPeer = _peerHelper.GetPeer(obj.FromPeer, input.UserId);
         var toPeer = _peerHelper.GetPeer(obj.ToPeer, input.UserId);
-        var firstId = obj.Id.First();
-        var ownerPeerId = fromPeer.PeerType == PeerType.Channel ? fromPeer.PeerId : input.UserId;
-        var command = new StartForwardMessageCommand(MessageId.Create(ownerPeerId, firstId),
+        var sendAs = _peerHelper.GetPeer(obj.SendAs);
+         
+        var command = new StartForwardMessagesCommand(TempId.New,
             input.ToRequestInfo(),
+            obj.Silent,
+            obj.Background,
+            obj.WithMyScore,
+            obj.DropAuthor,
+            obj.DropMediaCaptions,
+            obj.Noforwards,
             fromPeer,
             toPeer,
             obj.Id.ToList(),
             obj.RandomId.ToList(),
-            false,
-            Guid.NewGuid());
-        await _commandBus.PublishAsync(command, CancellationToken.None);
+            obj.ScheduleDate,
+            sendAs,
+            false
+        );
+        await _commandBus.PublishAsync(command);
         return null!;
     }
 }

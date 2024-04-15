@@ -42,7 +42,7 @@ public class UserDomainEventHandler :
                     domainEvent.AggregateEvent.RequestInfo.PermAuthKeyId,
                     Guid.NewGuid(), 0, DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()),
                 MyTelegramServerDomainConsts.OfficialUserId,
-                new Peer(PeerType.User, domainEvent.AggregateEvent.UserId, domainEvent.AggregateEvent.AccessHash),
+                new Peer(PeerType.User, domainEvent.AggregateEvent.UserId/*, domainEvent.AggregateEvent.AccessHash*/),
                 welcomeMessage,
                 _randomHelper.NextLong());
 

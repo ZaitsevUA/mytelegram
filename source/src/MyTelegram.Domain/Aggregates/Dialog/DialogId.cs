@@ -1,7 +1,7 @@
 ﻿namespace MyTelegram.Domain.Aggregates.Dialog;
 
 [JsonConverter(typeof(SystemTextJsonSingleValueObjectConverter<DialogId>))]
-public class DialogId : MyIdentity<DialogId>
+public class DialogId : Identity<DialogId>
 {
     public DialogId(string value) : base(value)
     {

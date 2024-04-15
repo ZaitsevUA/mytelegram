@@ -12,7 +12,7 @@ public class QueryServerMongoDbIndexesCreator : MongoDbIndexesCreatorBase
 
     protected override async Task CreateAllIndexesCoreAsync()
     {
-        await CreateIndexAsync<RpcResultReadModel>(p => p.PeerId);
+        await CreateIndexAsync<RpcResultReadModel>(p => p.UserId);
         await CreateIndexAsync<RpcResultReadModel>(p => p.ReqMsgId);
 
         await CreateIndexAsync<UpdatesReadModel>(p => p.OwnerPeerId);

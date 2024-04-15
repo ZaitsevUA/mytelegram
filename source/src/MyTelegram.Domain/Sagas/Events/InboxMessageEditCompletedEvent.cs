@@ -11,7 +11,8 @@ public class InboxMessageEditCompletedEvent : AggregateEvent<EditMessageSaga, Ed
         int pts,
         Peer toPeer,
         byte[]? entities,
-        byte[]? media
+        byte[]? media,
+        MessageFwdHeader? fwdHeader
     )
     {
         OwnerPeerId = ownerPeerId;
@@ -23,12 +24,14 @@ public class InboxMessageEditCompletedEvent : AggregateEvent<EditMessageSaga, Ed
         ToPeer = toPeer;
         Entities = entities;
         Media = media;
+        FwdHeader = fwdHeader;
     }
 
     public int EditDate { get; }
     public Peer ToPeer { get; }
     public byte[]? Entities { get; }
     public byte[]? Media { get; }
+    public MessageFwdHeader? FwdHeader { get; }
     public string Message { get; }
     public long OwnerPeerId { get; }
     public long SenderPeerId { get; }

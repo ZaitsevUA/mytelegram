@@ -7,7 +7,9 @@ namespace MyTelegram.Messenger.QueryServer.DomainEventHandlers;
 
 public class ReadHistoryDomainEventHandler : DomainEventHandlerBase,
     ISubscribeSynchronousTo<ReadHistorySaga, ReadHistorySagaId, ReadHistoryCompletedEvent>,
-    ISubscribeSynchronousTo<ReadChannelHistorySaga, ReadChannelHistorySagaId, ReadChannelHistoryCompletedEvent>
+    ISubscribeSynchronousTo<ReadChannelHistorySaga, ReadChannelHistorySagaId, ReadChannelHistoryCompletedEvent>,
+    ISubscribeSynchronousTo<ReadHistorySaga, ReadHistorySagaId, UpdateInboxMaxIdCompletedSagaEvent>,
+    ISubscribeSynchronousTo<ReadHistorySaga, ReadHistorySagaId, UpdateOutboxMaxIdCompletedSagaEvent>
 {
     private readonly IPeerHelper _peerHelper;
     //private readonly ITlUpdatesConverter _updatesConverter;
@@ -34,40 +36,21 @@ public class ReadHistoryDomainEventHandler : DomainEventHandlerBase,
             domainEvent,
         CancellationToken cancellationToken)
     {
-        // Console.WriteLine($"Read channel history ok.reqMsgId:{domainEvent.AggregateEvent.ReqMsgId:x2} SenderPeerId={domainEvent.AggregateEvent.SenderPeerId} NeedNotifySender={domainEvent.AggregateEvent.NeedNotifySender}");
-
-        //todo:这里的selfUid不是senderUid
         await SendRpcMessageToClientAsync(domainEvent.AggregateEvent.RequestInfo,
                 new TBoolTrue(),
-                domainEvent.AggregateEvent.SenderPeerId)
-     ;
+                domainEvent.AggregateEvent.SenderPeerId);
 
-        if (domainEvent.AggregateEvent.NeedNotifySender)
+        var updates = new TUpdateShort
         {
-            IUpdate data = domainEvent.AggregateEvent.TopMsgId.HasValue ? new TUpdateReadChannelDiscussionOutbox
+            Update = new TUpdateReadChannelOutbox
             {
                 ChannelId = domainEvent.AggregateEvent.ChannelId,
-                TopMsgId = domainEvent.AggregateEvent.TopMsgId.Value,
-                ReadMaxId = domainEvent.AggregateEvent.MessageId
+                MaxId = domainEvent.AggregateEvent.MessageId
+            },
+            Date = DateTime.UtcNow.ToTimestamp()
+        };
 
-            } : new TUpdateReadChannelOutbox
-            {
-                ChannelId = domainEvent.AggregateEvent.ChannelId,
-                MaxId = domainEvent.AggregateEvent.MessageId,
-            };
-            // Console.WriteLine($"{data.GetType().FullName}");
-            var updates = new TUpdateShort { Update = data, Date = DateTime.UtcNow.ToTimestamp() };
-            await PushUpdatesToPeerAsync(
-                    new Peer(PeerType.User, domainEvent.AggregateEvent.SenderPeerId),
-                    updates)
-         ;
-        }
-
-        //await SendRpcMessageToClientAsync(domainEvent.AggregateEvent.ReqMsgId,
-        //    () => new TUpdateReadChannelOutbox
-        //    {
-        //        ChannelId = domainEvent.AggregateEvent.
-        //    });
+        await PushUpdatesToPeerAsync(domainEvent.AggregateEvent.SenderPeerId.ToUserPeer(), updates);
     }
 
     public async Task HandleAsync(
@@ -116,5 +99,48 @@ public class ReadHistoryDomainEventHandler : DomainEventHandlerBase,
                 pts: domainEvent.AggregateEvent.ReaderPts
             );
         }
+    }
+
+    public async Task HandleAsync(IDomainEvent<ReadHistorySaga, ReadHistorySagaId, UpdateInboxMaxIdCompletedSagaEvent> domainEvent, CancellationToken cancellationToken)
+    {
+        var affectedMessages = new TAffectedMessages { Pts = domainEvent.AggregateEvent.Pts, PtsCount = 1 };
+
+        await SendRpcMessageToClientAsync(domainEvent.AggregateEvent.RequestInfo,
+                affectedMessages,
+                domainEvent.AggregateEvent.RequestInfo.UserId)
+            ;
+
+        var updateReadHistoryInbox = new TUpdateReadHistoryInbox
+        {
+            Peer = domainEvent.AggregateEvent.RequestInfo.UserId.ToUserPeer().ToPeer(),
+            MaxId = domainEvent.AggregateEvent.MaxId,
+            Pts = domainEvent.AggregateEvent.Pts,
+            PtsCount = 1
+        };
+        var selfOtherDevicesUpdates = new TUpdates
+        {
+            Updates = new TVector<IUpdate>(updateReadHistoryInbox),
+            Users = new TVector<IUser>(),
+            Chats = new TVector<IChat>(),
+            Date = DateTime.UtcNow.ToTimestamp()
+        };
+        await PushUpdatesToPeerAsync(domainEvent.AggregateEvent.RequestInfo.UserId.ToUserPeer(),
+            selfOtherDevicesUpdates,
+            excludeAuthKeyId: domainEvent.AggregateEvent.RequestInfo.AuthKeyId,
+            pts: domainEvent.AggregateEvent.Pts
+        );
+    }
+
+    public async Task HandleAsync(IDomainEvent<ReadHistorySaga, ReadHistorySagaId, UpdateOutboxMaxIdCompletedSagaEvent> domainEvent, CancellationToken cancellationToken)
+    {
+        var readHistoryUpdates =
+            _layeredUpdatesService.Converter.ToReadHistoryUpdates(domainEvent.AggregateEvent);
+
+        var toPeer = new Peer(PeerType.User, domainEvent.AggregateEvent.UserId);
+        await PushUpdatesToPeerAsync(
+            toPeer,
+            readHistoryUpdates,
+            pts: domainEvent.AggregateEvent.Pts
+        );
     }
 }

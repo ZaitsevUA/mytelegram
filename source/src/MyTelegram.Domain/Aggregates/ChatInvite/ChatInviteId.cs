@@ -1,7 +1,7 @@
 ﻿namespace MyTelegram.Domain.Aggregates.ChatInvite;
 
 [JsonConverter(typeof(SystemTextJsonSingleValueObjectConverter<ChatInviteId>))]
-public class ChatInviteId : MyIdentity<ChatInviteId>
+public class ChatInviteId : Identity<ChatInviteId>
 {
     public ChatInviteId(string value) : base(value)
     {

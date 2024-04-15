@@ -22,17 +22,17 @@ public sealed class RequestBindTempAuthKey : IRequest<IBool>
     public long PermAuthKeyId { get; set; }
 
     ///<summary>
-    /// Random long from <a href="https://corefork.telegram.org/htmls/method/auth.bindTempAuthKey.html#binding-message-contents">Binding message contents</a>
+    /// Random long from <a href="https://corefork.telegram.org/method/auth.bindTempAuthKey#binding-message-contents">Binding message contents</a>
     ///</summary>
     public long Nonce { get; set; }
 
     ///<summary>
-    /// Unix timestamp to invalidate temporary key, see <a href="https://corefork.telegram.org/htmls/method/auth.bindTempAuthKey.html#binding-message-contents">Binding message contents</a>
+    /// Unix timestamp to invalidate temporary key, see <a href="https://corefork.telegram.org/method/auth.bindTempAuthKey#binding-message-contents">Binding message contents</a>
     ///</summary>
     public int ExpiresAt { get; set; }
 
     ///<summary>
-    /// See <a href="https://corefork.telegram.org/htmls/method/auth.bindTempAuthKey.html#generating-encrypted-message">Generating encrypted_message</a>
+    /// See <a href="https://corefork.telegram.org/method/auth.bindTempAuthKey#generating-encrypted-message">Generating encrypted_message</a>
     ///</summary>
     public byte[] EncryptedMessage { get; set; }
 

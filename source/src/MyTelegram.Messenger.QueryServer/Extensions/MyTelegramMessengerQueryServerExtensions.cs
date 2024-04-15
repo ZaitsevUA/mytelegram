@@ -1,5 +1,8 @@
 ﻿using EventFlow.Core.Caching;
 using EventFlow.MongoDB.Extensions;
+using MongoDB.Bson.Serialization;
+using MongoDB.Bson.Serialization.Serializers;
+using MyTelegram.Caching.Redis;
 using MyTelegram.Domain.Aggregates.Updates;
 using MyTelegram.Domain.CommandHandlers.PushUpdates;
 using MyTelegram.Domain.CommandHandlers.RpcResult;
@@ -9,6 +12,9 @@ using MyTelegram.Domain.EventFlow;
 using MyTelegram.Domain.Events.PushUpdates;
 using MyTelegram.Domain.Events.RpcResult;
 using MyTelegram.Domain.Events.Updates;
+using MyTelegram.EventFlow.MongoDB.ReadStores;
+using MyTelegram.EventFlow.ReadStores;
+using MyTelegram.Messenger.Extensions;
 using MyTelegram.Messenger.NativeAot;
 using MyTelegram.Messenger.QueryServer.BackgroundServices;
 using MyTelegram.Messenger.QueryServer.EventHandlers;
@@ -135,12 +141,20 @@ public static class MyTelegramMessengerQueryServerExtensions
 
         services.AddSystemTextJson(options =>
         {
-            options.AddSingleValueObjects();
+            //options.AddSingleValueObjects();
             options.TypeInfoResolverChain.Add(MyJsonSerializeContext.Default);
             options.TypeInfoResolverChain.Add(MyMessengerJsonContext.Default);
         });
 
-        services.AddMyNativeAot();
+        services.AddCacheJsonSerializer(jsonOptions =>
+        {
+            jsonOptions.TypeInfoResolverChain.Add(MyJsonSerializeContext.Default);
+            jsonOptions.TypeInfoResolverChain.Add(MyMessengerJsonContext.Default);
+        });
+
+        services.AddTransient<IQueryOnlyReadModelDescriptionProvider, QueryOnlyReadModelDescriptionProvider>();
+        services.AddTransient<IQueryOnlyReadModelStore<IAccessHashReadModel>, MongoDbQueryOnlyReadModelStore<IAccessHashReadModel>>();
+        BsonSerializer.RegisterSerializer(typeof(IAccessHashReadModel), new ImpliedImplementationInterfaceSerializer<IAccessHashReadModel, MyTelegram.ReadModel.MongoDB.AccessHashReadModel>());
 
     }
 }

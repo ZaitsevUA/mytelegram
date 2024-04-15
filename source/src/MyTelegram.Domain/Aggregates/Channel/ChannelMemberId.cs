@@ -1,7 +1,7 @@
 ﻿namespace MyTelegram.Domain.Aggregates.Channel;
 
 [JsonConverter(typeof(SystemTextJsonSingleValueObjectConverter<ChannelMemberId>))]
-public class ChannelMemberId : MyIdentity<ChannelMemberId>
+public class ChannelMemberId : Identity<ChannelMemberId>
 {
     public ChannelMemberId(string value) : base(value)
     {

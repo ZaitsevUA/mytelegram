@@ -3,7 +3,6 @@
 namespace MyTelegram.Domain.Aggregates.Messaging;
 
 public class MessageState : AggregateState<MessageAggregate, MessageId, MessageState>,
-    IApply<SendMessageStartedEvent>,
     IApply<OutboxMessageCreatedEvent>,
     IApply<InboxMessageCreatedEvent>,
     IApply<InboxMessageIdAddedToOutboxMessageEvent>,
@@ -13,18 +12,21 @@ public class MessageState : AggregateState<MessageAggregate, MessageId, MessageS
     IApply<MessageForwardedEvent>,
     IApply<InboxMessageHasReadEvent>,
     IApply<ReplyToMessageEvent>,
-    IApply<ReplyToMessageStartedEvent>,
     IApply<MessageViewsIncrementedEvent>,
     IApply<DeleteMessagesStartedEvent>,
     IApply<UpdatePinnedMessageStartedEvent>,
     IApply<InboxMessagePinnedUpdatedEvent>,
     IApply<OutboxMessagePinnedUpdatedEvent>,
     IApply<OtherPartyMessageDeletedEvent>,
-    IApply<ForwardMessageStartedEvent>,
     IApply<SelfMessageDeletedEvent>,
     IApply<OutboxMessageDeletedEvent>,
     IApply<InboxMessageDeletedEvent>,
-    IApply<InboxItemsAddedToOutboxMessageEvent>
+    IApply<InboxItemsAddedToOutboxMessageEvent>,
+    IApply<MessageDeleted4Event>,
+    IApply<ReplyChannelMessageCompletedEvent>,
+    IApply<ChannelMessagePinnedEvent>,
+    IApply<ChannelMessageDeletedEvent>,
+    IApply<MessageReplyUpdatedEvent>
 
 {
     public MessageItem MessageItem { get; private set; } = null!;
@@ -38,9 +40,9 @@ public class MessageState : AggregateState<MessageAggregate, MessageId, MessageS
     public bool Edited { get; private set; }
     public int Pts { get; private set; }
 
-    public IReadOnlyCollection<Peer> RecentRepliers { get; private set; } = new List<Peer>(MyTelegramServerDomainConsts.MaxRecentRepliersCount);
+    //public List<Peer> RecentRepliers { get; private set; } = new(MyTelegramServerDomainConsts.MaxRecentRepliersCount);
 
-
+    public MessageReply? Reply { get; private set; }
 
     public void LoadSnapshot(MessageSnapshot snapshot)
     {
@@ -52,7 +54,6 @@ public class MessageState : AggregateState<MessageAggregate, MessageId, MessageS
         //EditHide = snapshot.EditHide;
         Edited = snapshot.Edited;
         Pts = snapshot.Pts;
-        RecentRepliers = snapshot.RecentRepliers;
     }
 
     //private readonly CircularBuffer<Peer> _recentRepliers = new(5);
@@ -116,28 +117,28 @@ public class MessageState : AggregateState<MessageAggregate, MessageId, MessageS
         //throw new NotImplementedException();
     }
 
-    public void Apply(ReplyToMessageStartedEvent aggregateEvent)
-    {
-        RecentRepliers = aggregateEvent.RecentRepliers;
-        //throw new NotImplementedException();
-    }
+    //public void Apply(ReplyToMessageStartedEvent aggregateEvent)
+    //{
+    //    //RecentRepliers = aggregateEvent.RecentRepliers;
+    //    //throw new NotImplementedException();
+    //}
 
-    public void Apply(SendMessageStartedEvent aggregateEvent)
-    {
-        MessageItem = aggregateEvent.OutMessageItem;
-        SenderMessageId = aggregateEvent.OutMessageItem.MessageId;
-        //throw new NotImplementedException();
-    }
+    //public void Apply(SendMessageStartedEvent aggregateEvent)
+    //{
+    //    MessageItem = aggregateEvent.OutMessageItem;
+    //    SenderMessageId = aggregateEvent.OutMessageItem.MessageId;
+    //    //throw new NotImplementedException();
+    //}
 
     public void Apply(MessageViewsIncrementedEvent aggregateEvent)
     {
-        MessageItem.Views++;
+        MessageItem = MessageItem with { Views = MessageItem.Views + 1 };
     }
 
-    public void Apply(DeleteMessagesStartedEvent aggregateEvent)
-    {
+    //public void Apply(DeleteMessagesStartedEvent aggregateEvent)
+    //{
         //throw new NotImplementedException();
-    }
+    //}
 
     public void Apply(UpdatePinnedMessageStartedEvent aggregateEvent)
     {
@@ -162,10 +163,6 @@ public class MessageState : AggregateState<MessageAggregate, MessageId, MessageS
         //throw new NotImplementedException();
     }
 
-    public void Apply(ForwardMessageStartedEvent aggregateEvent)
-    {
-        //throw new NotImplementedException();
-    }
     //public CircularBuffer<Reaction> RecentReactions { get; private set; } = new(10);
     //public ConcurrentDictionary<long, Reaction> RecentReactions { get; private set; } = new();
     public List<Reaction> RecentReactions { get; private set; } = new();
@@ -269,5 +266,38 @@ public class MessageState : AggregateState<MessageAggregate, MessageId, MessageS
     public void Apply(InboxItemsAddedToOutboxMessageEvent aggregateEvent)
     {
         InboxItems = aggregateEvent.InboxItems;
+    }
+    public void Apply(MessageDeleted4Event aggregateEvent)
+    {
+        //throw new NotImplementedException();
+    }
+
+    public void Apply(ReplyChannelMessageCompletedEvent aggregateEvent)
+    {
+        Reply = aggregateEvent.Reply;
+    }
+
+    public void Apply(ChannelMessagePinnedEvent aggregateEvent)
+    {
+        Pinned = true;
+    }
+
+    public void Apply(ChannelMessageDeletedEvent aggregateEvent)
+    {
+        //throw new NotImplementedException();
+    }
+
+    public void Apply(MessageReplyUpdatedEvent aggregateEvent)
+    {
+        //throw new NotImplementedException();
+        if (Reply != null)
+        {
+            Reply.ChannelId = aggregateEvent.ChannelId;
+        }
+    }
+
+    public void Apply(DeleteMessagesStartedEvent aggregateEvent)
+    {
+        //throw new NotImplementedException();
     }
 }

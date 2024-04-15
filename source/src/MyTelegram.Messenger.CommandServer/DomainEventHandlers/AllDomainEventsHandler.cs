@@ -20,7 +20,7 @@ public class AllDomainEventsHandler : ISubscribeSynchronousToAll
             if (aggregateEvent is IHasRequestInfo requestInfo)
             {
                 var totalMilliseconds = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() - requestInfo.RequestInfo.Date;
-                if (totalMilliseconds > 200)
+                if (totalMilliseconds > 500)
                 {
                     _logger.LogInformation("Process domain event '{DomainEvent}' is too slow,time={Timespan}ms,reqMsgId={ReqMsgId}",
                         domainEvent.GetAggregateEvent().GetType().Name,

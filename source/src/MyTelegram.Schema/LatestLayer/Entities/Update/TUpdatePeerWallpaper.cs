@@ -17,7 +17,7 @@ public sealed class TUpdatePeerWallpaper : IUpdate
     public BitArray Flags { get; set; } = new BitArray(32);
 
     ///<summary>
-    /// Whether the other user has chosen a custom wallpaper for us using <a href="https://corefork.telegram.org/method/messages.setChatWallPaper">messages.setChatWallPaper</a> and the <code>for_both</code> flag, see <a href="https://corefork.telegram.org/api/wallpapers#installing-wallpapers-in-a-specific-chat">here »</a> for more info.
+    /// Whether the other user has chosen a custom wallpaper for us using <a href="https://corefork.telegram.org/method/messages.setChatWallPaper">messages.setChatWallPaper</a> and the <code>for_both</code> flag, see <a href="https://corefork.telegram.org/api/wallpapers#installing-wallpapers-in-a-specific-chat-or-channel">here »</a> for more info.
     /// See <a href="https://corefork.telegram.org/type/true" />
     ///</summary>
     public bool WallpaperOverridden { get; set; }

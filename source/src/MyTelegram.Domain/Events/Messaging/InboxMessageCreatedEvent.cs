@@ -3,8 +3,7 @@
 public class InboxMessageCreatedEvent : RequestAggregateEvent2<MessageAggregate, MessageId>
 {
     public MessageItem InboxMessageItem { get; }
-    public int SenderMessageId { get; }
-
+    public int SenderMessageId { get; } 
 
     public InboxMessageCreatedEvent(
         RequestInfo requestInfo,
@@ -12,6 +11,5 @@ public class InboxMessageCreatedEvent : RequestAggregateEvent2<MessageAggregate,
     {
         InboxMessageItem = inboxMessageItem;
         SenderMessageId = senderMessageId;
-
     }
 }

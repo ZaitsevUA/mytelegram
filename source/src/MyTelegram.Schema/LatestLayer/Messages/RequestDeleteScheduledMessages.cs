@@ -5,6 +5,9 @@ namespace MyTelegram.Schema.Messages;
 
 ///<summary>
 /// Delete scheduled messages
+/// <para>Possible errors</para>
+/// Code Type Description
+/// 400 PEER_ID_INVALID The provided peer id is invalid.
 /// See <a href="https://corefork.telegram.org/method/messages.deleteScheduledMessages" />
 ///</summary>
 [TlObject(0x59ae2b16)]

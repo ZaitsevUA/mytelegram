@@ -1,5 +1,6 @@
-﻿using EventFlow.Core.Caching;
-using MyTelegram.Domain.EventFlow;
+﻿using MyTelegram.Caching.Redis;
+using MyTelegram.EventFlow;
+using MyTelegram.Messenger.CommandServer.BackgroundServices;
 using MyTelegram.Messenger.CommandServer.EventHandlers;
 using MyTelegram.Messenger.NativeAot;
 using MyTelegram.Services.Extensions;
@@ -22,8 +23,14 @@ public static class MyTelegramMessengerCommandServerExtensions
     {
         //services.AddTransient<PtsEventHandler>();
         services.AddTransient<MessengerEventHandler>();
+        services.AddTransient<IDataProcessor<NewDeviceCreatedEvent>, NewDeviceCreatedEventDataProcessor>();
         //services.AddTransient<IReadModelUpdateManager, MyTelegramCommandServerReadModelUpdateManager>();
 
+        services.AddCacheJsonSerializer(jsonOptions =>
+        {
+            jsonOptions.TypeInfoResolverChain.Add(MyJsonSerializeContext.Default);
+            jsonOptions.TypeInfoResolverChain.Add(MyMessengerJsonContext.Default);
+        });
         services.AddSystemTextJson(options =>
         {
             options.AddSingleValueObjects();

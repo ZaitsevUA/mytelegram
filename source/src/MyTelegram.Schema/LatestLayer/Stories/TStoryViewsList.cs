@@ -20,7 +20,15 @@ public sealed class TStoryViewsList : IStoryViewsList
     /// Total number of results that can be fetched
     ///</summary>
     public int Count { get; set; }
+
+    ///<summary>
+    /// Total number of story views
+    ///</summary>
     public int ViewsCount { get; set; }
+
+    ///<summary>
+    /// Total number of story forwards/reposts
+    ///</summary>
     public int ForwardsCount { get; set; }
 
     ///<summary>
@@ -32,6 +40,10 @@ public sealed class TStoryViewsList : IStoryViewsList
     /// Story view date and reaction information
     ///</summary>
     public TVector<MyTelegram.Schema.IStoryView> Views { get; set; }
+
+    ///<summary>
+    /// Mentioned chats
+    ///</summary>
     public TVector<MyTelegram.Schema.IChat> Chats { get; set; }
 
     ///<summary>

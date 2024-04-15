@@ -7,10 +7,10 @@ namespace MyTelegram.Schema;
 /// Extended user info
 /// See <a href="https://corefork.telegram.org/constructor/userFull" />
 ///</summary>
-[TlObject(0xb9b12c6c)]
+[TlObject(0xcc997720)]
 public sealed class TUserFull : IUserFull
 {
-    public uint ConstructorId => 0xb9b12c6c;
+    public uint ConstructorId => 0xcc997720;
     ///<summary>
     /// Flags, see <a href="https://corefork.telegram.org/mtproto/TL-combinators#conditional-fields">TL conditional fields</a>
     ///</summary>
@@ -77,12 +77,13 @@ public sealed class TUserFull : IUserFull
     public bool BlockedMyStoriesFrom { get; set; }
 
     ///<summary>
-    /// Whether the other user has chosen a custom wallpaper for us using <a href="https://corefork.telegram.org/method/messages.setChatWallPaper">messages.setChatWallPaper</a> and the <code>for_both</code> flag, see <a href="https://corefork.telegram.org/api/wallpapers#installing-wallpapers-in-a-specific-chat">here »</a> for more info.
+    /// Whether the other user has chosen a custom wallpaper for us using <a href="https://corefork.telegram.org/method/messages.setChatWallPaper">messages.setChatWallPaper</a> and the <code>for_both</code> flag, see <a href="https://corefork.telegram.org/api/wallpapers#installing-wallpapers-in-a-specific-chat-or-channel">here »</a> for more info.
     /// See <a href="https://corefork.telegram.org/type/true" />
     ///</summary>
     public bool WallpaperOverridden { get; set; }
     public bool ContactRequirePremium { get; set; }
     public bool ReadDatesPrivate { get; set; }
+    public BitArray Flags2 { get; set; } = new BitArray(32);
 
     ///<summary>
     /// User ID
@@ -188,6 +189,14 @@ public sealed class TUserFull : IUserFull
     /// See <a href="https://corefork.telegram.org/type/PeerStories" />
     ///</summary>
     public MyTelegram.Schema.IPeerStories? Stories { get; set; }
+    public MyTelegram.Schema.IBusinessWorkHours? BusinessWorkHours { get; set; }
+    public MyTelegram.Schema.IBusinessLocation? BusinessLocation { get; set; }
+    public MyTelegram.Schema.IBusinessGreetingMessage? BusinessGreetingMessage { get; set; }
+    public MyTelegram.Schema.IBusinessAwayMessage? BusinessAwayMessage { get; set; }
+    public MyTelegram.Schema.IBusinessIntro? BusinessIntro { get; set; }
+    public MyTelegram.Schema.IBirthday? Birthday { get; set; }
+    public long? PersonalChannelId { get; set; }
+    public int? PersonalChannelMessage { get; set; }
 
     public void ComputeFlag()
     {
@@ -219,6 +228,14 @@ public sealed class TUserFull : IUserFull
         if (PremiumGifts?.Count > 0) { Flags[19] = true; }
         if (Wallpaper != null) { Flags[24] = true; }
         if (Stories != null) { Flags[25] = true; }
+        if (BusinessWorkHours != null) { Flags2[0] = true; }
+        if (BusinessLocation != null) { Flags2[1] = true; }
+        if (BusinessGreetingMessage != null) { Flags2[2] = true; }
+        if (BusinessAwayMessage != null) { Flags2[3] = true; }
+        if (BusinessIntro != null) { Flags2[4] = true; }
+        if (Birthday != null) { Flags2[5] = true; }
+        if (/*PersonalChannelId != 0 &&*/ PersonalChannelId.HasValue) { Flags2[6] = true; }
+        if (/*PersonalChannelMessage != 0 && */PersonalChannelMessage.HasValue) { Flags2[6] = true; }
     }
 
     public void Serialize(IBufferWriter<byte> writer)
@@ -226,6 +243,7 @@ public sealed class TUserFull : IUserFull
         ComputeFlag();
         writer.Write(ConstructorId);
         writer.Write(Flags);
+        writer.Write(Flags2);
         writer.Write(Id);
         if (Flags[1]) { writer.Write(About); }
         writer.Write(Settings);
@@ -245,6 +263,14 @@ public sealed class TUserFull : IUserFull
         if (Flags[19]) { writer.Write(PremiumGifts); }
         if (Flags[24]) { writer.Write(Wallpaper); }
         if (Flags[25]) { writer.Write(Stories); }
+        if (Flags2[0]) { writer.Write(BusinessWorkHours); }
+        if (Flags2[1]) { writer.Write(BusinessLocation); }
+        if (Flags2[2]) { writer.Write(BusinessGreetingMessage); }
+        if (Flags2[3]) { writer.Write(BusinessAwayMessage); }
+        if (Flags2[4]) { writer.Write(BusinessIntro); }
+        if (Flags2[5]) { writer.Write(Birthday); }
+        if (Flags2[6]) { writer.Write(PersonalChannelId.Value); }
+        if (Flags2[6]) { writer.Write(PersonalChannelMessage.Value); }
     }
 
     public void Deserialize(ref SequenceReader<byte> reader)
@@ -263,6 +289,7 @@ public sealed class TUserFull : IUserFull
         if (Flags[28]) { WallpaperOverridden = true; }
         if (Flags[29]) { ContactRequirePremium = true; }
         if (Flags[30]) { ReadDatesPrivate = true; }
+        Flags2 = reader.ReadBitArray();
         Id = reader.ReadInt64();
         if (Flags[1]) { About = reader.ReadString(); }
         Settings = reader.Read<MyTelegram.Schema.IPeerSettings>();
@@ -282,5 +309,13 @@ public sealed class TUserFull : IUserFull
         if (Flags[19]) { PremiumGifts = reader.Read<TVector<MyTelegram.Schema.IPremiumGiftOption>>(); }
         if (Flags[24]) { Wallpaper = reader.Read<MyTelegram.Schema.IWallPaper>(); }
         if (Flags[25]) { Stories = reader.Read<MyTelegram.Schema.IPeerStories>(); }
+        if (Flags2[0]) { BusinessWorkHours = reader.Read<MyTelegram.Schema.IBusinessWorkHours>(); }
+        if (Flags2[1]) { BusinessLocation = reader.Read<MyTelegram.Schema.IBusinessLocation>(); }
+        if (Flags2[2]) { BusinessGreetingMessage = reader.Read<MyTelegram.Schema.IBusinessGreetingMessage>(); }
+        if (Flags2[3]) { BusinessAwayMessage = reader.Read<MyTelegram.Schema.IBusinessAwayMessage>(); }
+        if (Flags2[4]) { BusinessIntro = reader.Read<MyTelegram.Schema.IBusinessIntro>(); }
+        if (Flags2[5]) { Birthday = reader.Read<MyTelegram.Schema.IBirthday>(); }
+        if (Flags2[6]) { PersonalChannelId = reader.ReadInt64(); }
+        if (Flags2[6]) { PersonalChannelMessage = reader.ReadInt32(); }
     }
 }

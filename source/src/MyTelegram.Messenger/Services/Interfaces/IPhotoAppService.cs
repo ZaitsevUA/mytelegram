@@ -10,5 +10,5 @@ public interface IPhotoAppService
         IReadOnlyCollection<IChannelReadModel> channelReadModels);
     Task<IPhotoReadModel?> GetPhotoAsync(long? photoId);
     //Task<IReadOnlyCollection<IPhotoReadModel>> GetPhotosAsync(IUserReadModel userReadModel);
-    Task<IReadOnlyCollection<IPhotoReadModel>> GetPhotosAsync(IList<long> photoIds);
+    Task<IReadOnlyCollection<IPhotoReadModel>> GetPhotosAsync(List<long> photoIds);
 }

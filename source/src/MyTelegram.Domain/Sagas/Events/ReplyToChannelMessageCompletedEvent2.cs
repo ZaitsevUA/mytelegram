@@ -3,7 +3,7 @@
 public class ReplyToChannelMessageCompletedEvent2 : AggregateEvent<SendMessageSaga, SendMessageSagaId>
 {
     public ReplyToChannelMessageCompletedEvent2(
-        //        long channelId,
+        //int replyToMsgId,
         IInputReplyTo replyTo,
         long channelId,
         int repliesPts,
@@ -13,7 +13,7 @@ public class ReplyToChannelMessageCompletedEvent2 : AggregateEvent<SendMessageSa
         IReadOnlyCollection<Peer> recentRepliers
     )
     {
-        //        ReplyToMsgId = replyToMsgId;
+        //ReplyToMsgId = replyToMsgId;
         ReplyTo = replyTo;
         ChannelId = channelId;
         RepliesPts = repliesPts;
@@ -23,7 +23,7 @@ public class ReplyToChannelMessageCompletedEvent2 : AggregateEvent<SendMessageSa
         RecentRepliers = recentRepliers;
     }
 
-    public int ReplyToMsgId { get; }
+    //public int ReplyToMsgId { get; }
     public IInputReplyTo ReplyTo { get; }
     public long ChannelId { get; }
     public int RepliesPts { get; }

@@ -16,7 +16,9 @@ public class ChannelMemberAggregate : AggregateRoot<ChannelMemberAggregate, Chan
         long inviterId,
         int date,
         bool isBot,
-        long? chatInviteId)
+        long? chatInviteId,
+        ChatJoinType chatJoinType
+        )
     {
         // Kicked user can not join channel by invite link
         if (_state.KickedBy != 0 && userId == inviterId)
@@ -40,7 +42,9 @@ public class ChannelMemberAggregate : AggregateRoot<ChannelMemberAggregate, Chan
             !IsNew,
             _state.BannedRights,
             isBot,
-            chatInviteId));
+            chatInviteId,
+            chatJoinType
+            ));
     }
 
     public void CreateCreator(RequestInfo requestInfo,

@@ -90,26 +90,78 @@ public class MessageAppService : BaseAppService, IMessageAppService
     {
         if (input.ToPeer.PeerType == PeerType.User)
         {
-            if (await _blockCacheAppService.IsBlockedAsync(input.ToPeer.PeerId, input.SenderPeerId))
+            if (await _blockCacheAppService.IsBlockedAsync(input.ToPeer.PeerId, input.SenderUserId))
             {
                 RpcErrors.RpcErrors400.UserIsBlocked.ThrowRpcError();
             }
 
-            if (await _blockCacheAppService.IsBlockedAsync(input.SenderPeerId, input.ToPeer.PeerId))
+            if (await _blockCacheAppService.IsBlockedAsync(input.SenderUserId, input.ToPeer.PeerId))
             {
                 RpcErrors.RpcErrors400.YouBlockedUser.ThrowRpcError();
             }
         }
     }
 
-    private Task CheckAccessHashAsync(SendMessageInput input)
-    {
-        if (input.ToPeer.PeerType == PeerType.User || input.ToPeer.PeerType == PeerType.Channel)
-        {
-            return _accessHashHelper.CheckAccessHashAsync(input.ToPeer);
-        }
+    //private async Task CheckAccessHashAsync(SendMessageInput input)
+    //{
+    //    if (input.ToPeer.PeerType == PeerType.User || input.ToPeer.PeerType == PeerType.Channel)
+    //    {
+    //        await _accessHashHelper.CheckAccessHashAsync(input.ToPeer);
+    //    }
 
-        return Task.CompletedTask;
+    //    if (input.SendAs != null)
+    //    {
+    //        await _accessHashHelper.CheckAccessHashAsync(input.SendAs);
+    //    }
+    //}
+    private async Task CheckSendAsAsync(SendMessageInput input)
+    {
+        if (input.SendAs != null)
+        {
+            if (input.ToPeer.PeerType != PeerType.Channel)
+            {
+                RpcErrors.RpcErrors400.SendAsPeerInvalid.ThrowRpcError();
+            }
+
+            switch (input.SendAs.PeerType)
+            {
+                case PeerType.User:
+                case PeerType.Self:
+                    if (input.SendAs.PeerId != input.RequestInfo.UserId)
+                    {
+                        RpcErrors.RpcErrors400.SendAsPeerInvalid.ThrowRpcError();
+                    }
+                    break;
+
+                case PeerType.Channel:
+
+                    var sendAsPeerId =
+                        await _queryProcessor.ProcessAsync(new GetSendAsPeerIdQuery(input.RequestInfo.UserId, input.SendAs.PeerId));
+                    if (sendAsPeerId == null)
+                    {
+                        RpcErrors.RpcErrors400.SendAsPeerInvalid.ThrowRpcError();
+                    }
+
+                    //var channelReadModel =
+                    //    await _queryProcessor.ProcessAsync(new GetChannelByIdQuery(input.SendAs.PeerId));
+                    //if (channelReadModel == null)
+                    //{
+                    //    RpcErrors.RpcErrors400.SendAsPeerInvalid.ThrowRpcError();
+                    //}
+
+                    //if (channelReadModel!.CreatorId != input.RequestInfo.UserId)
+                    //{
+                    //    RpcErrors.RpcErrors400.SendAsPeerInvalid.ThrowRpcError();
+                    //}
+
+                    //if (channelReadModel.LinkedChatId != input.SendAs.PeerId || channelReadModel.ChannelId != input.SendAs.PeerId)
+                    //{
+                    //    RpcErrors.RpcErrors400.SendAsPeerInvalid.ThrowRpcError();
+                    //}
+
+                    break;
+            }
+        }
     }
 
     private async Task<IChannelReadModel?> CheckChannelBannedRightsAsync(SendMessageInput input)
@@ -119,10 +171,10 @@ public class MessageAppService : BaseAppService, IMessageAppService
             return null;
         }
 
-        var channelReadModel = await _queryProcessor.ProcessAsync(new GetChannelByIdQuery(input.ToPeer.PeerId), default);
+        var channelReadModel = await _queryProcessor.ProcessAsync(new GetChannelByIdQuery(input.ToPeer.PeerId));
         if (channelReadModel!.Broadcast)
         {
-            var admin = channelReadModel.AdminList.FirstOrDefault(p => p.UserId == input.SenderPeerId);
+            var admin = channelReadModel.AdminList.FirstOrDefault(p => p.UserId == input.SenderUserId);
             if (admin == null || !admin.AdminRights.PostMessages)
             {
                 RpcErrors.RpcErrors403.ChatWriteForbidden.ThrowRpcError();
@@ -137,7 +189,7 @@ public class MessageAppService : BaseAppService, IMessageAppService
 
         var channelMemberReadModel =
             await _queryProcessor.ProcessAsync(new GetChannelMemberByUserIdQuery(channelReadModel.ChannelId,
-                input.SenderPeerId), default);
+                input.SenderUserId));
 
         if (channelMemberReadModel == null)
         {
@@ -210,24 +262,27 @@ public class MessageAppService : BaseAppService, IMessageAppService
 
     public async Task SendMessageAsync(SendMessageInput input)
     {
-        if (input.SenderPeerId != MyTelegramServerDomainConsts.OfficialUserId)
-        {
-            await CheckAccessHashAsync(input);
-        }
-
+        //await CheckAccessHashAsync(input);
+        await CheckSendAsAsync(input);
         await CheckBlockedAsync(input);
         var channelReadModel = await CheckChannelBannedRightsAsync(input);
         var chatMembers = await GetChatMembersAsync(input);
 
         var item = await GetMessageEntitiesAsync(input);
-        var ownerPeerId = input.ToPeer.PeerType == PeerType.Channel ? input.ToPeer.PeerId : input.SenderPeerId;
+        var ownerPeerId = input.ToPeer.PeerType == PeerType.Channel ? input.ToPeer.PeerId : input.SenderUserId;
         int? replyToMsgId = input.InputReplyTo.ToReplyToMsgId();
+
+        // Reply to group: ToPeerId=input.ToPeerId,SenderUserId=input.UserId
+        // Reply to user:  ToPeerId=Input.UserId,OwnerPeerId=input.ToPeerId,MessageId=replyToMsgId
+
         var replyToMsgItems =
-            await _queryProcessor.ProcessAsync(new GetReplyToMsgIdListQuery(input.ToPeer, input.SenderPeerId, replyToMsgId));
+            await _queryProcessor.ProcessAsync(new GetReplyToMsgIdListQuery(input.ToPeer, input.SenderUserId, replyToMsgId));
         //var idType = input.ToPeer.PeerType == PeerType.Channel ? IdType.ChannelMessageId : IdType.MessageId;
         var idType = IdType.MessageId;
         var post = channelReadModel?.Broadcast ?? false;
+        var linkedChannelId = channelReadModel?.Broadcast ?? false ? channelReadModel.LinkedChatId : null;
         string? postAuthor = null;
+
         if (post && channelReadModel!.Signatures)
         {
             var user = await _queryProcessor.ProcessAsync(new GetUserByIdQuery(input.RequestInfo.UserId));
@@ -238,9 +293,10 @@ public class MessageAppService : BaseAppService, IMessageAppService
 
         var date = CurrentDate;
         var messageItem = new MessageItem(
-            input.ToPeer with { PeerId = ownerPeerId, AccessHash = 0 },
+            input.ToPeer with { PeerId = ownerPeerId/*, AccessHash = 0 */},
             input.ToPeer,
-            new Peer(PeerType.User, input.SenderPeerId),
+            new Peer(PeerType.User, input.SenderUserId),
+            input.SenderUserId,
             messageId,
             input.Message,
             date,
@@ -255,11 +311,13 @@ public class MessageAppService : BaseAppService, IMessageAppService
             item.entities.ToBytes(),
             input.Media,
             input.GroupId,
-            pollId: input.PollId,
-            post: post,
-            replyMarkup: input.ReplyMarkup,
-            topMsgId: input.TopMsgId,
-            postAuthor: postAuthor
+            PollId: input.PollId,
+            Post: post,
+            ReplyMarkup: input.ReplyMarkup,
+            TopMsgId: input.TopMsgId,
+            PostAuthor: postAuthor,
+            SendAs: input.SendAs,
+            QuickReplyShortcut: input.QuickReplyShortcut
         );
 
         var command = new CreateOutboxMessageCommand(MessageId.Create(ownerPeerId, messageId),
@@ -267,9 +325,10 @@ public class MessageAppService : BaseAppService, IMessageAppService
             messageItem,
             item.mentionedUserIds,
             replyToMsgItems?.ToList(),
+            //input.InputReplyTo,
             input.ClearDraft,
             input.GroupItemCount,
-            channelReadModel?.LinkedChatId,
+            linkedChannelId,
             chatMembers
             );
         await _commandBus.PublishAsync(command);
@@ -307,8 +366,8 @@ public class MessageAppService : BaseAppService, IMessageAppService
         return GetMessagesInternalAsync(query);
     }
 
-    private async Task<GetMessageOutput> GetMessagesInternalAsync(GetMessagesQuery query, IReadOnlyCollection<long>? users,
-        IReadOnlyCollection<long>? chats)
+    private async Task<GetMessageOutput> GetMessagesInternalAsync(GetMessagesQuery query, IReadOnlyCollection<long>? users = null,
+        IReadOnlyCollection<long>? chats = null)
     {
         var messageList = await _queryProcessor.ProcessAsync(query);
 
@@ -379,13 +438,14 @@ public class MessageAppService : BaseAppService, IMessageAppService
                 : await _queryProcessor
                     .ProcessAsync(new GetChannelByChannelIdListQuery(channelIdList));
 
-        var contactList = new List<IContactReadModel>();
+        var contactList = await _queryProcessor
+                .ProcessAsync(new GetContactListQuery(query.SelfUserId, userIdList));
         var photoIds = new List<long>();
         photoIds.AddRange(chatList.Select(p => p.PhotoId ?? 0));
         photoIds.AddRange(channelList.Select(p => p.PhotoId ?? 0));
         photoIds.AddRange(userList.Select(p => p.ProfilePhotoId ?? 0));
         photoIds.AddRange(userList.Select(p => p.FallbackPhotoId ?? 0));
-        //photoIds.AddRange(contactList.Select(p => p.PhotoId ?? 0));
+        photoIds.AddRange(contactList.Select(p => p.PhotoId ?? 0));
         photoIds.RemoveAll(p => p == 0);
 
         var photoList = await _photoAppService.GetPhotosAsync(photoIds);

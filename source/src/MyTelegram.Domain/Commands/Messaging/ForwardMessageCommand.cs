@@ -1,18 +1,13 @@
 ﻿namespace MyTelegram.Domain.Commands.Messaging;
 
-public class ForwardMessageCommand : RequestCommand2<MessageAggregate, MessageId, IExecutionResult>
+public class ForwardMessageCommand(
+    MessageId aggregateId,
+    RequestInfo requestInfo,
+    long randomId)
+    : Command<MessageAggregate, MessageId, IExecutionResult>(aggregateId), IHasRequestInfo
 {
-    public long RandomId { get; }
-    public ForwardMessageCommand(MessageId aggregateId,
-        RequestInfo requestInfo,
-        long randomId) : base(aggregateId, requestInfo)
-    {
-        RandomId = randomId;
-    }
+    public long RandomId { get; } = randomId;
 
-    protected override IEnumerable<byte[]> GetSourceIdComponents()
-    {
-        yield return BitConverter.GetBytes(RandomId);
-        yield return RequestInfo.RequestId.ToByteArray();
-    }
+
+    public RequestInfo RequestInfo { get; } = requestInfo;
 }

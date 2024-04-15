@@ -4,18 +4,48 @@
 namespace MyTelegram.Schema.Messages;
 
 ///<summary>
+/// Returns the current saved dialog list, see <a href="https://corefork.telegram.org/api/saved-messages">here »</a> for more info.
 /// See <a href="https://corefork.telegram.org/method/messages.getSavedDialogs" />
 ///</summary>
 [TlObject(0x5381d21a)]
 public sealed class RequestGetSavedDialogs : IRequest<MyTelegram.Schema.Messages.ISavedDialogs>
 {
     public uint ConstructorId => 0x5381d21a;
+    ///<summary>
+    /// Flags, see <a href="https://corefork.telegram.org/mtproto/TL-combinators#conditional-fields">TL conditional fields</a>
+    ///</summary>
     public BitArray Flags { get; set; } = new BitArray(32);
+
+    ///<summary>
+    /// Exclude pinned dialogs
+    /// See <a href="https://corefork.telegram.org/type/true" />
+    ///</summary>
     public bool ExcludePinned { get; set; }
+
+    ///<summary>
+    /// <a href="https://corefork.telegram.org/api/offsets">Offsets for pagination, for more info click here</a>
+    ///</summary>
     public int OffsetDate { get; set; }
+
+    ///<summary>
+    /// <a href="https://corefork.telegram.org/api/offsets">Offsets for pagination, for more info click here</a> (<code>top_message</code> ID used for pagination)
+    ///</summary>
     public int OffsetId { get; set; }
+
+    ///<summary>
+    /// <a href="https://corefork.telegram.org/api/offsets">Offset peer for pagination</a>
+    /// See <a href="https://corefork.telegram.org/type/InputPeer" />
+    ///</summary>
     public MyTelegram.Schema.IInputPeer OffsetPeer { get; set; }
+
+    ///<summary>
+    /// Number of list elements to be returned
+    ///</summary>
     public int Limit { get; set; }
+
+    ///<summary>
+    /// <a href="https://corefork.telegram.org/api/offsets#hash-generation">Hash for pagination, for more info click here</a>
+    ///</summary>
     public long Hash { get; set; }
 
     public void ComputeFlag()

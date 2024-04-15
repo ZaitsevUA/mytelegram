@@ -7,12 +7,13 @@ namespace MyTelegram.Schema.Messages;
 /// Sends a message to a chat
 /// <para>Possible errors</para>
 /// Code Type Description
-/// 400 ADMIN_RIGHTS_EMPTY &nbsp;
+/// 400 ADMIN_RIGHTS_EMPTY The chatAdminRights constructor passed in keyboardButtonRequestPeer.peer_type.user_admin_rights has no rights set (i.e. flags is 0).
 /// 400 BOT_DOMAIN_INVALID Bot domain invalid.
 /// 400 BOT_INVALID This is not a valid bot.
 /// 400 BUTTON_DATA_INVALID The data of one or more of the buttons you provided is invalid.
 /// 400 BUTTON_TYPE_INVALID The type of one or more of the buttons you provided is invalid.
 /// 400 BUTTON_URL_INVALID Button URL invalid.
+/// 400 BUTTON_USER_INVALID The <code>user_id</code> passed to inputKeyboardButtonUserProfile is invalid!
 /// 400 BUTTON_USER_PRIVACY_RESTRICTED The privacy setting of the user specified in a <a href="https://corefork.telegram.org/constructor/inputKeyboardButtonUserProfile">inputKeyboardButtonUserProfile</a> button do not allow creating such a button.
 /// 400 CHANNEL_INVALID The provided channel is invalid.
 /// 406 CHANNEL_PRIVATE You haven't joined this channel/supergroup.
@@ -37,6 +38,7 @@ namespace MyTelegram.Schema.Messages;
 /// 400 PEER_ID_INVALID The provided peer id is invalid.
 /// 400 PINNED_DIALOGS_TOO_MUCH Too many pinned dialogs.
 /// 400 POLL_OPTION_INVALID Invalid poll option provided.
+/// 406 PRIVACY_PREMIUM_REQUIRED You need a <a href="https://corefork.telegram.org/api/premium">Telegram Premium subscription</a> to send a message to this user.
 /// 500 RANDOM_ID_DUPLICATE You provided a random ID that was already used.
 /// 400 REPLY_MARKUP_INVALID The provided reply markup is invalid.
 /// 400 REPLY_MARKUP_TOO_LONG The specified reply_markup is too long.
@@ -58,10 +60,10 @@ namespace MyTelegram.Schema.Messages;
 /// 400 YOU_BLOCKED_USER You blocked this user.
 /// See <a href="https://corefork.telegram.org/method/messages.sendMessage" />
 ///</summary>
-[TlObject(0x280d096f)]
+[TlObject(0xdff8042c)]
 public sealed class RequestSendMessage : IRequest<MyTelegram.Schema.IUpdates>
 {
-    public uint ConstructorId => 0x280d096f;
+    public uint ConstructorId => 0xdff8042c;
     ///<summary>
     /// Flags, see <a href="https://corefork.telegram.org/mtproto/TL-combinators#conditional-fields">TL conditional fields</a>
     ///</summary>
@@ -152,6 +154,7 @@ public sealed class RequestSendMessage : IRequest<MyTelegram.Schema.IUpdates>
     /// See <a href="https://corefork.telegram.org/type/InputPeer" />
     ///</summary>
     public MyTelegram.Schema.IInputPeer? SendAs { get; set; }
+    public MyTelegram.Schema.IInputQuickReplyShortcut? QuickReplyShortcut { get; set; }
 
     public void ComputeFlag()
     {
@@ -167,6 +170,7 @@ public sealed class RequestSendMessage : IRequest<MyTelegram.Schema.IUpdates>
         if (Entities?.Count > 0) { Flags[3] = true; }
         if (/*ScheduleDate != 0 && */ScheduleDate.HasValue) { Flags[10] = true; }
         if (SendAs != null) { Flags[13] = true; }
+        if (QuickReplyShortcut != null) { Flags[17] = true; }
     }
 
     public void Serialize(IBufferWriter<byte> writer)
@@ -182,6 +186,7 @@ public sealed class RequestSendMessage : IRequest<MyTelegram.Schema.IUpdates>
         if (Flags[3]) { writer.Write(Entities); }
         if (Flags[10]) { writer.Write(ScheduleDate.Value); }
         if (Flags[13]) { writer.Write(SendAs); }
+        if (Flags[17]) { writer.Write(QuickReplyShortcut); }
     }
 
     public void Deserialize(ref SequenceReader<byte> reader)
@@ -202,5 +207,6 @@ public sealed class RequestSendMessage : IRequest<MyTelegram.Schema.IUpdates>
         if (Flags[3]) { Entities = reader.Read<TVector<MyTelegram.Schema.IMessageEntity>>(); }
         if (Flags[10]) { ScheduleDate = reader.ReadInt32(); }
         if (Flags[13]) { SendAs = reader.Read<MyTelegram.Schema.IInputPeer>(); }
+        if (Flags[17]) { QuickReplyShortcut = reader.Read<MyTelegram.Schema.IInputQuickReplyShortcut>(); }
     }
 }

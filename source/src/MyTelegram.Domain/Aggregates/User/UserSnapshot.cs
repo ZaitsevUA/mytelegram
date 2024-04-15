@@ -21,7 +21,9 @@ public class UserSnapshot : ISnapshot
         PeerColor? color,
         PeerColor? profileColor,
         GlobalPrivacySettings globalPrivacySettings,
-        bool premium
+        bool premium,
+        long? personalChannelId,
+        Birthday? birthday
         )
     {
         UserId = userId;
@@ -44,6 +46,8 @@ public class UserSnapshot : ISnapshot
         ProfileColor = profileColor;
         GlobalPrivacySettings = globalPrivacySettings;
         Premium = premium;
+        PersonalChannelId = personalChannelId;
+        Birthday = birthday;
     }
 
     public long AccessHash { get; }
@@ -67,6 +71,8 @@ public class UserSnapshot : ISnapshot
     public PeerColor? ProfileColor { get; }
     public GlobalPrivacySettings GlobalPrivacySettings { get; }
     public bool Premium { get; }
+    public long? PersonalChannelId { get; }
+    public Birthday? Birthday { get; }
 
     public long UserId { get; }
     public string? UserName { get; }

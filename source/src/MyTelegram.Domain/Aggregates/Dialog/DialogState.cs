@@ -16,7 +16,12 @@ public class DialogState : AggregateState<DialogAggregate, DialogId, DialogState
     IApply<PinnedOrderChangedEvent>,
     IApply<DialogUnreadMarkChangedEvent>,
     IApply<DraftClearedEvent>,
-    IApply<DeleteUserMessagesStartedEvent>
+    IApply<DeleteUserMessagesStartedEvent>,
+    IApply<UpdateReadChannelOutboxEvent>,
+    IApply<UpdateReadChannelInboxEvent>,
+    IApply<ReadInboxMaxIdUpdatedEvent>,
+    IApply<ReadOutboxMaxIdUpdatedEvent>,
+    IApply<TopMessageIdUpdatedEvent>
 {
     public int ChannelHistoryMinId { get; private set; }
 
@@ -29,15 +34,13 @@ public class DialogState : AggregateState<DialogAggregate, DialogId, DialogState
     public int TopMessage { get; private set; }
     public int UnreadCount { get; private set; }
     public bool UnreadMark { get; private set; }
+    public int UnreadMentionsCount { get; private set; }
 
     public void Apply(ChannelHistoryClearedEvent aggregateEvent)
     {
         ChannelHistoryMinId = aggregateEvent.HistoryMinId;
     }
 
-    public void Apply(DeleteUserMessagesStartedEvent aggregateEvent)
-    {
-    }
 
     public void Apply(DialogCreatedEvent aggregateEvent)
     {
@@ -86,6 +89,7 @@ public class DialogState : AggregateState<DialogAggregate, DialogId, DialogState
     public void Apply(OutboxMessageHasReadEvent aggregateEvent)
     {
         ReadOutboxMaxId = aggregateEvent.MaxMessageId;
+        ToPeer= aggregateEvent.ToPeer;
     }
 
     public void Apply(ParticipantHistoryClearedEvent aggregateEvent)
@@ -110,18 +114,13 @@ public class DialogState : AggregateState<DialogAggregate, DialogId, DialogState
         ToPeer = aggregateEvent.ToPeer;
 
         ReadInboxMaxId = aggregateEvent.MaxMessageId;
-        var unreadCount = TopMessage - aggregateEvent.MaxMessageId;
-        if (unreadCount < 0)
-        {
-            unreadCount = 0;
-        }
+        UnreadCount= aggregateEvent.UnreadCount;
 
         if (TopMessage < aggregateEvent.MaxMessageId)
         {
             TopMessage = aggregateEvent.MaxMessageId;
         }
 
-        UnreadCount = unreadCount;
     }
 
     public void Apply(SetOutboxTopMessageSuccessEvent aggregateEvent)
@@ -133,6 +132,35 @@ public class DialogState : AggregateState<DialogAggregate, DialogId, DialogState
         {
             Draft = null;
         }
+    }
+
+    public void Apply(DeleteUserMessagesStartedEvent aggregateEvent)
+    {
+    }
+
+    public void Apply(UpdateReadChannelOutboxEvent aggregateEvent)
+    {
+        ReadOutboxMaxId = aggregateEvent.MaxId;
+    }
+
+    public void Apply(UpdateReadChannelInboxEvent aggregateEvent)
+    {
+        ReadInboxMaxId = aggregateEvent.MaxId;
+    }
+
+    public void Apply(ReadInboxMaxIdUpdatedEvent aggregateEvent)
+    {
+        ReadInboxMaxId = aggregateEvent.ReadInboxMaxId;
+    }
+
+    public void Apply(ReadOutboxMaxIdUpdatedEvent aggregateEvent)
+    {
+        ReadOutboxMaxId = aggregateEvent.ReadOutboxMaxId;
+    }
+
+    public void Apply(TopMessageIdUpdatedEvent aggregateEvent)
+    {
+        TopMessage = aggregateEvent.NewTopMessageId;
     }
 
     public void LoadSnapshot(DialogSnapshot snapshot)
@@ -147,5 +175,6 @@ public class DialogState : AggregateState<DialogAggregate, DialogId, DialogState
         Pinned = snapshot.Pinned;
         ChannelHistoryMinId = snapshot.ChannelHistoryMinId;
         Draft = snapshot.Draft;
+        UnreadMentionsCount= snapshot.UnreadMentionsCount;
     }
 }

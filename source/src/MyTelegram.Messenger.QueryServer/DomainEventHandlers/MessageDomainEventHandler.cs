@@ -1,4 +1,5 @@
-﻿using MyTelegram.Messenger.Services.Caching;
+﻿using MyTelegram.Domain.Aggregates.Messaging;
+using MyTelegram.Messenger.Services.Caching;
 using MyTelegram.Messenger.Services.Interfaces;
 using MyTelegram.Messenger.TLObjectConverters.Interfaces;
 using MyTelegram.Services.TLObjectConverters;
@@ -11,7 +12,9 @@ public class MessageDomainEventHandler : DomainEventHandlerBase,
     ISubscribeSynchronousTo<EditMessageSaga, EditMessageSagaId, InboxMessageEditCompletedEvent>,
 
     ISubscribeSynchronousTo<SendMessageSaga, SendMessageSagaId, SendOutboxMessageCompletedEvent>,
-    ISubscribeSynchronousTo<SendMessageSaga, SendMessageSagaId, ReceiveInboxMessageCompletedEvent>
+    ISubscribeSynchronousTo<SendMessageSaga, SendMessageSagaId, ReceiveInboxMessageCompletedEvent>,
+    ISubscribeSynchronousTo<MessageAggregate, MessageId, ChannelMessagePinnedEvent>,
+    ISubscribeSynchronousTo<MessageAggregate, MessageId, MessageReplyUpdatedEvent>
 
 
 {
@@ -232,11 +235,15 @@ public class MessageDomainEventHandler : DomainEventHandlerBase,
             var chat = await _queryProcessor.ProcessAsync(new GetChatByChatIdQuery(aggregateEvent.MessageItem.ToPeer.PeerId));
             var updates = _updatesLayeredService.GetConverter(aggregateEvent.RequestInfo.Layer)
                 .ToCreateChatUpdates(eventData, aggregateEvent, chat!);
-
+            var invitedUsers = new TInvitedUsers
+            {
+                Updates = updates,
+                MissingInvitees = new()
+            };
             var layeredData =
                 _updatesLayeredService.GetLayeredData(c => c.ToCreateChatUpdates(eventData, aggregateEvent, chat!));
             await SendRpcMessageToClientAsync(aggregateEvent.RequestInfo,
-                updates,
+                invitedUsers,
                 pts: aggregateEvent.Pts);
             await PushUpdatesToPeerAsync(aggregateEvent.MessageItem.SenderPeer,
                 updates,
@@ -263,7 +270,7 @@ public class MessageDomainEventHandler : DomainEventHandlerBase,
 
             var updates = _updatesLayeredService.Converter.ToMigrateChatUpdates(aggregateEvent, channelId);
             var latestLayerChannel = _chatLayeredService.Converter
-                .ToChannel(userId, channelReadModel, chatPhoto, null, false);
+                .ToChannel(userId, channelReadModel!, chatPhoto, null, false);
             var latestLayerChat = _chatLayeredService.Converter
                 .ToChat(userId, chatReadModel, chatPhoto);
 
@@ -277,7 +284,7 @@ public class MessageDomainEventHandler : DomainEventHandlerBase,
                 _updatesLayeredService.GetLayeredData(c =>
                 {
                     var channel = _chatLayeredService.GetConverter(c.RequestLayer)
-                        .ToChannel(userId, channelReadModel, chatPhoto, null, false);
+                        .ToChannel(userId, channelReadModel!, chatPhoto, null, false);
                     var chat = _chatLayeredService.GetConverter(c.RequestLayer)
                         .ToChat(userId, chatReadModel, chatPhoto);
 
@@ -304,9 +311,9 @@ public class MessageDomainEventHandler : DomainEventHandlerBase,
         {
             var chat = await _queryProcessor.ProcessAsync(new GetChatByChatIdQuery(aggregateEvent.MessageItem.ToPeer.PeerId));
 
-            var updates = _updatesLayeredService.Converter.ToCreateChatUpdates(eventData, aggregateEvent, chat);
+            var updates = _updatesLayeredService.Converter.ToCreateChatUpdates(eventData, aggregateEvent, chat!);
             var layeredData =
-                _updatesLayeredService.GetLayeredData(c => c.ToCreateChatUpdates(eventData, aggregateEvent, chat));
+                _updatesLayeredService.GetLayeredData(c => c.ToCreateChatUpdates(eventData, aggregateEvent, chat!));
             await PushUpdatesToPeerAsync(aggregateEvent.MessageItem.OwnerPeer,
                 updates,
                 pts: aggregateEvent.Pts,
@@ -339,13 +346,18 @@ public class MessageDomainEventHandler : DomainEventHandlerBase,
                 .ToInviteToChannelUpdates(
                     aggregateEvent,
                     startInviteToChannelEvent,
-                    channelReadModel,
+                    channelReadModel!,
                     true);
+            var invitedUsers = new TInvitedUsers
+            {
+                Updates = updates,
+                MissingInvitees = new()
+            };
             var layeredData = _updatesLayeredService.GetLayeredData(c =>
-                c.ToInviteToChannelUpdates(aggregateEvent, startInviteToChannelEvent, channelReadModel, true));
+                c.ToInviteToChannelUpdates(aggregateEvent, startInviteToChannelEvent, channelReadModel!, true));
 
             await SendRpcMessageToClientAsync(aggregateEvent.RequestInfo,
-                updates,
+                invitedUsers,
                 item.SenderPeer.PeerId);
             // notify self other devices
             await PushUpdatesToChannelSingleMemberAsync(
@@ -358,12 +370,12 @@ public class MessageDomainEventHandler : DomainEventHandlerBase,
 
             var updatesForChannelMember = _updatesLayeredService.Converter.ToInviteToChannelUpdates(aggregateEvent,
                 startInviteToChannelEvent,
-                channelReadModel,
+                channelReadModel!,
                 false);
             var layeredUpdatesForChannelMember = _updatesLayeredService.GetLayeredData(c =>
                 c.ToInviteToChannelUpdates(aggregateEvent,
                     startInviteToChannelEvent,
-                    channelReadModel,
+                    channelReadModel!,
                     false));
 
             foreach (var channelMemberUserId in startInviteToChannelEvent.MemberUidList)
@@ -622,5 +634,42 @@ public class MessageDomainEventHandler : DomainEventHandlerBase,
     public Task HandleAsync(IDomainEvent<SendMessageSaga, SendMessageSagaId, ReceiveInboxMessageCompletedEvent> domainEvent, CancellationToken cancellationToken)
     {
         return HandleReceiveMessageCompletedAsync(domainEvent.AggregateEvent);
+    }
+    public async Task HandleAsync(IDomainEvent<MessageAggregate, MessageId, MessageReplyUpdatedEvent> domainEvent, CancellationToken cancellationToken)
+    {
+        var messageReadModel = await _queryProcessor.ProcessAsync(new GetMessageByIdQuery(MessageId
+            .Create(domainEvent.AggregateEvent.OwnerChannelId, domainEvent.AggregateEvent.MessageId).Value), cancellationToken);
+
+        if (messageReadModel != null)
+        {
+            var message = _messageLayeredService.Converter.ToMessage(messageReadModel, null, null, 0);
+            if (message is TMessage tMessage)
+            {
+                tMessage.EditDate = DateTime.UtcNow.ToTimestamp();
+                tMessage.EditHide = true;
+            }
+
+            var update = new TUpdateEditChannelMessage
+            {
+                Message = message,
+                Pts = domainEvent.AggregateEvent.Pts,
+                PtsCount = 1
+            };
+            var updates = new TUpdates
+            {
+                Updates = new TVector<IUpdate>(update),
+                Users = new(),
+                Chats = new(),
+                Date = DateTime.UtcNow.ToTimestamp()
+            };
+
+            await PushUpdatesToPeerAsync(domainEvent.AggregateEvent.OwnerChannelId.ToChannelPeer(), updates);
+        }
+    }
+
+    public Task HandleAsync(IDomainEvent<MessageAggregate, MessageId, ChannelMessagePinnedEvent> domainEvent, CancellationToken cancellationToken)
+    {
+        //throw new NotImplementedException();
+        return Task.CompletedTask;
     }
 }

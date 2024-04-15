@@ -13,5 +13,7 @@ public enum PrivacyType
     ProfilePhoto,
     PhoneNumber,
     AddedByPhone,
-    VoiceMessages
+    VoiceMessages,
+    About,
+    Birthday
 }

@@ -5,6 +5,9 @@ namespace MyTelegram.Schema.Messages;
 
 ///<summary>
 /// Changes the default value of the Time-To-Live setting, applied to all new chats.
+/// <para>Possible errors</para>
+/// Code Type Description
+/// 400 TTL_PERIOD_INVALID The specified TTL period is invalid.
 /// See <a href="https://corefork.telegram.org/method/messages.setDefaultHistoryTTL" />
 ///</summary>
 [TlObject(0x9eb51445)]

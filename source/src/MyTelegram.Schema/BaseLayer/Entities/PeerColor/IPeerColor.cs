@@ -15,12 +15,12 @@ public interface IPeerColor : IObject
     BitArray Flags { get; set; }
 
     ///<summary>
-    /// <a href="https://corefork.telegram.org/api/colors">Color palette ID, see here »</a> for more info.
+    /// <a href="https://corefork.telegram.org/api/colors">Color palette ID, see here »</a> for more info; if not set, the default palette should be used.
     ///</summary>
     int? Color { get; set; }
 
     ///<summary>
-    /// <a href="https://corefork.telegram.org/api/custom-emoji">Custom emoji ID</a> used to generate the pattern.
+    /// Optional <a href="https://corefork.telegram.org/api/custom-emoji">custom emoji ID</a> used to generate the pattern.
     ///</summary>
     long? BackgroundEmojiId { get; set; }
 }

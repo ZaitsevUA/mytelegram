@@ -6,7 +6,7 @@ public class FileItem
     public byte[]? Attributes { get; set; }
     public int Date { get; set; }
     public long FileId { get; set; }
-    public Guid FileReference { get; set; }
+    public Guid? FileReference { get; set; }
     public int LocalId { get; set; }
     public string? Md5 { get; set; }
     public bool Merged { get; set; }

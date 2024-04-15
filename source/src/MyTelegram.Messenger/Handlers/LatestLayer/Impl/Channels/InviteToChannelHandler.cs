@@ -26,7 +26,7 @@ namespace MyTelegram.Handlers.Channels;
 /// 403 USER_PRIVACY_RESTRICTED The user's privacy settings do not allow you to do this.
 /// See <a href="https://corefork.telegram.org/method/channels.inviteToChannel" />
 ///</summary>
-internal sealed class InviteToChannelHandler : RpcResultObjectHandler<MyTelegram.Schema.Channels.RequestInviteToChannel, MyTelegram.Schema.IUpdates>,
+internal sealed class InviteToChannelHandler : RpcResultObjectHandler<MyTelegram.Schema.Channels.RequestInviteToChannel, MyTelegram.Schema.Messages.IInvitedUsers>,
     Channels.IInviteToChannelHandler
 {
     private readonly ICommandBus _commandBus;
@@ -49,13 +49,13 @@ internal sealed class InviteToChannelHandler : RpcResultObjectHandler<MyTelegram
         _queryProcessor = queryProcessor;
     }
 
-    protected override async Task<IUpdates> HandleCoreAsync(IRequestInput input,
+    protected override async Task<MyTelegram.Schema.Messages.IInvitedUsers> HandleCoreAsync(IRequestInput input,
         RequestInviteToChannel obj)
     {
         if (obj.Channel is TInputChannel inputChannel)
         {
             await _accessHashHelper.CheckAccessHashAsync(inputChannel.ChannelId, inputChannel.AccessHash);
-            var channelReadModel = await _queryProcessor.ProcessAsync(new GetChannelByIdQuery(inputChannel.ChannelId), default);
+            var channelReadModel = await _queryProcessor.ProcessAsync(new GetChannelByIdQuery(inputChannel.ChannelId));
 
             if (obj.Users.Count == 1)
             {

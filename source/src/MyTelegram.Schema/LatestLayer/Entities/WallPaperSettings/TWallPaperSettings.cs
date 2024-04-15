@@ -57,6 +57,10 @@ public sealed class TWallPaperSettings : IWallPaperSettings
     /// Clockwise rotation angle of the gradient, in degrees; 0-359. Should be always divisible by 45.
     ///</summary>
     public int? Rotation { get; set; }
+
+    ///<summary>
+    /// If set, this wallpaper can be used as a channel wallpaper and is represented by the specified UTF-8 emoji.
+    ///</summary>
     public string? Emoticon { get; set; }
 
     public void ComputeFlag()

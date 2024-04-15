@@ -12,7 +12,7 @@ public class PtsHelper : IPtsHelper
             return cacheItem.Pts;
         }
 
-        return 0;
+        return MyTelegramServerDomainConsts.PtsInitId;
     }
 
     //public async Task AddPtsAsync(long ownerId,int currentPts){}

@@ -15,7 +15,7 @@ namespace MyTelegram.Schema.Channels;
 /// See <a href="https://corefork.telegram.org/method/channels.deleteHistory" />
 ///</summary>
 [TlObject(0x9baa9647)]
-public sealed class RequestDeleteHistory : IRequest</*MyTelegram.Schema.IUpdates*/IBool>
+public sealed class RequestDeleteHistory : IRequest<MyTelegram.Schema.IUpdates>
 {
     public uint ConstructorId => 0x9baa9647;
     ///<summary>

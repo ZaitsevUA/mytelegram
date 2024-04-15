@@ -13,19 +13,21 @@ namespace MyTelegram.Handlers.Channels;
 /// 400 CHAT_ADMIN_REQUIRED You must be an admin in this chat to do this.
 /// See <a href="https://corefork.telegram.org/method/channels.deleteHistory" />
 ///</summary>
-internal sealed class DeleteHistoryHandler : RpcResultObjectHandler<MyTelegram.Schema.Channels.RequestDeleteHistory, IBool>,
+internal sealed class DeleteHistoryHandler : RpcResultObjectHandler<MyTelegram.Schema.Channels.RequestDeleteHistory, IUpdates>,
     Channels.IDeleteHistoryHandler
 {
     private readonly IQueryProcessor _queryProcessor;
     private readonly ICommandBus _commandBus;
     private readonly IAccessHashHelper _accessHashHelper;
+    private readonly IChannelAdminRightsChecker _channelAdminRightsChecker;
     public DeleteHistoryHandler(IQueryProcessor queryProcessor,
         ICommandBus commandBus,
-        IAccessHashHelper accessHashHelper)
+        IAccessHashHelper accessHashHelper, IChannelAdminRightsChecker channelAdminRightsChecker)
     {
         _queryProcessor = queryProcessor;
         _commandBus = commandBus;
         _accessHashHelper = accessHashHelper;
+        _channelAdminRightsChecker = channelAdminRightsChecker;
     }
 
     private async Task DeleteChannelHistoryForEveryoneAsync(long channelId, IRequestInput input)
@@ -38,15 +40,16 @@ internal sealed class DeleteHistoryHandler : RpcResultObjectHandler<MyTelegram.S
         messageIds.Remove(1);
         if (messageIds.Any())
         {
-            var command = new StartDeleteParticipantHistoryCommand(ChannelId.Create(channelId),
-                        input.ToRequestInfo(),
-                        messageIds.ToList()
-                    );
-            await _commandBus.PublishAsync(command, default);
+            var newTopMessageId =
+                await _queryProcessor.ProcessAsync(new GetTopMessageIdQuery(channelId,
+                    messageIds));
+            var command =
+                new StartDeleteParticipantHistoryCommand(TempId.New, input.ToRequestInfo(), channelId, messageIds, newTopMessageId);
+            await _commandBus.PublishAsync(command);
         }
     }
 
-    protected override async Task<IBool> HandleCoreAsync(IRequestInput input,
+    protected override async Task<IUpdates> HandleCoreAsync(IRequestInput input,
         MyTelegram.Schema.Channels.RequestDeleteHistory obj)
     {
         if (obj.Channel is TInputChannel inputChannel)
@@ -55,6 +58,8 @@ internal sealed class DeleteHistoryHandler : RpcResultObjectHandler<MyTelegram.S
 
             if (obj.ForEveryone)
             {
+                await _channelAdminRightsChecker.CheckAdminRightAsync(inputChannel.ChannelId, input.UserId,
+                    admin => admin.AdminRights.DeleteMessages, RpcErrors.RpcErrors403.ChatAdminRequired);
                 await DeleteChannelHistoryForEveryoneAsync(inputChannel.ChannelId, input);
             }
             else
@@ -62,8 +67,10 @@ internal sealed class DeleteHistoryHandler : RpcResultObjectHandler<MyTelegram.S
                 var command =
                     new ClearChannelHistoryCommand(
                         DialogId.Create(input.UserId, PeerType.Channel, inputChannel.ChannelId),
-                        input.ToRequestInfo());
-                await _commandBus.PublishAsync(command, CancellationToken.None);
+                        input.ToRequestInfo(),
+                        obj.MaxId
+                        );
+                await _commandBus.PublishAsync(command);
             }
 
             return null!;

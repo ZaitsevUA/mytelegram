@@ -16,6 +16,7 @@ namespace MyTelegram.Schema;
 [JsonDerivedType(typeof(TPrivacyKeyAddedByPhone), nameof(TPrivacyKeyAddedByPhone))]
 [JsonDerivedType(typeof(TPrivacyKeyVoiceMessages), nameof(TPrivacyKeyVoiceMessages))]
 [JsonDerivedType(typeof(TPrivacyKeyAbout), nameof(TPrivacyKeyAbout))]
+[JsonDerivedType(typeof(TPrivacyKeyBirthday), nameof(TPrivacyKeyBirthday))]
 public interface IPrivacyKey : IObject
 {
 

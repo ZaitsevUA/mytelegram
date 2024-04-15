@@ -4,14 +4,31 @@
 namespace MyTelegram.Schema.Messages;
 
 ///<summary>
+/// Pin or unpin a <a href="https://corefork.telegram.org/api/saved-messages">saved message dialog »</a>.
+/// <para>Possible errors</para>
+/// Code Type Description
+/// 400 PEER_ID_INVALID The provided peer id is invalid.
 /// See <a href="https://corefork.telegram.org/method/messages.toggleSavedDialogPin" />
 ///</summary>
 [TlObject(0xac81bbde)]
 public sealed class RequestToggleSavedDialogPin : IRequest<IBool>
 {
     public uint ConstructorId => 0xac81bbde;
+    ///<summary>
+    /// Flags, see <a href="https://corefork.telegram.org/mtproto/TL-combinators#conditional-fields">TL conditional fields</a>
+    ///</summary>
     public BitArray Flags { get; set; } = new BitArray(32);
+
+    ///<summary>
+    /// Whether to pin or unpin the dialog
+    /// See <a href="https://corefork.telegram.org/type/true" />
+    ///</summary>
     public bool Pinned { get; set; }
+
+    ///<summary>
+    /// The dialog to pin
+    /// See <a href="https://corefork.telegram.org/type/InputDialogPeer" />
+    ///</summary>
     public MyTelegram.Schema.IInputDialogPeer Peer { get; set; }
 
     public void ComputeFlag()

@@ -24,6 +24,11 @@ public sealed class RequestGetSearchCounters : IRequest<TVector<MyTelegram.Schem
     /// See <a href="https://corefork.telegram.org/type/InputPeer" />
     ///</summary>
     public MyTelegram.Schema.IInputPeer Peer { get; set; }
+
+    ///<summary>
+    /// Search within the <a href="https://corefork.telegram.org/api/saved-messages">saved message dialog »</a> with this ID.
+    /// See <a href="https://corefork.telegram.org/type/InputPeer" />
+    ///</summary>
     public MyTelegram.Schema.IInputPeer? SavedPeerId { get; set; }
 
     ///<summary>

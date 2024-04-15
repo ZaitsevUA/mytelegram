@@ -31,10 +31,10 @@ namespace MyTelegram.Schema.Messages;
 /// 400 USER_BANNED_IN_CHANNEL You're banned from sending messages in supergroups/channels.
 /// See <a href="https://corefork.telegram.org/method/messages.sendMultiMedia" />
 ///</summary>
-[TlObject(0x456e8987)]
+[TlObject(0xc964709)]
 public sealed class RequestSendMultiMedia : IRequest<MyTelegram.Schema.IUpdates>
 {
-    public uint ConstructorId => 0x456e8987;
+    public uint ConstructorId => 0xc964709;
     ///<summary>
     /// Flags, see <a href="https://corefork.telegram.org/mtproto/TL-combinators#conditional-fields">TL conditional fields</a>
     ///</summary>
@@ -103,6 +103,7 @@ public sealed class RequestSendMultiMedia : IRequest<MyTelegram.Schema.IUpdates>
     /// See <a href="https://corefork.telegram.org/type/InputPeer" />
     ///</summary>
     public MyTelegram.Schema.IInputPeer? SendAs { get; set; }
+    public MyTelegram.Schema.IInputQuickReplyShortcut? QuickReplyShortcut { get; set; }
 
     public void ComputeFlag()
     {
@@ -115,6 +116,7 @@ public sealed class RequestSendMultiMedia : IRequest<MyTelegram.Schema.IUpdates>
         if (ReplyTo != null) { Flags[0] = true; }
         if (/*ScheduleDate != 0 && */ScheduleDate.HasValue) { Flags[10] = true; }
         if (SendAs != null) { Flags[13] = true; }
+        if (QuickReplyShortcut != null) { Flags[17] = true; }
     }
 
     public void Serialize(IBufferWriter<byte> writer)
@@ -127,6 +129,7 @@ public sealed class RequestSendMultiMedia : IRequest<MyTelegram.Schema.IUpdates>
         writer.Write(MultiMedia);
         if (Flags[10]) { writer.Write(ScheduleDate.Value); }
         if (Flags[13]) { writer.Write(SendAs); }
+        if (Flags[17]) { writer.Write(QuickReplyShortcut); }
     }
 
     public void Deserialize(ref SequenceReader<byte> reader)
@@ -143,5 +146,6 @@ public sealed class RequestSendMultiMedia : IRequest<MyTelegram.Schema.IUpdates>
         MultiMedia = reader.Read<TVector<MyTelegram.Schema.IInputSingleMedia>>();
         if (Flags[10]) { ScheduleDate = reader.ReadInt32(); }
         if (Flags[13]) { SendAs = reader.Read<MyTelegram.Schema.IInputPeer>(); }
+        if (Flags[17]) { QuickReplyShortcut = reader.Read<MyTelegram.Schema.IInputQuickReplyShortcut>(); }
     }
 }

@@ -4,14 +4,27 @@
 namespace MyTelegram.Schema.Messages;
 
 ///<summary>
+/// Reorder pinned <a href="https://corefork.telegram.org/api/saved-messages">saved message dialogs »</a>.
 /// See <a href="https://corefork.telegram.org/method/messages.reorderPinnedSavedDialogs" />
 ///</summary>
 [TlObject(0x8b716587)]
 public sealed class RequestReorderPinnedSavedDialogs : IRequest<IBool>
 {
     public uint ConstructorId => 0x8b716587;
+    ///<summary>
+    /// Flags, see <a href="https://corefork.telegram.org/mtproto/TL-combinators#conditional-fields">TL conditional fields</a>
+    ///</summary>
     public BitArray Flags { get; set; } = new BitArray(32);
+
+    ///<summary>
+    /// If set, dialogs pinned server-side but not present in the <code>order</code> field will be unpinned.
+    /// See <a href="https://corefork.telegram.org/type/true" />
+    ///</summary>
     public bool Force { get; set; }
+
+    ///<summary>
+    /// New dialog order
+    ///</summary>
     public TVector<MyTelegram.Schema.IInputDialogPeer> Order { get; set; }
 
     public void ComputeFlag()

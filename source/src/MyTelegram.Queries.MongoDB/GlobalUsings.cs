@@ -13,6 +13,10 @@ global using MyTelegram.ReadModel;
 global using MyTelegram.EventFlow.MongoDB;
 global using System.Linq.Expressions;
 global using MyTelegram.Domain.ValueObjects;
+global using MyTelegram.EventFlow.ReadStores;
+global using EventFlow;
+global using EventFlow.Extensions;
+
 
 global using AppCodeReadModel = MyTelegram.ReadModel.MongoDB.AppCodeReadModel;
 //global using BotReadModel = MyTelegram.ReadModel.MongoDB.BotReadModel;

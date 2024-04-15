@@ -23,10 +23,10 @@ namespace MyTelegram.Schema.Messages;
 /// 400 YOU_BLOCKED_USER You blocked this user.
 /// See <a href="https://corefork.telegram.org/method/messages.addChatUser" />
 ///</summary>
-[TlObject(0xf24753e3)]
-public sealed class RequestAddChatUser : IRequest<MyTelegram.Schema.IUpdates>
+[TlObject(0xcbc6d107)]
+public sealed class RequestAddChatUser : IRequest<MyTelegram.Schema.Messages.IInvitedUsers>
 {
-    public uint ConstructorId => 0xf24753e3;
+    public uint ConstructorId => 0xcbc6d107;
     ///<summary>
     /// Chat ID
     ///</summary>

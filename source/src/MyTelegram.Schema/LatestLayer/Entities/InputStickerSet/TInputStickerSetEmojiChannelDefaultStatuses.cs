@@ -4,6 +4,7 @@
 namespace MyTelegram.Schema;
 
 ///<summary>
+/// Default <a href="https://corefork.telegram.org/api/emoji-status">custom emoji status</a> stickerset for channel statuses
 /// See <a href="https://corefork.telegram.org/constructor/inputStickerSetEmojiChannelDefaultStatuses" />
 ///</summary>
 [TlObject(0x49748553)]

@@ -5,6 +5,9 @@ namespace MyTelegram.Schema.Channels;
 
 ///<summary>
 /// Pin or unpin <a href="https://corefork.telegram.org/api/forum">forum topics</a>
+/// <para>Possible errors</para>
+/// Code Type Description
+/// 400 TOPIC_ID_INVALID The specified topic ID is invalid.
 /// See <a href="https://corefork.telegram.org/method/channels.updatePinnedForumTopic" />
 ///</summary>
 [TlObject(0x6c2d9026)]

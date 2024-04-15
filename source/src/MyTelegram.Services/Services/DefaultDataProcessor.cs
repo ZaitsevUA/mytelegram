@@ -40,11 +40,12 @@ public class DefaultDataProcessor<TData> : IDataProcessor<TData>
                 {
                     sw.Stop();
                     _logger.LogInformation(
-                        "{Elapsed}ms UserId={UserId} reqMsgId={ReqMsgId} handler={Handler},returns data from cache",
-                        sw.Elapsed.TotalMilliseconds,
+                        "UserId={UserId} reqMsgId={ReqMsgId} handler={Handler},returns data from cache. {Elapsed}ms",
                         obj.UserId,
                         obj.ReqMsgId,
-                        handler.GetType().Name);
+                        handler.GetType().Name,
+                        sw.Elapsed.TotalMilliseconds
+                        );
 
                     //await _objectMessageSender.SendMessageToPeerAsync(obj.ReqMsgId, rpcResult);
                     await SendMessageToPeerAsync(obj.ReqMsgId, rpcResult);
@@ -62,14 +63,14 @@ public class DefaultDataProcessor<TData> : IDataProcessor<TData>
                     }
                     var r = await handler.HandleAsync(req, data);
                     _logger.LogInformation(
-                        "{Elapsed}ms UserId={UserId} authKeyId={AuthKeyId:x2} reqMsgId={ReqMsgId} layer={Layer} handler={Handler} {DeviceType}",
-                        sw.Elapsed.TotalMilliseconds,
+                            "UserId={UserId} authKeyId={AuthKeyId:x2} reqMsgId={ReqMsgId} layer={Layer} handler={Handler} {DeviceType}. {Elapsed}ms",
                         obj.UserId,
                         obj.AuthKeyId,
                         obj.ReqMsgId,
                         obj.Layer,
                         handlerName,
-                        obj.DeviceType
+                            obj.DeviceType,
+                            sw.Elapsed.TotalMilliseconds
                         );
 
                     if (r != null!)

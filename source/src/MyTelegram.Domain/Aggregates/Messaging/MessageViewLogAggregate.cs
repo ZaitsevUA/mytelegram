@@ -6,14 +6,14 @@ public class MessageViewLogAggregate : AggregateRoot<MessageViewLogAggregate, Me
     public MessageViewLogAggregate(MessageViewLogId id) : base(id)
     {
     }
-
     public void Apply(CheckMessageViewLogSuccessEvent aggregateEvent)
     {
     }
 
-    public void CheckMessageViewLog(int messageId,
-        Guid correlationId)
+    public void CheckMessageViewLog(
+        RequestInfo requestInfo,
+        int messageId)
     {
-        Emit(new CheckMessageViewLogSuccessEvent(messageId, !IsNew, correlationId));
+        Emit(new CheckMessageViewLogSuccessEvent(requestInfo, messageId, !IsNew));
     }
 }

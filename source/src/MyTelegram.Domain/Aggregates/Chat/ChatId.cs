@@ -1,7 +1,7 @@
 ﻿namespace MyTelegram.Domain.Aggregates.Chat;
 
 [JsonConverter(typeof(SystemTextJsonSingleValueObjectConverter<ChatId>))]
-public class ChatId : MyIdentity<ChatId>
+public class ChatId : Identity<ChatId>
 {
     public ChatId(string value) : base(value)
     {

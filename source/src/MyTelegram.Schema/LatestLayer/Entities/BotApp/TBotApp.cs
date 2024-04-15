@@ -4,7 +4,7 @@
 namespace MyTelegram.Schema;
 
 ///<summary>
-/// Contains information about a <a href="https://corefork.telegram.org/api/bots/webapps#named-mini-apps">named Mini App</a>.
+/// Contains information about a <a href="https://corefork.telegram.org/api/bots/webapps#direct-link-mini-apps">direct link Mini App</a>.
 /// See <a href="https://corefork.telegram.org/constructor/botApp" />
 ///</summary>
 [TlObject(0x95fcd1d6)]
@@ -27,7 +27,7 @@ public sealed class TBotApp : IBotApp
     public long AccessHash { get; set; }
 
     ///<summary>
-    /// bot mini app short name, used to generate <a href="https://corefork.telegram.org/api/links#named-mini-app-links">named Mini App deep links</a>.
+    /// bot mini app short name, used to generate <a href="https://corefork.telegram.org/api/links#direct-mini-app-links">Direct Mini App deep links</a>.
     ///</summary>
     public string ShortName { get; set; }
 

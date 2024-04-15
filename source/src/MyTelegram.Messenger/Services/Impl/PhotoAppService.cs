@@ -26,10 +26,10 @@ public class PhotoAppService : IPhotoAppService
             photoIds.Add(userReadModel.FallbackPhotoId.Value);
         }
 
-        //if (contactReadModel?.PhotoId.HasValue ?? false)
-        //{
-        //    photoIds.Add(contactReadModel.PhotoId.Value);
-        //}
+        if (contactReadModel?.PhotoId.HasValue ?? false)
+        {
+            photoIds.Add(contactReadModel.PhotoId.Value);
+        }
 
         if (photoIds.Count == 0)
         {
@@ -54,16 +54,16 @@ public class PhotoAppService : IPhotoAppService
             }
         }
 
-        //if (contactReadModels?.Count > 0)
-        //{
-        //    foreach (var contactReadModel in contactReadModels)
-        //    {
-        //        if (contactReadModel.PhotoId.HasValue)
-        //        {
-        //            photoIds.Add(contactReadModel.PhotoId.Value);
-        //        }
-        //    }
-        //}
+        if (contactReadModels?.Count > 0)
+        {
+            foreach (var contactReadModel in contactReadModels)
+            {
+                if (contactReadModel.PhotoId.HasValue)
+                {
+                    photoIds.Add(contactReadModel.PhotoId.Value);
+                }
+            }
+        }
 
         if (photoIds.Count == 0)
         {
@@ -102,8 +102,9 @@ public class PhotoAppService : IPhotoAppService
         return _queryProcessor.ProcessAsync(new GetPhotoByIdQuery(photoId.Value), default);
     }
 
-    public Task<IReadOnlyCollection<IPhotoReadModel>> GetPhotosAsync(IList<long> photoIds)
+    public Task<IReadOnlyCollection<IPhotoReadModel>> GetPhotosAsync(List<long> photoIds)
     {
+        photoIds.RemoveAll(p => p == 0);
         if (photoIds.Count == 0)
         {
             return Task.FromResult<IReadOnlyCollection<IPhotoReadModel>>(Array.Empty<IPhotoReadModel>());

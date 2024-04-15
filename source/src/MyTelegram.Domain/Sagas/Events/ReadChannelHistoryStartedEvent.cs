@@ -3,16 +3,15 @@
 public class ReadChannelHistoryStartedEvent : RequestAggregateEvent2<ReadChannelHistorySaga, ReadChannelHistorySagaId>
 {
     public ReadChannelHistoryStartedEvent(RequestInfo requestInfo,
-        long readerUserId,
-        long channelId,
-        int? topMsgId) : base(requestInfo)
+        //long readerUserId,
+        long channelId) : base(requestInfo)
     {
-        ReaderUserId = readerUserId;
+        //ReaderUserId = readerUserId;
         ChannelId = channelId;
-        TopMsgId = topMsgId;
+        //TopMsgId = topMsgId;
     }
 
     public long ChannelId { get; }
-    public int? TopMsgId { get; }
-    public long ReaderUserId { get; }
+    //public int? TopMsgId { get; }
+    //public long ReaderUserId { get; }
 }

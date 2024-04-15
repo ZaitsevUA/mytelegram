@@ -23,6 +23,7 @@ public static class MyTelegramGatewayServerExtensions
         services.AddTransient<EncryptedMessageResponseEventHandler>();
         services.AddTransient<UnencryptedMessageResponseEventHandler>();
         services.AddTransient<AuthKeyNotFoundEventHandler>();
+        services.AddTransient<TransportErrorEventHandler>();
         services.AddTransient<IClientDataSender, ClientDataSender>();
 
         services.AddTransient<IDataProcessor<ClientDisconnectedEvent>, ClientDisconnectedDataProcessor>();
@@ -35,5 +36,6 @@ public static class MyTelegramGatewayServerExtensions
         eventBus.Subscribe<MyTelegram.Core.EncryptedMessageResponse, EncryptedMessageResponseEventHandler>();
         eventBus.Subscribe<MyTelegram.Core.UnencryptedMessageResponse, UnencryptedMessageResponseEventHandler>();
         eventBus.Subscribe<AuthKeyNotFoundEvent, AuthKeyNotFoundEventHandler>();
+        eventBus.Subscribe<TransportErrorEvent, TransportErrorEventHandler>();
     }
 }

@@ -27,10 +27,15 @@ public sealed class RequestGetStoryViewsList : IRequest<MyTelegram.Schema.Storie
     public bool JustContacts { get; set; }
 
     ///<summary>
-    /// Whether to return <a href="https://corefork.telegram.org/constructor/storyView">storyView</a> info about users that reacted to the story (i.e. if set, the server will first sort results by view date as usual, and then also additionally sort the list by putting <a href="https://corefork.telegram.org/constructor/storyView">storyView</a>s with an associated reaction first in the list).
+    /// Whether to return <a href="https://corefork.telegram.org/constructor/storyView">storyView</a> info about users that reacted to the story (i.e. if set, the server will first sort results by view date as usual, and then also additionally sort the list by putting <a href="https://corefork.telegram.org/constructor/storyView">storyView</a>s with an associated reaction first in the list). Ignored if <code>forwards_first</code> is set.
     /// See <a href="https://corefork.telegram.org/type/true" />
     ///</summary>
     public bool ReactionsFirst { get; set; }
+
+    ///<summary>
+    /// If set, returns forwards and reposts first, then reactions, then other views; otherwise returns interactions sorted just by interaction date.
+    /// See <a href="https://corefork.telegram.org/type/true" />
+    ///</summary>
     public bool ForwardsFirst { get; set; }
 
     ///<summary>

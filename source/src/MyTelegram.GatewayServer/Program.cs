@@ -11,7 +11,7 @@ Log.Logger = new LoggerConfiguration()
 Log.Information("{Info} {Version}", "MyTelegram Gateway Server", typeof(Program).Assembly.GetName().Version);
 Log.Information("{Description} {Url}", "For more information, please visit", "https://github.com/loyldg/mytelegram");
 
-Log.Information("MyTelegram gateway server starting 2...");
+Log.Information("MyTelegram gateway server starting...");
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Host.UseSerilog((context,
@@ -20,6 +20,7 @@ builder.Host.UseSerilog((context,
     configuration.ReadFrom.Configuration(context.Configuration);
 });
 builder.Configuration.AddEnvironmentVariables();
+builder.Configuration.AddCommandLine(args);
 //builder.Services.AddMyTelegramRabbitMqEventBus();
 
 builder.Services.AddMyTelegramGatewayServer();
@@ -34,7 +35,14 @@ var rabbitMqOptions = builder.Configuration.GetRequiredSection("RabbitMQ:Connect
 
 builder.Services.AddRebusEventBus(options =>
 {
-    options.Transport(t => t.UseRabbitMq($"amqp://{rabbitMqOptions.UserName}:{rabbitMqOptions.Password}@{rabbitMqOptions.HostName}:{rabbitMqOptions.Port}", eventBusOptions.ClientName));
+    options.Transport(t =>
+    {
+        t.UseRabbitMq(
+                $"amqp://{rabbitMqOptions.UserName}:{rabbitMqOptions.Password}@{rabbitMqOptions.HostName}:{rabbitMqOptions.Port}",
+                eventBusOptions.ClientName)
+            .ExchangeNames(eventBusOptions.ExchangeName, eventBusOptions.TopicExchangeName ?? "RebusTopics")
+            ;
+    });
     options.AddSystemTextJson(jsonOptions =>
     {
         jsonOptions.TypeInfoResolverChain.Add(GatewayServerJsonContext.Default);
@@ -42,6 +50,10 @@ builder.Services.AddRebusEventBus(options =>
 });
 
 var appConfig = builder.Configuration.GetRequiredSection("App").Get<MyTelegramGatewayServerOption>();
+if (appConfig == null)
+{
+    Log.Error("Get app config failed.");
+}
 
 builder.Services.AddHostedService<EncryptedDataProcessorBackgroundService>();
 builder.Services.AddHostedService<UnencryptedDataProcessorBackgroundService>();

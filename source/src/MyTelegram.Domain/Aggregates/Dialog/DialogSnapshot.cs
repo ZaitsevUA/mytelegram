@@ -12,7 +12,8 @@ public class DialogSnapshot : ISnapshot
         bool unreadMark,
         bool pinned,
         int channelHistoryMinId,
-        Draft? draft
+        Draft? draft,
+        int unreadMentionsCount
     )
     {
         OwnerId = ownerId;
@@ -25,11 +26,13 @@ public class DialogSnapshot : ISnapshot
         Pinned = pinned;
         ChannelHistoryMinId = channelHistoryMinId;
         Draft = draft;
+        UnreadMentionsCount = unreadMentionsCount;
     }
 
     public int ChannelHistoryMinId { get; }
 
     public Draft? Draft { get; }
+    public int UnreadMentionsCount { get; }
 
     public long OwnerId { get; }
 

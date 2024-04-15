@@ -1,7 +1,7 @@
 ﻿namespace MyTelegram.Domain.Aggregates.Device;
 
 [JsonConverter(typeof(SystemTextJsonSingleValueObjectConverter<DeviceId>))]
-public class DeviceId : MyIdentity<DeviceId>
+public class DeviceId : Identity<DeviceId>
 {
     public DeviceId(string value) : base(value)
     {

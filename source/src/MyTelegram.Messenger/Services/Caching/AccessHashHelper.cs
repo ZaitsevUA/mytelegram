@@ -18,15 +18,31 @@ internal sealed class AccessHashHelper : IAccessHashHelper
         _accessHashCaches.TryAdd(id, accessHash);
     }
 
+
     public async Task<bool> IsAccessHashValidAsync(long id,
-        long accessHash)
+        long accessHash, AccessHashType? accessHashType = null)
     {
         if (_accessHashCaches.TryGetValue(id, out var cachedAccessHash))
         {
             return accessHash == cachedAccessHash;
         }
+        if (accessHashType == null)
+        {
+            var peer = _peerHelper.GetPeer(id);
+            switch (peer.PeerType)
+            {
+                case PeerType.Channel:
+                    accessHashType = AccessHashType.Channel;
+                    break;
+                case PeerType.User:
+                    accessHashType = AccessHashType.User;
+                    break;
+                case PeerType.Self:
+                    return true;
+            }
+        }
 
-        var accessHashReadModel = await _queryProcessor.ProcessAsync(new GetAccessHashQueryByIdQuery(id), default);
+        var accessHashReadModel = await _queryProcessor.ProcessAsync(new GetAccessHashQueryByIdQuery(id));
 
         if (accessHashReadModel != null)
         {
@@ -34,11 +50,10 @@ internal sealed class AccessHashHelper : IAccessHashHelper
             return accessHash == accessHashReadModel.AccessHash;
         }
 
-        var peer = _peerHelper.GetPeer(id);
-        switch (peer.PeerType)
+        switch (accessHashType)
         {
-            case PeerType.User:
-                var userReadModel = await _queryProcessor.ProcessAsync(new GetUserByIdQuery(id), default);
+            case AccessHashType.User:
+                var userReadModel = await _queryProcessor.ProcessAsync(new GetUserByIdQuery(id));
                 if (userReadModel != null)
                 {
                     _accessHashCaches.TryAdd(id, userReadModel.AccessHash);
@@ -47,8 +62,8 @@ internal sealed class AccessHashHelper : IAccessHashHelper
 
                 break;
 
-            case PeerType.Channel:
-                var channelReadModel = await _queryProcessor.ProcessAsync(new GetChannelByIdQuery(id), default);
+            case AccessHashType.Channel:
+                var channelReadModel = await _queryProcessor.ProcessAsync(new GetChannelByIdQuery(id));
                 if (channelReadModel != null)
                 {
                     _accessHashCaches.TryAdd(id, channelReadModel.AccessHash);
@@ -56,15 +71,18 @@ internal sealed class AccessHashHelper : IAccessHashHelper
                 }
 
                 break;
+
+            case AccessHashType.WallPaper:
+                break;
         }
 
         return false;
     }
 
     public async Task CheckAccessHashAsync(long id,
-        long accessHash)
+        long accessHash, AccessHashType? accessHashType = null)
     {
-        if (!await IsAccessHashValidAsync(id, accessHash))
+        if (!await IsAccessHashValidAsync(id, accessHash, accessHashType))
         {
             RpcErrors.RpcErrors400.PeerIdInvalid.ThrowRpcError();
         }
@@ -102,8 +120,9 @@ internal sealed class AccessHashHelper : IAccessHashHelper
         return Task.CompletedTask;
     }
 
-    public Task CheckAccessHashAsync(Peer peer)
-    {
-        return CheckAccessHashAsync(peer.PeerId, peer.AccessHash);
-    }
+    //public Task CheckAccessHashAsync(Peer peer)
+    //{
+    //    return CheckAccessHashAsync(peer.PeerId, peer.AccessHash);
+    //}
 }
+

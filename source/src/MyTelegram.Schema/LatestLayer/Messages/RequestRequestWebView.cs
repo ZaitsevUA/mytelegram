@@ -8,7 +8,10 @@ namespace MyTelegram.Schema.Messages;
 /// <para>Possible errors</para>
 /// Code Type Description
 /// 400 BOT_INVALID This is not a valid bot.
+/// 400 BOT_WEBVIEW_DISABLED A webview cannot be opened in the specified conditions: emitted for example if <code>from_bot_menu</code> or <code>url</code> are set and <code>peer</code> is not the chat with the bot.
+/// 400 INPUT_USER_DEACTIVATED The specified user was deleted.
 /// 400 PEER_ID_INVALID The provided peer id is invalid.
+/// 400 YOU_BLOCKED_USER You blocked this user.
 /// See <a href="https://corefork.telegram.org/method/messages.requestWebView" />
 ///</summary>
 [TlObject(0x269dc2c1)]

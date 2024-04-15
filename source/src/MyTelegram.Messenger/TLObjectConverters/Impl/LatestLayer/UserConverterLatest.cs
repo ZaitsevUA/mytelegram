@@ -191,6 +191,7 @@ public class UserConverterLatest : UserConverterBase, IUserConverterLatest
 
     protected virtual void ApplyVoiceMessagePrivacyToUserFull(Schema.IUserFull userFull)
     {
+        userFull.VoiceMessagesForbidden = true;
     }
 
     protected virtual void CallAfterUserFullCreated(IUserReadModel user, ILayeredUser layeredUser,
@@ -230,6 +231,24 @@ public class UserConverterLatest : UserConverterBase, IUserConverterLatest
             ProfilePhoto = GetPhotoConverter().ToPhoto(photos?.FirstOrDefault(p => p.PhotoId == user.ProfilePhotoId)),
             FallbackPhoto = GetPhotoConverter().ToPhoto(photos?.FirstOrDefault(p => p.PhotoId == user.FallbackPhotoId)),
             ReadDatesPrivate = user.GlobalPrivacySettings?.HideReadMarks ?? false,
+            Birthday = user.Birthday != null ? new TBirthday
+            {
+                Day = user.Birthday.Day,
+                Month = user.Birthday.Month,
+                Year = user.Birthday.Year,
+            } : null,
+            //BusinessIntro = new TBusinessIntro
+            //{
+            //    Description = "test description",
+            //    Title = "test title"
+            //},
+            //PersonalChannelId = user.PersonalChannelId,
+            //PersonalChannelMessage = user.PersonalChannelId.HasValue ? 1 : null
+            //BusinessWorkHours = new TBusinessWorkHours{}
+            //BusinessGreetingMessage = new TBusinessGreetingMessage
+            //{
+            //    NoActivityDays = 3,
+            //}
         };
 
         return Task.FromResult<Schema.IUserFull>(fullUser);

@@ -4,8 +4,9 @@ using IMessageViews = MyTelegram.Schema.IMessageViews;
 
 namespace MyTelegram.Messenger.Services.Impl;
 
-public class ChannelMessageViewsAppService : IChannelMessageViewsAppService
+public class ChannelMessageViewsAppService : IChannelMessageViewsAppService //, ISingletonDependency
 {
+    //private readonly IBloomFilter _bloomFilter;
     private readonly ICommandBus _commandBus;
     private readonly IQueryProcessor _queryProcessor;
     private readonly ICuckooFilter _cuckooFilter;
@@ -63,7 +64,7 @@ public class ChannelMessageViewsAppService : IChannelMessageViewsAppService
         }
 
         var messageViews = (await _queryProcessor
-                    .ProcessAsync(new GetMessageViewsQuery(channelId, messageIdGreaterThanZeroList))
+                    .ProcessAsync(new GetMessageViewsQuery(channelId, messageIdGreaterThanZeroList), default)
                     .ConfigureAwait(false))
                 .ToDictionary(k => k.MessageId, v => v)
             ;
@@ -81,13 +82,10 @@ public class ChannelMessageViewsAppService : IChannelMessageViewsAppService
             }
         }
 
-        var linkedChannelId = await _queryProcessor.ProcessAsync(new GetLinkedChannelIdQuery(channelId))
-     ;
+        var linkedChannelId = await _queryProcessor.ProcessAsync(new GetLinkedChannelIdQuery(channelId));
 
-        var replies = (await _queryProcessor.ProcessAsync(new GetRepliesQuery(channelId, messageIdList))
-            .ConfigureAwait(false))
-                .ToDictionary(k => k.SavedFromMsgId, v => v)
-            ;
+        var replies = (await _queryProcessor.ProcessAsync(new GetRepliesQuery(channelId, messageIdList)))
+                .ToDictionary(k => k.MessageId, v => v);
 
         var messageViewsToClient = new List<IMessageViews>();
         foreach (var messageId in messageIdList)
@@ -105,13 +103,14 @@ public class ChannelMessageViewsAppService : IChannelMessageViewsAppService
                 messageViewsToClient.Add(new Schema.TMessageViews
                 {
                     Views = needIncrement ? views.Views + 1 : views.Views,
+                    //Replies = new TMessageReplies { ChannelId = channelId }
                     Replies = new TMessageReplies
                     {
-                        ChannelId = linkedChannelId,
+                        ChannelId = reply?.CommentChannelId ?? linkedChannelId,
                         Comments = linkedChannelId.HasValue,
                         Replies = reply?.Replies ?? 0,
                         RepliesPts = reply?.RepliesPts ?? 0,
-                        MaxId = reply?.MaxId ?? 0,
+                        MaxId = reply?.MaxId,
                         RecentRepliers = new TVector<IPeer>(recentRepliers)
                     }
                 });

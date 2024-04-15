@@ -67,7 +67,7 @@ public class ConfigConverterLatest : IConfigConverterLatest
             CallRingTimeoutMs = 90000,
             CallConnectTimeoutMs = 30000,
             CallPacketTimeoutMs = 10000,
-            MeUrlPrefix = "https://t.mytelegram.top/",
+            MeUrlPrefix = "https://t.me/",
             //AutoupdateUrlPrefix = "",
             GifSearchUsername = "gif",
             VenueSearchUsername = "foursquare",

@@ -13,7 +13,7 @@ public class
             command.ChannelId,
             command.MaxId,
             command.SenderUserId,
-            command.TopMsgId);
+            command.TopMsgId );
         return Task.CompletedTask;
     }
 }

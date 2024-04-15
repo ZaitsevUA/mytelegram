@@ -12,7 +12,7 @@ public class UpdatePinnedMessageCompletedEvent : RequestAggregateEvent2<UpdatePi
         bool pmOneSide,
         int pts,
         Peer toPeer,
-        int date) : base(requestInfo)
+        int date):base(requestInfo)
     {
         ShouldReplyRpcResult = shouldReplyRpcResult;
         SenderPeerId = senderPeerId;
@@ -33,5 +33,5 @@ public class UpdatePinnedMessageCompletedEvent : RequestAggregateEvent2<UpdatePi
     public int Pts { get; }
     public Peer ToPeer { get; }
     public long SenderPeerId { get; }
-    public bool ShouldReplyRpcResult { get; }
+    public bool ShouldReplyRpcResult { get; } 
 }

@@ -1,35 +1,26 @@
-﻿namespace MyTelegram.Domain.Commands.Messaging;
+﻿//namespace MyTelegram.Domain.Commands.Messaging;
 
-public class StartForwardMessageCommand : RequestCommand2<MessageAggregate, MessageId, IExecutionResult>,
-    IHasCorrelationId
-{
-    public StartForwardMessageCommand(MessageId aggregateId,
-        RequestInfo requestInfo,
-        Peer fromPeer,
-        Peer toPeer,
-        IReadOnlyList<int> idList,
-        IReadOnlyList<long> randomIdList,
-        bool forwardFromLinkedChannel,
-        Guid correlationId) : base(aggregateId, requestInfo)
-    {
-        FromPeer = fromPeer;
-        ToPeer = toPeer;
-        IdList = idList;
-        RandomIdList = randomIdList;
-        ForwardFromLinkedChannel = forwardFromLinkedChannel;
-        CorrelationId = correlationId;
-    }
+//public class StartForwardMessageCommand : RequestCommand2<MessageAggregate, MessageId, IExecutionResult>
+//{
+//    public StartForwardMessageCommand(MessageId aggregateId,
+//        RequestInfo requestInfo,
+//        Peer fromPeer,
+//        Peer toPeer,
+//        IReadOnlyList<int> idList,
+//        IReadOnlyList<long> randomIdList,
+//        bool forwardFromLinkedChannel) : base(aggregateId, requestInfo)
+//    {
+//        FromPeer = fromPeer;
+//        ToPeer = toPeer;
+//        IdList = idList;
+//        RandomIdList = randomIdList;
+//        ForwardFromLinkedChannel = forwardFromLinkedChannel;
+//    }
 
-    public Peer FromPeer { get; }
-    public IReadOnlyList<int> IdList { get; }
-    public IReadOnlyList<long> RandomIdList { get; }
-    public bool ForwardFromLinkedChannel { get; }
+//    public Peer FromPeer { get; }
+//    public IReadOnlyList<int> IdList { get; }
+//    public IReadOnlyList<long> RandomIdList { get; }
+//    public bool ForwardFromLinkedChannel { get; }
 
-    public Peer ToPeer { get; }
-    public Guid CorrelationId { get; }
-
-    protected override IEnumerable<byte[]> GetSourceIdComponents()
-    {
-        yield return CorrelationId.ToByteArray();
-    }
-}
+//    public Peer ToPeer { get; }
+//}

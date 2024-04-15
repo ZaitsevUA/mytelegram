@@ -39,4 +39,6 @@ public interface IUserReadModel : IReadModel
     PeerColor? Color { get; }
     PeerColor? ProfileColor { get; }
     GlobalPrivacySettings? GlobalPrivacySettings { get; }
+    long? PersonalChannelId { get; }
+    Birthday? Birthday { get; }
 }

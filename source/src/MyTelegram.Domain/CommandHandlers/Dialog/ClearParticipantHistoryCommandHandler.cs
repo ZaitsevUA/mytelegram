@@ -8,7 +8,7 @@ public class
         ClearParticipantHistoryCommand command,
         CancellationToken cancellationToken)
     {
-        aggregate.ClearParticipantHistory(command.CorrelationId);
+        aggregate.ClearParticipantHistory(command.RequestInfo);
         return Task.CompletedTask;
     }
 }

@@ -28,7 +28,8 @@ public class ContactAppService : BaseAppService, IContactAppService
                 await _queryProcessor.ProcessAsync(new SearchUserByKeywordQuery(keyword, 20),
                     CancellationToken.None);
 
-            var contactReadModels = new List<IContactReadModel>();
+            var contactReadModels = await _queryProcessor
+                .ProcessAsync(new SearchContactQuery(selfUserId, searchKey));
 
             var userNameReadModel = await _queryProcessor
                 .ProcessAsync(new SearchUserNameQuery(searchKey));
@@ -37,7 +38,7 @@ public class ContactAppService : BaseAppService, IContactAppService
                 .ToList();
             //var userIdList = userNameReadModel.Where(p => p.PeerType == PeerType.User).Select(p => p.PeerId).ToList();
 
-            var userIdList = new List<long>();// contactReadModels.Select(p => p.TargetUid).ToList();
+            var userIdList = contactReadModels.Select(p => p.TargetUserId).ToList();
 
             var userList2 = await _queryProcessor
                 .ProcessAsync(new GetUsersByUidListQuery(userIdList));

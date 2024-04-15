@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace MyTelegram.Domain.Aggregates.PeerSettings;
 
 [JsonConverter(typeof(SystemTextJsonSingleValueObjectConverter<PeerSettingsId>))]
-public class PeerSettingsId : MyIdentity<PeerSettingsId>
+public class PeerSettingsId : Identity<PeerSettingsId>
 {
     public PeerSettingsId(string value) : base(value)
     {

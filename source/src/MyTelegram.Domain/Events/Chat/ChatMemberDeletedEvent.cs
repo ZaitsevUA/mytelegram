@@ -8,7 +8,7 @@ public class ChatMemberDeletedEvent : RequestAggregateEvent2<ChatAggregate, Chat
         long userId,
         string messageActionData,
         long randomId
-    ) : base(requestInfo)
+        ) : base(requestInfo)
     {
         ChatId = chatId;
         UserId = userId;
@@ -23,5 +23,5 @@ public class ChatMemberDeletedEvent : RequestAggregateEvent2<ChatAggregate, Chat
     public long RandomId { get; }
 
     public long UserId { get; }
-
+    
 }

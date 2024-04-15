@@ -118,8 +118,9 @@ public class DifferenceConverterLatest : LayeredConverterBase, IDifferenceConver
                     {
                         Date = DateTime.UtcNow.ToTimestamp(),
                         Qts = qts,
-                        Pts = pts?.Pts ?? 0,
-                        UnreadCount = unreadCount
+                        Pts = pts?.Pts ?? 1,
+                        UnreadCount = unreadCount,
+                        Seq = 1,
                     }
                     : _objectMapper.Map<IPtsReadModel, TState>(pts)
             };
@@ -147,8 +148,9 @@ public class DifferenceConverterLatest : LayeredConverterBase, IDifferenceConver
                 {
                     Date = DateTime.UtcNow.ToTimestamp(),
                     Qts = qts,
-                    Pts = pts?.Pts ?? 0,
-                    UnreadCount = unreadCount
+                    Pts = pts?.Pts ?? 1,
+                    UnreadCount = unreadCount,
+                    Seq = 1
                 }
                 : _objectMapper.Map<IPtsReadModel, TState>(pts)
         };

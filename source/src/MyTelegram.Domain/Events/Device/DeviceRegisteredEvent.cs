@@ -1,10 +1,10 @@
 ﻿namespace MyTelegram.Domain.Events.Device;
 
-public class DeviceRegisteredEvent : RequestAggregateEvent<DeviceAggregate, DeviceId>
+public class DeviceRegisteredEvent : RequestAggregateEvent2<DeviceAggregate, DeviceId>
 {
-    public DeviceRegisteredEvent(long reqMsgId,
+    public DeviceRegisteredEvent(RequestInfo requestInfo,
         int tokenType,
-        string token) : base(reqMsgId)
+        string token) : base(requestInfo)
     {
         TokenType = tokenType;
         Token = token;

@@ -3,7 +3,7 @@
 public class EditChannelAboutCommand : RequestCommand2<ChannelAggregate, ChannelId, IExecutionResult>
 {
     public EditChannelAboutCommand(ChannelId aggregateId,
-        RequestInfo requestInfo,
+        RequestInfo  requestInfo,
         long selfUserId,
         string? about
     ) : base(aggregateId, requestInfo)

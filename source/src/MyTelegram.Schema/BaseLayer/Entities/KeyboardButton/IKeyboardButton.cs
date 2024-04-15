@@ -22,10 +22,8 @@ namespace MyTelegram.Schema;
 [JsonDerivedType(typeof(TKeyboardButtonWebView), nameof(TKeyboardButtonWebView))]
 [JsonDerivedType(typeof(TKeyboardButtonSimpleWebView), nameof(TKeyboardButtonSimpleWebView))]
 [JsonDerivedType(typeof(TKeyboardButtonRequestPeer), nameof(TKeyboardButtonRequestPeer))]
+[JsonDerivedType(typeof(TInputKeyboardButtonRequestPeer), nameof(TInputKeyboardButtonRequestPeer))]
 public interface IKeyboardButton : IObject
 {
-    ///<summary>
-    /// Button text
-    ///</summary>
     string Text { get; set; }
 }

@@ -5,12 +5,12 @@ public class CheckSignInCodeCompletedEvent : RequestAggregateEvent2<AppCodeAggre
     public CheckSignInCodeCompletedEvent(RequestInfo requestInfo,
         bool isCodeValid,
         long userId//,
-        //long accessHash,
-        //string phoneNumber,
-        //string firstName,
-        //string lastName,
-        //Guid correlationId
-    ) : base(requestInfo)
+                   //long accessHash,
+                   //string phoneNumber,
+                   //string firstName,
+                   //string lastName,
+                   //Guid correlationId
+        ) : base(requestInfo)
     {
         IsCodeValid = isCodeValid;
         UserId = userId;

@@ -4,12 +4,16 @@
 namespace MyTelegram.Schema.Account;
 
 ///<summary>
+/// Returns fetch the full list of <a href="https://corefork.telegram.org/api/custom-emoji">custom emoji IDs »</a> that cannot be used in <a href="https://corefork.telegram.org/api/emoji-status">channel emoji statuses »</a>.
 /// See <a href="https://corefork.telegram.org/method/account.getChannelRestrictedStatusEmojis" />
 ///</summary>
 [TlObject(0x35a9e0d5)]
 public sealed class RequestGetChannelRestrictedStatusEmojis : IRequest<MyTelegram.Schema.IEmojiList>
 {
     public uint ConstructorId => 0x35a9e0d5;
+    ///<summary>
+    /// <a href="https://corefork.telegram.org/api/offsets#hash-generation">Hash for pagination, for more info click here</a>
+    ///</summary>
     public long Hash { get; set; }
 
     public void ComputeFlag()

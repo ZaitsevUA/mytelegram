@@ -15,7 +15,9 @@ public class
             command.InviterId,
             command.Date,
             command.IsBot,
-            command.ChatInviteId);
+            command.ChatInviteId,
+            command.ChatJoinType
+            );
         return Task.CompletedTask;
     }
 }

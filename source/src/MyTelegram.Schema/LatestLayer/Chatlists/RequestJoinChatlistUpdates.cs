@@ -5,6 +5,10 @@ namespace MyTelegram.Schema.Chatlists;
 
 ///<summary>
 /// Join channels and supergroups recently added to a <a href="https://corefork.telegram.org/api/links#chat-folder-links">chat folder deep link »</a>.
+/// <para>Possible errors</para>
+/// Code Type Description
+/// 400 FILTER_ID_INVALID The specified filter ID is invalid.
+/// 400 FILTER_INCLUDE_EMPTY The include_peers vector of the filter is empty.
 /// See <a href="https://corefork.telegram.org/method/chatlists.joinChatlistUpdates" />
 ///</summary>
 [TlObject(0xe089f8f5)]

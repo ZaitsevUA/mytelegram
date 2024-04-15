@@ -1,7 +1,7 @@
 ﻿namespace MyTelegram.Domain.Aggregates.Messaging;
 
 [JsonConverter(typeof(SystemTextJsonSingleValueObjectConverter<MessageViewLogId>))]
-public class MessageViewLogId : MyIdentity<MessageViewLogId>
+public class MessageViewLogId : Identity<MessageViewLogId>
 {
     public MessageViewLogId(string value) : base(value)
     {

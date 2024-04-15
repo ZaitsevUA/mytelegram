@@ -4,7 +4,7 @@
 namespace MyTelegram.Schema.Contacts;
 
 ///<summary>
-/// Delete saved contacts
+/// Removes all contacts without an associated Telegram account.
 /// See <a href="https://corefork.telegram.org/method/contacts.resetSaved" />
 ///</summary>
 [TlObject(0x879537f1)]

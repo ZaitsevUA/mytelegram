@@ -8,6 +8,8 @@ using EventFlow.ReadStores;
 using EventFlow.ReadStores.InMemory.Queries;
 using EventFlow.ReadStores.InMemory;
 using Microsoft.Extensions.DependencyInjection;
+using MyTelegram.EventFlow.MongoDB.ReadStores;
+using MyTelegram.EventFlow.ReadStores;
 
 namespace MyTelegram.EventFlow.MongoDB;
 
@@ -22,6 +24,7 @@ public static class MyMongoDbOptionsExtensions
         options.ServiceCollection.AddTransient<IReadModelCacheStrategy, DefaultReadModelCacheStrategy>();
         options.ServiceCollection.AddTransient<IReadModelUpdateStrategy, ReadModelUpdateStrategy>();
         options.ServiceCollection.AddTransient<IReadModelUpdateManager, ReadModelUpdateManager>();
+        options.ServiceCollection.AddTransient<IQueryOnlyReadModelDescriptionProvider, QueryOnlyReadModelDescriptionProvider>();
         //options.ServiceCollection.AddSingleton(typeof(IMyInMemoryReadStore<>), typeof(MyInMemoryReadStore<>));
 
         return options;
@@ -36,6 +39,7 @@ public static class MyMongoDbOptionsExtensions
         eventFlowOptions.ServiceCollection
             .AddTransient<IMongoDbReadModelStore<TReadModel>, MyMongoDbReadModelStore<TReadModel>>()
             .AddTransient<IMyMongoDbReadModelStore<TReadModel>, MyMongoDbReadModelStore<TReadModel>>()
+            .AddTransient<IQueryOnlyReadModelStore<TReadModel>, MongoDbQueryOnlyReadModelStore<TReadModel>>()
             ;
         eventFlowOptions.ServiceCollection.AddTransient<IReadModelStore<TReadModel>>(f =>
             f.GetRequiredService<IMongoDbReadModelStore<TReadModel>>());
@@ -54,13 +58,22 @@ public static class MyMongoDbOptionsExtensions
     {
         eventFlowOptions.ServiceCollection
             .AddTransient<IMongoDbReadModelStore<TReadModel>, MyMongoDbReadModelStore<TReadModel>>()
-            .AddTransient<IMyMongoDbReadModelStore<TReadModel>, MyMongoDbReadModelStore<TReadModel>>();
+            .AddTransient<IMyMongoDbReadModelStore<TReadModel>, MyMongoDbReadModelStore<TReadModel>>()
+            .AddTransient<IQueryOnlyReadModelStore<TReadModel>, MongoDbQueryOnlyReadModelStore<TReadModel>>()
+            ;
 
         eventFlowOptions.ServiceCollection.AddTransient<IReadModelStore<TReadModel>>(f =>
             f.GetRequiredService<IMongoDbReadModelStore<TReadModel>>());
         eventFlowOptions.UseReadStoreFor<IMongoDbReadModelStore<TReadModel>, TReadModel, TReadModelLocator>();
 
         return eventFlowOptions;
+    }
+    private static void AddMongoDbStoreServices<TReadModel, TDbContext>(this IServiceCollection services)
+        where TReadModel : class, IQueryOnlyReadModel
+        where TDbContext : IMongoDbContext
+    {
+        services
+            .AddTransient<IQueryOnlyReadModelStore<TReadModel>, MongoDbQueryOnlyReadModelStore<TReadModel, TDbContext>>();
     }
 
     public static IEventFlowOptions UseMongoDbReadModel<TAggregate, TIdentity, TReadModel, TDbContext>(
@@ -75,6 +88,7 @@ public static class MyMongoDbOptionsExtensions
             .AddTransient<IMyMongoDbReadModelStore<TReadModel>,
                 MyMongoDbReadModelStore<TReadModel, TDbContext>>()
             .AddTransient<IMyMongoDbReadModelStore<TReadModel>, MyMongoDbReadModelStore<TReadModel, TDbContext>>()
+            .AddTransient<IQueryOnlyReadModelStore<TReadModel>, MongoDbQueryOnlyReadModelStore<TReadModel, TDbContext>>()
             ;
         eventFlowOptions.ServiceCollection.AddTransient<IReadModelStore<TReadModel>>(f =>
             f.GetRequiredService<IMyMongoDbReadModelStore<TReadModel>>());

@@ -16,10 +16,10 @@ namespace MyTelegram.Schema.Messages;
 /// 406 USER_RESTRICTED You're spamreported, you can't create channels or chats.
 /// See <a href="https://corefork.telegram.org/method/messages.createChat" />
 ///</summary>
-[TlObject(0x34a818)]
-public sealed class RequestCreateChat : IRequest<MyTelegram.Schema.IUpdates>
+[TlObject(0x92ceddd4)]
+public sealed class RequestCreateChat : IRequest<MyTelegram.Schema.Messages.IInvitedUsers>
 {
-    public uint ConstructorId => 0x34a818;
+    public uint ConstructorId => 0x92ceddd4;
     ///<summary>
     /// Flags, see <a href="https://corefork.telegram.org/mtproto/TL-combinators#conditional-fields">TL conditional fields</a>
     ///</summary>

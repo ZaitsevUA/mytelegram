@@ -1,7 +1,7 @@
 ﻿namespace MyTelegram.Domain.Aggregates.PeerNotifySettings;
 
 [JsonConverter(typeof(SystemTextJsonSingleValueObjectConverter<PeerNotifySettingsId>))]
-public class PeerNotifySettingsId : MyIdentity<PeerNotifySettingsId>
+public class PeerNotifySettingsId : Identity<PeerNotifySettingsId>
 {
     public PeerNotifySettingsId(string value) : base(value)
     {

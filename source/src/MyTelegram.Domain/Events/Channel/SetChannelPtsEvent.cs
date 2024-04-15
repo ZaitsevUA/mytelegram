@@ -2,10 +2,7 @@
 
 public class SetChannelPtsEvent : AggregateEvent<ChannelAggregate, ChannelId>
 {
-    public SetChannelPtsEvent(long senderPeerId,
-        int pts,
-        int messageId,
-        int date)
+    public SetChannelPtsEvent(long senderPeerId,int pts,int messageId,int date)
     {
         SenderPeerId = senderPeerId;
         Pts = pts;

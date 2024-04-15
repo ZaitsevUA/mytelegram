@@ -8,12 +8,15 @@ public class PtsReadModelLocator : IPtsReadModelLocator
         var aggregateEvent = domainEvent.GetAggregateEvent();
         switch (aggregateEvent)
         {
+            case TempPtsIncrementedEvent tempPtsIncrementedEvent:
+                ownerPeerId = tempPtsIncrementedEvent.OwnerPeerId;
+                break;
             case PtsGlobalSeqNoUpdatedEvent ptsGlobalSeqNoUpdatedEvent:
                 ownerPeerId = ptsGlobalSeqNoUpdatedEvent.PeerId;
                 break;
 
-            case PushUpdatesCreatedEvent pushUpdatesCreatedEvent:
-                ownerPeerId = pushUpdatesCreatedEvent.ToPeer.PeerId;
+            case UpdatesCreatedEvent updateCreatedEvent:
+                ownerPeerId = updateCreatedEvent.OwnerPeerId;
                 break;
 
             case EncryptedPushUpdatesCreatedEvent encryptedPushUpdatesCreatedEvent:
@@ -32,8 +35,8 @@ public class PtsReadModelLocator : IPtsReadModelLocator
             case ReadHistoryPtsIncrementEvent readHistoryPtsIncrementEvent:
                 ownerPeerId = readHistoryPtsIncrementEvent.PeerId;
                 break;
-            case DeleteMessagePtsIncrementedEvent deleteMessagePtsIncrementedEvent:
-                ownerPeerId = deleteMessagePtsIncrementedEvent.PeerId;
+            case DeleteMessagePtsIncrementedEvent4 deleteMessagePtsIncrementedEvent:
+                ownerPeerId = deleteMessagePtsIncrementedEvent.UserId;
                 break;
             case ClearSingleUserHistoryCompletedEvent clearSingleUserHistoryCompletedEvent:
                 ownerPeerId = clearSingleUserHistoryCompletedEvent.DeletedBoxItem.OwnerPeerId;

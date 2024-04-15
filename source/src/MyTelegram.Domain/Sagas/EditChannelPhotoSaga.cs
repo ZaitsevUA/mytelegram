@@ -24,6 +24,7 @@ public class
             ownerPeer,
             ownerPeer,
             senderPeer,
+            senderPeer.PeerId,
             outMessageId,
             string.Empty,
             DateTime.UtcNow.ToTimestamp(),

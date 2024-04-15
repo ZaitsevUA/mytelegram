@@ -10,7 +10,9 @@ public class CreateChannelMemberCommand : /*Request*/RequestCommand2<ChannelMemb
         long inviterId,
         int date,
         bool isBot,
-        long? chatInviteId) : base(aggregateId, requestInfo)
+        long? chatInviteId,
+        ChatJoinType chatJoinType = ChatJoinType.InvitedByAdmin
+        ) : base(aggregateId, requestInfo)
     {
         ChannelId = channelId;
         UserId = userId;
@@ -18,6 +20,7 @@ public class CreateChannelMemberCommand : /*Request*/RequestCommand2<ChannelMemb
         Date = date;
         IsBot = isBot;
         ChatInviteId = chatInviteId;
+        ChatJoinType = chatJoinType;
     }
 
     public long ChannelId { get; }
@@ -25,5 +28,6 @@ public class CreateChannelMemberCommand : /*Request*/RequestCommand2<ChannelMemb
     public long InviterId { get; }
     public bool IsBot { get; }
     public long? ChatInviteId { get; }
+    public ChatJoinType ChatJoinType { get; }
     public long UserId { get; }
 }

@@ -4,16 +4,36 @@
 namespace MyTelegram.Schema.Messages;
 
 ///<summary>
+/// Incomplete list of <a href="https://corefork.telegram.org/api/saved-messages">saved message dialogs »</a> with messages and auxiliary data.
 /// See <a href="https://corefork.telegram.org/constructor/messages.savedDialogsSlice" />
 ///</summary>
 [TlObject(0x44ba9dd9)]
 public sealed class TSavedDialogsSlice : ISavedDialogs
 {
     public uint ConstructorId => 0x44ba9dd9;
+    ///<summary>
+    /// Total number of saved message dialogs
+    ///</summary>
     public int Count { get; set; }
+
+    ///<summary>
+    /// List of saved message dialogs
+    ///</summary>
     public TVector<MyTelegram.Schema.ISavedDialog> Dialogs { get; set; }
+
+    ///<summary>
+    /// List of last messages from dialogs
+    ///</summary>
     public TVector<MyTelegram.Schema.IMessage> Messages { get; set; }
+
+    ///<summary>
+    /// Mentioned chats
+    ///</summary>
     public TVector<MyTelegram.Schema.IChat> Chats { get; set; }
+
+    ///<summary>
+    /// Mentioned users
+    ///</summary>
     public TVector<MyTelegram.Schema.IUser> Users { get; set; }
 
     public void ComputeFlag()

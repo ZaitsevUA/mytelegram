@@ -30,16 +30,6 @@ public interface IStickerSet : IObject
     bool Masks { get; set; }
 
     ///<summary>
-    /// Is this an animated stickerpack
-    ///</summary>
-    bool Animated { get; set; }
-
-    ///<summary>
-    /// Is this a video stickerpack
-    ///</summary>
-    bool Videos { get; set; }
-
-    ///<summary>
     /// This is a custom emoji stickerset
     ///</summary>
     bool Emojis { get; set; }
@@ -48,7 +38,12 @@ public interface IStickerSet : IObject
     /// Whether the color of this TGS custom emoji stickerset should be changed to the text color when used in messages, the accent color if used as emoji status, white on chat photos, or another appropriate color based on context.
     ///</summary>
     bool TextColor { get; set; }
+
+    ///<summary>
+    /// If set, this custom emoji stickerset can be used in <a href="https://corefork.telegram.org/api/emoji-status">channel emoji statuses</a>.
+    ///</summary>
     bool ChannelEmojiStatus { get; set; }
+    bool Creator { get; set; }
 
     ///<summary>
     /// When was this stickerset installed

@@ -209,7 +209,7 @@ public class ChatMapper :
         destination.SlowmodeEnabled = source.SlowModeEnabled;
         destination.DefaultBannedRights = Map(source.DefaultBannedRights ?? ChatBannedRights.Default);
 
-        destination.HasLink = source.LinkedChatId.HasValue;
+        destination.HasLink = source.HasLink;
         destination.Noforwards = source.NoForwards;
         destination.Color=source.Color.ToPeerColor();
         destination.ProfileColor = source.ProfileColor.ToPeerColor();

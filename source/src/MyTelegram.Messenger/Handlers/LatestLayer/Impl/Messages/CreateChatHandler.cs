@@ -14,7 +14,7 @@ namespace MyTelegram.Handlers.Messages;
 /// 406 USER_RESTRICTED You're spamreported, you can't create channels or chats.
 /// See <a href="https://corefork.telegram.org/method/messages.createChat" />
 ///</summary>
-internal sealed class CreateChatHandler : RpcResultObjectHandler<MyTelegram.Schema.Messages.RequestCreateChat, MyTelegram.Schema.IUpdates>,
+internal sealed class CreateChatHandler : RpcResultObjectHandler<MyTelegram.Schema.Messages.RequestCreateChat, MyTelegram.Schema.Messages.IInvitedUsers>,
     Messages.ICreateChatHandler
 {
     private readonly IIdGenerator _idGenerator;
@@ -39,7 +39,7 @@ internal sealed class CreateChatHandler : RpcResultObjectHandler<MyTelegram.Sche
         _options = options;
     }
 
-    protected override async Task<IUpdates> HandleCoreAsync(IRequestInput input,
+    protected override async Task<MyTelegram.Schema.Messages.IInvitedUsers> HandleCoreAsync(IRequestInput input,
         RequestCreateChat obj)
     {
         var memberUidList = new List<long>();

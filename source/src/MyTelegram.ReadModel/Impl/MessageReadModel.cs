@@ -1,4 +1,5 @@
-﻿using MyTelegram.Schema.Extensions;
+﻿using MyTelegram.Schema;
+using MyTelegram.Schema.Extensions;
 
 namespace MyTelegram.ReadModel.Impl;
 
@@ -18,7 +19,13 @@ public class MessageReadModel : IMessageReadModel,
     IAmReadModelFor<MessageAggregate, MessageId, InboxMessageDeletedEvent>,
     IAmReadModelFor<MessageAggregate, MessageId, SelfMessageDeletedEvent>,
     IAmReadModelFor<SendMessageSaga, SendMessageSagaId, SendOutboxMessageCompletedEvent>,
-    IAmReadModelFor<SendMessageSaga, SendMessageSagaId, ReceiveInboxMessageCompletedEvent>
+    IAmReadModelFor<SendMessageSaga, SendMessageSagaId, ReceiveInboxMessageCompletedEvent>,
+    IAmReadModelFor<MessageAggregate, MessageId, MessageDeleted4Event>,
+    IAmReadModelFor<MessageAggregate, MessageId, ReplyChannelMessageCompletedEvent>,
+    IAmReadModelFor<MessageAggregate, MessageId, ChannelMessagePinnedEvent>,
+    IAmReadModelFor<MessageAggregate, MessageId, MessageReplyUpdatedEvent>,
+    IAmReadModelFor<MessageAggregate, MessageId, ChannelMessageDeletedEvent>,
+    IAmReadModelFor<SendMessageSaga, SendMessageSagaId, PostChannelIdUpdatedEvent>
 {
     public int Date { get; private set; }
     public int? EditDate { get; private set; }
@@ -43,6 +50,7 @@ public class MessageReadModel : IMessageReadModel,
     public int? TopMsgId { get; private set; }
     public int SenderMessageId { get; private set; }
     public long SenderPeerId { get; private set; }
+    public long SenderUserId { get; private set; }
     public SendMessageType SendMessageType { get; private set; }
     public bool Silent { get; private set; }
     public long ToPeerId { get; private set; }
@@ -57,6 +65,15 @@ public class MessageReadModel : IMessageReadModel,
     public long? PollId { get; private set; }
     public byte[]? ReplyMarkup { get; private set; }
     public IInputReplyTo? ReplyTo { get; private set; }
+    public Peer? SendAs { get; private set; }
+    public MessageReply? Reply { get; private set; }
+    public long? PostChannelId { get; private set; }
+    public int? PostMessageId { get; private set; }
+    public bool HasQuickReplyShortcut { get; private set; }
+    public string? QuickReplyShortcut { get; private set; }
+    public Guid BatchId { get; private set; }
+    //public long RandomId { get; private set; }
+
     public List<UserReaction>? UserReactions { get; set; }
     //public List<long>? ReactionUserIds { get; private set; }
     public List<ReactionCount>? Reactions { get; private set; }
@@ -71,6 +88,7 @@ public class MessageReadModel : IMessageReadModel,
         Id = domainEvent.AggregateIdentity.Value;
         OwnerPeerId = messageItem.OwnerPeer.PeerId;
         SenderPeerId = messageItem.SenderPeer.PeerId;
+        SenderUserId = messageItem.SenderUserId;
         ToPeerType = messageItem.ToPeer.PeerType;
         ToPeerId = messageItem.ToPeer.PeerId;
         MessageType = messageItem.MessageType;
@@ -108,6 +126,18 @@ public class MessageReadModel : IMessageReadModel,
         ReplyMarkup = messageItem.ReplyMarkup;
         ReplyTo = messageItem.InputReplyTo;
         ReplyToMsgId = messageItem.InputReplyTo.ToReplyToMsgId();
+        SendAs = messageItem.SendAs;
+        Reply = messageItem.Reply;
+        EditHide = messageItem.EditHide;
+        PostChannelId = messageItem.PostChannelId;
+        PostMessageId = messageItem.PostMessageId;
+        HasQuickReplyShortcut = !string.IsNullOrEmpty(messageItem.QuickReplyShortcut);
+        QuickReplyShortcut = messageItem.QuickReplyShortcut;
+        //RandomId= messageItem.RandomId;
+        if (messageItem.BatchId.HasValue)
+        {
+            BatchId = messageItem.BatchId.Value;
+        }
 
         return Task.CompletedTask;
     }
@@ -120,6 +150,7 @@ public class MessageReadModel : IMessageReadModel,
         Id = domainEvent.AggregateIdentity.Value;
         OwnerPeerId = messageItem.OwnerPeer.PeerId;
         SenderPeerId = messageItem.SenderPeer.PeerId;
+        SenderUserId = messageItem.SenderUserId;
         ToPeerType = messageItem.ToPeer.PeerType;
         ToPeerId = messageItem.ToPeer.PeerId;
         MessageType = messageItem.MessageType;
@@ -143,6 +174,11 @@ public class MessageReadModel : IMessageReadModel,
         ReplyMarkup = messageItem.ReplyMarkup;
         ReplyTo = messageItem.InputReplyTo;
         ReplyToMsgId = messageItem.InputReplyTo.ToReplyToMsgId();
+        //RandomId = messageItem.RandomId;
+        if (messageItem.BatchId.HasValue)
+        {
+            BatchId = messageItem.BatchId.Value;
+        }
 
         return Task.CompletedTask;
     }
@@ -168,7 +204,7 @@ public class MessageReadModel : IMessageReadModel,
     }
 
     //public Task ApplyAsync(IReadModelContext context,
-    //    IDomainEvent<SendMessageSaga, SendMessageSagaId, SendOutboxMessageCompletedEvent> domainEvent,
+    //    IDomainEvent<MessageSaga, MessageSagaId, SendOutboxMessageCompletedEvent> domainEvent,
     //    CancellationToken cancellationToken)
     //{
     //    if (string.IsNullOrEmpty(Id))
@@ -182,7 +218,7 @@ public class MessageReadModel : IMessageReadModel,
     //}
 
     //public Task ApplyAsync(IReadModelContext context,
-    //    IDomainEvent<SendMessageSaga, SendMessageSagaId, MyTelegram.Domain.Sagas.Events.ReceiveInboxMessageCompletedEvent> domainEvent,
+    //    IDomainEvent<MessageSaga, MessageSagaId, ReceiveInboxMessageCompletedEvent> domainEvent,
     //    CancellationToken cancellationToken)
     //{
     //    if (string.IsNullOrEmpty(Id))
@@ -210,7 +246,7 @@ public class MessageReadModel : IMessageReadModel,
     }
 
     public Task ApplyAsync(IReadModelContext context,
-        IDomainEvent<SendMessageSaga, SendMessageSagaId, MyTelegram.Domain.Sagas.Events.ReceiveInboxMessageCompletedEvent> domainEvent,
+        IDomainEvent<SendMessageSaga, SendMessageSagaId, ReceiveInboxMessageCompletedEvent> domainEvent,
         CancellationToken cancellationToken)
     {
         if (string.IsNullOrEmpty(Id))
@@ -284,6 +320,52 @@ public class MessageReadModel : IMessageReadModel,
         CancellationToken cancellationToken)
     {
         context.MarkForDeletion();
+        return Task.CompletedTask;
+    }
+
+    public Task ApplyAsync(IReadModelContext context, IDomainEvent<MessageAggregate, MessageId, MessageDeleted4Event> domainEvent, CancellationToken cancellationToken)
+    {
+        context.MarkForDeletion();
+        return Task.CompletedTask;
+    }
+
+    public Task ApplyAsync(IReadModelContext context, IDomainEvent<MessageAggregate, MessageId, ReplyChannelMessageCompletedEvent> domainEvent, CancellationToken cancellationToken)
+    {
+
+        Reply = domainEvent.AggregateEvent.Reply;
+
+        return Task.CompletedTask;
+    }
+
+    public Task ApplyAsync(IReadModelContext context, IDomainEvent<MessageAggregate, MessageId, ChannelMessagePinnedEvent> domainEvent, CancellationToken cancellationToken)
+    {
+        Pinned = true;
+
+        return Task.CompletedTask;
+    }
+
+    public Task ApplyAsync(IReadModelContext context, IDomainEvent<MessageAggregate, MessageId, MessageReplyUpdatedEvent> domainEvent, CancellationToken cancellationToken)
+    {
+        if (Reply != null)
+        {
+            Reply.ChannelId = domainEvent.AggregateEvent.ChannelId;
+        }
+
+        return Task.CompletedTask;
+    }
+
+    public Task ApplyAsync(IReadModelContext context, IDomainEvent<MessageAggregate, MessageId, ChannelMessageDeletedEvent> domainEvent, CancellationToken cancellationToken)
+    {
+        context.MarkForDeletion();
+
+        return Task.CompletedTask;
+    }
+
+    public Task ApplyAsync(IReadModelContext context, IDomainEvent<SendMessageSaga, SendMessageSagaId, PostChannelIdUpdatedEvent> domainEvent, CancellationToken cancellationToken)
+    {
+        PostChannelId = domainEvent.AggregateEvent.PostChannelId;
+        PostMessageId = domainEvent.AggregateEvent.PostMessageId;
+
         return Task.CompletedTask;
     }
 }

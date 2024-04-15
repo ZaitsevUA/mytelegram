@@ -28,6 +28,10 @@ public sealed class RequestGetMessagePublicForwards : IRequest<MyTelegram.Schema
     /// Source message ID
     ///</summary>
     public int MsgId { get; set; }
+
+    ///<summary>
+    /// Offset for <a href="https://corefork.telegram.org/api/offsets">pagination</a>, empty string on first call, then use the <code>next_offset</code> field of the returned constructor (if present, otherwise no more results are available).
+    ///</summary>
     public string Offset { get; set; }
 
     ///<summary>

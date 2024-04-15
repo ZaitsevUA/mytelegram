@@ -42,14 +42,15 @@ namespace MyTelegram.Schema.Messages;
 /// 500 MSG_WAIT_FAILED A waiting call returned an error.
 /// 400 PEER_ID_INVALID The provided peer id is invalid.
 /// 400 REPLY_MARKUP_INVALID The provided reply markup is invalid.
+/// 400 REPLY_MARKUP_TOO_LONG The specified reply_markup is too long.
 /// 400 SCHEDULE_DATE_INVALID Invalid schedule date provided.
 /// 400 USER_BANNED_IN_CHANNEL You're banned from sending messages in supergroups/channels.
 /// See <a href="https://corefork.telegram.org/method/messages.editMessage" />
 ///</summary>
-[TlObject(0x48f71778)]
+[TlObject(0xdfd14005)]
 public sealed class RequestEditMessage : IRequest<MyTelegram.Schema.IUpdates>
 {
-    public uint ConstructorId => 0x48f71778;
+    public uint ConstructorId => 0xdfd14005;
     ///<summary>
     /// Flags, see <a href="https://corefork.telegram.org/mtproto/TL-combinators#conditional-fields">TL conditional fields</a>
     ///</summary>
@@ -104,6 +105,7 @@ public sealed class RequestEditMessage : IRequest<MyTelegram.Schema.IUpdates>
     /// Scheduled message date for <a href="https://corefork.telegram.org/api/scheduled-messages">scheduled messages</a>
     ///</summary>
     public int? ScheduleDate { get; set; }
+    public int? QuickReplyShortcutId { get; set; }
 
     public void ComputeFlag()
     {
@@ -114,6 +116,7 @@ public sealed class RequestEditMessage : IRequest<MyTelegram.Schema.IUpdates>
         if (ReplyMarkup != null) { Flags[2] = true; }
         if (Entities?.Count > 0) { Flags[3] = true; }
         if (/*ScheduleDate != 0 && */ScheduleDate.HasValue) { Flags[15] = true; }
+        if (/*QuickReplyShortcutId != 0 && */QuickReplyShortcutId.HasValue) { Flags[17] = true; }
     }
 
     public void Serialize(IBufferWriter<byte> writer)
@@ -128,6 +131,7 @@ public sealed class RequestEditMessage : IRequest<MyTelegram.Schema.IUpdates>
         if (Flags[2]) { writer.Write(ReplyMarkup); }
         if (Flags[3]) { writer.Write(Entities); }
         if (Flags[15]) { writer.Write(ScheduleDate.Value); }
+        if (Flags[17]) { writer.Write(QuickReplyShortcutId.Value); }
     }
 
     public void Deserialize(ref SequenceReader<byte> reader)
@@ -142,5 +146,6 @@ public sealed class RequestEditMessage : IRequest<MyTelegram.Schema.IUpdates>
         if (Flags[2]) { ReplyMarkup = reader.Read<MyTelegram.Schema.IReplyMarkup>(); }
         if (Flags[3]) { Entities = reader.Read<TVector<MyTelegram.Schema.IMessageEntity>>(); }
         if (Flags[15]) { ScheduleDate = reader.ReadInt32(); }
+        if (Flags[17]) { QuickReplyShortcutId = reader.ReadInt32(); }
     }
 }

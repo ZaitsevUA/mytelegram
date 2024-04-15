@@ -4,12 +4,16 @@
 namespace MyTelegram.Schema.Messages;
 
 ///<summary>
+/// The saved dialogs haven't changed
 /// See <a href="https://corefork.telegram.org/constructor/messages.savedDialogsNotModified" />
 ///</summary>
 [TlObject(0xc01f6fe8)]
 public sealed class TSavedDialogsNotModified : ISavedDialogs
 {
     public uint ConstructorId => 0xc01f6fe8;
+    ///<summary>
+    /// Number of <a href="https://corefork.telegram.org/api/saved-messages">saved dialogs</a> found server-side by the query
+    ///</summary>
     public int Count { get; set; }
 
     public void ComputeFlag()

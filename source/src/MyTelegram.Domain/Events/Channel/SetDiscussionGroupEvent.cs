@@ -1,15 +1,17 @@
 ﻿namespace MyTelegram.Domain.Events.Channel;
 
-public class SetDiscussionGroupEvent : RequestAggregateEvent2<ChannelAggregate, ChannelId>
+public class DiscussionGroupUpdatedEvent : RequestAggregateEvent2<ChannelAggregate, ChannelId>
 {
-    public SetDiscussionGroupEvent(RequestInfo requestInfo,
+    public DiscussionGroupUpdatedEvent(RequestInfo requestInfo,
         long broadcastChannelId,
-        long? groupChannelId) : base(requestInfo)
+        long? groupChannelId, long? oldGroupChannelId) : base(requestInfo)
     {
         BroadcastChannelId = broadcastChannelId;
         GroupChannelId = groupChannelId;
+        OldGroupChannelId = oldGroupChannelId;
     }
 
     public long BroadcastChannelId { get; }
+    public long? OldGroupChannelId { get; }
     public long? GroupChannelId { get; }
 }

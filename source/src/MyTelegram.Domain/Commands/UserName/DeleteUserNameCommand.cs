@@ -11,3 +11,14 @@ public class DeleteUserNameCommand : Command<UserNameAggregate, UserNameId, IExe
     {
     }
 }
+
+//public class CheckUserNameCommand : RequestCommand<UserNameAggregate, UserNameId, IExecutionResult>
+//{
+//    public string UserName { get; }
+//    public CheckUserNameCommand(UserNameId aggregateId,
+//        long reqMsgId,
+//        string userName) : base(aggregateId, reqMsgId)
+//    {
+//        UserName = userName;
+//    }
+//}

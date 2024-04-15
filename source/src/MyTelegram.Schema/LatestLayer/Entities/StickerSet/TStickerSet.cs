@@ -35,18 +35,6 @@ public sealed class TStickerSet : IStickerSet
     public bool Masks { get; set; }
 
     ///<summary>
-    /// Is this an animated stickerpack
-    /// See <a href="https://corefork.telegram.org/type/true" />
-    ///</summary>
-    public bool Animated { get; set; }
-
-    ///<summary>
-    /// Is this a video stickerpack
-    /// See <a href="https://corefork.telegram.org/type/true" />
-    ///</summary>
-    public bool Videos { get; set; }
-
-    ///<summary>
     /// This is a custom emoji stickerset
     /// See <a href="https://corefork.telegram.org/type/true" />
     ///</summary>
@@ -57,7 +45,13 @@ public sealed class TStickerSet : IStickerSet
     /// See <a href="https://corefork.telegram.org/type/true" />
     ///</summary>
     public bool TextColor { get; set; }
+
+    ///<summary>
+    /// If set, this custom emoji stickerset can be used in <a href="https://corefork.telegram.org/api/emoji-status">channel emoji statuses</a>.
+    /// See <a href="https://corefork.telegram.org/type/true" />
+    ///</summary>
     public bool ChannelEmojiStatus { get; set; }
+    public bool Creator { get; set; }
 
     ///<summary>
     /// When was this stickerset installed
@@ -119,11 +113,10 @@ public sealed class TStickerSet : IStickerSet
         if (Archived) { Flags[1] = true; }
         if (Official) { Flags[2] = true; }
         if (Masks) { Flags[3] = true; }
-        if (Animated) { Flags[5] = true; }
-        if (Videos) { Flags[6] = true; }
         if (Emojis) { Flags[7] = true; }
         if (TextColor) { Flags[9] = true; }
         if (ChannelEmojiStatus) { Flags[10] = true; }
+        if (Creator) { Flags[11] = true; }
         if (/*InstalledDate != 0 && */InstalledDate.HasValue) { Flags[0] = true; }
         if (Thumbs?.Count > 0) { Flags[4] = true; }
         if (/*ThumbDcId != 0 && */ThumbDcId.HasValue) { Flags[4] = true; }
@@ -156,11 +149,10 @@ public sealed class TStickerSet : IStickerSet
         if (Flags[1]) { Archived = true; }
         if (Flags[2]) { Official = true; }
         if (Flags[3]) { Masks = true; }
-        if (Flags[5]) { Animated = true; }
-        if (Flags[6]) { Videos = true; }
         if (Flags[7]) { Emojis = true; }
         if (Flags[9]) { TextColor = true; }
         if (Flags[10]) { ChannelEmojiStatus = true; }
+        if (Flags[11]) { Creator = true; }
         if (Flags[0]) { InstalledDate = reader.ReadInt32(); }
         Id = reader.ReadInt64();
         AccessHash = reader.ReadInt64();

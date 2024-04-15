@@ -1,6 +1,6 @@
 ﻿namespace MyTelegram.Domain.Events.Dialog;
 
-public class HistoryClearedEvent : RequestAggregateEvent2<DialogAggregate, DialogId>, IHasCorrelationId
+public class HistoryClearedEvent : RequestAggregateEvent2<DialogAggregate, DialogId>
 {
     public HistoryClearedEvent(
         RequestInfo requestInfo,
@@ -11,8 +11,7 @@ public class HistoryClearedEvent : RequestAggregateEvent2<DialogAggregate, Dialo
         string messageActionData,
         long randomId,
         List<int> messageIdListToBeDelete,
-        int nextMaxId,
-        Guid correlationId) : base(requestInfo)
+        int nextMaxId) : base(requestInfo)
     {
         OwnerPeerId = ownerPeerId;
         HistoryMinId = historyMinId;
@@ -22,7 +21,7 @@ public class HistoryClearedEvent : RequestAggregateEvent2<DialogAggregate, Dialo
         RandomId = randomId;
         MessageIdListToBeDelete = messageIdListToBeDelete;
         NextMaxId = nextMaxId;
-        CorrelationId = correlationId;
+
     }
 
     public int HistoryMinId { get; }
@@ -34,5 +33,5 @@ public class HistoryClearedEvent : RequestAggregateEvent2<DialogAggregate, Dialo
     public bool Revoke { get; }
     public Peer ToPeer { get; }
 
-    public Guid CorrelationId { get; }
+
 }

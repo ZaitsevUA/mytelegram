@@ -7,6 +7,8 @@ public class CreateOutboxMessageCommand : RequestCommand2<MessageAggregate, Mess
         MessageItem outboxMessageItem,
         List<long>? mentionedUserIds = null,
         List<ReplyToMsgItem>? replyToMsgItems = null,
+        //IReplyTo? replyTo = null,
+        //IInputReplyTo? inputReplyTo = null,
         bool clearDraft = true,
         int groupItemCount = 1,
         long? linkedChannelId = null,
@@ -15,6 +17,7 @@ public class CreateOutboxMessageCommand : RequestCommand2<MessageAggregate, Mess
         OutboxMessageItem = outboxMessageItem;
         MentionedUserIds = mentionedUserIds;
         ReplyToMsgItems = replyToMsgItems;
+        //InputReplyTo = inputReplyTo;
         ClearDraft = clearDraft;
         GroupItemCount = groupItemCount;
         LinkedChannelId = linkedChannelId;
@@ -25,6 +28,8 @@ public class CreateOutboxMessageCommand : RequestCommand2<MessageAggregate, Mess
     public MessageItem OutboxMessageItem { get; }
     public List<long>? MentionedUserIds { get; }
     public List<ReplyToMsgItem>? ReplyToMsgItems { get; }
+    //public IInputReplyTo? InputReplyTo { get; }
+    //public IReplyTo? ReplyTo { get; }
     public bool ClearDraft { get; }
     public int GroupItemCount { get; }
     public long? LinkedChannelId { get; }

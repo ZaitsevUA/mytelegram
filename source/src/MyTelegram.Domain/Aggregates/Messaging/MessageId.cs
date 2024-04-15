@@ -1,14 +1,13 @@
 ﻿namespace MyTelegram.Domain.Aggregates.Messaging;
 
 [JsonConverter(typeof(SystemTextJsonSingleValueObjectConverter<MessageId>))]
-public class MessageId : MyIdentity<MessageId>
+public class MessageId : Identity<MessageId>
 {
     public MessageId(string value) : base(value)
     {
     }
 
-    public static MessageId Create(long ownerPeerId,
-        int messageId)
+    public static MessageId Create(long ownerPeerId, int messageId)
     {
         return NewDeterministic(GuidFactories.Deterministic.Namespaces.Commands,
             $"message_{ownerPeerId}_{messageId}");

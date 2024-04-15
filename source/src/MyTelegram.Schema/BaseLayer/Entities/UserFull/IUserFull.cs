@@ -65,11 +65,12 @@ public interface IUserFull : IObject
     bool BlockedMyStoriesFrom { get; set; }
 
     ///<summary>
-    /// Whether the other user has chosen a custom wallpaper for us using <a href="https://corefork.telegram.org/method/messages.setChatWallPaper">messages.setChatWallPaper</a> and the <code>for_both</code> flag, see <a href="https://corefork.telegram.org/api/wallpapers#installing-wallpapers-in-a-specific-chat">here »</a> for more info.
+    /// Whether the other user has chosen a custom wallpaper for us using <a href="https://corefork.telegram.org/method/messages.setChatWallPaper">messages.setChatWallPaper</a> and the <code>for_both</code> flag, see <a href="https://corefork.telegram.org/api/wallpapers#installing-wallpapers-in-a-specific-chat-or-channel">here »</a> for more info.
     ///</summary>
     bool WallpaperOverridden { get; set; }
     bool ContactRequirePremium { get; set; }
     bool ReadDatesPrivate { get; set; }
+    BitArray Flags2 { get; set; }
 
     ///<summary>
     /// User ID
@@ -176,4 +177,12 @@ public interface IUserFull : IObject
     /// See <a href="https://corefork.telegram.org/type/PeerStories" />
     ///</summary>
     MyTelegram.Schema.IPeerStories? Stories { get; set; }
+    MyTelegram.Schema.IBusinessWorkHours? BusinessWorkHours { get; set; }
+    MyTelegram.Schema.IBusinessLocation? BusinessLocation { get; set; }
+    MyTelegram.Schema.IBusinessGreetingMessage? BusinessGreetingMessage { get; set; }
+    MyTelegram.Schema.IBusinessAwayMessage? BusinessAwayMessage { get; set; }
+    MyTelegram.Schema.IBusinessIntro? BusinessIntro { get; set; }
+    MyTelegram.Schema.IBirthday? Birthday { get; set; }
+    long? PersonalChannelId { get; set; }
+    int? PersonalChannelMessage { get; set; }
 }

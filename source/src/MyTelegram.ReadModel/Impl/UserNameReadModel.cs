@@ -2,7 +2,8 @@
 
 public class UserNameReadModel : IUserNameReadModel,
     IAmReadModelFor<UserNameAggregate, UserNameId, SetUserNameSuccessEvent>,
-    IAmReadModelFor<UserNameAggregate, UserNameId, UserNameDeletedEvent>
+    IAmReadModelFor<UserNameAggregate, UserNameId, UserNameDeletedEvent>,
+    IAmReadModelFor<UserNameAggregate, UserNameId, UserNameCreatedEvent>
 
 {
     public virtual long? Version { get; set; }
@@ -45,4 +46,16 @@ public class UserNameReadModel : IUserNameReadModel,
     public virtual string UserName { get; private set; } = null!;
     public virtual PeerType PeerType { get; private set; }
     public virtual long PeerId { get; private set; }
+
+    public Task ApplyAsync(IReadModelContext context,
+        IDomainEvent<UserNameAggregate, UserNameId, UserNameCreatedEvent> domainEvent,
+        CancellationToken cancellationToken)
+    {
+        Id = domainEvent.AggregateIdentity.Value;
+        UserName= domainEvent.AggregateEvent.UserName;
+        PeerId = domainEvent.AggregateEvent.UserId;
+        PeerType = PeerType.User;
+
+        return Task.CompletedTask;
+    }
 }

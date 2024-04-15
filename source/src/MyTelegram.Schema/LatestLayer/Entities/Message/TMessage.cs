@@ -7,10 +7,10 @@ namespace MyTelegram.Schema;
 /// A message
 /// See <a href="https://corefork.telegram.org/constructor/message" />
 ///</summary>
-[TlObject(0x1e4c8a69)]
+[TlObject(0x2357bf25)]
 public sealed class TMessage : IMessage
 {
-    public uint ConstructorId => 0x1e4c8a69;
+    public uint ConstructorId => 0x2357bf25;
     ///<summary>
     /// Flags, see <a href="https://corefork.telegram.org/mtproto/TL-combinators#conditional-fields">TL conditional fields</a>
     ///</summary>
@@ -81,6 +81,8 @@ public sealed class TMessage : IMessage
     /// See <a href="https://corefork.telegram.org/type/true" />
     ///</summary>
     public bool InvertMedia { get; set; }
+    public BitArray Flags2 { get; set; } = new BitArray(32);
+    public bool Offline { get; set; }
 
     ///<summary>
     /// ID of the message
@@ -99,6 +101,11 @@ public sealed class TMessage : IMessage
     /// See <a href="https://corefork.telegram.org/type/Peer" />
     ///</summary>
     public MyTelegram.Schema.IPeer PeerId { get; set; }
+
+    ///<summary>
+    /// Messages fetched from a <a href="https://corefork.telegram.org/api/saved-messages">saved messages dialog »</a> will have <code>peer</code>=<a href="https://corefork.telegram.org/constructor/inputPeerSelf">inputPeerSelf</a> and the <code>saved_peer_id</code> flag set to the ID of the saved dialog.<br>
+    /// See <a href="https://corefork.telegram.org/type/Peer" />
+    ///</summary>
     public MyTelegram.Schema.IPeer? SavedPeerId { get; set; }
 
     ///<summary>
@@ -111,6 +118,7 @@ public sealed class TMessage : IMessage
     /// ID of the inline bot that generated the message
     ///</summary>
     public long? ViaBotId { get; set; }
+    public long? ViaBusinessBotId { get; set; }
 
     ///<summary>
     /// Reply information
@@ -191,6 +199,7 @@ public sealed class TMessage : IMessage
     /// Time To Live of the message, once message.date+message.ttl_period === time(), the message will be deleted on the server, and must be deleted locally as well.
     ///</summary>
     public int? TtlPeriod { get; set; }
+    public int? QuickReplyShortcutId { get; set; }
 
     public void ComputeFlag()
     {
@@ -205,11 +214,13 @@ public sealed class TMessage : IMessage
         if (Pinned) { Flags[24] = true; }
         if (Noforwards) { Flags[26] = true; }
         if (InvertMedia) { Flags[27] = true; }
+        if (Offline) { Flags2[1] = true; }
         if (FromId != null) { Flags[8] = true; }
         if (/*FromBoostsApplied != 0 && */FromBoostsApplied.HasValue) { Flags[29] = true; }
         if (SavedPeerId != null) { Flags[28] = true; }
         if (FwdFrom != null) { Flags[2] = true; }
         if (/*ViaBotId != 0 &&*/ ViaBotId.HasValue) { Flags[11] = true; }
+        if (/*ViaBusinessBotId != 0 &&*/ ViaBusinessBotId.HasValue) { Flags2[0] = true; }
         if (ReplyTo != null) { Flags[3] = true; }
         if (Media != null) { Flags[9] = true; }
         if (ReplyMarkup != null) { Flags[6] = true; }
@@ -223,6 +234,7 @@ public sealed class TMessage : IMessage
         if (Reactions != null) { Flags[20] = true; }
         if (RestrictionReason?.Count > 0) { Flags[22] = true; }
         if (/*TtlPeriod != 0 && */TtlPeriod.HasValue) { Flags[25] = true; }
+        if (/*QuickReplyShortcutId != 0 && */QuickReplyShortcutId.HasValue) { Flags[30] = true; }
     }
 
     public void Serialize(IBufferWriter<byte> writer)
@@ -230,6 +242,7 @@ public sealed class TMessage : IMessage
         ComputeFlag();
         writer.Write(ConstructorId);
         writer.Write(Flags);
+        writer.Write(Flags2);
         writer.Write(Id);
         if (Flags[8]) { writer.Write(FromId); }
         if (Flags[29]) { writer.Write(FromBoostsApplied.Value); }
@@ -237,6 +250,7 @@ public sealed class TMessage : IMessage
         if (Flags[28]) { writer.Write(SavedPeerId); }
         if (Flags[2]) { writer.Write(FwdFrom); }
         if (Flags[11]) { writer.Write(ViaBotId.Value); }
+        if (Flags2[0]) { writer.Write(ViaBusinessBotId.Value); }
         if (Flags[3]) { writer.Write(ReplyTo); }
         writer.Write(Date);
         writer.Write(Message);
@@ -252,6 +266,7 @@ public sealed class TMessage : IMessage
         if (Flags[20]) { writer.Write(Reactions); }
         if (Flags[22]) { writer.Write(RestrictionReason); }
         if (Flags[25]) { writer.Write(TtlPeriod.Value); }
+        if (Flags[30]) { writer.Write(QuickReplyShortcutId.Value); }
     }
 
     public void Deserialize(ref SequenceReader<byte> reader)
@@ -268,6 +283,8 @@ public sealed class TMessage : IMessage
         if (Flags[24]) { Pinned = true; }
         if (Flags[26]) { Noforwards = true; }
         if (Flags[27]) { InvertMedia = true; }
+        Flags2 = reader.ReadBitArray();
+        if (Flags2[1]) { Offline = true; }
         Id = reader.ReadInt32();
         if (Flags[8]) { FromId = reader.Read<MyTelegram.Schema.IPeer>(); }
         if (Flags[29]) { FromBoostsApplied = reader.ReadInt32(); }
@@ -275,6 +292,7 @@ public sealed class TMessage : IMessage
         if (Flags[28]) { SavedPeerId = reader.Read<MyTelegram.Schema.IPeer>(); }
         if (Flags[2]) { FwdFrom = reader.Read<MyTelegram.Schema.IMessageFwdHeader>(); }
         if (Flags[11]) { ViaBotId = reader.ReadInt64(); }
+        if (Flags2[0]) { ViaBusinessBotId = reader.ReadInt64(); }
         if (Flags[3]) { ReplyTo = reader.Read<MyTelegram.Schema.IMessageReplyHeader>(); }
         Date = reader.ReadInt32();
         Message = reader.ReadString();
@@ -290,5 +308,6 @@ public sealed class TMessage : IMessage
         if (Flags[20]) { Reactions = reader.Read<MyTelegram.Schema.IMessageReactions>(); }
         if (Flags[22]) { RestrictionReason = reader.Read<TVector<MyTelegram.Schema.IRestrictionReason>>(); }
         if (Flags[25]) { TtlPeriod = reader.ReadInt32(); }
+        if (Flags[30]) { QuickReplyShortcutId = reader.ReadInt32(); }
     }
 }

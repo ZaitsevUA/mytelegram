@@ -11,7 +11,18 @@ namespace MyTelegram.Schema;
 [JsonDerivedType(typeof(TStoryViewPublicRepost), nameof(TStoryViewPublicRepost))]
 public interface IStoryView : IObject
 {
+    ///<summary>
+    /// Flags, see <a href="https://corefork.telegram.org/mtproto/TL-combinators#conditional-fields">TL conditional fields</a>
+    ///</summary>
     BitArray Flags { get; set; }
+
+    ///<summary>
+    /// Whether we have <a href="https://corefork.telegram.org/api/block">completely blocked</a> this user, including from viewing more of our stories.
+    ///</summary>
     bool Blocked { get; set; }
+
+    ///<summary>
+    /// Whether we have <a href="https://corefork.telegram.org/api/block">blocked</a> this user from viewing more of our stories.
+    ///</summary>
     bool BlockedMyStoriesFrom { get; set; }
 }

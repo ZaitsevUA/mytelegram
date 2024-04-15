@@ -5,10 +5,10 @@ namespace MyTelegram.Domain.Sagas;
 
 public class InMemorySagaStore : SagaStore, IInMemorySagaStore
 {
+    private readonly IServiceProvider _serviceProvider;
+    private readonly ConcurrentDictionary<ISagaId, ISaga> _sagas = new();
     //private readonly AsyncLock _asyncLock = new();
     private readonly ConcurrentDictionary<Type, Func<ISagaId, ISaga>> _sagaCreators = new();
-    private readonly ConcurrentDictionary<ISagaId, ISaga> _sagas = new();
-    private readonly IServiceProvider _serviceProvider;
 
     public InMemorySagaStore(
         IServiceProvider serviceProvider)
@@ -29,14 +29,13 @@ public class InMemorySagaStore : SagaStore, IInMemorySagaStore
         {
             if (!_sagaCreators.TryGetValue(sagaType, out var sagaCreator))
             {
-                sagaCreator = MyReflectionHelper.CompileConstructor<ISagaId, ISaga>(sagaId.GetType(), sagaType);
+                sagaCreator = ReflectionHelper.CompileConstructor<ISagaId, ISaga>(sagaId.GetType(), sagaType);
                 _sagaCreators.TryAdd(sagaType, sagaCreator);
             }
 
             saga = sagaCreator(sagaId);
             _sagas.TryAdd(sagaId, saga);
         }
-
         await updateSaga(saga, cancellationToken);
 
         await saga.PublishAsync(commandBus, cancellationToken);

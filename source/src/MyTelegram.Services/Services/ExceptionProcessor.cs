@@ -56,7 +56,7 @@ public class ExceptionProcessor : IExceptionProcessor
 
             case NotImplementedException:
                 errorCode = MyTelegramServerDomainConsts.InternalErrorCode;
-                errorMessage = string.IsNullOrEmpty(ex.Message) ? "Api not implemented" : ex.Message;
+                errorMessage = "API NotImplemented";
                 break;
 
             case RpcException rpcException:

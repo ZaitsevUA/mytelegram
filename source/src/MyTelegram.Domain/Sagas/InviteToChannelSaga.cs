@@ -41,6 +41,8 @@ public class InviteToChannelSaga :
                 _state.MaxMessageId
             );
             Publish(createDialogCommand);
+
+            Console.WriteLine($"Create dialog:owner={domainEvent.AggregateEvent.UserId} toPeer:{toPeer}");
         }
 
         await HandleInviteToChannelCompletedAsync();
@@ -103,6 +105,7 @@ public class InviteToChannelSaga :
                         ownerPeer,
                         ownerPeer,
                         senderPeer,
+                        _state.InviterId,
                         outMessageId,
                         string.Empty,
                         DateTime.UtcNow.ToTimestamp(),

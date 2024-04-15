@@ -35,6 +35,10 @@ public interface IPeerColorOption : IObject
     /// See <a href="https://corefork.telegram.org/type/help.PeerColorSet" />
     ///</summary>
     MyTelegram.Schema.Help.IPeerColorSet? DarkColors { get; set; }
+
+    ///<summary>
+    /// Channels can use this palette only after reaching at least the <a href="https://corefork.telegram.org/api/boost">boost level</a> specified in this field.
+    ///</summary>
     int? ChannelMinLevel { get; set; }
     int? GroupMinLevel { get; set; }
 }
