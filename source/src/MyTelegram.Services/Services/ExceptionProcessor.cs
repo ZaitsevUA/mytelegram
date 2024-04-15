@@ -23,6 +23,7 @@ public class ExceptionProcessor : IExceptionProcessor
     }
 
     public async Task HandleExceptionAsync(Exception ex,
+        IObject requestData,
         long userId,
         string? handlerName,
         long reqMsgId,
@@ -30,12 +31,13 @@ public class ExceptionProcessor : IExceptionProcessor
         bool isInMsgContainer)
     {
         _logger.LogError(ex,
-            "Process request {ReqMsgId} {IsInMsgContainer} failed,handler={HandlerName},userId={UserId},authKeyId={AuthKeyId:x2}",
+            "Process request {ReqMsgId} {IsInMsgContainer} failed,handler={HandlerName},userId={UserId},authKeyId={AuthKeyId:x2},requestData={@RequestData}",
             reqMsgId,
             isInMsgContainer ? "in msgContainer" : string.Empty,
             handlerName,
             userId,
-            authKeyId
+            authKeyId,
+            requestData
         );
 
         string errorMessage;

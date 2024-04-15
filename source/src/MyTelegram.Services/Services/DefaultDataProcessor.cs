@@ -51,11 +51,10 @@ public class DefaultDataProcessor<TData> : IDataProcessor<TData>
                     await SendMessageToPeerAsync(obj.ReqMsgId, rpcResult);
                     return;
                 }
-
+                var req = GetRequestInput(obj);
+                var data = GetData(obj);
                 try
                 {
-                    var req = GetRequestInput(obj);
-                    var data = GetData(obj);
                     var handlerName = handler.GetType().Name;
                     if (data is IHasSubQuery)
                     {
@@ -83,6 +82,7 @@ public class DefaultDataProcessor<TData> : IDataProcessor<TData>
                 catch (Exception ex)
                 {
                     await _exceptionProcessor.HandleExceptionAsync(ex,
+                        data,
                         obj.UserId,
                         handler.GetType().Name,
                         obj.ReqMsgId,

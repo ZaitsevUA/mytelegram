@@ -24,7 +24,7 @@ public class DialogReadModel : IDialogReadModel,
     IAmReadModelFor<DialogAggregate, DialogId, ReadInboxMaxIdUpdatedEvent>,
     IAmReadModelFor<DialogAggregate, DialogId, ReadOutboxMaxIdUpdatedEvent>,
     IAmReadModelFor<DialogAggregate, DialogId, TopMessageIdUpdatedEvent>,
-    IAmReadModelFor<DialogAggregate,DialogId, UpdateReadChannelInboxEvent>
+    IAmReadModelFor<DialogAggregate, DialogId, UpdateReadChannelInboxEvent>
 {
     public virtual int ChannelHistoryMinId { get; private set; }
     public virtual DateTime CreationTime { get; private set; }
