@@ -1,11 +1,7 @@
 ﻿namespace MyTelegram.Domain.Commands.Messaging;
 
-public class PinChannelMessageCommand : Command<MessageAggregate, MessageId, IExecutionResult>,IHasRequestInfo
+public class PinChannelMessageCommand(MessageId aggregateId, RequestInfo requestInfo)
+    : Command<MessageAggregate, MessageId, IExecutionResult>(aggregateId), IHasRequestInfo
 {
-    public PinChannelMessageCommand(MessageId aggregateId, RequestInfo requestInfo) : base(aggregateId)
-    {
-        RequestInfo = requestInfo;
-    }
-
-    public RequestInfo RequestInfo { get; }
+    public RequestInfo RequestInfo { get; } = requestInfo;
 }

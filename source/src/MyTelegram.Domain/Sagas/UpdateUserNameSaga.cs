@@ -1,15 +1,12 @@
 ﻿namespace MyTelegram.Domain.Sagas;
 
-public class UpdateUserNameSaga : AggregateSaga<UpdateUserNameSaga, UpdateUserNameSagaId, UpdateUserNameSagaLocator>,
-    ISagaIsStartedBy<UserNameAggregate, UserNameId, SetUserNameSuccessEvent>,
-    ISagaHandles<UserAggregate, UserId, UserNameUpdatedEvent>,
-    ISagaHandles<ChannelAggregate, ChannelId, ChannelUserNameChangedEvent>,
-    IApply<UpdateUserNameStartedEvent>
+public class UpdateUserNameSaga(UpdateUserNameSagaId id)
+    : AggregateSaga<UpdateUserNameSaga, UpdateUserNameSagaId, UpdateUserNameSagaLocator>(id),
+        ISagaIsStartedBy<UserNameAggregate, UserNameId, SetUserNameSuccessEvent>,
+        ISagaHandles<UserAggregate, UserId, UserNameUpdatedEvent>,
+        ISagaHandles<ChannelAggregate, ChannelId, ChannelUserNameChangedEvent>,
+        IApply<UpdateUserNameStartedEvent>
 {
-    public UpdateUserNameSaga(UpdateUserNameSagaId id) : base(id)
-    {
-    }
-
     public void Apply(UpdateUserNameStartedEvent aggregateEvent)
     {
         //throw new NotImplementedException();

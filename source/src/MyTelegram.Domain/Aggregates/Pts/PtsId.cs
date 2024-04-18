@@ -3,12 +3,8 @@
 namespace MyTelegram.Domain.Aggregates.Pts;
 
 [JsonConverter(typeof(SystemTextJsonSingleValueObjectConverter<PtsId>))]
-public class PtsId : Identity<PtsId>
+public class PtsId(string value) : Identity<PtsId>(value)
 {
-    public PtsId(string value) : base(value)
-    {
-    }
-
     public static PtsId Create(long peerId,
         long permAuthKeyId = 0)
     {

@@ -1,11 +1,7 @@
 ﻿namespace MyTelegram.Domain.Commands.User;
 
-public class UpdateBirthdayCommand : Command<UserAggregate, UserId, IExecutionResult>
+public class UpdateBirthdayCommand(UserId aggregateId, Birthday? birthday)
+    : Command<UserAggregate, UserId, IExecutionResult>(aggregateId)
 {
-    public Birthday? Birthday { get; }
-
-    public UpdateBirthdayCommand(UserId aggregateId,Birthday? birthday) : base(aggregateId)
-    {
-        Birthday = birthday;
-    }
+    public Birthday? Birthday { get; } = birthday;
 }

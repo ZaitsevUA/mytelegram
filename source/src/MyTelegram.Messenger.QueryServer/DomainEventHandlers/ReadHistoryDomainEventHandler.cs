@@ -5,31 +5,25 @@ using MyTelegram.Services.TLObjectConverters;
 
 namespace MyTelegram.Messenger.QueryServer.DomainEventHandlers;
 
-public class ReadHistoryDomainEventHandler : DomainEventHandlerBase,
-    ISubscribeSynchronousTo<ReadHistorySaga, ReadHistorySagaId, ReadHistoryCompletedEvent>,
-    ISubscribeSynchronousTo<ReadChannelHistorySaga, ReadChannelHistorySagaId, ReadChannelHistoryCompletedEvent>,
-    ISubscribeSynchronousTo<ReadHistorySaga, ReadHistorySagaId, UpdateInboxMaxIdCompletedSagaEvent>,
-    ISubscribeSynchronousTo<ReadHistorySaga, ReadHistorySagaId, UpdateOutboxMaxIdCompletedSagaEvent>
+public class ReadHistoryDomainEventHandler(
+    IObjectMessageSender objectMessageSender,
+    ICommandBus commandBus,
+    IIdGenerator idGenerator,
+    IAckCacheService ackCacheService,
+    IResponseCacheAppService responseCacheAppService,
+    IPeerHelper peerHelper,
+    ILayeredService<IUpdatesConverter> layeredUpdatesService)
+    : DomainEventHandlerBase(objectMessageSender,
+            commandBus,
+            idGenerator,
+            ackCacheService,
+            responseCacheAppService),
+        ISubscribeSynchronousTo<ReadHistorySaga, ReadHistorySagaId, ReadHistoryCompletedEvent>,
+        ISubscribeSynchronousTo<ReadChannelHistorySaga, ReadChannelHistorySagaId, ReadChannelHistoryCompletedEvent>,
+        ISubscribeSynchronousTo<ReadHistorySaga, ReadHistorySagaId, UpdateInboxMaxIdCompletedSagaEvent>,
+        ISubscribeSynchronousTo<ReadHistorySaga, ReadHistorySagaId, UpdateOutboxMaxIdCompletedSagaEvent>
 {
-    private readonly IPeerHelper _peerHelper;
     //private readonly ITlUpdatesConverter _updatesConverter;
-    private readonly ILayeredService<IUpdatesConverter> _layeredUpdatesService;
-
-    public ReadHistoryDomainEventHandler(IObjectMessageSender objectMessageSender,
-        ICommandBus commandBus,
-        IIdGenerator idGenerator,
-        IAckCacheService ackCacheService,
-        IResponseCacheAppService responseCacheAppService,
-        IPeerHelper peerHelper,
-        ILayeredService<IUpdatesConverter> layeredUpdatesService) : base(objectMessageSender,
-        commandBus,
-        idGenerator,
-        ackCacheService,
-        responseCacheAppService)
-    {
-        _peerHelper = peerHelper;
-        _layeredUpdatesService = layeredUpdatesService;
-    }
 
     public async Task HandleAsync(
         IDomainEvent<ReadChannelHistorySaga, ReadChannelHistorySagaId, ReadChannelHistoryCompletedEvent>
@@ -86,10 +80,10 @@ public class ReadHistoryDomainEventHandler : DomainEventHandlerBase,
         );
 
         if (!domainEvent.AggregateEvent.IsOut && !domainEvent.AggregateEvent.OutboxAlreadyRead &&
-            !_peerHelper.IsBotUser(domainEvent.AggregateEvent.SenderPeerId))
+            !peerHelper.IsBotUser(domainEvent.AggregateEvent.SenderPeerId))
         {
             var readHistoryUpdates =
-                _layeredUpdatesService.Converter.ToReadHistoryUpdates(domainEvent.AggregateEvent);
+                layeredUpdatesService.Converter.ToReadHistoryUpdates(domainEvent.AggregateEvent);
 
             var toPeer = new Peer(PeerType.User, domainEvent.AggregateEvent.SenderPeerId);
             await PushUpdatesToPeerAsync(
@@ -134,7 +128,7 @@ public class ReadHistoryDomainEventHandler : DomainEventHandlerBase,
     public async Task HandleAsync(IDomainEvent<ReadHistorySaga, ReadHistorySagaId, UpdateOutboxMaxIdCompletedSagaEvent> domainEvent, CancellationToken cancellationToken)
     {
         var readHistoryUpdates =
-            _layeredUpdatesService.Converter.ToReadHistoryUpdates(domainEvent.AggregateEvent);
+            layeredUpdatesService.Converter.ToReadHistoryUpdates(domainEvent.AggregateEvent);
 
         var toPeer = new Peer(PeerType.User, domainEvent.AggregateEvent.UserId);
         await PushUpdatesToPeerAsync(

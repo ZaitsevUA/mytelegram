@@ -1,16 +1,10 @@
 ﻿namespace MyTelegram.Messenger.Services.Impl;
 
-public class PrivacyAppService : BaseAppService, IPrivacyAppService
+public class PrivacyAppService(
+    ICacheManager<GlobalPrivacySettingsCacheItem> cacheManager,
+    IQueryProcessor queryProcessor)
+    : BaseAppService, IPrivacyAppService
 {
-    private readonly IQueryProcessor _queryProcessor;
-    private readonly ICacheManager<GlobalPrivacySettingsCacheItem> _cacheManager;
-
-    public PrivacyAppService(ICacheManager<GlobalPrivacySettingsCacheItem> cacheManager, IQueryProcessor queryProcessor)
-    {
-        _cacheManager = cacheManager;
-        _queryProcessor = queryProcessor;
-    }
-
     public Task<IReadOnlyCollection<IPrivacyReadModel>> GetPrivacyListAsync(IReadOnlyList<long> userIds)
     {
         return Task.FromResult<IReadOnlyCollection<IPrivacyReadModel>>(Array.Empty<IPrivacyReadModel>());
@@ -47,14 +41,14 @@ public class PrivacyAppService : BaseAppService, IPrivacyAppService
     public async Task<GlobalPrivacySettingsCacheItem?> GetGlobalPrivacySettingsAsync(long userId)
     {
         var cacheKey = GlobalPrivacySettingsCacheItem.GetCacheKey(userId);
-        var item = await _cacheManager.GetAsync(cacheKey);
-        var globalPrivacySettings = await _queryProcessor.ProcessAsync(new GetGlobalPrivacySettingsQuery(userId));
+        var item = await cacheManager.GetAsync(cacheKey);
+        var globalPrivacySettings = await queryProcessor.ProcessAsync(new GetGlobalPrivacySettingsQuery(userId));
         if (globalPrivacySettings != null)
         {
             item = new(globalPrivacySettings.ArchiveAndMuteNewNoncontactPeers,
                 globalPrivacySettings.KeepArchivedUnmuted, globalPrivacySettings.KeepArchivedFolders,
                 globalPrivacySettings.HideReadMarks, globalPrivacySettings.NewNoncontactPeersRequirePremium);
-            await _cacheManager.SetAsync(cacheKey, item);
+            await cacheManager.SetAsync(cacheKey, item);
         }
         return item;
     }

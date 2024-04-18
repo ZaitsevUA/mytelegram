@@ -4,42 +4,27 @@ using System.Diagnostics;
 
 namespace MyTelegram.Services.Services;
 
-public class DefaultDataProcessor<TData> : IDataProcessor<TData>
+public class DefaultDataProcessor<TData>(
+    IHandlerHelper handlerHelper,
+    IObjectMessageSender objectMessageSender,
+    IRpcResultCacheAppService rpcResultCacheAppService,
+    ILogger<DefaultDataProcessor<TData>> logger,
+    IExceptionProcessor exceptionProcessor,
+    IInvokeAfterMsgProcessor invokeAfterMsgProcessor)
+    : IDataProcessor<TData>
     where TData : DataReceivedEvent
 {
-    private readonly IExceptionProcessor _exceptionProcessor;
-    private readonly IHandlerHelper _handlerHelper;
-    private readonly ILogger<DefaultDataProcessor<TData>> _logger;
-    private readonly IObjectMessageSender _objectMessageSender;
-    private readonly IRpcResultCacheAppService _rpcResultCacheAppService;
-    private readonly IInvokeAfterMsgProcessor _invokeAfterMsgProcessor;
-
-    public DefaultDataProcessor(IHandlerHelper handlerHelper,
-        IObjectMessageSender objectMessageSender,
-        IRpcResultCacheAppService rpcResultCacheAppService,
-        ILogger<DefaultDataProcessor<TData>> logger,
-        IExceptionProcessor exceptionProcessor,
-        IInvokeAfterMsgProcessor invokeAfterMsgProcessor)
-    {
-        _handlerHelper = handlerHelper;
-        _objectMessageSender = objectMessageSender;
-        _rpcResultCacheAppService = rpcResultCacheAppService;
-        _logger = logger;
-        _exceptionProcessor = exceptionProcessor;
-        _invokeAfterMsgProcessor = invokeAfterMsgProcessor;
-    }
-
     public virtual Task ProcessAsync(TData obj)
     {
         Task.Run(async () =>
         {
             var sw = Stopwatch.StartNew();
-            if (_handlerHelper.TryGetHandler(obj.ObjectId, out var handler))
+            if (handlerHelper.TryGetHandler(obj.ObjectId, out var handler))
             {
-                if (_rpcResultCacheAppService.TryGetRpcResult(obj.UserId, obj.ReqMsgId, out var rpcResult))
+                if (rpcResultCacheAppService.TryGetRpcResult(obj.UserId, obj.ReqMsgId, out var rpcResult))
                 {
                     sw.Stop();
-                    _logger.LogInformation(
+                    logger.LogInformation(
                         "UserId={UserId} reqMsgId={ReqMsgId} handler={Handler},returns data from cache. {Elapsed}ms",
                         obj.UserId,
                         obj.ReqMsgId,
@@ -58,10 +43,10 @@ public class DefaultDataProcessor<TData> : IDataProcessor<TData>
                     var handlerName = handler.GetType().Name;
                     if (data is IHasSubQuery)
                     {
-                        handlerName = _handlerHelper.GetHandlerFullName(data);
+                        handlerName = handlerHelper.GetHandlerFullName(data);
                     }
                     var r = await handler.HandleAsync(req, data);
-                    _logger.LogInformation(
+                    logger.LogInformation(
                             "UserId={UserId} authKeyId={AuthKeyId:x2} reqMsgId={ReqMsgId} layer={Layer} handler={Handler} {DeviceType}. {Elapsed}ms",
                         obj.UserId,
                         obj.AuthKeyId,
@@ -77,11 +62,11 @@ public class DefaultDataProcessor<TData> : IDataProcessor<TData>
                         await SendMessageToPeerAsync(obj.ReqMsgId, r);
                     }
 
-                    await _invokeAfterMsgProcessor.AddCompletedReqMsgIdAsync(obj.ReqMsgId);
+                    await invokeAfterMsgProcessor.AddCompletedReqMsgIdAsync(obj.ReqMsgId);
                 }
                 catch (Exception ex)
                 {
-                    await _exceptionProcessor.HandleExceptionAsync(ex,
+                    await exceptionProcessor.HandleExceptionAsync(ex,
                         data,
                         obj.UserId,
                         handler.GetType().Name,
@@ -134,6 +119,6 @@ public class DefaultDataProcessor<TData> : IDataProcessor<TData>
     protected virtual Task SendMessageToPeerAsync(long reqMsgId,
         IObject data)
     {
-        return _objectMessageSender.SendMessageToPeerAsync(reqMsgId, data);
+        return objectMessageSender.SendMessageToPeerAsync(reqMsgId, data);
     }
 }

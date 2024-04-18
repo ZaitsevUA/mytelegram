@@ -1,29 +1,21 @@
 ﻿namespace MyTelegram.Domain.Commands.Pts;
 
-public class PtsAckedCommand : Command<PtsAggregate, PtsId, IExecutionResult>
+public class PtsAckedCommand(
+    PtsId aggregateId,
+    long peerId,
+    long permAuthKeyId,
+    long msgId,
+    int pts,
+    long globalSeqNo,
+    Peer toPeer)
+    : Command<PtsAggregate, PtsId, IExecutionResult>(aggregateId)
 {
-    public PtsAckedCommand(PtsId aggregateId,
-        long peerId,
-        long permAuthKeyId,
-        long msgId,
-        int pts,
-        long globalSeqNo,
-        Peer toPeer) : base(aggregateId)
-    {
-        PeerId = peerId;
-        PermAuthKeyId = permAuthKeyId;
-        MsgId = msgId;
-        Pts = pts;
-        GlobalSeqNo = globalSeqNo;
-        ToPeer = toPeer;
-    }
-
-    public long GlobalSeqNo { get; }
-    public long MsgId { get; }
-    public long PeerId { get; }
-    public long PermAuthKeyId { get; }
-    public int Pts { get; }
-    public Peer ToPeer { get; }
+    public long GlobalSeqNo { get; } = globalSeqNo;
+    public long MsgId { get; } = msgId;
+    public long PeerId { get; } = peerId;
+    public long PermAuthKeyId { get; } = permAuthKeyId;
+    public int Pts { get; } = pts;
+    public Peer ToPeer { get; } = toPeer;
 }
 
 //public class IncrementPtsCommand : Command<PtsAggregate, PtsId, IExecutionResult>

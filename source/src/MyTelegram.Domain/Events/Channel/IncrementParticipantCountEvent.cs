@@ -1,15 +1,10 @@
 ﻿namespace MyTelegram.Domain.Events.Channel;
 
-public class IncrementParticipantCountEvent : AggregateEvent<ChannelAggregate, ChannelId> //, IHasCorrelationId
+public class IncrementParticipantCountEvent(long channelId, int newParticipantCount)
+    : AggregateEvent<ChannelAggregate, ChannelId> //, IHasCorrelationId
 {
-    public long ChannelId { get; }
-    public int NewParticipantCount { get; }
-
-    public IncrementParticipantCountEvent(long channelId, int newParticipantCount)
-    {
-        ChannelId = channelId;
-        NewParticipantCount = newParticipantCount;
-    }
+    public long ChannelId { get; } = channelId;
+    public int NewParticipantCount { get; } = newParticipantCount;
 
     //public IncrementParticipantCountEvent(Guid correlationId)
     //{

@@ -1,39 +1,33 @@
 ﻿namespace MyTelegram.Domain.Commands.Messaging;
 
-public class CreateOutboxMessageCommand : RequestCommand2<MessageAggregate, MessageId, IExecutionResult>
+public class CreateOutboxMessageCommand(
+    MessageId aggregateId,
+    RequestInfo requestInfo,
+    MessageItem outboxMessageItem,
+    List<long>? mentionedUserIds = null,
+    List<ReplyToMsgItem>? replyToMsgItems = null,
+    bool clearDraft = true,
+    int groupItemCount = 1,
+    long? linkedChannelId = null,
+    List<long>? chatMembers = null)
+    : RequestCommand2<MessageAggregate, MessageId, IExecutionResult>(aggregateId, requestInfo)
 {
-    public CreateOutboxMessageCommand(MessageId aggregateId,
-        RequestInfo requestInfo,
-        MessageItem outboxMessageItem,
-        List<long>? mentionedUserIds = null,
-        List<ReplyToMsgItem>? replyToMsgItems = null,
-        //IReplyTo? replyTo = null,
-        //IInputReplyTo? inputReplyTo = null,
-        bool clearDraft = true,
-        int groupItemCount = 1,
-        long? linkedChannelId = null,
-        List<long>? chatMembers = null) : base(aggregateId, requestInfo)
-    {
-        OutboxMessageItem = outboxMessageItem;
-        MentionedUserIds = mentionedUserIds;
-        ReplyToMsgItems = replyToMsgItems;
-        //InputReplyTo = inputReplyTo;
-        ClearDraft = clearDraft;
-        GroupItemCount = groupItemCount;
-        LinkedChannelId = linkedChannelId;
-        ChatMembers = chatMembers;
-    }
+    //IReplyTo? replyTo = null,
+    //IInputReplyTo? inputReplyTo = null,
+    //InputReplyTo = inputReplyTo;
 
     //public long ReqMsgId { get; }
-    public MessageItem OutboxMessageItem { get; }
-    public List<long>? MentionedUserIds { get; }
-    public List<ReplyToMsgItem>? ReplyToMsgItems { get; }
+    public MessageItem OutboxMessageItem { get; } = outboxMessageItem;
+    public List<long>? MentionedUserIds { get; } = mentionedUserIds;
+
+    public List<ReplyToMsgItem>? ReplyToMsgItems { get; } = replyToMsgItems;
+
     //public IInputReplyTo? InputReplyTo { get; }
     //public IReplyTo? ReplyTo { get; }
-    public bool ClearDraft { get; }
-    public int GroupItemCount { get; }
-    public long? LinkedChannelId { get; }
-    public List<long>? ChatMembers { get; }
+    public bool ClearDraft { get; } = clearDraft;
+    public int GroupItemCount { get; } = groupItemCount;
+    public long? LinkedChannelId { get; } = linkedChannelId;
+    public List<long>? ChatMembers { get; } = chatMembers;
 
     protected override IEnumerable<byte[]> GetSourceIdComponents()
     {

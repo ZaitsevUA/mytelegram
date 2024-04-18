@@ -10,12 +10,7 @@ using MyTelegram.Domain.Events.Temp;
 namespace MyTelegram.Domain.Sagas;
 
 [JsonConverter(typeof(SystemTextJsonSingleValueObjectConverter<DeleteReplyMessagesSagaId>))]
-public class DeleteReplyMessagesSagaId : Identity<DeleteReplyMessagesSagaId>, ISagaId
-{
-    public DeleteReplyMessagesSagaId(string value) : base(value)
-    {
-    }
-}
+public class DeleteReplyMessagesSagaId(string value) : Identity<DeleteReplyMessagesSagaId>(value), ISagaId;
 
 public class DeleteReplyMessagesSagaLocator : DefaultSagaLocator<DeleteReplyMessagesSaga, DeleteReplyMessagesSagaId>
 {
@@ -163,12 +158,7 @@ public class
 
 
 [JsonConverter(typeof(SystemTextJsonSingleValueObjectConverter<DeleteChannelMessagesSagaId>))]
-public class DeleteChannelMessagesSagaId : Identity<DeleteChannelMessagesSagaId>, ISagaId
-{
-    public DeleteChannelMessagesSagaId(string value) : base(value)
-    {
-    }
-}
+public class DeleteChannelMessagesSagaId(string value) : Identity<DeleteChannelMessagesSagaId>(value), ISagaId;
 
 public class
     DeleteChannelMessagesSagaLocator : DefaultSagaLocator<DeleteChannelMessagesSaga, DeleteChannelMessagesSagaId>

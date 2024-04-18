@@ -6,37 +6,25 @@ using TUserFull = MyTelegram.Schema.Users.TUserFull;
 
 namespace MyTelegram.Messenger.TLObjectConverters.Impl.LatestLayer;
 
-public class UserConverterLatest : UserConverterBase, IUserConverterLatest
+public class UserConverterLatest(
+    IObjectMapper objectMapper,
+    IUserStatusCacheAppService userStatusCacheAppService,
+    IPrivacyHelper privacyHelper,
+    IBlockCacheAppService blockCacheAppService,
+    ILayeredService<IPhotoConverter> layeredPhotoService,
+    ILayeredService<IPeerSettingsConverter> layeredPeerSettingsConverter,
+    ILayeredService<IPeerNotifySettingsConverter> layeredPeerNotifySettingsService)
+    : UserConverterBase, IUserConverterLatest
 {
-    private readonly IBlockCacheAppService _blockCacheAppService;
-    private readonly ILayeredService<IPeerNotifySettingsConverter> _layeredPeerNotifySettingsService;
-    private readonly ILayeredService<IPeerSettingsConverter> _layeredPeerSettingsConverter;
-    private readonly ILayeredService<IPhotoConverter> _layeredPhotoService;
-    private readonly IPrivacyHelper _privacyHelper;
-    private readonly IUserStatusCacheAppService _userStatusCacheAppService;
+    private readonly IPrivacyHelper _privacyHelper = privacyHelper;
     private IPhotoConverter? _photoConverter;
 
-    public UserConverterLatest(IObjectMapper objectMapper,
-        IUserStatusCacheAppService userStatusCacheAppService,
-        //ITlPhotoConverterLayer143 photoConverter,
-        IPrivacyHelper privacyHelper,
-        IBlockCacheAppService blockCacheAppService,
-        ILayeredService<IPhotoConverter> layeredPhotoService,
-        ILayeredService<IPeerSettingsConverter> layeredPeerSettingsConverter,
-        ILayeredService<IPeerNotifySettingsConverter> layeredPeerNotifySettingsService)
-    {
-        ObjectMapper = objectMapper;
-        _userStatusCacheAppService = userStatusCacheAppService;
-        _privacyHelper = privacyHelper;
-        _blockCacheAppService = blockCacheAppService;
-        _layeredPhotoService = layeredPhotoService;
-        _layeredPeerSettingsConverter = layeredPeerSettingsConverter;
-        _layeredPeerNotifySettingsService = layeredPeerNotifySettingsService;
-        //_layeredPhotoService = layeredPhotoService;
-    }
+    //ITlPhotoConverterLayer143 photoConverter,
+    //_layeredPhotoService = layeredPhotoService;
 
     public override int Layer => Layers.LayerLatest;
-    protected IObjectMapper ObjectMapper { get; }
+    protected IObjectMapper ObjectMapper { get; } = objectMapper;
+
     public virtual IUser ToUser(SignInSuccessEvent aggregateEvent)
     {
         return ObjectMapper.Map<SignInSuccessEvent, TUser>(aggregateEvent);
@@ -94,7 +82,7 @@ public class UserConverterLatest : UserConverterBase, IUserConverterLatest
     {
         //var isOfficialId = user.UserId == MyTelegramServerDomainConsts.OfficialUserId;
         var tUser = ToUser(selfUserId, user, photos, contactReadModel, privacies);
-        var isBlocked = await _blockCacheAppService.IsBlockedAsync(selfUserId, user.UserId);
+        var isBlocked = await blockCacheAppService.IsBlockedAsync(selfUserId, user.UserId);
 
         //var notifySettings = ObjectMapper.Map<PeerNotifySettings, TPeerNotifySettings>(
         //    peerNotifySettingsReadModel?.NotifySettings ?? PeerNotifySettings.DefaultSettings);
@@ -109,7 +97,7 @@ public class UserConverterLatest : UserConverterBase, IUserConverterLatest
         var fullUser = await GetUserFullCoreAsync(selfUserId, user, photos);
         fullUser.NotifySettings = notifySettings;
         fullUser.Blocked = isBlocked;
-        fullUser.Settings = _layeredPeerSettingsConverter.GetConverter(GetLayer())
+        fullUser.Settings = layeredPeerSettingsConverter.GetConverter(GetLayer())
             .ToPeerSettings(user.UserId, peerSettingsReadModel, contactType);
 
 
@@ -201,12 +189,12 @@ public class UserConverterLatest : UserConverterBase, IUserConverterLatest
 
     protected virtual IPeerNotifySettings GetPeerNotifySettings(PeerNotifySettings? peerNotifySettings)
     {
-        return _layeredPeerNotifySettingsService.GetConverter(GetLayer()).ToPeerNotifySettings(peerNotifySettings);
+        return layeredPeerNotifySettingsService.GetConverter(GetLayer()).ToPeerNotifySettings(peerNotifySettings);
     }
 
     protected virtual IPhotoConverter GetPhotoConverter()
     {
-        return _photoConverter ??= _layeredPhotoService.GetConverter(GetLayer());
+        return _photoConverter ??= layeredPhotoService.GetConverter(GetLayer());
     }
 
     protected virtual Task<Schema.IUserFull> GetUserFullCoreAsync(
@@ -289,7 +277,7 @@ public class UserConverterLatest : UserConverterBase, IUserConverterLatest
     //IUserProfilePhoto? profilePhoto
     )
     {
-        user.Status = _userStatusCacheAppService.GetUserStatus(user.Id);
+        user.Status = userStatusCacheAppService.GetUserStatus(user.Id);
         user.Photo = GetPhotoConverter().ToProfilePhoto(profilePhoto);
     }
 

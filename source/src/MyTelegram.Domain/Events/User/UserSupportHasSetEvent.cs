@@ -1,11 +1,6 @@
 ﻿namespace MyTelegram.Domain.Events.User;
 
-public class UserSupportHasSetEvent : AggregateEvent<UserAggregate, UserId>
+public class UserSupportHasSetEvent(bool support) : AggregateEvent<UserAggregate, UserId>
 {
-    public UserSupportHasSetEvent(bool support)
-    {
-        Support = support;
-    }
-
-    public bool Support { get; }
+    public bool Support { get; } = support;
 }

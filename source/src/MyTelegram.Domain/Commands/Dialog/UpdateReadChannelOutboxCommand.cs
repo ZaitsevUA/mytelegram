@@ -1,18 +1,15 @@
 ﻿namespace MyTelegram.Domain.Commands.Dialog;
 
-public class UpdateReadChannelOutboxCommand : Command<DialogAggregate, DialogId, IExecutionResult>, IHasRequestInfo
+public class UpdateReadChannelOutboxCommand(DialogId aggregateId, RequestInfo requestInfo, int maxId)
+    : Command<DialogAggregate, DialogId, IExecutionResult>(aggregateId), IHasRequestInfo
 {
     //public long MessageSenderUserId { get; }
     //public long ChannelId { get; }
-    public int MaxId { get; }
+    public int MaxId { get; } = maxId;
 
-    public UpdateReadChannelOutboxCommand(DialogId aggregateId, RequestInfo requestInfo,  /*long messageSenderUserId, long channelId, */int maxId) : base(aggregateId)
-    {
-        //MessageSenderUserId = messageSenderUserId;
-        //ChannelId = channelId;
-        MaxId = maxId;
-        RequestInfo = requestInfo;
-    }
+    /*long messageSenderUserId, long channelId, */
+    //MessageSenderUserId = messageSenderUserId;
+    //ChannelId = channelId;
 
-    public RequestInfo RequestInfo { get; }
+    public RequestInfo RequestInfo { get; } = requestInfo;
 }

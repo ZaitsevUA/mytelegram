@@ -2,15 +2,8 @@
 
 namespace MyTelegram.Messenger.QueryServer.DomainEventHandlers;
 
-public class InvokeAfterMsgEventHandler : ISubscribeSynchronousToAll
+public class InvokeAfterMsgEventHandler(IInvokeAfterMsgProcessor invokeAfterMsgProcessor) : ISubscribeSynchronousToAll
 {
-    private readonly IInvokeAfterMsgProcessor _invokeAfterMsgProcessor;
-
-    public InvokeAfterMsgEventHandler(IInvokeAfterMsgProcessor invokeAfterMsgProcessor)
-    {
-        _invokeAfterMsgProcessor = invokeAfterMsgProcessor;
-    }
-
     public async Task HandleAsync(IReadOnlyCollection<IDomainEvent> domainEvents,
         CancellationToken cancellationToken)
     {
@@ -27,8 +20,8 @@ public class InvokeAfterMsgEventHandler : ISubscribeSynchronousToAll
                 continue;
             }
 
-            _invokeAfterMsgProcessor.AddToRecentMessageIdList(reqMsgId);
-            await _invokeAfterMsgProcessor.HandleAsync(reqMsgId);
+            invokeAfterMsgProcessor.AddToRecentMessageIdList(reqMsgId);
+            await invokeAfterMsgProcessor.HandleAsync(reqMsgId);
         }
     }
 }

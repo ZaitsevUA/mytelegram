@@ -4,18 +4,12 @@ using MyTelegram.Schema.Extensions;
 
 namespace MyTelegram.Services.Services;
 
-public class QueuedObjectMessageSender : IObjectMessageSender
+public class QueuedObjectMessageSender(
+    IMessageQueueProcessor<ISessionMessage> sessionMessageQueueProcessor,
+    IGZipHelper gzipHelper)
+    : IObjectMessageSender
 {
-    private readonly IGZipHelper _gzipHelper;
     private readonly int _maxQueueCount = 10;
-    private readonly IMessageQueueProcessor<ISessionMessage> _sessionMessageQueueProcessor;
-
-    public QueuedObjectMessageSender(IMessageQueueProcessor<ISessionMessage> sessionMessageQueueProcessor,
-        IGZipHelper gzipHelper)
-    {
-        _sessionMessageQueueProcessor = sessionMessageQueueProcessor;
-        _gzipHelper = gzipHelper;
-    }
 
     public Task PushSessionMessageToAuthKeyIdAsync<TData>(long authKeyId,
         TData data,
@@ -26,7 +20,7 @@ public class QueuedObjectMessageSender : IObjectMessageSender
     {
         var layeredByteData = layeredData?.DataWithLayer?.ToDictionary(k => k.Key, v => v.Value.ToBytes());
 
-        _sessionMessageQueueProcessor.Enqueue(new LayeredAuthKeyIdMessageCreatedIntegrationEvent(authKeyId,
+        sessionMessageQueueProcessor.Enqueue(new LayeredAuthKeyIdMessageCreatedIntegrationEvent(authKeyId,
                 data.ToBytes(),
                 pts,
                 //updatesType,
@@ -47,7 +41,7 @@ public class QueuedObjectMessageSender : IObjectMessageSender
         long globalSeqNo = 0,
         LayeredData<TData>? layeredData = null) where TData : IObject
     {
-        _sessionMessageQueueProcessor.Enqueue(new LayeredPushMessageCreatedIntegrationEvent((int)peer.PeerType,
+        sessionMessageQueueProcessor.Enqueue(new LayeredPushMessageCreatedIntegrationEvent((int)peer.PeerType,
                 peer.PeerId,
                 data.ToBytes(),
                 excludeAuthKeyId,
@@ -73,7 +67,7 @@ public class QueuedObjectMessageSender : IObjectMessageSender
         //UpdatesType updatesType = UpdatesType.Updates,
         long globalSeqNo = 0, LayeredData<TData>? layeredData = null) where TData : IObject
     {
-        _sessionMessageQueueProcessor.Enqueue(new LayeredPushMessageCreatedIntegrationEvent((int)peer.PeerType,
+        sessionMessageQueueProcessor.Enqueue(new LayeredPushMessageCreatedIntegrationEvent((int)peer.PeerType,
                 peer.PeerId,
                 data.ToBytes(),
                 excludeAuthKeyId,
@@ -116,7 +110,7 @@ public class QueuedObjectMessageSender : IObjectMessageSender
                 layeredData);
         }
 
-        _sessionMessageQueueProcessor.Enqueue(new LayeredPushMessageCreatedIntegrationEvent<TExtraData>((int)peer.PeerType,
+        sessionMessageQueueProcessor.Enqueue(new LayeredPushMessageCreatedIntegrationEvent<TExtraData>((int)peer.PeerType,
                 peer.PeerId,
                 data.ToBytes(),
                 excludeAuthKeyId,
@@ -137,7 +131,7 @@ public class QueuedObjectMessageSender : IObjectMessageSender
     public Task SendMessageToPeerAsync<TData>(long reqMsgId,
         TData data) where TData : IObject
     {
-        _sessionMessageQueueProcessor.Enqueue(new DataResultResponseReceivedEvent(reqMsgId, data.ToBytes()),
+        sessionMessageQueueProcessor.Enqueue(new DataResultResponseReceivedEvent(reqMsgId, data.ToBytes()),
             reqMsgId % _maxQueueCount);
 
         return Task.CompletedTask;
@@ -146,7 +140,7 @@ public class QueuedObjectMessageSender : IObjectMessageSender
     public Task SendFileDataToPeerAsync<TData>(long reqMsgId,
         TData data) where TData : IObject
     {
-        _sessionMessageQueueProcessor.Enqueue(new FileDataResultResponseReceivedEvent(reqMsgId, data.ToBytes()),
+        sessionMessageQueueProcessor.Enqueue(new FileDataResultResponseReceivedEvent(reqMsgId, data.ToBytes()),
             reqMsgId % _maxQueueCount);
         return Task.CompletedTask;
     }
@@ -156,7 +150,7 @@ public class QueuedObjectMessageSender : IObjectMessageSender
         int pts = 0) where TData : IObject
     {
         var rpcResult = CreateRpcResult(reqMsgId, data);
-        _sessionMessageQueueProcessor.Enqueue(new DataResultResponseReceivedEvent(reqMsgId, rpcResult.ToBytes()),
+        sessionMessageQueueProcessor.Enqueue(new DataResultResponseReceivedEvent(reqMsgId, rpcResult.ToBytes()),
             reqMsgId % _maxQueueCount);
         return Task.CompletedTask;
     }
@@ -166,7 +160,7 @@ public class QueuedObjectMessageSender : IObjectMessageSender
         int pts = 0) where TData : IObject
     {
         var rpcResult = CreateRpcResult(reqMsgId, data);
-        _sessionMessageQueueProcessor.Enqueue(new DataResultResponseWithUserIdReceivedEvent(reqMsgId, rpcResult.ToBytes(), userId, authKeyId, permAuthKeyId),
+        sessionMessageQueueProcessor.Enqueue(new DataResultResponseWithUserIdReceivedEvent(reqMsgId, rpcResult.ToBytes(), userId, authKeyId, permAuthKeyId),
             reqMsgId % _maxQueueCount);
         return Task.CompletedTask;
     }
@@ -179,7 +173,7 @@ public class QueuedObjectMessageSender : IObjectMessageSender
         {
             var gzipPacked = new TGzipPacked
             {
-                PackedData = _gzipHelper.Compress(newData.ToBytes())
+                PackedData = gzipHelper.Compress(newData.ToBytes())
             };
             rpcResult.Result = gzipPacked;
         }

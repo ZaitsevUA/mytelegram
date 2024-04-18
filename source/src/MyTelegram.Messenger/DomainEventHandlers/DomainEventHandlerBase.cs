@@ -5,32 +5,18 @@ using MyTelegram.Domain.Commands.Updates;
 
 namespace MyTelegram.Messenger.DomainEventHandlers;
 
-public abstract class DomainEventHandlerBase
+public abstract class DomainEventHandlerBase(
+    IObjectMessageSender objectMessageSender,
+    ICommandBus commandBus,
+    IIdGenerator idGenerator,
+    IAckCacheService ackCacheService,
+    IResponseCacheAppService responseCacheAppService)
 {
-    private readonly IAckCacheService _ackCacheService;
-    private readonly ICommandBus _commandBus;
-    private readonly IIdGenerator _idGenerator;
-    private readonly IObjectMessageSender _objectMessageSender;
-    private readonly IResponseCacheAppService _responseCacheAppService;
-
-    protected DomainEventHandlerBase(IObjectMessageSender objectMessageSender,
-        ICommandBus commandBus,
-        IIdGenerator idGenerator,
-        IAckCacheService ackCacheService,
-        IResponseCacheAppService responseCacheAppService)
-    {
-        _objectMessageSender = objectMessageSender;
-        _commandBus = commandBus;
-        _idGenerator = idGenerator;
-        _ackCacheService = ackCacheService;
-        _responseCacheAppService = responseCacheAppService;
-    }
-
     protected Task AddRpcGlobalSeqNoForAuthKeyIdAsync(long reqMsgId,
         long selfUserId,
         long globalSeqNo)
     {
-        return _ackCacheService.AddRpcPtsToCacheAsync(reqMsgId, 0, globalSeqNo, new Peer(PeerType.User, selfUserId));
+        return ackCacheService.AddRpcPtsToCacheAsync(reqMsgId, 0, globalSeqNo, new Peer(PeerType.User, selfUserId));
     }
 
     protected async Task PushUpdatesToChannelMemberAsync(
@@ -66,7 +52,7 @@ public abstract class DomainEventHandlerBase
                 );
         }
 
-        await _objectMessageSender.PushMessageToPeerAsync(channelPeer,
+        await objectMessageSender.PushMessageToPeerAsync(channelPeer,
             updates,
             excludeAuthKeyId,
             excludeUserId,
@@ -103,7 +89,7 @@ public abstract class DomainEventHandlerBase
             onlySendToThisAuthKeyId,
             updatesType: updatesType
             );
-        await _objectMessageSender.PushMessageToPeerAsync(channelMemberPeer,
+        await objectMessageSender.PushMessageToPeerAsync(channelMemberPeer,
             updates,
             excludeAuthKeyId,
             excludeUserId,
@@ -164,7 +150,7 @@ public abstract class DomainEventHandlerBase
                 );
         }
 
-        await _objectMessageSender.PushMessageToPeerAsync(toPeer,
+        await objectMessageSender.PushMessageToPeerAsync(toPeer,
             updates,
             excludeAuthKeyId,
             excludeUserId,
@@ -317,7 +303,7 @@ public abstract class DomainEventHandlerBase
         }
 
 
-        var globalSeqNo = await _idGenerator.NextLongIdAsync(IdType.GlobalSeqNo);
+        var globalSeqNo = await idGenerator.NextLongIdAsync(IdType.GlobalSeqNo);
 
         Task.Run(() =>
         {
@@ -336,7 +322,7 @@ public abstract class DomainEventHandlerBase
                 userIds,
                 chatIds
             );
-            _commandBus.PublishAsync(command, default);
+            commandBus.PublishAsync(command, default);
         });
         return globalSeqNo;
 
@@ -385,7 +371,7 @@ public abstract class DomainEventHandlerBase
                updatesType: updatesType
                );
         }
-        await _objectMessageSender.PushMessageToPeerAsync(toPeer,
+        await objectMessageSender.PushMessageToPeerAsync(toPeer,
             data,
             excludeAuthKeyId,
             excludeUserId,
@@ -426,7 +412,7 @@ public abstract class DomainEventHandlerBase
             );
         }
 
-        await _objectMessageSender.PushMessageToPeerAsync(toPeer,
+        await objectMessageSender.PushMessageToPeerAsync(toPeer,
             data,
             excludeAuthKeyId,
             excludeUserId,
@@ -450,10 +436,10 @@ public abstract class DomainEventHandlerBase
         long selfUserId,
         int pts)
     {
-        var cachedCount = _responseCacheAppService.AddToCache(requestInfo.ReqMsgId, updates);
+        var cachedCount = responseCacheAppService.AddToCache(requestInfo.ReqMsgId, updates);
         if (cachedCount == groupItemCount)
         {
-            if (_responseCacheAppService.TryRemoveResponseList(requestInfo.ReqMsgId, out var responseList))
+            if (responseCacheAppService.TryRemoveResponseList(requestInfo.ReqMsgId, out var responseList))
             {
                 var updatesAllInOne = new TUpdates
                 {
@@ -500,11 +486,11 @@ public abstract class DomainEventHandlerBase
 
         if (pts > 0 && selfUserId != 0 && toPeerType != PeerType.Channel)
         {
-            await _ackCacheService.AddRpcPtsToCacheAsync(requestInfo.ReqMsgId, pts, 0, new Peer(PeerType.User, selfUserId))
+            await ackCacheService.AddRpcPtsToCacheAsync(requestInfo.ReqMsgId, pts, 0, new Peer(PeerType.User, selfUserId))
          ;
         }
 
-        await _objectMessageSender.SendRpcMessageToClientAsync(requestInfo.ReqMsgId, data);
+        await objectMessageSender.SendRpcMessageToClientAsync(requestInfo.ReqMsgId, data);
     }
 
     protected Task UpdateSelfGlobalSeqNoAfterSendChannelMessageAsync(long userId,
@@ -513,7 +499,7 @@ public abstract class DomainEventHandlerBase
         Task.Run(() =>
         {
             var updateGlobalSeqNoCommand = new UpdateGlobalSeqNoCommand(PtsId.Create(userId), userId, 0, globalSeqNo);
-            _commandBus.PublishAsync(updateGlobalSeqNoCommand, default);
+            commandBus.PublishAsync(updateGlobalSeqNoCommand, default);
         });
 
         return Task.CompletedTask;

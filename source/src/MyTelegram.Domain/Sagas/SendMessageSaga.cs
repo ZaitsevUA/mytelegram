@@ -4,34 +4,21 @@ using MyTelegram.Schema.Extensions;
 
 namespace MyTelegram.Domain.Sagas;
 
-public class ReplyBroadcastChannelCompletedSagaEvent : AggregateEvent<SendMessageSaga, SendMessageSagaId>
+public class ReplyBroadcastChannelCompletedSagaEvent(long channelId, int messageId, MessageReply reply)
+    : AggregateEvent<SendMessageSaga, SendMessageSagaId>
 {
-    public long ChannelId { get; }
-    public int MessageId { get; }
-    public MessageReply Reply { get; }
-
-    public ReplyBroadcastChannelCompletedSagaEvent(long channelId, int messageId, MessageReply reply)
-    {
-        ChannelId = channelId;
-        MessageId = messageId;
-        Reply = reply;
-    }
+    public long ChannelId { get; } = channelId;
+    public int MessageId { get; } = messageId;
+    public MessageReply Reply { get; } = reply;
 }
 
-public class PostChannelIdUpdatedEvent : AggregateEvent<SendMessageSaga, SendMessageSagaId>
+public class PostChannelIdUpdatedEvent(long channelId, int messageId, long postChannelId, int postMessageId)
+    : AggregateEvent<SendMessageSaga, SendMessageSagaId>
 {
-    public long ChannelId { get; }
-    public int MessageId { get; }
-    public long PostChannelId { get; }
-    public int PostMessageId { get; }
-
-    public PostChannelIdUpdatedEvent(long channelId, int messageId, long postChannelId, int postMessageId)
-    {
-        ChannelId = channelId;
-        MessageId = messageId;
-        PostChannelId = postChannelId;
-        PostMessageId = postMessageId;
-    }
+    public long ChannelId { get; } = channelId;
+    public int MessageId { get; } = messageId;
+    public long PostChannelId { get; } = postChannelId;
+    public int PostMessageId { get; } = postMessageId;
 }
 
 public class SendMessageSaga : MyInMemoryAggregateSaga<SendMessageSaga, SendMessageSagaId, SendMessageSagaLocator>,

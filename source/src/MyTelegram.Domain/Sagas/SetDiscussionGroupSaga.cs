@@ -4,12 +4,7 @@ using MyTelegram.Domain.Events.Temp;
 namespace MyTelegram.Domain.Sagas;
 
 [JsonConverter(typeof(SystemTextJsonSingleValueObjectConverter<SetDiscussionGroupSagaId>))]
-public class SetDiscussionGroupSagaId : Identity<SetDiscussionGroupSagaId>, ISagaId
-{
-    public SetDiscussionGroupSagaId(string value) : base(value)
-    {
-    }
-}
+public class SetDiscussionGroupSagaId(string value) : Identity<SetDiscussionGroupSagaId>(value), ISagaId;
 
 public class
     SetDiscussionGroupSagaLocator : DefaultSagaLocator<SetDiscussionGroupSaga, SetDiscussionGroupSagaId>

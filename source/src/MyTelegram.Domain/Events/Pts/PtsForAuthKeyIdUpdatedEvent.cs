@@ -1,23 +1,16 @@
 ﻿namespace MyTelegram.Domain.Events.Pts;
 
-public class PtsForAuthKeyIdUpdatedEvent : AggregateEvent<PtsAggregate, PtsId>
+public class PtsForAuthKeyIdUpdatedEvent(
+    long peerId,
+    long permAuthKeyId,
+    int pts,
+    int changedUnreadCount,
+    long globalSeqNo)
+    : AggregateEvent<PtsAggregate, PtsId>
 {
-    public long PeerId { get; }
-    public long PermAuthKeyId { get; }
-    public int Pts { get; }
-    public int ChangedUnreadCount { get; }
-    public long GlobalSeqNo { get; }
-
-    public PtsForAuthKeyIdUpdatedEvent(long peerId,
-        long permAuthKeyId,
-        int pts,
-        int changedUnreadCount,
-        long globalSeqNo)
-    {
-        PeerId = peerId;
-        PermAuthKeyId = permAuthKeyId;
-        Pts = pts;
-        ChangedUnreadCount = changedUnreadCount;
-        GlobalSeqNo = globalSeqNo;
-    }
+    public long PeerId { get; } = peerId;
+    public long PermAuthKeyId { get; } = permAuthKeyId;
+    public int Pts { get; } = pts;
+    public int ChangedUnreadCount { get; } = changedUnreadCount;
+    public long GlobalSeqNo { get; } = globalSeqNo;
 }

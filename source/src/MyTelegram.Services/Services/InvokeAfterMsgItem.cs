@@ -2,16 +2,11 @@
 
 namespace MyTelegram.Services.Services;
 
-public class InvokeAfterMsgItem
+public class InvokeAfterMsgItem(
+    IRequestInput input,
+    IObject query)
 {
-    public InvokeAfterMsgItem(IRequestInput input,
-        IObject query)
-    {
-        Input = input;
-        Query = query;
-    }
+    public IRequestInput Input { get; } = input;
 
-    public IRequestInput Input { get; }
-
-    public IObject Query { get; }
+    public IObject Query { get; } = query;
 }

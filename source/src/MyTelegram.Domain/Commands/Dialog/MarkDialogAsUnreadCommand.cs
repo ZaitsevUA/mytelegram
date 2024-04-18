@@ -1,16 +1,12 @@
 ﻿namespace MyTelegram.Domain.Commands.Dialog;
 
-public class MarkDialogAsUnreadCommand : RequestCommand2<DialogAggregate, DialogId, IExecutionResult>
+public class MarkDialogAsUnreadCommand(
+    DialogId aggregateId,
+    RequestInfo requestInfo,
+    bool unread)
+    : RequestCommand2<DialogAggregate, DialogId, IExecutionResult>(aggregateId, requestInfo)
 {
-    public MarkDialogAsUnreadCommand(DialogId aggregateId,
-        RequestInfo requestInfo,
-        bool unread
-    ) : base(aggregateId, requestInfo)
-    {
-        Unread = unread;
-    }
-
-    public bool Unread { get; }
+    public bool Unread { get; } = unread;
 }
 
 //public class ReadInboxMessageCommand : RequestCommand<DialogAggregate, DialogId, IExecutionResult>,IHasCorrelationId

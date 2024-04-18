@@ -1,28 +1,20 @@
 ﻿namespace MyTelegram.Domain.Events.Pts;
 
-public class PtsAckedEvent : AggregateEvent<PtsAggregate, PtsId>
+public class PtsAckedEvent(
+    long peerId,
+    long permAuthKeyId,
+    long msgId,
+    int pts,
+    long globalSeqNo,
+    Peer toPeer)
+    : AggregateEvent<PtsAggregate, PtsId>
 {
-    public PtsAckedEvent(long peerId,
-        long permAuthKeyId,
-        long msgId,
-        int pts,
-        long globalSeqNo,
-        Peer toPeer)
-    {
-        PeerId = peerId;
-        PermAuthKeyId = permAuthKeyId;
-        MsgId = msgId;
-        Pts = pts;
-        GlobalSeqNo = globalSeqNo;
-        ToPeer = toPeer;
-    }
-
-    public long GlobalSeqNo { get; }
-    public long MsgId { get; }
-    public long PeerId { get; }
-    public long PermAuthKeyId { get; }
-    public int Pts { get; }
-    public Peer ToPeer { get; }
+    public long GlobalSeqNo { get; } = globalSeqNo;
+    public long MsgId { get; } = msgId;
+    public long PeerId { get; } = peerId;
+    public long PermAuthKeyId { get; } = permAuthKeyId;
+    public int Pts { get; } = pts;
+    public Peer ToPeer { get; } = toPeer;
 }
 
 //public class ChannelPtsForUserUpdatedEvent : AggregateEvent<ChannelPtsAggregate, ChannelPtsId>

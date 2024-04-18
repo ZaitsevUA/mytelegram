@@ -1,22 +1,15 @@
 ﻿namespace MyTelegram.Domain.Sagas.States;
 
-public class ReadChannelHistorySagaSnapshot : ISnapshot
+public class ReadChannelHistorySagaSnapshot(
+    long reqMsgId,
+    long readerUid,
+    long channelId,
+    Guid correlationId)
+    : ISnapshot
 {
-    public ReadChannelHistorySagaSnapshot(long reqMsgId,
-        long readerUid,
-        long channelId,
-        Guid correlationId
-    )
-    {
-        ReqMsgId = reqMsgId;
-        ReaderUid = readerUid;
-        ChannelId = channelId;
-        CorrelationId = correlationId;
-    }
+    public long ChannelId { get; } = channelId;
+    public Guid CorrelationId { get; } = correlationId;
+    public long ReaderUid { get; } = readerUid;
 
-    public long ChannelId { get; }
-    public Guid CorrelationId { get; }
-    public long ReaderUid { get; }
-
-    public long ReqMsgId { get; }
+    public long ReqMsgId { get; } = reqMsgId;
 }

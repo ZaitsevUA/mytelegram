@@ -1,16 +1,12 @@
 ﻿namespace MyTelegram.Domain.Commands.Messaging;
 
-public class CreateInboxMessageCommand : RequestCommand2<MessageAggregate, MessageId, IExecutionResult>
+public class CreateInboxMessageCommand(
+    MessageId aggregateId,
+    RequestInfo requestInfo,
+    MessageItem inboxMessageItem,
+    int senderMessageId)
+    : RequestCommand2<MessageAggregate, MessageId, IExecutionResult>(aggregateId, requestInfo)
 {
-    public CreateInboxMessageCommand(MessageId aggregateId,
-        RequestInfo requestInfo,
-        MessageItem inboxMessageItem,
-        int senderMessageId) : base(aggregateId, requestInfo)
-    {
-        InboxMessageItem = inboxMessageItem;
-        SenderMessageId = senderMessageId;
-    }
-
-    public MessageItem InboxMessageItem { get; }
-    public int SenderMessageId { get; }
+    public MessageItem InboxMessageItem { get; } = inboxMessageItem;
+    public int SenderMessageId { get; } = senderMessageId;
 }

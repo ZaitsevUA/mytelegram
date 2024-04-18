@@ -1,15 +1,10 @@
 ﻿namespace MyTelegram.Messenger.Services;
 
-public class GetPeerSettingsListInput
+public class GetPeerSettingsListInput(
+    long userId,
+    List<long> targetUserIdList)
 {
-    public GetPeerSettingsListInput(long userId,
-        List<long> targetUserIdList)
-    {
-        UserId = userId;
-        TargetUserIdList = targetUserIdList;
-    }
+    public List<long> TargetUserIdList { get; } = targetUserIdList;
 
-    public List<long> TargetUserIdList { get; }
-
-    public long UserId { get; }
+    public long UserId { get; } = userId;
 }

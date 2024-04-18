@@ -1,46 +1,34 @@
 ﻿namespace MyTelegram.Messenger.Services;
 
-public class ProcessBotCommandInput
+public class ProcessBotCommandInput(
+    long botUserId,
+    long senderPeerId,
+    int senderMessageId,
+    int messageId,
+    string command,
+    Peer replyToPeer,
+    int updateId,
+    bool isChannelPost = false,
+    string? data = null,
+    byte[]? media = null)
 {
-    public ProcessBotCommandInput(long botUserId,
-        long senderPeerId,
-        int senderMessageId,
-        int messageId,
-        string command,
-        //PeerType replyToPeerType,
-        //long replyToPeerId,
-        Peer replyToPeer,
-        int updateId,
-        bool isChannelPost = false,
-        string? data = null,
-        byte[]? media = null
-    )
-    {
-        BotUserId = botUserId;
-        SenderMessageId = senderMessageId;
-        SenderPeerId = senderPeerId;
-        MessageId = messageId;
-        Command = command;
-        ReplyToPeer = replyToPeer;
-        //ReplyToPeerType = replyToPeerType;
-        //ReplyToPeerId = replyToPeerId;
-        UpdateId = updateId;
-        IsChannelPost = isChannelPost;
-        Data = data;
-        Media = media;
-    }
+    //PeerType replyToPeerType,
+    //long replyToPeerId,
+    //ReplyToPeerType = replyToPeerType;
+    //ReplyToPeerId = replyToPeerId;
 
-    public long BotUserId { get; }
-    public int SenderMessageId { get; }
-    public string Command { get; }
-    public Peer ReplyToPeer { get; }
-    public bool IsChannelPost { get; }
-    public string? Data { get; }
-    public byte[]? Media { get; }
+    public long BotUserId { get; } = botUserId;
+    public int SenderMessageId { get; } = senderMessageId;
+    public string Command { get; } = command;
+    public Peer ReplyToPeer { get; } = replyToPeer;
+    public bool IsChannelPost { get; } = isChannelPost;
+    public string? Data { get; } = data;
+    public byte[]? Media { get; } = media;
 
-    public int MessageId { get; }
+    public int MessageId { get; } = messageId;
+
     //public long ReplyToPeerId { get; }
     //public PeerType ReplyToPeerType { get; }
-    public long SenderPeerId { get; }
-    public int UpdateId { get; set; }
+    public long SenderPeerId { get; } = senderPeerId;
+    public int UpdateId { get; set; } = updateId;
 }

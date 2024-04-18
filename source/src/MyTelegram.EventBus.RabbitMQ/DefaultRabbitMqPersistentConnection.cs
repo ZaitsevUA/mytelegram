@@ -7,41 +7,30 @@ public interface IRabbitMqConnectionFactory
     IRabbitMqPersistentConnection CreateConnection();
 }
 
-public class RabbitMqConnectionFactory : IRabbitMqConnectionFactory
+public class RabbitMqConnectionFactory(
+    IOptions<RabbitMqOptions> options,
+    ILogger<DefaultRabbitMqPersistentConnection> logger)
+    : IRabbitMqConnectionFactory
 {
-    private readonly IOptions<RabbitMqOptions> _options;
-    private readonly ILogger<DefaultRabbitMqPersistentConnection> _logger;
-    public RabbitMqConnectionFactory(IOptions<RabbitMqOptions> options, ILogger<DefaultRabbitMqPersistentConnection> logger)
-    {
-        _options = options;
-        _logger = logger;
-    }
-
     public IRabbitMqPersistentConnection CreateConnection()
     {
-        return new DefaultRabbitMqPersistentConnection(_logger, _options);
+        return new DefaultRabbitMqPersistentConnection(logger, options);
     }
 }
 
 // Original https://github.com/dotnet-architecture/eShopOnContainers/blob/dev/src/BuildingBlocks/EventBus/EventBusRabbitMQ/DefaultRabbitMQPersistentConnection.cs
-public class DefaultRabbitMqPersistentConnection
+public class DefaultRabbitMqPersistentConnection(
+    ILogger<DefaultRabbitMqPersistentConnection> logger,
+    IOptions<RabbitMqOptions> options)
     : IRabbitMqPersistentConnection
 {
-    private readonly ILogger<DefaultRabbitMqPersistentConnection> _logger;
-    private readonly IOptions<RabbitMqOptions> _options;
+    private readonly ILogger<DefaultRabbitMqPersistentConnection> _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     private readonly int _retryCount = 5;
 
     private readonly object _syncRoot = new();
     private IConnection? _connection;
     private IConnectionFactory? _connectionFactory;
     private bool _disposed;
-
-    public DefaultRabbitMqPersistentConnection(ILogger<DefaultRabbitMqPersistentConnection> logger,
-        IOptions<RabbitMqOptions> options)
-    {
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        _options = options;
-    }
 
     public bool IsConnected => _connection is { IsOpen: true } && !_disposed;
 
@@ -155,10 +144,10 @@ public class DefaultRabbitMqPersistentConnection
         {
             var factory = new ConnectionFactory
             {
-                HostName = _options.Value.HostName,
-                Port = _options.Value.Port,
-                UserName = _options.Value.UserName,
-                Password = _options.Value.Password,
+                HostName = options.Value.HostName,
+                Port = options.Value.Port,
+                UserName = options.Value.UserName,
+                Password = options.Value.Password,
                 DispatchConsumersAsync = true,
             };
 

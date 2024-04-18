@@ -1,17 +1,11 @@
 ﻿namespace MyTelegram.Domain.Commands.Pts;
 
-public class UpdateQtsCommand : Command<PtsAggregate, PtsId, IExecutionResult>
+public class UpdateQtsCommand(
+    PtsId aggregateId,
+    long peerId,
+    int newQts) : Command<PtsAggregate, PtsId, IExecutionResult>(aggregateId)
 {
-    public UpdateQtsCommand(PtsId aggregateId,
-        long peerId,
-        int newQts
-    ) : base(aggregateId)
-    {
-        NewQts = newQts;
-        PeerId = peerId;
-    }
+    public int NewQts { get; } = newQts;
 
-    public int NewQts { get; }
-
-    public long PeerId { get; }
+    public long PeerId { get; } = peerId;
 }

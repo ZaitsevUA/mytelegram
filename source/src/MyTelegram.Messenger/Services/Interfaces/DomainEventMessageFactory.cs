@@ -1,17 +1,10 @@
 ﻿namespace MyTelegram.Messenger.Services.Interfaces;
 
-public class DomainEventMessageFactory : IDomainEventMessageFactory
+public class DomainEventMessageFactory(IEventJsonSerializer eventJsonSerializer) : IDomainEventMessageFactory
 {
-    private readonly IEventJsonSerializer _eventJsonSerializer;
-
-    public DomainEventMessageFactory(IEventJsonSerializer eventJsonSerializer)
-    {
-        _eventJsonSerializer = eventJsonSerializer;
-    }
-
     public DomainEventMessage CreateDomainEventMessage(IDomainEvent domainEvent)
     {
-        var serializedEvent = _eventJsonSerializer.Serialize(
+        var serializedEvent = eventJsonSerializer.Serialize(
             domainEvent.GetAggregateEvent(),
             domainEvent.Metadata);
 

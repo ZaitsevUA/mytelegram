@@ -1,14 +1,10 @@
 ﻿namespace MyTelegram.Domain.Events.RpcResult;
 
-public class RpcResultCreatedEvent : RequestAggregateEvent2<RpcResultAggregate, RpcResultId>
+public class RpcResultCreatedEvent(
+    RequestInfo requestInfo,
+    byte[] rpcData,
+    int date) : RequestAggregateEvent2<RpcResultAggregate, RpcResultId>(requestInfo)
 {
-    public RpcResultCreatedEvent(RequestInfo requestInfo,
-        byte[] rpcData, int date) : base(requestInfo)
-    {
-        RpcData = rpcData;
-        Date = date;
-    }
-
-    public byte[] RpcData { get; }
-    public int Date { get; }
+    public byte[] RpcData { get; } = rpcData;
+    public int Date { get; } = date;
 }

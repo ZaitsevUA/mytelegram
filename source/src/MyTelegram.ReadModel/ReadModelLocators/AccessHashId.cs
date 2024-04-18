@@ -2,12 +2,8 @@
 
 namespace MyTelegram.ReadModel.ReadModelLocators;
 
-public class AccessHashId : Identity<AccessHashId>
+public class AccessHashId(string value) : Identity<AccessHashId>(value)
 {
-    public AccessHashId(string value) : base(value)
-    {
-    }
-
     public static AccessHashId Create(long id,
         long accessHash)
     {

@@ -2,30 +2,17 @@
 
 namespace MyTelegram.Messenger.TLObjectConverters.Impl.LatestLayer;
 
-public class DifferenceConverterLatest : LayeredConverterBase, IDifferenceConverterLatest
+public class DifferenceConverterLatest(
+    IObjectMapper objectMapper,
+    IOptions<MyTelegramMessengerServerOptions> options,
+    ILayeredService<IMessageConverter> layeredMessageService,
+    ILayeredService<IChatConverter> layeredChatService,
+    ILayeredService<IUserConverter> layeredUserService)
+    : LayeredConverterBase, IDifferenceConverterLatest
 {
-    private readonly ILayeredService<IChatConverter> _layeredChatService;
-    private readonly ILayeredService<IMessageConverter> _layeredMessageService;
-    private readonly ILayeredService<IUserConverter> _layeredUserService;
-    private readonly IObjectMapper _objectMapper;
-    private readonly IOptions<MyTelegramMessengerServerOptions> _options;
     private IChatConverter? _chatConverter;
     private IMessageConverter? _messageConverter;
     private IUserConverter? _userConverter;
-
-    public DifferenceConverterLatest(
-        IObjectMapper objectMapper,
-        IOptions<MyTelegramMessengerServerOptions> options,
-        ILayeredService<IMessageConverter> layeredMessageService,
-        ILayeredService<IChatConverter> layeredChatService,
-        ILayeredService<IUserConverter> layeredUserService)
-    {
-        _objectMapper = objectMapper;
-        _options = options;
-        _layeredMessageService = layeredMessageService;
-        _layeredChatService = layeredChatService;
-        _layeredUserService = layeredUserService;
-    }
 
     public override int Layer => Layers.LayerLatest;
 
@@ -35,7 +22,7 @@ public class DifferenceConverterLatest : LayeredConverterBase, IDifferenceConver
         int updatesMaxPts = 0,
         bool resetLeftToFalse = false)
     {
-        var timeout = _options.Value.ChannelGetDifferenceIntervalSeconds;
+        var timeout = options.Value.ChannelGetDifferenceIntervalSeconds;
         if (output.MessageList.Count == 0 && updatesList.Count == 0)
         {
             return new TChannelDifferenceEmpty { Final = true, Pts = output.Pts, Timeout = timeout };
@@ -122,7 +109,7 @@ public class DifferenceConverterLatest : LayeredConverterBase, IDifferenceConver
                         UnreadCount = unreadCount,
                         Seq = 1,
                     }
-                    : _objectMapper.Map<IPtsReadModel, TState>(pts)
+                    : objectMapper.Map<IPtsReadModel, TState>(pts)
             };
 
             return differenceSlice;
@@ -133,7 +120,7 @@ public class DifferenceConverterLatest : LayeredConverterBase, IDifferenceConver
         if (encryptedMessageReadModels?.Count > 0)
         {
             newEncryptedMessages = encryptedMessageReadModels
-                .Select(p => _objectMapper.Map<IEncryptedMessageReadModel, IEncryptedMessage>(p)).ToArray();
+                .Select(p => objectMapper.Map<IEncryptedMessageReadModel, IEncryptedMessage>(p)).ToArray();
         }
 
         var difference = new TDifference
@@ -152,7 +139,7 @@ public class DifferenceConverterLatest : LayeredConverterBase, IDifferenceConver
                     UnreadCount = unreadCount,
                     Seq = 1
                 }
-                : _objectMapper.Map<IPtsReadModel, TState>(pts)
+                : objectMapper.Map<IPtsReadModel, TState>(pts)
         };
         if (cachedPts > pts?.Pts)
         {
@@ -164,17 +151,17 @@ public class DifferenceConverterLatest : LayeredConverterBase, IDifferenceConver
 
     protected IChatConverter GetChatConverter()
     {
-        return _chatConverter ??= _layeredChatService.GetConverter(GetLayer());
+        return _chatConverter ??= layeredChatService.GetConverter(GetLayer());
     }
 
     protected IMessageConverter GetMessageConverter()
     {
-        return _messageConverter ??= _layeredMessageService.GetConverter(GetLayer());
+        return _messageConverter ??= layeredMessageService.GetConverter(GetLayer());
     }
 
     protected IUserConverter GetUserConverter()
     {
-        var converter = _userConverter ??= _layeredUserService.GetConverter(GetLayer());
+        var converter = _userConverter ??= layeredUserService.GetConverter(GetLayer());
         return converter;
     }
 

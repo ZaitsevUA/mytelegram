@@ -1,18 +1,14 @@
 ﻿namespace MyTelegram.Domain.Commands.Dialog;
 
-public class SetDialogPinnedMsgIdCommand : DistinctCommand<DialogAggregate, DialogId, IExecutionResult>
+public class SetDialogPinnedMsgIdCommand(
+    DialogId aggregateId,
+    long reqMsgId,
+    int pinnedMsgId)
+    : DistinctCommand<DialogAggregate, DialogId, IExecutionResult>(aggregateId)
 {
-    public SetDialogPinnedMsgIdCommand(DialogId aggregateId,
-        long reqMsgId,
-        int pinnedMsgId) : base(aggregateId)
-    {
-        ReqMsgId = reqMsgId;
-        PinnedMsgId = pinnedMsgId;
-    }
+    public int PinnedMsgId { get; } = pinnedMsgId;
 
-    public int PinnedMsgId { get; }
-
-    public long ReqMsgId { get; }
+    public long ReqMsgId { get; } = reqMsgId;
 
     protected override IEnumerable<byte[]> GetSourceIdComponents()
     {

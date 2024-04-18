@@ -1,12 +1,8 @@
 ﻿namespace MyTelegram.Domain.Events.Dialog;
 
-public class ToggleDialogPinEvent : RequestAggregateEvent2<DialogAggregate, DialogId>
+public class ToggleDialogPinEvent(
+    RequestInfo requestInfo,
+    bool pinned) : RequestAggregateEvent2<DialogAggregate, DialogId>(requestInfo)
 {
-    public ToggleDialogPinEvent(RequestInfo requestInfo,
-        bool pinned) : base(requestInfo)
-    {
-        Pinned = pinned;
-    }
-
-    public bool Pinned { get; }
+    public bool Pinned { get; } = pinned;
 }

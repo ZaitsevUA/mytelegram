@@ -1,25 +1,22 @@
 ﻿namespace MyTelegram.Domain.Commands.Chat;
 
-public class EditChatPhotoCommand : RequestCommand2<ChatAggregate, ChatId, IExecutionResult>
+public class EditChatPhotoCommand(
+    ChatId aggregateId,
+    RequestInfo requestInfo,
+    long fileId,
+    long photoId,
+    string messageActionData,
+    long randomId)
+    : RequestCommand2<ChatAggregate, ChatId, IExecutionResult>(aggregateId, requestInfo)
 {
-    public EditChatPhotoCommand(ChatId aggregateId,
-        RequestInfo requestInfo,
-        long fileId,
-        //byte[] photo,
-        long photoId,
-        string messageActionData,
-        long randomId) : base(aggregateId, requestInfo)
-    {
-        FileId = fileId;
-        PhotoId = photoId;
-        //Photo = photo;
-        MessageActionData = messageActionData;
-        RandomId = randomId;
-    }
-    public long FileId { get; }
-    public long PhotoId { get; }
+    //byte[] photo,
+    //Photo = photo;
 
-    public string MessageActionData { get; }
+    public long FileId { get; } = fileId;
+    public long PhotoId { get; } = photoId;
+
+    public string MessageActionData { get; } = messageActionData;
+
     //public byte[] Photo { get; }
-    public long RandomId { get; }
+    public long RandomId { get; } = randomId;
 }

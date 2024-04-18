@@ -1,12 +1,8 @@
 ﻿namespace MyTelegram.Domain.Events.Chat;
 
-public class ChatAboutEditedEvent : RequestAggregateEvent2<ChatAggregate, ChatId>
+public class ChatAboutEditedEvent(
+    RequestInfo requestInfo,
+    string? about) : RequestAggregateEvent2<ChatAggregate, ChatId>(requestInfo)
 {
-    public ChatAboutEditedEvent(RequestInfo requestInfo,
-        string? about) : base(requestInfo)
-    {
-        About = about;
-    }
-
-    public string? About { get; }
+    public string? About { get; } = about;
 }

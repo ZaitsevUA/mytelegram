@@ -1,20 +1,18 @@
 ﻿namespace MyTelegram.Domain.Commands.AppCode;
 
-public class CheckSignInCodeCommand : RequestCommand2<AppCodeAggregate, AppCodeId, IExecutionResult>
+public class CheckSignInCodeCommand(
+    AppCodeId aggregateId,
+    RequestInfo requestInfo,
+    string code,
+    long userId)
+    : RequestCommand2<AppCodeAggregate, AppCodeId, IExecutionResult>(aggregateId, requestInfo)
 {
-    public CheckSignInCodeCommand(AppCodeId aggregateId,
-        RequestInfo requestInfo,
-        //string phoneNumber,
-        //string phoneCodeHash,
-        string code,
-        long userId) : base(aggregateId, requestInfo)
-    {
-        Code = code;
-        //PhoneCodeHash = phoneCodeHash;
-        UserId = userId;
-    }
+    //string phoneNumber,
+    //string phoneCodeHash,
+    //PhoneCodeHash = phoneCodeHash;
 
-    public string Code { get; }
+    public string Code { get; } = code;
+
     //public string PhoneCodeHash { get; }
-    public long UserId { get; }
+    public long UserId { get; } = userId;
 }

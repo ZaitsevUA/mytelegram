@@ -1,34 +1,22 @@
 ﻿namespace MyTelegram.Messenger.Services;
 
-public class SearchContactOutput
+public class SearchContactOutput(
+    long selfUserId,
+    IReadOnlyCollection<IUserReadModel> userList,
+    IReadOnlyCollection<IPhotoReadModel> photoList,
+    IReadOnlyCollection<IContactReadModel> contactList,
+    IReadOnlyCollection<IChannelReadModel> myChannelList,
+    IReadOnlyCollection<IChannelReadModel> channelList,
+    IReadOnlyCollection<IPrivacyReadModel> privacyList,
+    IReadOnlyCollection<IChannelMemberReadModel> channelMemberList)
 {
-    public SearchContactOutput(long selfUserId,
-        IReadOnlyCollection<IUserReadModel> userList,
-        IReadOnlyCollection<IPhotoReadModel> photoList,
-        IReadOnlyCollection<IContactReadModel> contactList,
-        IReadOnlyCollection<IChannelReadModel> myChannelList,
-        IReadOnlyCollection<IChannelReadModel> channelList,
-        IReadOnlyCollection<IPrivacyReadModel> privacyList,
-        IReadOnlyCollection<IChannelMemberReadModel> channelMemberList
-    )
-    {
-        SelfUserId = selfUserId;
-        UserList = userList;
-        PhotoList = photoList;
-        ContactList = contactList;
-        MyChannelList = myChannelList;
-        ChannelList = channelList;
-        PrivacyList = privacyList;
-        ChannelMemberList = channelMemberList;
-    }
+    public IReadOnlyCollection<IChannelReadModel> ChannelList { get; } = channelList;
+    public IReadOnlyCollection<IChannelMemberReadModel> ChannelMemberList { get; } = channelMemberList;
+    public IReadOnlyCollection<IContactReadModel> ContactList { get; } = contactList;
+    public IReadOnlyCollection<IChannelReadModel> MyChannelList { get; } = myChannelList;
+    public IReadOnlyCollection<IPrivacyReadModel> PrivacyList { get; } = privacyList;
 
-    public IReadOnlyCollection<IChannelReadModel> ChannelList { get; }
-    public IReadOnlyCollection<IChannelMemberReadModel> ChannelMemberList { get; }
-    public IReadOnlyCollection<IContactReadModel> ContactList { get; }
-    public IReadOnlyCollection<IChannelReadModel> MyChannelList { get; }
-    public IReadOnlyCollection<IPrivacyReadModel> PrivacyList { get; }
-
-    public long SelfUserId { get; }
-    public IReadOnlyCollection<IUserReadModel> UserList { get; }
-    public IReadOnlyCollection<IPhotoReadModel> PhotoList { get; }
+    public long SelfUserId { get; } = selfUserId;
+    public IReadOnlyCollection<IUserReadModel> UserList { get; } = userList;
+    public IReadOnlyCollection<IPhotoReadModel> PhotoList { get; } = photoList;
 }

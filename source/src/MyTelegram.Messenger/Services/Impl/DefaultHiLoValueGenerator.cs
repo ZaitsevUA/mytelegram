@@ -1,19 +1,12 @@
 ﻿namespace MyTelegram.Messenger.Services.Impl;
 
-public class DefaultHiLoValueGenerator : HiLoValueGenerator<long>
+public class DefaultHiLoValueGenerator(
+    HiLoValueGeneratorState generatorState,
+    ILogger<DefaultHiLoValueGenerator> logger,
+    IHiLoHighValueGenerator highValueGenerator)
+    : HiLoValueGenerator<long>(generatorState)
 {
-    private readonly int _blockSize;
-    private readonly IHiLoHighValueGenerator _highValueGenerator;
-    private readonly ILogger<DefaultHiLoValueGenerator> _logger;
-
-    public DefaultHiLoValueGenerator(HiLoValueGeneratorState generatorState,
-        ILogger<DefaultHiLoValueGenerator> logger,
-        IHiLoHighValueGenerator highValueGenerator) : base(generatorState)
-    {
-        _logger = logger;
-        _highValueGenerator = highValueGenerator;
-        _blockSize = generatorState.BlockSize;
-    }
+    private readonly int _blockSize = generatorState.BlockSize;
 
     protected override long GetNewLowValue(IdType idType,
         long key)
@@ -25,8 +18,8 @@ public class DefaultHiLoValueGenerator : HiLoValueGenerator<long>
         long key,
         CancellationToken cancellationToken = default)
     {
-        var highValue = await _highValueGenerator.GetNewHighValueAsync(idType, key, cancellationToken);
-        _logger.LogInformation("Get new low value from db,idType={IdType} key={Key} newHighValue={HighValue}",
+        var highValue = await highValueGenerator.GetNewHighValueAsync(idType, key, cancellationToken);
+        logger.LogInformation("Get new low value from db,idType={IdType} key={Key} newHighValue={HighValue}",
             idType,
             key,
             highValue);

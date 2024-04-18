@@ -1,30 +1,20 @@
 ﻿namespace MyTelegram.Domain.Sagas.Events;
 
-public class CreateChannelSuccessEvent : AggregateEvent<CreateChannelSaga, CreateChannelSagaId>
+public class CreateChannelSuccessEvent(
+    long reqMsgId,
+    long selfAuthKeyId,
+    long channelId,
+    long creatorUid,
+    int date,
+    string messageActionData,
+    long randomId)
+    : AggregateEvent<CreateChannelSaga, CreateChannelSagaId>
 {
-    public CreateChannelSuccessEvent(long reqMsgId,
-        long selfAuthKeyId,
-        long channelId,
-        long creatorUid,
-        int date,
-        string messageActionData,
-        long randomId
-    )
-    {
-        ChannelId = channelId;
-        CreatorUid = creatorUid;
-        Date = date;
-        MessageActionData = messageActionData;
-        RandomId = randomId;
-        ReqMsgId = reqMsgId;
-        SelfAuthKeyId = selfAuthKeyId;
-    }
-
-    public long ChannelId { get; }
-    public long CreatorUid { get; }
-    public int Date { get; }
-    public string MessageActionData { get; }
-    public long RandomId { get; }
-    public long ReqMsgId { get; }
-    public long SelfAuthKeyId { get; }
+    public long ChannelId { get; } = channelId;
+    public long CreatorUid { get; } = creatorUid;
+    public int Date { get; } = date;
+    public string MessageActionData { get; } = messageActionData;
+    public long RandomId { get; } = randomId;
+    public long ReqMsgId { get; } = reqMsgId;
+    public long SelfAuthKeyId { get; } = selfAuthKeyId;
 }

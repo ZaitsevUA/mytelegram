@@ -4,12 +4,12 @@ using MongoDB.Driver;
 
 namespace MyTelegram.Messenger.QueryServer.BackgroundServices;
 
-public class QueryServerMongoDbIndexesCreator : MongoDbIndexesCreatorBase
+public class QueryServerMongoDbIndexesCreator(
+    IMongoDatabase database,
+    IReadModelDescriptionProvider descriptionProvider,
+    IMongoDbEventPersistenceInitializer eventPersistenceInitializer)
+    : MongoDbIndexesCreatorBase(database, descriptionProvider, eventPersistenceInitializer)
 {
-    public QueryServerMongoDbIndexesCreator(IMongoDatabase database, IReadModelDescriptionProvider descriptionProvider, IMongoDbEventPersistenceInitializer eventPersistenceInitializer) : base(database, descriptionProvider, eventPersistenceInitializer)
-    {
-    }
-
     protected override async Task CreateAllIndexesCoreAsync()
     {
         await CreateIndexAsync<RpcResultReadModel>(p => p.UserId);

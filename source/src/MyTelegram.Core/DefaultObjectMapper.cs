@@ -1,24 +1,11 @@
 ﻿namespace MyTelegram.Core;
 
-public class DefaultObjectMapper<TContext> : DefaultObjectMapper, IObjectMapper<TContext>
-{
-    public DefaultObjectMapper(
-        IServiceProvider serviceProvider
-    ) : base(
-        serviceProvider)
-    {
-    }
-}
+public class DefaultObjectMapper<TContext>(IServiceProvider serviceProvider)
+    : DefaultObjectMapper(serviceProvider), IObjectMapper<TContext>;
 
-public class DefaultObjectMapper : IObjectMapper //, ITransientDependency
+public class DefaultObjectMapper(IServiceProvider serviceProvider) : IObjectMapper //, ITransientDependency
 {
-    public DefaultObjectMapper(
-        IServiceProvider serviceProvider)
-    {
-        ServiceProvider = serviceProvider;
-    }
-
-    protected IServiceProvider ServiceProvider { get; }
+    protected IServiceProvider ServiceProvider { get; } = serviceProvider;
 
     [return: NotNullIfNotNull("source")]
     public virtual TDestination? Map<TSource, TDestination>(TSource source)

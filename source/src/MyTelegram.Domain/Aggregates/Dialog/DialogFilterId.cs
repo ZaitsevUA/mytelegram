@@ -1,12 +1,8 @@
 ﻿namespace MyTelegram.Domain.Aggregates.Dialog;
 
 [JsonConverter(typeof(SystemTextJsonSingleValueObjectConverter<DialogFilterId>))]
-public class DialogFilterId : Identity<DialogFilterId>
+public class DialogFilterId(string value) : Identity<DialogFilterId>(value)
 {
-    public DialogFilterId(string value) : base(value)
-    {
-    }
-
     public static DialogFilterId Create(long ownerUserId, int filterId)
     {
         return NewDeterministic(GuidFactories.Deterministic.Namespaces.Commands,

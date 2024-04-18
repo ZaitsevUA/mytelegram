@@ -1,59 +1,41 @@
 ﻿namespace MyTelegram.Domain.Commands.Channel;
 
-public class CreateChannelCommand : RequestCommand2<ChannelAggregate, ChannelId, IExecutionResult>
+public class CreateChannelCommand(
+    ChannelId aggregateId,
+    RequestInfo requestInfo,
+    long channelId,
+    long creatorId,
+    string title,
+    bool broadcast,
+    bool megaGroup,
+    string? about,
+    string? address,
+    long accessHash,
+    int date,
+    long randomId,
+    string messageActionData,
+    int? ttlPeriod,
+    bool migratedFromChat,
+    long? migrateFromChatId,
+    int? migratedMaxId,
+    long? photoId)
+    : RequestCommand2<ChannelAggregate, ChannelId, IExecutionResult>(aggregateId, requestInfo)
 {
-    public CreateChannelCommand(ChannelId aggregateId,
-        RequestInfo requestInfo,
-        long channelId,
-        long creatorId,
-        string title,
-        bool broadcast,
-        bool megaGroup,
-        string? about,
-        string? address,
-        long accessHash,
-        int date,
-        long randomId,
-        string messageActionData,
-        int? ttlPeriod,
-        bool migratedFromChat,
-        long? migrateFromChatId,
-        int? migratedMaxId,
-        long? photoId) : base(aggregateId, requestInfo)
-    {
-        ChannelId = channelId;
-        CreatorId = creatorId;
-        Title = title;
-        Broadcast = broadcast;
-        MegaGroup = megaGroup;
-        About = about;
-        Address = address;
-        AccessHash = accessHash;
-        Date = date;
-        RandomId = randomId;
-        MessageActionData = messageActionData;
-        TtlPeriod = ttlPeriod;
-        MigratedFromChat = migratedFromChat;
-        MigrateFromChatId = migrateFromChatId;
-        MigratedMaxId = migratedMaxId;
-        PhotoId = photoId;
-    }
+    public string? About { get; } = about;
+    public long AccessHash { get; } = accessHash;
+    public string? Address { get; } = address;
 
-    public string? About { get; }
-    public long AccessHash { get; }
-    public string? Address { get; }
-
-    public bool Broadcast { get; }
-    public long ChannelId { get; }
-    public long CreatorId { get; }
-    public int Date { get; }
-    public bool MegaGroup { get; }
-    public string MessageActionData { get; }
-    public int? TtlPeriod { get; }
-    public bool MigratedFromChat { get; }
-    public long? MigrateFromChatId { get; }
-    public int? MigratedMaxId { get; }
-    public long? PhotoId { get; }
-    public long RandomId { get; }
-    public string Title { get; }
+    public bool Broadcast { get; } = broadcast;
+    public long ChannelId { get; } = channelId;
+    public long CreatorId { get; } = creatorId;
+    public int Date { get; } = date;
+    public bool MegaGroup { get; } = megaGroup;
+    public string MessageActionData { get; } = messageActionData;
+    public int? TtlPeriod { get; } = ttlPeriod;
+    public bool MigratedFromChat { get; } = migratedFromChat;
+    public long? MigrateFromChatId { get; } = migrateFromChatId;
+    public int? MigratedMaxId { get; } = migratedMaxId;
+    public long? PhotoId { get; } = photoId;
+    public long RandomId { get; } = randomId;
+    public string Title { get; } = title;
 }

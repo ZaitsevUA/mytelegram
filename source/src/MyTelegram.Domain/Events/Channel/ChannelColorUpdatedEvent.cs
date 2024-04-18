@@ -1,17 +1,15 @@
 ﻿namespace MyTelegram.Domain.Events.Channel;
 
-public class ChannelColorUpdatedEvent : RequestAggregateEvent2<ChannelAggregate, ChannelId>
+public class ChannelColorUpdatedEvent(
+    RequestInfo requestInfo,
+    long channelId,
+    PeerColor color,
+    long? backgroundEmojiId,
+    bool forProfile)
+    : RequestAggregateEvent2<ChannelAggregate, ChannelId>(requestInfo)
 {
-    public long ChannelId { get; }
-    public PeerColor Color { get; }
-    public long? BackgroundEmojiId { get; }
-    public bool ForProfile { get; }
-
-    public ChannelColorUpdatedEvent(RequestInfo requestInfo, long channelId, PeerColor color, long? backgroundEmojiId, bool forProfile) : base(requestInfo)
-    {
-        ChannelId = channelId;
-        Color = color;
-        BackgroundEmojiId = backgroundEmojiId;
-        ForProfile = forProfile;
-    }
+    public long ChannelId { get; } = channelId;
+    public PeerColor Color { get; } = color;
+    public long? BackgroundEmojiId { get; } = backgroundEmojiId;
+    public bool ForProfile { get; } = forProfile;
 }

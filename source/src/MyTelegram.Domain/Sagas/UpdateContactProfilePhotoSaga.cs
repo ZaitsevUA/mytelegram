@@ -1,23 +1,20 @@
 ﻿namespace MyTelegram.Domain.Sagas;
 
-public class UpdateContactProfilePhotoSaga : MyInMemoryAggregateSaga<UpdateContactProfilePhotoSaga,
-        UpdateContactProfilePhotoSagaId, UpdateContactProfilePhotoSagaLocator>,
-    ISagaIsStartedBy<ContactAggregate, ContactId, ContactProfilePhotoChangedEvent>
+public class UpdateContactProfilePhotoSaga(
+    UpdateContactProfilePhotoSagaId id,
+    IEventStore eventStore,
+    IIdGenerator idGenerator)
+    : MyInMemoryAggregateSaga<UpdateContactProfilePhotoSaga,
+            UpdateContactProfilePhotoSagaId, UpdateContactProfilePhotoSagaLocator>(id, eventStore),
+        ISagaIsStartedBy<ContactAggregate, ContactId, ContactProfilePhotoChangedEvent>
 {
-    private readonly IIdGenerator _idGenerator;
-
-    public UpdateContactProfilePhotoSaga(UpdateContactProfilePhotoSagaId id, IEventStore eventStore, IIdGenerator idGenerator) : base(id, eventStore)
-    {
-        _idGenerator = idGenerator;
-    }
-
     public async Task HandleAsync(IDomainEvent<ContactAggregate, ContactId, ContactProfilePhotoChangedEvent> domainEvent, ISagaContext sagaContext, CancellationToken cancellationToken)
     {
         if (domainEvent.AggregateEvent.Suggest)
         {
             var ownerPeerId = domainEvent.AggregateEvent.SelfUserId;
 
-            var outMessageId = await _idGenerator.NextIdAsync(IdType.MessageId, ownerPeerId, cancellationToken: cancellationToken);
+            var outMessageId = await idGenerator.NextIdAsync(IdType.MessageId, ownerPeerId, cancellationToken: cancellationToken);
             var randomId = Random.Shared.NextInt64();
             var aggregateId = MessageId.Create(ownerPeerId, outMessageId);
             var ownerPeer = new Peer(PeerType.User, ownerPeerId);

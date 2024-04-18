@@ -5,22 +5,13 @@ using MyTelegram.Schema;
 
 namespace MyTelegram.Services.Services;
 
-public class ExceptionProcessor : IExceptionProcessor
+public class ExceptionProcessor(
+    ILogger<ExceptionProcessor> logger,
+    IObjectMessageSender objectMessageSender,
+    IEventBus eventBus)
+    : IExceptionProcessor
 {
-    private readonly IEventBus _eventBus;
-    private readonly ILogger<ExceptionProcessor> _logger;
-
-    private readonly IObjectMessageSender _objectMessageSender;
-
     //private const int BufferSize = 1024 * 4;
-    public ExceptionProcessor(ILogger<ExceptionProcessor> logger,
-        IObjectMessageSender objectMessageSender,
-        IEventBus eventBus)
-    {
-        _logger = logger;
-        _objectMessageSender = objectMessageSender;
-        _eventBus = eventBus;
-    }
 
     public async Task HandleExceptionAsync(Exception ex,
         IObject requestData,
@@ -30,7 +21,7 @@ public class ExceptionProcessor : IExceptionProcessor
         long authKeyId,
         bool isInMsgContainer)
     {
-        _logger.LogError(ex,
+        logger.LogError(ex,
             "Process request {ReqMsgId} {IsInMsgContainer} failed,handler={HandlerName},userId={UserId},authKeyId={AuthKeyId:x2},requestData={@RequestData}",
             reqMsgId,
             isInMsgContainer ? "in msgContainer" : string.Empty,
@@ -48,7 +39,7 @@ public class ExceptionProcessor : IExceptionProcessor
                 //errorCode = MyTelegramServerDomainConsts.InternalErrorCode;
                 //errorMessage = MyTelegramServerDomainConsts.InternalErrorMessage;
                 var eventData = new DuplicateCommandEvent(userId, reqMsgId);
-                await _eventBus.PublishAsync(eventData);
+                await eventBus.PublishAsync(eventData);
                 return;
             //break;
             case UserFriendlyException userFriendlyException:
@@ -97,6 +88,6 @@ public class ExceptionProcessor : IExceptionProcessor
 
         var rpcError = new TRpcError { ErrorCode = errorCode, ErrorMessage = errorMessage };
         var rpcResult = new TRpcResult { ReqMsgId = reqMsgId, Result = rpcError };
-        await _objectMessageSender.SendMessageToPeerAsync(reqMsgId, rpcResult);
+        await objectMessageSender.SendMessageToPeerAsync(reqMsgId, rpcResult);
     }
 }

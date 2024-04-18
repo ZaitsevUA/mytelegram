@@ -1,14 +1,9 @@
 ﻿namespace MyTelegram.Domain.Events.Dialog;
 
-public class ReadOutboxMaxIdUpdatedEvent : RequestAggregateEvent2<DialogAggregate, DialogId>
+public class ReadOutboxMaxIdUpdatedEvent(RequestInfo requestInfo, long ownerUserId, long toPeerId, int readOutboxMaxId)
+    : RequestAggregateEvent2<DialogAggregate, DialogId>(requestInfo)
 {
-    public long OwnerUserId { get; }
-    public long ToPeerId { get; }
-    public int ReadOutboxMaxId { get; }
-    public ReadOutboxMaxIdUpdatedEvent(RequestInfo requestInfo, long ownerUserId, long toPeerId, int readOutboxMaxId) : base(requestInfo)
-    {
-        OwnerUserId = ownerUserId;
-        ToPeerId = toPeerId;
-        ReadOutboxMaxId = readOutboxMaxId;
-    }
+    public long OwnerUserId { get; } = ownerUserId;
+    public long ToPeerId { get; } = toPeerId;
+    public int ReadOutboxMaxId { get; } = readOutboxMaxId;
 }

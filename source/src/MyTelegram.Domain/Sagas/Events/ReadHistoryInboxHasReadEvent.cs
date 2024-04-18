@@ -1,17 +1,12 @@
 ﻿namespace MyTelegram.Domain.Sagas.Events;
 
-public class ReadHistoryInboxHasReadEvent : AggregateEvent<ReadHistorySaga, ReadHistorySagaId>
+public class ReadHistoryInboxHasReadEvent(
+    bool isOut,
+    bool senderIsBot,
+    bool needReadLatestNoneBotOutboxMessage)
+    : AggregateEvent<ReadHistorySaga, ReadHistorySagaId>
 {
-    public ReadHistoryInboxHasReadEvent(bool isOut,
-        bool senderIsBot,
-        bool needReadLatestNoneBotOutboxMessage)
-    {
-        IsOut = isOut;
-        SenderIsBot = senderIsBot;
-        NeedReadLatestNoneBotOutboxMessage = needReadLatestNoneBotOutboxMessage;
-    }
-
-    public bool IsOut { get; }
-    public bool NeedReadLatestNoneBotOutboxMessage { get; }
-    public bool SenderIsBot { get; }
+    public bool IsOut { get; } = isOut;
+    public bool NeedReadLatestNoneBotOutboxMessage { get; } = needReadLatestNoneBotOutboxMessage;
+    public bool SenderIsBot { get; } = senderIsBot;
 }

@@ -1,12 +1,7 @@
 ﻿namespace MyTelegram.EventBus;
 
 [AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface)]
-public class EventNameAttribute : Attribute
+public class EventNameAttribute(string name) : Attribute
 {
-    public EventNameAttribute(string name)
-    {
-        Name = name;
-    }
-
-    public string Name { get; }
+    public string Name { get; } = name;
 }

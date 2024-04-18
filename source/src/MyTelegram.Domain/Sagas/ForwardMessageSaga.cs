@@ -1,19 +1,13 @@
 ﻿using MyTelegram.Domain.Aggregates.Temp;
 
 namespace MyTelegram.Domain.Sagas;
-public class MessageReplyCreatedEvent : AggregateEvent<ForwardMessageSaga, ForwardMessageSagaId>
+public class MessageReplyCreatedEvent(long postChannelId, int postMessageId, long channelId, int messageId)
+    : AggregateEvent<ForwardMessageSaga, ForwardMessageSagaId>
 {
-    public long PostChannelId { get; }
-    public int PostMessageId { get; }
-    public long ChannelId { get; }
-    public int MessageId { get; }
-    public MessageReplyCreatedEvent(long postChannelId, int postMessageId, long channelId, int messageId)
-    {
-        PostChannelId = postChannelId;
-        PostMessageId = postMessageId;
-        ChannelId = channelId;
-        MessageId = messageId;
-    }
+    public long PostChannelId { get; } = postChannelId;
+    public int PostMessageId { get; } = postMessageId;
+    public long ChannelId { get; } = channelId;
+    public int MessageId { get; } = messageId;
 }
 
 public class ForwardMessageSaga : MyInMemoryAggregateSaga<ForwardMessageSaga, ForwardMessageSagaId, ForwardMessageSagaLocator>,

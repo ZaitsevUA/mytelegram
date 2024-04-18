@@ -1,35 +1,25 @@
 ﻿namespace MyTelegram.Domain.Events.User;
 
-public class CheckUserStatusCompletedEvent : RequestAggregateEvent2<UserAggregate, UserId>
+public class CheckUserStatusCompletedEvent(
+    RequestInfo requestInfo,
+    long userId,
+    long accessHash,
+    string phoneNumber,
+    string firstName,
+    string? lastName,
+    bool hasPassword,
+    bool isUserLocked)
+    : RequestAggregateEvent2<UserAggregate, UserId>(requestInfo)
 {
-    public CheckUserStatusCompletedEvent(
-        RequestInfo requestInfo,
-        long userId,
-        long accessHash,
-        string phoneNumber,
-        string firstName,
-        string? lastName,
-        //string userName,
-        bool hasPassword,
-        bool isUserLocked) : base(requestInfo)
-    {
-        UserId = userId;
-        AccessHash = accessHash;
-        PhoneNumber = phoneNumber;
-        FirstName = firstName;
-        LastName = lastName;
-        HasPassword = hasPassword;
-        IsUserLocked = isUserLocked;
-
-    }
+    //string userName,
 
 
-    public string FirstName { get; }
-    public bool HasPassword { get; }
-    public bool IsUserLocked { get; }
-    public string? LastName { get; }
-    public string PhoneNumber { get; }
+    public string FirstName { get; } = firstName;
+    public bool HasPassword { get; } = hasPassword;
+    public bool IsUserLocked { get; } = isUserLocked;
+    public string? LastName { get; } = lastName;
+    public string PhoneNumber { get; } = phoneNumber;
 
-    public long UserId { get; }
-    public long AccessHash { get; }
+    public long UserId { get; } = userId;
+    public long AccessHash { get; } = accessHash;
 }

@@ -1,17 +1,10 @@
 ﻿namespace MyTelegram.Messenger.CommandServer.DomainEventHandlers;
-public class AllDomainEventsHandler : ISubscribeSynchronousToAll
+public class AllDomainEventsHandler(
+    IEventBus eventBus,
+    IDomainEventMessageFactory domainEventMessageFactory,
+    ILogger<AllDomainEventsHandler> logger)
+    : ISubscribeSynchronousToAll
 {
-    private readonly IEventBus _eventBus;
-    private readonly IDomainEventMessageFactory _domainEventMessageFactory;
-    private readonly ILogger<AllDomainEventsHandler> _logger;
-
-    public AllDomainEventsHandler(IEventBus eventBus, IDomainEventMessageFactory domainEventMessageFactory, ILogger<AllDomainEventsHandler> logger)
-    {
-        _eventBus = eventBus;
-        _domainEventMessageFactory = domainEventMessageFactory;
-        _logger = logger;
-    }
-
     public async Task HandleAsync(IReadOnlyCollection<IDomainEvent> domainEvents, CancellationToken cancellationToken)
     {
         foreach (var domainEvent in domainEvents)
@@ -22,14 +15,14 @@ public class AllDomainEventsHandler : ISubscribeSynchronousToAll
                 var totalMilliseconds = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() - requestInfo.RequestInfo.Date;
                 if (totalMilliseconds > 500)
                 {
-                    _logger.LogInformation("Process domain event '{DomainEvent}' is too slow,time={Timespan}ms,reqMsgId={ReqMsgId}",
+                    logger.LogInformation("Process domain event '{DomainEvent}' is too slow,time={Timespan}ms,reqMsgId={ReqMsgId}",
                         domainEvent.GetAggregateEvent().GetType().Name,
                         totalMilliseconds,
                         requestInfo.RequestInfo.ReqMsgId);
                 }
             }
-            var message = _domainEventMessageFactory.CreateDomainEventMessage(domainEvent);
-            await _eventBus.PublishAsync(message);
+            var message = domainEventMessageFactory.CreateDomainEventMessage(domainEvent);
+            await eventBus.PublishAsync(message);
         }
     }
 }

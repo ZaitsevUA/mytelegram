@@ -1,23 +1,14 @@
 ﻿namespace MyTelegram.GatewayServer;
 
-public class WebsocketMiddleware : IMiddleware
+public class WebsocketMiddleware(
+    IMtpMessageParser messageParser,
+    IMtpMessageDispatcher messageDispatcher,
+    IClientManager clientManager,
+    IMessageQueueProcessor<ClientDisconnectedEvent> messageQueueProcessor)
+    : IMiddleware
 {
-    private readonly IClientManager _clientManager;
-    private readonly IMtpMessageDispatcher _messageDispatcher;
-    private readonly IMtpMessageParser _messageParser;
-    private readonly IMessageQueueProcessor<ClientDisconnectedEvent> _messageQueueProcessor;
     private readonly string _subProtocol = "binary";
     private bool _isWebSocketConnected;
-
-    public WebsocketMiddleware(IMtpMessageParser messageParser,
-        IMtpMessageDispatcher messageDispatcher,
-        IClientManager clientManager, IMessageQueueProcessor<ClientDisconnectedEvent> messageQueueProcessor)
-    {
-        _messageParser = messageParser;
-        _messageDispatcher = messageDispatcher;
-        _clientManager = clientManager;
-        _messageQueueProcessor = messageQueueProcessor;
-    }
 
     public async Task InvokeAsync(HttpContext context,
         RequestDelegate next)
@@ -35,7 +26,7 @@ public class WebsocketMiddleware : IMiddleware
                     ClientType = ClientType.WebSocket,
                     ClientIp = context.Connection.RemoteIpAddress?.ToString() ?? string.Empty
                 };
-                _clientManager.AddClient(context.Connection.Id, clientData);
+                clientManager.AddClient(context.Connection.Id, clientData);
 
                 await ProcessWebSocketAsync(webSocket, clientData);
             }
@@ -53,7 +44,7 @@ public class WebsocketMiddleware : IMiddleware
         {
             mtpMessage.ConnectionId = clientData.ConnectionId;
             mtpMessage.ClientIp = clientData.ClientIp;
-            return _messageDispatcher.DispatchAsync(mtpMessage);
+            return messageDispatcher.DispatchAsync(mtpMessage);
         }
 
         return Task.CompletedTask;
@@ -66,8 +57,8 @@ public class WebsocketMiddleware : IMiddleware
         var writeTask = WritePipeAsync(webSocket, pipe.Writer);
         var readTask = ReadPipeAsync(pipe.Reader, clientData);
         await Task.WhenAll(writeTask, readTask);
-        _clientManager.RemoveClient(clientData.ConnectionId);
-        _messageQueueProcessor.Enqueue(new ClientDisconnectedEvent(clientData.ConnectionId, clientData.AuthKeyId, 0), clientData.AuthKeyId);
+        clientManager.RemoveClient(clientData.ConnectionId);
+        messageQueueProcessor.Enqueue(new ClientDisconnectedEvent(clientData.ConnectionId, clientData.AuthKeyId, 0), clientData.AuthKeyId);
     }
 
     private async Task ReadPipeAsync(PipeReader reader,
@@ -89,7 +80,7 @@ public class WebsocketMiddleware : IMiddleware
 
             if (!clientData.IsFirstPacketParsed)
             {
-                _messageParser.ProcessFirstUnencryptedPacket(ref buffer, clientData);
+                messageParser.ProcessFirstUnencryptedPacket(ref buffer, clientData);
             }
 
             while (TryParseMessage(ref buffer, clientData, out var mtpMessage))
@@ -127,7 +118,7 @@ public class WebsocketMiddleware : IMiddleware
             return false;
         }
 
-        return _messageParser.TryParse(ref buffer, clientData, out mtpMessage);
+        return messageParser.TryParse(ref buffer, clientData, out mtpMessage);
     }
 
     private async Task WritePipeAsync(WebSocket webSocket,

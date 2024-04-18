@@ -1,40 +1,26 @@
 ﻿namespace MyTelegram.Domain.Sagas.Events;
 
-public class InboxMessageEditCompletedEvent : AggregateEvent<EditMessageSaga, EditMessageSagaId>
+public class InboxMessageEditCompletedEvent(
+    long ownerPeerId,
+    long senderPeerId,
+    int messageId,
+    string message,
+    int editDate,
+    int pts,
+    Peer toPeer,
+    byte[]? entities,
+    byte[]? media,
+    MessageFwdHeader? fwdHeader)
+    : AggregateEvent<EditMessageSaga, EditMessageSagaId>
 {
-    public InboxMessageEditCompletedEvent(
-        long ownerPeerId,
-        long senderPeerId,
-        int messageId,
-        string message,
-        int editDate,
-        int pts,
-        Peer toPeer,
-        byte[]? entities,
-        byte[]? media,
-        MessageFwdHeader? fwdHeader
-    )
-    {
-        OwnerPeerId = ownerPeerId;
-        SenderPeerId = senderPeerId;
-        MessageId = messageId;
-        Message = message;
-        Pts = pts;
-        EditDate = editDate;
-        ToPeer = toPeer;
-        Entities = entities;
-        Media = media;
-        FwdHeader = fwdHeader;
-    }
-
-    public int EditDate { get; }
-    public Peer ToPeer { get; }
-    public byte[]? Entities { get; }
-    public byte[]? Media { get; }
-    public MessageFwdHeader? FwdHeader { get; }
-    public string Message { get; }
-    public long OwnerPeerId { get; }
-    public long SenderPeerId { get; }
-    public int MessageId { get; }
-    public int Pts { get; }
+    public int EditDate { get; } = editDate;
+    public Peer ToPeer { get; } = toPeer;
+    public byte[]? Entities { get; } = entities;
+    public byte[]? Media { get; } = media;
+    public MessageFwdHeader? FwdHeader { get; } = fwdHeader;
+    public string Message { get; } = message;
+    public long OwnerPeerId { get; } = ownerPeerId;
+    public long SenderPeerId { get; } = senderPeerId;
+    public int MessageId { get; } = messageId;
+    public int Pts { get; } = pts;
 }

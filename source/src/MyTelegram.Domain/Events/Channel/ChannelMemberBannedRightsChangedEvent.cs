@@ -1,40 +1,28 @@
 ﻿namespace MyTelegram.Domain.Events.Channel;
 
-public class ChannelMemberBannedRightsChangedEvent : RequestAggregateEvent2<ChannelMemberAggregate, ChannelMemberId>, IHasCorrelationId
+public class ChannelMemberBannedRightsChangedEvent(
+    RequestInfo requestInfo,
+    long adminId,
+    long channelId,
+    long memberUserId,
+    bool kicked,
+    long kickedBy,
+    bool left,
+    bool banned,
+    bool removedFromKicked,
+    bool removedFromBanned,
+    ChatBannedRights bannedRights)
+    : RequestAggregateEvent2<ChannelMemberAggregate, ChannelMemberId>(requestInfo), IHasCorrelationId
 {
-    public ChannelMemberBannedRightsChangedEvent(RequestInfo requestInfo,
-        long adminId,
-        long channelId,
-        long memberUserId,
-        bool kicked,
-        long kickedBy,
-        bool left,
-        bool banned,
-        bool removedFromKicked,
-        bool removedFromBanned,
-        ChatBannedRights bannedRights) : base(requestInfo)
-    {
-        AdminId = adminId;
-        ChannelId = channelId;
-        MemberUserId = memberUserId;
-        Kicked = kicked;
-        KickedBy = kickedBy;
-        Left = left;
-        Banned = banned;
-        RemovedFromKicked = removedFromKicked;
-        RemovedFromBanned = removedFromBanned;
-        BannedRights = bannedRights;
-    }
+    public long AdminId { get; } = adminId;
+    public ChatBannedRights BannedRights { get; } = bannedRights;
+    public long ChannelId { get; } = channelId;
+    public long MemberUserId { get; } = memberUserId;
+    public bool Kicked { get; } = kicked;
+    public long KickedBy { get; } = kickedBy;
+    public bool Left { get; } = left;
 
-    public long AdminId { get; }
-    public ChatBannedRights BannedRights { get; }
-    public long ChannelId { get; }
-    public long MemberUserId { get; }
-    public bool Kicked { get; }
-    public long KickedBy { get; }
-    public bool Left { get; }
-
-    public bool Banned { get; }
-    public bool RemovedFromKicked { get; }
-    public bool RemovedFromBanned { get; }
+    public bool Banned { get; } = banned;
+    public bool RemovedFromKicked { get; } = removedFromKicked;
+    public bool RemovedFromBanned { get; } = removedFromBanned;
 }

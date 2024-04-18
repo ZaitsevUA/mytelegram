@@ -1,11 +1,9 @@
 ﻿namespace MyTelegram.Domain.Aggregates.Messaging;
 
-public class MessageViewLogAggregate : AggregateRoot<MessageViewLogAggregate, MessageViewLogId>,
-    IApply<CheckMessageViewLogSuccessEvent>
+public class MessageViewLogAggregate(MessageViewLogId id)
+    : AggregateRoot<MessageViewLogAggregate, MessageViewLogId>(id),
+        IApply<CheckMessageViewLogSuccessEvent>
 {
-    public MessageViewLogAggregate(MessageViewLogId id) : base(id)
-    {
-    }
     public void Apply(CheckMessageViewLogSuccessEvent aggregateEvent)
     {
     }

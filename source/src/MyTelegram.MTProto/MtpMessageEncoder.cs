@@ -1,17 +1,11 @@
 ﻿namespace MyTelegram.MTProto;
 
-public class MtpMessageEncoder : IMtpMessageEncoder
+public class MtpMessageEncoder(
+    IAesHelper aesHelper,
+    IMessageIdHelper messageIdHelper)
+    : IMtpMessageEncoder
 {
     private static readonly byte[] DefaultAuthKeyIdBytes = new byte[8];
-    private readonly IAesHelper _aesHelper;
-    private readonly IMessageIdHelper _messageIdHelper;
-
-    public MtpMessageEncoder(IAesHelper aesHelper,
-        IMessageIdHelper messageIdHelper)
-    {
-        _aesHelper = aesHelper;
-        _messageIdHelper = messageIdHelper;
-    }
 
     public int Encode(IClientData d,
         EncryptedMessageResponse m,
@@ -55,7 +49,7 @@ public class MtpMessageEncoder : IMtpMessageEncoder
         UnencryptedMessageResponse message,
         Span<byte> encodedBytes)
     {
-        var messageIdBytes = BitConverter.GetBytes(_messageIdHelper.GenerateMessageId());
+        var messageIdBytes = BitConverter.GetBytes(messageIdHelper.GenerateMessageId());
         var messageDataLengthBytes = BitConverter.GetBytes(message.Data.Length);
         var totalCount = EncodeToProtocolAbridgedBytesCore(encodedBytes,
             DefaultAuthKeyIdBytes,
@@ -63,7 +57,7 @@ public class MtpMessageEncoder : IMtpMessageEncoder
             messageDataLengthBytes,
             message.Data);
 
-        _aesHelper.Ctr128Encrypt(encodedBytes[..totalCount], d.ReceiveKey, d.ReceiveCtrState);
+        aesHelper.Ctr128Encrypt(encodedBytes[..totalCount], d.ReceiveKey, d.ReceiveCtrState);
 
         return totalCount;
     }
@@ -75,7 +69,7 @@ public class MtpMessageEncoder : IMtpMessageEncoder
         var totalCount = EncodeToProtocolAbridgedBytesCore(encodedBytes, message.Data);
         if (d.ObfuscationEnabled)
         {
-            _aesHelper.Ctr128Encrypt(encodedBytes[..totalCount], d.ReceiveKey, d.ReceiveCtrState);
+            aesHelper.Ctr128Encrypt(encodedBytes[..totalCount], d.ReceiveKey, d.ReceiveCtrState);
 
             return totalCount;
         }
@@ -123,7 +117,7 @@ public class MtpMessageEncoder : IMtpMessageEncoder
         UnencryptedMessageResponse message,
         Span<byte> encodedBytes)
     {
-        var messageIdBytes = BitConverter.GetBytes(_messageIdHelper.GenerateMessageId());
+        var messageIdBytes = BitConverter.GetBytes(messageIdHelper.GenerateMessageId());
         var messageDataLengthBytes = BitConverter.GetBytes(message.Data.Length);
         var totalCount = EncodeToProtocolIntermediateBytesCore(encodedBytes,
             DefaultAuthKeyIdBytes,
@@ -133,7 +127,7 @@ public class MtpMessageEncoder : IMtpMessageEncoder
 
         if (d.ObfuscationEnabled)
         {
-            _aesHelper.Ctr128Encrypt(encodedBytes[..totalCount], d.ReceiveKey, d.ReceiveCtrState);
+            aesHelper.Ctr128Encrypt(encodedBytes[..totalCount], d.ReceiveKey, d.ReceiveCtrState);
         }
 
         return totalCount;
@@ -146,7 +140,7 @@ public class MtpMessageEncoder : IMtpMessageEncoder
         var totalCount = EncodeToProtocolIntermediateBytesCore(encodedBytes, message.Data);
         if (d.ObfuscationEnabled)
         {
-            _aesHelper.Ctr128Encrypt(encodedBytes[..totalCount], d.ReceiveKey, d.ReceiveCtrState);
+            aesHelper.Ctr128Encrypt(encodedBytes[..totalCount], d.ReceiveKey, d.ReceiveCtrState);
         }
 
         return totalCount;

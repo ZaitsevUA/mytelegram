@@ -1,64 +1,44 @@
 ﻿namespace MyTelegram.Domain.Commands.Device;
 
-public class CreateDeviceCommand : RequestCommand2<DeviceAggregate, DeviceId, IExecutionResult>
+public class CreateDeviceCommand(
+    DeviceId aggregateId,
+    RequestInfo requestInfo,
+    long permAuthKeyId,
+    long tempAuthKeyId,
+    long userId,
+    int apiId,
+    string appName,
+    string appVersion,
+    long hash,
+    bool officialApp,
+    bool passwordPending,
+    string deviceModel,
+    string platform,
+    string systemVersion,
+    string systemLangCode,
+    string langPack,
+    string langCode,
+    string ip,
+    int layer)
+    : RequestCommand2<DeviceAggregate, DeviceId, IExecutionResult>(aggregateId, requestInfo)
 {
-    public CreateDeviceCommand(DeviceId aggregateId,
-        RequestInfo requestInfo,
-        long permAuthKeyId,
-        long tempAuthKeyId,
-        long userId,
-        int apiId,
-        string appName,
-        string appVersion,
-        long hash,
-        bool officialApp,
-        bool passwordPending,
-        string deviceModel,
-        string platform,
-        string systemVersion,
-        string systemLangCode,
-        string langPack,
-        string langCode,
-        string ip,
-        int layer
-    ) : base(aggregateId, requestInfo)
-    {
-        PermAuthKeyId = permAuthKeyId;
-        TempAuthKeyId = tempAuthKeyId;
-        UserId = userId;
-        ApiId = apiId;
-        AppName = appName;
-        AppVersion = appVersion;
-        Hash = hash;
-        OfficialApp = officialApp;
-        PasswordPending = passwordPending;
-        DeviceModel = deviceModel;
-        Platform = platform;
-        SystemVersion = systemVersion;
-        SystemLangCode = systemLangCode;
-        LangPack = langPack;
-        LangCode = langCode;
-        Ip = ip;
-        Layer = layer;
-    }
-
-    public int ApiId { get; }
-    public string AppName { get; }
-    public string AppVersion { get; }
-    public string DeviceModel { get; }
-    public long Hash { get; }
-    public string Ip { get; }
-    public string LangCode { get; }
-    public string LangPack { get; }
-    public int Layer { get; }
-    public bool OfficialApp { get; }
-    public bool PasswordPending { get; }
-    public long PermAuthKeyId { get; }
-    public string Platform { get; }
-    public string SystemLangCode { get; }
-    public string SystemVersion { get; }
-    public long TempAuthKeyId { get; }
-    public long UserId { get; }
+    public int ApiId { get; } = apiId;
+    public string AppName { get; } = appName;
+    public string AppVersion { get; } = appVersion;
+    public string DeviceModel { get; } = deviceModel;
+    public long Hash { get; } = hash;
+    public string Ip { get; } = ip;
+    public string LangCode { get; } = langCode;
+    public string LangPack { get; } = langPack;
+    public int Layer { get; } = layer;
+    public bool OfficialApp { get; } = officialApp;
+    public bool PasswordPending { get; } = passwordPending;
+    public long PermAuthKeyId { get; } = permAuthKeyId;
+    public string Platform { get; } = platform;
+    public string SystemLangCode { get; } = systemLangCode;
+    public string SystemVersion { get; } = systemVersion;
+    public long TempAuthKeyId { get; } = tempAuthKeyId;
+    public long UserId { get; } = userId;
 
     protected override IEnumerable<byte[]> GetSourceIdComponents()
     {

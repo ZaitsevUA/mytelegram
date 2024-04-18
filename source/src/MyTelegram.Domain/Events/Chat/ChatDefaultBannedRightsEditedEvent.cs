@@ -1,19 +1,13 @@
 ﻿namespace MyTelegram.Domain.Events.Chat;
 
-public class ChatDefaultBannedRightsEditedEvent : RequestAggregateEvent2<ChatAggregate, ChatId>
+public class ChatDefaultBannedRightsEditedEvent(
+    RequestInfo requestInfo,
+    long chatId,
+    ChatBannedRights defaultBannedRights,
+    int version)
+    : RequestAggregateEvent2<ChatAggregate, ChatId>(requestInfo)
 {
-    public ChatDefaultBannedRightsEditedEvent(RequestInfo requestInfo,
-        long chatId,
-        ChatBannedRights defaultBannedRights,
-        int version
-    ) : base(requestInfo)
-    {
-        ChatId = chatId;
-        DefaultBannedRights = defaultBannedRights;
-        Version = version;
-    }
-
-    public long ChatId { get; }
-    public ChatBannedRights DefaultBannedRights { get; }
-    public int Version { get; }
+    public long ChatId { get; } = chatId;
+    public ChatBannedRights DefaultBannedRights { get; } = defaultBannedRights;
+    public int Version { get; } = version;
 }

@@ -1,22 +1,14 @@
 ﻿namespace MyTelegram.Domain.Events.Pts;
 
-public class QtsIncrementedEvent : RequestAggregateEvent2<PtsAggregate, PtsId>
+public class QtsIncrementedEvent(
+    RequestInfo requestInfo,
+    long peerId,
+    int qts,
+    string encryptedMessageBoxId)
+    : RequestAggregateEvent2<PtsAggregate, PtsId>(requestInfo)
 {
-    public QtsIncrementedEvent(
-        RequestInfo requestInfo,
-        long peerId,
-        int qts,
-        string encryptedMessageBoxId) : base(requestInfo)
-    {
-        PeerId = peerId;
-        Qts = qts;
-        EncryptedMessageBoxId = encryptedMessageBoxId;
+    public string EncryptedMessageBoxId { get; } = encryptedMessageBoxId;
 
-    }
-
-    public string EncryptedMessageBoxId { get; }
-
-    public long PeerId { get; }
-    public int Qts { get; }
-
+    public long PeerId { get; } = peerId;
+    public int Qts { get; } = qts;
 }

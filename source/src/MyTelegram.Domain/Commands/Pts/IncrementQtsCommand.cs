@@ -1,14 +1,10 @@
 ﻿namespace MyTelegram.Domain.Commands.Pts;
 
-public class IncrementQtsCommand : RequestCommand2<PtsAggregate, PtsId, IExecutionResult>
+public class IncrementQtsCommand(
+    PtsId aggregateId,
+    RequestInfo requestInfo,
+    string encryptedMessageBoxId)
+    : RequestCommand2<PtsAggregate, PtsId, IExecutionResult>(aggregateId, requestInfo)
 {
-    public IncrementQtsCommand(PtsId aggregateId,
-        RequestInfo requestInfo,
-        string encryptedMessageBoxId
-    ) : base(aggregateId, requestInfo)
-    {
-        EncryptedMessageBoxId = encryptedMessageBoxId;
-    }
-
-    public string EncryptedMessageBoxId { get; }
+    public string EncryptedMessageBoxId { get; } = encryptedMessageBoxId;
 }

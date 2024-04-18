@@ -1,51 +1,36 @@
 ﻿namespace MyTelegram.Domain.Events.Messaging;
 
-public class OutboxMessagePinnedUpdatedEvent : RequestAggregateEvent2<MessageAggregate, MessageId>
+public class OutboxMessagePinnedUpdatedEvent(
+    RequestInfo requestInfo,
+    long ownerPeerId,
+    int messageId,
+    bool pinned,
+    bool pmOneSide,
+    bool silent,
+    int date,
+    IReadOnlyList<InboxItem> inboxItems,
+    long senderPeerId,
+    int senderMessageId,
+    Peer toPeer,
+    int pts)
+    : RequestAggregateEvent2<MessageAggregate, MessageId>(requestInfo)
 {
-    public OutboxMessagePinnedUpdatedEvent(
-        RequestInfo requestInfo,
-        long ownerPeerId,
-        int messageId,
-        //long channelId,
-        bool pinned,
-        bool pmOneSide,
-        bool silent,
-        int date,
-        IReadOnlyList<InboxItem> inboxItems,
-        long senderPeerId,
-        int senderMessageId,
-        Peer toPeer,
-        int pts) : base(requestInfo)
-    {
-        OwnerPeerId = ownerPeerId;
-        MessageId = messageId;
-        //ChannelId = channelId;
-        Pinned = pinned;
-        PmOneSide = pmOneSide;
-        Silent = silent;
-        Date = date;
-        InboxItems = inboxItems;
-        SenderPeerId = senderPeerId;
-        SenderMessageId = senderMessageId;
-        ToPeer = toPeer;
-        Pts = pts;
+    //long channelId,
+    //ChannelId = channelId;
 
-    }
+    public int Date { get; } = date;
+    public IReadOnlyList<InboxItem> InboxItems { get; } = inboxItems;
 
-    public int Date { get; }
-    public IReadOnlyList<InboxItem> InboxItems { get; }
+    public int MessageId { get; } = messageId;
 
-    public int MessageId { get; }
-
-    public long OwnerPeerId { get; }
+    public long OwnerPeerId { get; } = ownerPeerId;
 
     //public long ChannelId { get; }
-    public bool Pinned { get; }
-    public bool PmOneSide { get; }
-    public int Pts { get; }
-    public int SenderMessageId { get; }
-    public Peer ToPeer { get; }
-    public long SenderPeerId { get; }
-    public bool Silent { get; }
-
+    public bool Pinned { get; } = pinned;
+    public bool PmOneSide { get; } = pmOneSide;
+    public int Pts { get; } = pts;
+    public int SenderMessageId { get; } = senderMessageId;
+    public Peer ToPeer { get; } = toPeer;
+    public long SenderPeerId { get; } = senderPeerId;
+    public bool Silent { get; } = silent;
 }

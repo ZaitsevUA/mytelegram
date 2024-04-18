@@ -7,12 +7,8 @@ using MyTelegram.Schema.Extensions;
 namespace MyTelegram.ReadModel.ReadModelLocators;
 
 [JsonConverter(typeof(SingleValueObject<ReplyId>))]
-public class ReplyId : Identity<ReplyId>
+public class ReplyId(string value) : Identity<ReplyId>(value)
 {
-    public ReplyId(string value) : base(value)
-    {
-    }
-
     public static ReplyId Create(long channelId, long messageId)
     {
         return NewDeterministic(GuidFactories.Deterministic.Namespaces.Commands, $"reply-{channelId}-{messageId}");

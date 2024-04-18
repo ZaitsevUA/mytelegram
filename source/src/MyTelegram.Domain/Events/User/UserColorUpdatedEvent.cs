@@ -1,15 +1,11 @@
 ﻿namespace MyTelegram.Domain.Events.User;
 
-public class UserColorUpdatedEvent : RequestAggregateEvent2<UserAggregate, UserId>
+public class UserColorUpdatedEvent(RequestInfo requestInfo, long userId, PeerColor? color, bool forProfile)
+    : RequestAggregateEvent2<UserAggregate, UserId>(requestInfo)
 {
-    public long UserId { get; }
-    public PeerColor? Color { get; }
-    public bool ForProfile { get; }
+    public long UserId { get; } = userId;
+    public PeerColor? Color { get; } = color;
+    public bool ForProfile { get; } = forProfile;
 
-    public UserColorUpdatedEvent(RequestInfo requestInfo,long userId,PeerColor? color,bool forProfile /*int color, long? backgroundEmojiId*/) : base(requestInfo)
-    {
-        UserId = userId;
-        Color = color;
-        ForProfile = forProfile;
-    }
+    /*int color, long? backgroundEmojiId*/
 }

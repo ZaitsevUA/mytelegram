@@ -1,14 +1,7 @@
 ﻿namespace MyTelegram.Messenger.TLObjectConverters.Impl.LatestLayer;
 
-public class PeerNotifySettingsConverterLatest : IPeerNotifySettingsConverterLatest
+public class PeerNotifySettingsConverterLatest(IObjectMapper objectMapper) : IPeerNotifySettingsConverterLatest
 {
-    private readonly IObjectMapper _objectMapper;
-
-    public PeerNotifySettingsConverterLatest(IObjectMapper objectMapper)
-    {
-        _objectMapper = objectMapper;
-    }
-
     public virtual int Layer => Layers.LayerLatest;
     public int RequestLayer { get; set; }
     public IPeerNotifySettings ToPeerNotifySettings(IPeerNotifySettingsReadModel? readModel)
@@ -19,7 +12,7 @@ public class PeerNotifySettingsConverterLatest : IPeerNotifySettingsConverterLat
     public virtual IPeerNotifySettings ToPeerNotifySettings(PeerNotifySettings? peerNotifySettings)
     {
         var settings =
-            _objectMapper.Map<PeerNotifySettings, TPeerNotifySettings>(peerNotifySettings ??
+            objectMapper.Map<PeerNotifySettings, TPeerNotifySettings>(peerNotifySettings ??
                                                                        PeerNotifySettings.DefaultSettings);
         settings.IosSound = new TNotificationSoundDefault();
         settings.AndroidSound = new TNotificationSoundLocal

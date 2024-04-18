@@ -1,18 +1,14 @@
 ﻿namespace MyTelegram.Domain.Commands.Messaging;
 
-public class AddInboxMessageIdToOutboxMessageCommand : RequestCommand2<MessageAggregate, MessageId,
-    IExecutionResult>
+public class AddInboxMessageIdToOutboxMessageCommand(
+    MessageId aggregateId,
+    RequestInfo requestInfo,
+    long inboxOwnerPeerId,
+    int inboxMessageId)
+    : RequestCommand2<MessageAggregate, MessageId,
+        IExecutionResult>(aggregateId, requestInfo)
 {
-    public AddInboxMessageIdToOutboxMessageCommand(MessageId aggregateId,
-        RequestInfo requestInfo,
-        long inboxOwnerPeerId,
-        int inboxMessageId) : base(aggregateId, requestInfo)
-    {
-        InboxOwnerPeerId = inboxOwnerPeerId;
-        InboxMessageId = inboxMessageId;
-    }
+    public int InboxMessageId { get; } = inboxMessageId;
 
-    public int InboxMessageId { get; }
-
-    public long InboxOwnerPeerId { get; }
+    public long InboxOwnerPeerId { get; } = inboxOwnerPeerId;
 }

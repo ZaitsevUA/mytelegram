@@ -1,11 +1,6 @@
 ﻿namespace MyTelegram.Domain.Events.Messaging;
 
-public class InboxMessageIdAddedToOutboxMessageEvent : AggregateEvent<MessageAggregate, MessageId>
+public class InboxMessageIdAddedToOutboxMessageEvent(InboxItem inboxItem) : AggregateEvent<MessageAggregate, MessageId>
 {
-    public InboxMessageIdAddedToOutboxMessageEvent(InboxItem inboxItem)
-    {
-        InboxItem = inboxItem;
-    }
-
-    public InboxItem InboxItem { get; }
+    public InboxItem InboxItem { get; } = inboxItem;
 }

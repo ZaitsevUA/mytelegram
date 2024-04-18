@@ -1,20 +1,17 @@
 ﻿namespace MyTelegram.Domain.Commands.Messaging;
 
-public class CreateReadingHistoryCommand : Command<ReadingHistoryAggregate, ReadingHistoryId, IExecutionResult>
+public class CreateReadingHistoryCommand(
+    ReadingHistoryId aggregateId,
+    long readerPeerId,
+    long targetPeerId,
+    int messageId,
+    int date)
+    : Command<ReadingHistoryAggregate, ReadingHistoryId, IExecutionResult>(aggregateId)
 {
-    public long ReaderPeerId { get; }
-    public long TargetPeerId { get; }
-    public int MessageId { get; }
-    public int Date { get; }
+    public long ReaderPeerId { get; } = readerPeerId;
+    public long TargetPeerId { get; } = targetPeerId;
+    public int MessageId { get; } = messageId;
+    public int Date { get; } = date;
 
-    public CreateReadingHistoryCommand(ReadingHistoryId aggregateId,
-        /*RequestInfo requestInfo,*/ long readerPeerId,
-        long targetPeerId,
-        int messageId,int date) : base(aggregateId)
-    {
-        ReaderPeerId = readerPeerId;
-        TargetPeerId = targetPeerId;
-        MessageId = messageId;
-        Date = date;
-    }
+    /*RequestInfo requestInfo,*/
 }

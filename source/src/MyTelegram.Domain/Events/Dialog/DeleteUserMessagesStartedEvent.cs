@@ -1,24 +1,17 @@
 ﻿namespace MyTelegram.Domain.Events.Dialog;
 
-public class DeleteUserMessagesStartedEvent : RequestAggregateEvent2<DialogAggregate, DialogId>, IHasCorrelationId
+public class DeleteUserMessagesStartedEvent(
+    RequestInfo requestInfo,
+    bool revoke,
+    long toUserId,
+    List<int> messageIds,
+    bool isClearHistory,
+    Guid correlationId)
+    : RequestAggregateEvent2<DialogAggregate, DialogId>(requestInfo), IHasCorrelationId
 {
-    public DeleteUserMessagesStartedEvent(RequestInfo requestInfo,
-        bool revoke,
-        long toUserId,
-        List<int> messageIds,
-        bool isClearHistory,
-        Guid correlationId) : base(requestInfo)
-    {
-        Revoke = revoke;
-        ToUserId = toUserId;
-        MessageIds = messageIds;
-        IsClearHistory = isClearHistory;
-        CorrelationId = correlationId;
-    }
-
-    public bool Revoke { get; }
-    public long ToUserId { get; }
-    public List<int> MessageIds { get; }
-    public bool IsClearHistory { get; }
-    public Guid CorrelationId { get; }
+    public bool Revoke { get; } = revoke;
+    public long ToUserId { get; } = toUserId;
+    public List<int> MessageIds { get; } = messageIds;
+    public bool IsClearHistory { get; } = isClearHistory;
+    public Guid CorrelationId { get; } = correlationId;
 }

@@ -13,14 +13,9 @@ public interface IMongoDbContextFactory<out TMongoDbContext> where TMongoDbConte
     TMongoDbContext CreateContext();
 }
 
-public class DefaultMongoDbContextFactory<TMongoDbContext> : IMongoDbContextFactory<TMongoDbContext> where TMongoDbContext : IMongoDbContext
+public class DefaultMongoDbContextFactory<TMongoDbContext>(TMongoDbContext dbContext)
+    : IMongoDbContextFactory<TMongoDbContext>
+    where TMongoDbContext : IMongoDbContext
 {
-    private readonly TMongoDbContext _dbContext;
-
-    public DefaultMongoDbContextFactory(TMongoDbContext dbContext)
-    {
-        _dbContext = dbContext;
-    }
-
-    public TMongoDbContext CreateContext() => _dbContext;
+    public TMongoDbContext CreateContext() => dbContext;
 }

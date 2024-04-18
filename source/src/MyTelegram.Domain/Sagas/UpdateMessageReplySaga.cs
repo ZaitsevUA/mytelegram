@@ -8,12 +8,7 @@ using System.Threading.Tasks;
 
 namespace MyTelegram.Domain.Sagas;
 [JsonConverter(typeof(SystemTextJsonSingleValueObjectConverter<UpdateMessageReplySagaId>))]
-public class UpdateMessageReplySagaId : Identity<UpdateMessageReplySagaId>, ISagaId
-{
-    public UpdateMessageReplySagaId(string value) : base(value)
-    {
-    }
-}
+public class UpdateMessageReplySagaId(string value) : Identity<UpdateMessageReplySagaId>(value), ISagaId;
 
 public class
     UpdateMessageReplySagaLocator : DefaultSagaLocator<UpdateMessageReplySaga, UpdateMessageReplySagaId>

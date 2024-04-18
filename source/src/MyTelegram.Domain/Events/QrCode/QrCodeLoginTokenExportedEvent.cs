@@ -1,25 +1,17 @@
 ﻿namespace MyTelegram.Domain.Events.QrCode;
 
-public class QrCodeLoginTokenExportedEvent : RequestAggregateEvent2<QrCodeAggregate, QrCodeId>
+public class QrCodeLoginTokenExportedEvent(
+    RequestInfo requestInfo,
+    long tempAuthKeyId,
+    long permAuthKeyId,
+    byte[] token,
+    int expireDate,
+    List<long> exceptUidList)
+    : RequestAggregateEvent2<QrCodeAggregate, QrCodeId>(requestInfo)
 {
-    public QrCodeLoginTokenExportedEvent(RequestInfo requestInfo,
-        long tempAuthKeyId,
-        long permAuthKeyId,
-        byte[] token,
-        int expireDate,
-        List<long> exceptUidList
-    ) : base(requestInfo)
-    {
-        TempAuthKeyId = tempAuthKeyId;
-        PermAuthKeyId = permAuthKeyId;
-        Token = token;
-        ExpireDate = expireDate;
-        ExceptUidList = exceptUidList;
-    }
-
-    public List<long> ExceptUidList { get; }
-    public int ExpireDate { get; }
-    public long PermAuthKeyId { get; }
-    public long TempAuthKeyId { get; }
-    public byte[] Token { get; }
+    public List<long> ExceptUidList { get; } = exceptUidList;
+    public int ExpireDate { get; } = expireDate;
+    public long PermAuthKeyId { get; } = permAuthKeyId;
+    public long TempAuthKeyId { get; } = tempAuthKeyId;
+    public byte[] Token { get; } = token;
 }

@@ -1,32 +1,23 @@
 ﻿namespace MyTelegram.GatewayServer.EventHandlers;
 
-public class ClientDataSender : IClientDataSender
+public class ClientDataSender(
+    IClientManager clientManager,
+    ILogger<ClientDataSender> logger,
+    IMtpMessageEncoder messageEncoder)
+    : IClientDataSender
 {
-    private readonly IClientManager _clientManager;
-    private readonly ILogger<ClientDataSender> _logger;
-    private readonly IMtpMessageEncoder _messageEncoder;
-
-    public ClientDataSender(IClientManager clientManager,
-        ILogger<ClientDataSender> logger,
-        IMtpMessageEncoder messageEncoder)
-    {
-        _clientManager = clientManager;
-        _logger = logger;
-        _messageEncoder = messageEncoder;
-    }
-
     public Task SendAsync(MTProto.UnencryptedMessageResponse data)
     {
-        if (!_clientManager.TryGetClientData(data.ConnectionId, out var d))
+        if (!clientManager.TryGetClientData(data.ConnectionId, out var d))
         {
-            _logger.LogWarning("Can not find cached client info,connectionId={ConnectionId}", data.ConnectionId);
+            logger.LogWarning("Can not find cached client info,connectionId={ConnectionId}", data.ConnectionId);
             return Task.CompletedTask;
         }
 
         var encodedBytes = ArrayPool<byte>.Shared.Rent(GetEncodedByteLength(data.Data.Length));
         try
         {
-            var totalCount = _messageEncoder.Encode(d, data, encodedBytes);
+            var totalCount = messageEncoder.Encode(d, data, encodedBytes);
             return SendAsync(encodedBytes.AsMemory()[..totalCount], d);
         }
         finally
@@ -37,9 +28,9 @@ public class ClientDataSender : IClientDataSender
 
     public Task SendAsync(MTProto.EncryptedMessageResponse data)
     {
-        if (!_clientManager.TryGetClientData(data.ConnectionId, out var d))
+        if (!clientManager.TryGetClientData(data.ConnectionId, out var d))
         {
-            _logger.LogWarning("Can not find cached client info,connectionId={ConnectionId}", data.ConnectionId);
+            logger.LogWarning("Can not find cached client info,connectionId={ConnectionId}", data.ConnectionId);
             return Task.CompletedTask;
         }
 
@@ -50,7 +41,7 @@ public class ClientDataSender : IClientDataSender
         }
         try
         {
-            var totalCount = _messageEncoder.Encode(d, data, encodedBytes);
+            var totalCount = messageEncoder.Encode(d, data, encodedBytes);
 
             return SendAsync(encodedBytes.AsMemory()[..totalCount], d);
         }

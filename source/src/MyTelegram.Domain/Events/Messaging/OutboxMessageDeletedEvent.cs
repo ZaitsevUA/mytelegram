@@ -1,21 +1,14 @@
 ﻿namespace MyTelegram.Domain.Events.Messaging;
 
-public class OutboxMessageDeletedEvent : AggregateEvent<MessageAggregate, MessageId>, IHasRequestInfo
+public class OutboxMessageDeletedEvent(
+    RequestInfo requestInfo,
+    long ownerPeerId,
+    int messageId,
+    IReadOnlyCollection<InboxItem>? inboxItems)
+    : AggregateEvent<MessageAggregate, MessageId>, IHasRequestInfo
 {
-    public OutboxMessageDeletedEvent(
-        RequestInfo requestInfo,
-        long ownerPeerId,
-        int messageId,
-        IReadOnlyCollection<InboxItem>? inboxItems)
-    {
-        RequestInfo = requestInfo;
-        OwnerPeerId = ownerPeerId;
-        MessageId = messageId;
-        InboxItems = inboxItems;
-    }
-
-    public IReadOnlyCollection<InboxItem>? InboxItems { get; }
-    public int MessageId { get; }
-    public RequestInfo RequestInfo { get; }
-    public long OwnerPeerId { get; }
+    public IReadOnlyCollection<InboxItem>? InboxItems { get; } = inboxItems;
+    public int MessageId { get; } = messageId;
+    public RequestInfo RequestInfo { get; } = requestInfo;
+    public long OwnerPeerId { get; } = ownerPeerId;
 }

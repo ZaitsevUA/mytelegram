@@ -1,18 +1,11 @@
 ﻿namespace MyTelegram.Domain.Events.Dialog;
 
-public class UpdateReadChannelOutboxEvent : AggregateEvent<DialogAggregate, DialogId>,IHasRequestInfo
+public class UpdateReadChannelOutboxEvent(RequestInfo requestInfo, long messageSenderUserId, long channelId, int maxId)
+    : AggregateEvent<DialogAggregate, DialogId>, IHasRequestInfo
 {
-    public long MessageSenderUserId { get; }
-    public long ChannelId { get; }
-    public int MaxId { get; }
+    public long MessageSenderUserId { get; } = messageSenderUserId;
+    public long ChannelId { get; } = channelId;
+    public int MaxId { get; } = maxId;
 
-    public UpdateReadChannelOutboxEvent(RequestInfo requestInfo, long messageSenderUserId, long channelId, int maxId )
-    {
-        MessageSenderUserId = messageSenderUserId;
-        ChannelId = channelId;
-        MaxId = maxId;
-        RequestInfo = requestInfo;
-    }
-
-    public RequestInfo RequestInfo { get; }
+    public RequestInfo RequestInfo { get; } = requestInfo;
 }

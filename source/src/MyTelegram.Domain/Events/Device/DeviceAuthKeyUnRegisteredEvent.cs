@@ -1,14 +1,9 @@
 ﻿namespace MyTelegram.Domain.Events.Device;
 
-public class DeviceAuthKeyUnRegisteredEvent : AggregateEvent<DeviceAggregate, DeviceId>
+public class DeviceAuthKeyUnRegisteredEvent(
+    long permAuthKeyId,
+    long tempAuthKeyId) : AggregateEvent<DeviceAggregate, DeviceId>
 {
-    public DeviceAuthKeyUnRegisteredEvent(long permAuthKeyId,
-        long tempAuthKeyId)
-    {
-        PermAuthKeyId = permAuthKeyId;
-        TempAuthKeyId = tempAuthKeyId;
-    }
-
-    public long PermAuthKeyId { get; }
-    public long TempAuthKeyId { get; }
+    public long PermAuthKeyId { get; } = permAuthKeyId;
+    public long TempAuthKeyId { get; } = tempAuthKeyId;
 }

@@ -4,22 +4,15 @@ using MyTelegram.Core;
 
 namespace MyTelegram.Services.Services;
 
-public class CacheSerializer : ICacheSerializer
+public class CacheSerializer(IJsonSerializer jsonSerializer) : ICacheSerializer
 {
-    private readonly IJsonSerializer _jsonSerializer;
-
-    public CacheSerializer(IJsonSerializer jsonSerializer)
-    {
-        _jsonSerializer = jsonSerializer;
-    }
-
     public byte[] Serialize<T>(T obj)
     {
-        return Encoding.UTF8.GetBytes(_jsonSerializer.Serialize(obj));
+        return Encoding.UTF8.GetBytes(jsonSerializer.Serialize(obj));
     }
 
     public T Deserialize<T>(byte[] bytes)
     {
-        return _jsonSerializer.Deserialize<T>(Encoding.UTF8.GetString(bytes));
+        return jsonSerializer.Deserialize<T>(Encoding.UTF8.GetString(bytes));
     }
 }

@@ -1,13 +1,10 @@
 ﻿namespace MyTelegram.Domain.Commands.Messaging;
 
-public class DeleteSelfMessageCommand : RequestCommand2<MessageAggregate, MessageId, IExecutionResult>, IHasCorrelationId
+public class DeleteSelfMessageCommand(
+    MessageId aggregateId,
+    RequestInfo requestInfo,
+    int messageId)
+    : RequestCommand2<MessageAggregate, MessageId, IExecutionResult>(aggregateId, requestInfo), IHasCorrelationId
 {
-    public DeleteSelfMessageCommand(MessageId aggregateId,
-        RequestInfo requestInfo,
-        int messageId) : base(aggregateId, requestInfo)
-    {
-        MessageId = messageId;
-    }
-
-    public int MessageId { get; }
+    public int MessageId { get; } = messageId;
 }

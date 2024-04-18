@@ -1,15 +1,12 @@
 ﻿namespace MyTelegram.Domain.Sagas.Events;
 
-public class ReadHistoryOutboxHasReadEvent : RequestAggregateEvent2<ReadHistorySaga, ReadHistorySagaId>, IHasCorrelationId
+public class ReadHistoryOutboxHasReadEvent(
+    RequestInfo requestInfo,
+    long senderPeerId,
+    int senderMessageId)
+    : RequestAggregateEvent2<ReadHistorySaga, ReadHistorySagaId>(requestInfo), IHasCorrelationId
 {
-    public ReadHistoryOutboxHasReadEvent(RequestInfo requestInfo, long senderPeerId,
-        int senderMessageId) : base(requestInfo)
-    {
-        SenderPeerId = senderPeerId;
-        SenderMessageId = senderMessageId;
-    }
+    public int SenderMessageId { get; } = senderMessageId;
 
-    public int SenderMessageId { get; }
-
-    public long SenderPeerId { get; }
+    public long SenderPeerId { get; } = senderPeerId;
 }

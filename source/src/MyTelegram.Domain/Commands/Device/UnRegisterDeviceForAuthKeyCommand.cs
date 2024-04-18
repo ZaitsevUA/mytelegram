@@ -1,15 +1,11 @@
 ﻿namespace MyTelegram.Domain.Commands.Device;
 
-public class UnRegisterDeviceForAuthKeyCommand : Command<DeviceAggregate, DeviceId, IExecutionResult>
+public class UnRegisterDeviceForAuthKeyCommand(
+    DeviceId aggregateId,
+    long permAuthKeyId,
+    long tempAuthKeyId)
+    : Command<DeviceAggregate, DeviceId, IExecutionResult>(aggregateId)
 {
-    public UnRegisterDeviceForAuthKeyCommand(DeviceId aggregateId,
-        long permAuthKeyId,
-        long tempAuthKeyId) : base(aggregateId)
-    {
-        PermAuthKeyId = permAuthKeyId;
-        TempAuthKeyId = tempAuthKeyId;
-    }
-
-    public long PermAuthKeyId { get; }
-    public long TempAuthKeyId { get; }
+    public long PermAuthKeyId { get; } = permAuthKeyId;
+    public long TempAuthKeyId { get; } = tempAuthKeyId;
 }

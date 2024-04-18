@@ -1,11 +1,7 @@
 ﻿namespace MyTelegram.Domain.Commands.Messaging;
 
-public class DeleteChannelMessageCommand : Command<MessageAggregate, MessageId, IExecutionResult>, IHasRequestInfo
+public class DeleteChannelMessageCommand(MessageId aggregateId, RequestInfo requestInfo)
+    : Command<MessageAggregate, MessageId, IExecutionResult>(aggregateId), IHasRequestInfo
 {
-    public DeleteChannelMessageCommand(MessageId aggregateId, RequestInfo requestInfo) : base(aggregateId)
-    {
-        RequestInfo = requestInfo;
-    }
-
-    public RequestInfo RequestInfo { get; }
+    public RequestInfo RequestInfo { get; } = requestInfo;
 }

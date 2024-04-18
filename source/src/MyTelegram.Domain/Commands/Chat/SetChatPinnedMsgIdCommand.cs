@@ -1,17 +1,13 @@
 ﻿namespace MyTelegram.Domain.Commands.Chat;
 
-public class SetChatPinnedMsgIdCommand : DistinctCommand<ChatAggregate, ChatId, IExecutionResult>
+public class SetChatPinnedMsgIdCommand(
+    ChatId aggregateId,
+    long reqMsgId,
+    int pinnedMsgId)
+    : DistinctCommand<ChatAggregate, ChatId, IExecutionResult>(aggregateId)
 {
-    public SetChatPinnedMsgIdCommand(ChatId aggregateId,
-        long reqMsgId,
-        int pinnedMsgId) : base(aggregateId)
-    {
-        ReqMsgId = reqMsgId;
-        PinnedMsgId = pinnedMsgId;
-    }
-
-    public int PinnedMsgId { get; }
-    public long ReqMsgId { get; }
+    public int PinnedMsgId { get; } = pinnedMsgId;
+    public long ReqMsgId { get; } = reqMsgId;
 
     protected override IEnumerable<byte[]> GetSourceIdComponents()
     {

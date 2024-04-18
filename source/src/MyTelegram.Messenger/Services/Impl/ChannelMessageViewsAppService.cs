@@ -4,21 +4,13 @@ using IMessageViews = MyTelegram.Schema.IMessageViews;
 
 namespace MyTelegram.Messenger.Services.Impl;
 
-public class ChannelMessageViewsAppService : IChannelMessageViewsAppService //, ISingletonDependency
+public class ChannelMessageViewsAppService(
+    IQueryProcessor queryProcessor,
+    ICommandBus commandBus,
+    ICuckooFilter cuckooFilter)
+    : IChannelMessageViewsAppService //, ISingletonDependency
 {
     //private readonly IBloomFilter _bloomFilter;
-    private readonly ICommandBus _commandBus;
-    private readonly IQueryProcessor _queryProcessor;
-    private readonly ICuckooFilter _cuckooFilter;
-    public ChannelMessageViewsAppService(
-        IQueryProcessor queryProcessor,
-        ICommandBus commandBus,
-        ICuckooFilter cuckooFilter)
-    {
-        _queryProcessor = queryProcessor;
-        _commandBus = commandBus;
-        _cuckooFilter = cuckooFilter;
-    }
 
     public async Task IncrementViewsIfNotIncrementedAsync(long selfUserId,
         long authKeyId,
@@ -26,10 +18,10 @@ public class ChannelMessageViewsAppService : IChannelMessageViewsAppService //, 
         int messageId)
     {
         var key = GetFilterKey(selfUserId, authKeyId, channelId, messageId);
-        var isExists = await _cuckooFilter.ExistsAsync(key);
+        var isExists = await cuckooFilter.ExistsAsync(key);
         if (!isExists)
         {
-            await _cuckooFilter.AddAsync(key);
+            await cuckooFilter.AddAsync(key);
         }
     }
 
@@ -54,16 +46,16 @@ public class ChannelMessageViewsAppService : IChannelMessageViewsAppService //, 
 
         foreach (var key in keyList)
         {
-            var isExists = await _cuckooFilter.ExistsAsync(key);
+            var isExists = await cuckooFilter.ExistsAsync(key);
             if (!isExists)
             {
-                await _cuckooFilter.AddAsync(key);
+                await cuckooFilter.AddAsync(key);
                 needIncrementMessageIdList.Add(messageIdGreaterThanZeroList[index]);
             }
             index++;
         }
 
-        var messageViews = (await _queryProcessor
+        var messageViews = (await queryProcessor
                     .ProcessAsync(new GetMessageViewsQuery(channelId, messageIdGreaterThanZeroList), default)
                     .ConfigureAwait(false))
                 .ToDictionary(k => k.MessageId, v => v)
@@ -74,7 +66,7 @@ public class ChannelMessageViewsAppService : IChannelMessageViewsAppService //, 
             try
             {
                 var command = new IncrementViewsCommand(MessageId.Create(channelId, messageId));
-                await _commandBus.PublishAsync(command);
+                await commandBus.PublishAsync(command);
             }
             catch (DomainError)
             {
@@ -82,9 +74,9 @@ public class ChannelMessageViewsAppService : IChannelMessageViewsAppService //, 
             }
         }
 
-        var linkedChannelId = await _queryProcessor.ProcessAsync(new GetLinkedChannelIdQuery(channelId));
+        var linkedChannelId = await queryProcessor.ProcessAsync(new GetLinkedChannelIdQuery(channelId));
 
-        var replies = (await _queryProcessor.ProcessAsync(new GetRepliesQuery(channelId, messageIdList)))
+        var replies = (await queryProcessor.ProcessAsync(new GetRepliesQuery(channelId, messageIdList)))
                 .ToDictionary(k => k.MessageId, v => v);
 
         var messageViewsToClient = new List<IMessageViews>();

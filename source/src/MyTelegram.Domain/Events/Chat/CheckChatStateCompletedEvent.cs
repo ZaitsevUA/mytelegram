@@ -1,17 +1,11 @@
 ﻿namespace MyTelegram.Domain.Events.Chat;
 
-public class CheckChatStateCompletedEvent : RequestAggregateEvent2<ChatAggregate, ChatId>
+public class CheckChatStateCompletedEvent(
+    RequestInfo requestInfo,
+    string title,
+    IReadOnlyList<long> memberUidList)
+    : RequestAggregateEvent2<ChatAggregate, ChatId>(requestInfo)
 {
-    public CheckChatStateCompletedEvent(
-        RequestInfo requestInfo,
-        string title,
-        IReadOnlyList<long> memberUidList) : base(requestInfo)
-    {
-        Title = title;
-        MemberUidList = memberUidList;
-
-    }
-
-    public string Title { get; }
-    public IReadOnlyList<long> MemberUidList { get; }
+    public string Title { get; } = title;
+    public IReadOnlyList<long> MemberUidList { get; } = memberUidList;
 }

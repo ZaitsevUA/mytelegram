@@ -1,13 +1,11 @@
 ﻿namespace MyTelegram.Domain.Sagas;
 
-public class CreateUserSaga : MyInMemoryAggregateSaga<CreateUserSaga, CreateUserSagaId, CreateUserSagaLocator>,
-    ISagaIsStartedBy<UserAggregate, UserId, UserCreatedEvent>
+public class CreateUserSaga(
+    CreateUserSagaId id,
+    IEventStore eventStore)
+    : MyInMemoryAggregateSaga<CreateUserSaga, CreateUserSagaId, CreateUserSagaLocator>(id, eventStore),
+        ISagaIsStartedBy<UserAggregate, UserId, UserCreatedEvent>
 {
-    public CreateUserSaga(CreateUserSagaId id,
-        IEventStore eventStore) : base(id, eventStore)
-    {
-    }
-
     public Task HandleAsync(IDomainEvent<UserAggregate, UserId, UserCreatedEvent> domainEvent,
         ISagaContext sagaContext,
         CancellationToken cancellationToken)

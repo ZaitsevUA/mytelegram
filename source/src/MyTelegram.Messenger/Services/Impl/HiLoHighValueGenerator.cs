@@ -1,51 +1,31 @@
 ﻿namespace MyTelegram.Messenger.Services.Impl;
 
 
-public class MongoDbHighValueGenerator : IHiLoHighValueGenerator
+public class MongoDbHighValueGenerator(IMongoDbIdGenerator idGenerator) : IHiLoHighValueGenerator
 {
-    private readonly IMongoDbIdGenerator _idGenerator;
-
-    public MongoDbHighValueGenerator(IMongoDbIdGenerator idGenerator)
-    {
-        _idGenerator = idGenerator;
-    }
-
     public Task<long> GetNewHighValueAsync(IdType idType, long key, CancellationToken cancellationToken = default)
     {
-        return _idGenerator.NextLongIdAsync(idType, key, cancellationToken: cancellationToken);
+        return idGenerator.NextLongIdAsync(idType, key, cancellationToken: cancellationToken);
     }
 }
 
-public class RedisHighValueGenerator : IHiLoHighValueGenerator
+public class RedisHighValueGenerator(IRedisIdGenerator redisIdGenerator) : IHiLoHighValueGenerator
 {
-    private readonly IRedisIdGenerator _redisIdGenerator;
-
-    public RedisHighValueGenerator(IRedisIdGenerator redisIdGenerator)
-    {
-        _redisIdGenerator = redisIdGenerator;
-    }
-
     public Task<long> GetNewHighValueAsync(IdType idType, long key, CancellationToken cancellationToken = default)
     {
-        return _redisIdGenerator.NextLongIdAsync(idType, key, cancellationToken: cancellationToken);
+        return redisIdGenerator.NextLongIdAsync(idType, key, cancellationToken: cancellationToken);
     }
 }
 
-public class HiLoHighValueGenerator : IHiLoHighValueGenerator
+public class HiLoHighValueGenerator(IOptions<MyTelegramMessengerServerOptions> options) : IHiLoHighValueGenerator
 {
-    private readonly IOptions<MyTelegramMessengerServerOptions> _options;
-    public HiLoHighValueGenerator(IOptions<MyTelegramMessengerServerOptions> options)
-    {
-        _options = options;
-    }
-
     public async Task<long> GetNewHighValueAsync(IdType idType,
         long key,
         CancellationToken cancellationToken = default)
     {
         try
         {
-            var client = GrpcClientFactory.CreateIdGeneratorServiceClient(_options.Value.IdGeneratorGrpcServiceUrl);
+            var client = GrpcClientFactory.CreateIdGeneratorServiceClient(options.Value.IdGeneratorGrpcServiceUrl);
             var r = await client
                 .GenerateNextHighValueAsync(new GenerateNextHighValueRequest { IdType = (int)idType, IdKey = key },
                     cancellationToken: cancellationToken)
@@ -55,7 +35,7 @@ public class HiLoHighValueGenerator : IHiLoHighValueGenerator
         catch (HttpRequestException ex)
         {
             Console.WriteLine($"Get next id failed:{ex}");
-            var client = GrpcClientFactory.CreateIdGeneratorServiceClient(_options.Value.IdGeneratorGrpcServiceUrl, true);
+            var client = GrpcClientFactory.CreateIdGeneratorServiceClient(options.Value.IdGeneratorGrpcServiceUrl, true);
             var r = await client
                 .GenerateNextHighValueAsync(new GenerateNextHighValueRequest { IdType = (int)idType, IdKey = key },
                     cancellationToken: cancellationToken)

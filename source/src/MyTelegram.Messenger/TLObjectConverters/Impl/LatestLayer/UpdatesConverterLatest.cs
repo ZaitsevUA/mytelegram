@@ -1,22 +1,13 @@
 ﻿namespace MyTelegram.Messenger.TLObjectConverters.Impl.LatestLayer;
 
-public class UpdatesConverterLatest : LayeredConverterBase, IUpdatesConverterLatest
+public class UpdatesConverterLatest(
+    IObjectMapper objectMapper,
+    ILayeredService<IChatConverter> layeredChatService,
+    ILayeredService<IMessageConverter> layeredMessageService)
+    : LayeredConverterBase, IUpdatesConverterLatest
 {
-    private readonly ILayeredService<IChatConverter> _layeredChatService;
-    private readonly ILayeredService<IMessageConverter> _layeredMessageService;
-    private readonly IObjectMapper _objectMapper;
     private IChatConverter? _chatConverter;
     private IMessageConverter? _messageConverter;
-
-    public UpdatesConverterLatest(
-        IObjectMapper objectMapper,
-        ILayeredService<IChatConverter> layeredChatService,
-        ILayeredService<IMessageConverter> layeredMessageService)
-    {
-        _objectMapper = objectMapper;
-        _layeredChatService = layeredChatService;
-        _layeredMessageService = layeredMessageService;
-    }
 
     public override int Layer => Layers.LayerLatest;
 
@@ -499,7 +490,7 @@ public class UpdatesConverterLatest : LayeredConverterBase, IUpdatesConverterLat
                         FwdFrom =
                             item.FwdHeader == null
                                 ? null
-                                : _objectMapper.Map<MessageFwdHeader, TMessageFwdHeader>(item.FwdHeader),
+                                : objectMapper.Map<MessageFwdHeader, TMessageFwdHeader>(item.FwdHeader),
                         ReplyTo = GetMessageConverter().ToMessageReplyHeader(item.InputReplyTo),
                         Entities = item.Entities.ToTObject<TVector<IMessageEntity>>()
                     };
@@ -523,7 +514,7 @@ public class UpdatesConverterLatest : LayeredConverterBase, IUpdatesConverterLat
                         FwdFrom =
                             item.FwdHeader == null
                                 ? null
-                                : _objectMapper.Map<MessageFwdHeader, TMessageFwdHeader>(item.FwdHeader),
+                                : objectMapper.Map<MessageFwdHeader, TMessageFwdHeader>(item.FwdHeader),
                         ReplyTo = item.InputReplyTo.ToMessageReplyHeader(),
                         Entities = item.Entities.ToTObject<TVector<IMessageEntity>>()
                     };
@@ -838,12 +829,12 @@ public class UpdatesConverterLatest : LayeredConverterBase, IUpdatesConverterLat
 
     protected virtual IChatConverter GetChatConverter()
     {
-        return _chatConverter ??= _layeredChatService.GetConverter(GetLayer());
+        return _chatConverter ??= layeredChatService.GetConverter(GetLayer());
     }
 
     protected virtual IMessageConverter GetMessageConverter()
     {
-        return _messageConverter ??= _layeredMessageService.GetConverter(GetLayer());
+        return _messageConverter ??= layeredMessageService.GetConverter(GetLayer());
     }
 
     private static TChatParticipants ToChatParticipants(long chatId,

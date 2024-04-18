@@ -2,16 +2,11 @@
 
 namespace MyTelegram.Messenger.CommandServer.DomainEventHandlers;
 
-public class InvokeAfterMsgEventHandler : ISubscribeSynchronousToAll
+public class InvokeAfterMsgEventHandler(
+    IInvokeAfterMsgProcessor invokeAfterMsgProcessor,
+    ILogger<InvokeAfterMsgEventHandler> logger)
+    : ISubscribeSynchronousToAll
 {
-    private readonly IInvokeAfterMsgProcessor _invokeAfterMsgProcessor;
-    private readonly ILogger<InvokeAfterMsgEventHandler> _logger;
-    public InvokeAfterMsgEventHandler(IInvokeAfterMsgProcessor invokeAfterMsgProcessor, ILogger<InvokeAfterMsgEventHandler> logger)
-    {
-        _invokeAfterMsgProcessor = invokeAfterMsgProcessor;
-        _logger = logger;
-    }
-
     public async Task HandleAsync(IReadOnlyCollection<IDomainEvent> domainEvents,
         CancellationToken cancellationToken)
     {
@@ -31,7 +26,7 @@ public class InvokeAfterMsgEventHandler : ISubscribeSynchronousToAll
                     var timespan = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() - requestInfo.RequestInfo.Date;
                     if (timespan > 500)
                     {
-                        _logger.LogWarning("{Name} mill seconds:{Timespan} reqMsgId:{ReqMsgId}", aggregateEvent.GetType().Name, timespan, requestInfo.RequestInfo.ReqMsgId);
+                        logger.LogWarning("{Name} mill seconds:{Timespan} reqMsgId:{ReqMsgId}", aggregateEvent.GetType().Name, timespan, requestInfo.RequestInfo.ReqMsgId);
                     }
 
                     break;
@@ -42,8 +37,8 @@ public class InvokeAfterMsgEventHandler : ISubscribeSynchronousToAll
                 continue;
             }
 
-            _invokeAfterMsgProcessor.AddToRecentMessageIdList(reqMsgId);
-            await _invokeAfterMsgProcessor.HandleAsync(reqMsgId);
+            invokeAfterMsgProcessor.AddToRecentMessageIdList(reqMsgId);
+            await invokeAfterMsgProcessor.HandleAsync(reqMsgId);
         }
     }
 }

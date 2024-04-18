@@ -1,67 +1,44 @@
 ﻿namespace MyTelegram.Domain.Events.Device;
 
-public class DeviceCreatedEvent : AggregateEvent<DeviceAggregate, DeviceId>
+public class DeviceCreatedEvent(
+    bool isNewDevice,
+    long permAuthKeyId,
+    long tempAuthKeyId,
+    long userId,
+    int apiId,
+    string appName,
+    string appVersion,
+    long hash,
+    bool officialApp,
+    bool passwordPending,
+    string deviceModel,
+    string platform,
+    string systemVersion,
+    string systemLangCode,
+    string langPack,
+    string langCode,
+    string ip,
+    int layer,
+    int date)
+    : AggregateEvent<DeviceAggregate, DeviceId>
 {
-    public DeviceCreatedEvent(
-        bool isNewDevice,
-        long permAuthKeyId,
-        long tempAuthKeyId,
-        long userId,
-        int apiId,
-        string appName,
-        string appVersion,
-        long hash,
-        bool officialApp,
-        bool passwordPending,
-        string deviceModel,
-        string platform,
-        string systemVersion,
-        string systemLangCode,
-        string langPack,
-        string langCode,
-        string ip,
-        int layer,
-        int date
-    )
-    {
-        IsNewDevice = isNewDevice;
-        PermAuthKeyId = permAuthKeyId;
-        TempAuthKeyId = tempAuthKeyId;
-        UserId = userId;
-        ApiId = apiId;
-        AppName = appName;
-        AppVersion = appVersion;
-        Hash = hash;
-        OfficialApp = officialApp;
-        PasswordPending = passwordPending;
-        DeviceModel = deviceModel;
-        Platform = platform;
-        SystemVersion = systemVersion;
-        SystemLangCode = systemLangCode;
-        LangPack = langPack;
-        LangCode = langCode;
-        Ip = ip;
-        Layer = layer;
-        Date = date;
-    }
-
-    public int ApiId { get; }
-    public string AppName { get; }
-    public string AppVersion { get; }
-    public int Date { get; }
-    public string DeviceModel { get; }
-    public long Hash { get; }
-    public string Ip { get; }
-    public bool IsNewDevice { get; }
-    public string LangCode { get; }
-    public string LangPack { get; }
-    public int Layer { get; }
-    public bool OfficialApp { get; }
-    public bool PasswordPending { get; }
-    public long PermAuthKeyId { get; }
-    public string Platform { get; }
-    public string SystemLangCode { get; }
-    public string SystemVersion { get; }
-    public long TempAuthKeyId { get; }
-    public long UserId { get; }
+    public int ApiId { get; } = apiId;
+    public string AppName { get; } = appName;
+    public string AppVersion { get; } = appVersion;
+    public int Date { get; } = date;
+    public string DeviceModel { get; } = deviceModel;
+    public long Hash { get; } = hash;
+    public string Ip { get; } = ip;
+    public bool IsNewDevice { get; } = isNewDevice;
+    public string LangCode { get; } = langCode;
+    public string LangPack { get; } = langPack;
+    public int Layer { get; } = layer;
+    public bool OfficialApp { get; } = officialApp;
+    public bool PasswordPending { get; } = passwordPending;
+    public long PermAuthKeyId { get; } = permAuthKeyId;
+    public string Platform { get; } = platform;
+    public string SystemLangCode { get; } = systemLangCode;
+    public string SystemVersion { get; } = systemVersion;
+    public long TempAuthKeyId { get; } = tempAuthKeyId;
+    public long UserId { get; } = userId;
 }

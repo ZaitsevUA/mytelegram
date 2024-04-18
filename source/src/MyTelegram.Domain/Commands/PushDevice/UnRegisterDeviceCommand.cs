@@ -1,19 +1,14 @@
 ﻿namespace MyTelegram.Domain.Commands.PushDevice;
 
-public class UnRegisterDeviceCommand : RequestCommand2<PushDeviceAggregate, PushDeviceId, IExecutionResult>
+public class UnRegisterDeviceCommand(
+    PushDeviceId aggregateId,
+    RequestInfo requestInfo,
+    int tokenType,
+    string token,
+    IReadOnlyList<long> otherUids)
+    : RequestCommand2<PushDeviceAggregate, PushDeviceId, IExecutionResult>(aggregateId, requestInfo)
 {
-    public UnRegisterDeviceCommand(PushDeviceId aggregateId,
-        RequestInfo requestInfo,
-        int tokenType,
-        string token,
-        IReadOnlyList<long> otherUids) : base(aggregateId, requestInfo)
-    {
-        TokenType = tokenType;
-        Token = token;
-        OtherUids = otherUids;
-    }
-
-    public IReadOnlyList<long> OtherUids { get; }
-    public string Token { get; }
-    public int TokenType { get; }
+    public IReadOnlyList<long> OtherUids { get; } = otherUids;
+    public string Token { get; } = token;
+    public int TokenType { get; } = tokenType;
 }

@@ -1,29 +1,23 @@
 ﻿namespace MyTelegram.Domain.Sagas.Events;
 
 public class
-    ClearSingleUserHistoryCompletedEvent : RequestAggregateEvent2<ClearHistorySaga, ClearHistorySagaId> //, IHasRequestMessageId
-{
-    public ClearSingleUserHistoryCompletedEvent(RequestInfo requestInfo,
+    ClearSingleUserHistoryCompletedEvent(
+        RequestInfo requestInfo,
         long selfAuthKeyId,
         int nextMaxId,
         bool isSelf,
         PeerType toPeerType,
-        DeletedBoxItem deletedBoxItem) : base(requestInfo)
-    {
-        SelfAuthKeyId = selfAuthKeyId;
-        NextMaxId = nextMaxId;
-        IsSelf = isSelf;
-        ToPeerType = toPeerType;
-        DeletedBoxItem = deletedBoxItem;
-    }
+        DeletedBoxItem deletedBoxItem)
+    : RequestAggregateEvent2<ClearHistorySaga, ClearHistorySagaId>(requestInfo) //, IHasRequestMessageId
+{
     //public long OwnerPeerId { get; }
     //public int Pts { get; }
     //public IReadOnlyList<int> DeletedMessageIdList { get; }
 
-    public DeletedBoxItem DeletedBoxItem { get; }
-    public bool IsSelf { get; }
-    public int NextMaxId { get; }
+    public DeletedBoxItem DeletedBoxItem { get; } = deletedBoxItem;
+    public bool IsSelf { get; } = isSelf;
+    public int NextMaxId { get; } = nextMaxId;
 
-    public long SelfAuthKeyId { get; }
-    public PeerType ToPeerType { get; }
+    public long SelfAuthKeyId { get; } = selfAuthKeyId;
+    public PeerType ToPeerType { get; } = toPeerType;
 }

@@ -1,15 +1,10 @@
 ﻿namespace MyTelegram.Domain.Sagas.Events;
 
-public class EditInboxMessageStartedEvent : AggregateEvent<EditMessageSaga, EditMessageSagaId>
+public class EditInboxMessageStartedEvent(
+    long userId,
+    int messageId) : AggregateEvent<EditMessageSaga, EditMessageSagaId>
 {
-    public EditInboxMessageStartedEvent(long userId,
-        int messageId)
-    {
-        UserId = userId;
-        MessageId = messageId;
-    }
+    public int MessageId { get; } = messageId;
 
-    public int MessageId { get; }
-
-    public long UserId { get; }
+    public long UserId { get; } = userId;
 }

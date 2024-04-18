@@ -1,6 +1,9 @@
 ﻿namespace MyTelegram.MTProto;
 
-public class FirstPacketParser : IFirstPacketParser
+public class FirstPacketParser(
+    ILogger<FirstPacketParser> logger,
+    IAesHelper aesHelper)
+    : IFirstPacketParser
 {
     private const byte AbridgedFlag = 0xef;
     private const byte IntermediateFlag = 0xee;
@@ -9,17 +12,6 @@ public class FirstPacketParser : IFirstPacketParser
 
     private static readonly byte[] IntermediateBytes =
         { IntermediateFlag, IntermediateFlag, IntermediateFlag, IntermediateFlag };
-
-    private readonly IAesHelper _aesHelper;
-
-    private readonly ILogger<FirstPacketParser> _logger;
-
-    public FirstPacketParser(ILogger<FirstPacketParser> logger,
-        IAesHelper aesHelper)
-    {
-        _logger = logger;
-        _aesHelper = aesHelper;
-    }
 
     public FirstPacketData Parse(ReadOnlySpan<byte> firstPacket)
     {
@@ -51,7 +43,7 @@ public class FirstPacketParser : IFirstPacketParser
 
         var encryptedNonce = ArrayPool<byte>.Shared.Rent(nonce.Length);
         nonce.CopyTo(encryptedNonce);
-        _aesHelper.Ctr128Encrypt(encryptedNonce, sendKey.ToArray(), sendCtrState);
+        aesHelper.Ctr128Encrypt(encryptedNonce, sendKey.ToArray(), sendCtrState);
 
         var data = new FirstPacketData
         {
@@ -69,7 +61,7 @@ public class FirstPacketParser : IFirstPacketParser
                 data.ProtocolType = ProtocolType.Intermediate;
                 break;
             default:
-                _logger.LogWarning("Unknown protocol:{nonce56:x} {nonce57:x} {nonce58:x} {nonce59:x}",
+                logger.LogWarning("Unknown protocol:{nonce56:x} {nonce57:x} {nonce58:x} {nonce59:x}",
                     protocolBytes[0],
                     protocolBytes[1],
                     protocolBytes[2],
@@ -79,7 +71,7 @@ public class FirstPacketParser : IFirstPacketParser
 
         if (data.ProtocolType != ProtocolType.Unknown)
         {
-            _logger.LogInformation("[{ProtocolType}] Protocol detected", data.ProtocolType);
+            logger.LogInformation("[{ProtocolType}] Protocol detected", data.ProtocolType);
             data.SendKey = sendKey;
             data.ReceiveState = new CtrState
             {
@@ -108,10 +100,10 @@ public class FirstPacketParser : IFirstPacketParser
         }
         else
         {
-            _logger.LogWarning("UnKnown protocol:{Protocol}", firstPacket[0]);
+            logger.LogWarning("UnKnown protocol:{Protocol}", firstPacket[0]);
         }
 
-        _logger.LogInformation("[{ProtocolType}](UnObfuscation) detected", state.ProtocolType);
+        logger.LogInformation("[{ProtocolType}](UnObfuscation) detected", state.ProtocolType);
 
         return state;
     }

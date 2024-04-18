@@ -1,11 +1,6 @@
 ﻿namespace MyTelegram.Domain.Events.Dialog;
 
-public class PinnedOrderChangedEvent : AggregateEvent<DialogAggregate, DialogId>
+public class PinnedOrderChangedEvent(int order) : AggregateEvent<DialogAggregate, DialogId>
 {
-    public PinnedOrderChangedEvent(int order)
-    {
-        Order = order;
-    }
-
-    public int Order { get; }
+    public int Order { get; } = order;
 }

@@ -1,17 +1,11 @@
 ﻿namespace MyTelegram.Messenger.TLObjectConverters.Impl.LatestLayer;
 
-public class MessageConverterLatest : LayeredConverterBase, IMessageConverterLatest
+public class MessageConverterLatest(
+    IPeerHelper peerHelper,
+    ILayeredService<IPollConverter> layeredPollService)
+    : LayeredConverterBase, IMessageConverterLatest
 {
-    private readonly ILayeredService<IPollConverter> _layeredPollService;
-    private readonly IPeerHelper _peerHelper;
     private IPollConverter? _pollConverter;
-
-    public MessageConverterLatest(IPeerHelper peerHelper,
-        ILayeredService<IPollConverter> layeredPollService)
-    {
-        _peerHelper = peerHelper;
-        _layeredPollService = layeredPollService;
-    }
 
     public override int Layer => Layers.LayerLatest;
 
@@ -266,7 +260,7 @@ public class MessageConverterLatest : LayeredConverterBase, IMessageConverterLat
     }
     protected IPollConverter GetPollConverter()
     {
-        return _pollConverter ??= _layeredPollService.GetConverter(GetLayer());
+        return _pollConverter ??= layeredPollService.GetConverter(GetLayer());
     }
 
     //public IMessage ToDiscussionMessage(IMessageReadModel readModel,long selfUserId,long from)
@@ -283,7 +277,7 @@ public class MessageConverterLatest : LayeredConverterBase, IMessageConverterLat
                     ArgumentNullException.ThrowIfNull(readModel.MessageActionData);
 
                     var bytes = readModel.MessageActionData.ToBytes();
-                    var fromId = _peerHelper.ToPeer(PeerType.User, readModel.SenderPeerId);
+                    var fromId = peerHelper.ToPeer(PeerType.User, readModel.SenderPeerId);
                     if (readModel is { ToPeerType: PeerType.Channel, Post: true } &&
                         readModel.MessageActionType != MessageActionType.ChatAddUser)
                     {
@@ -295,7 +289,7 @@ public class MessageConverterLatest : LayeredConverterBase, IMessageConverterLat
                         Date = readModel.Date,
                         Silent = readModel.Silent,
                         Post = readModel.Post,
-                        PeerId = _peerHelper.ToPeer(readModel.ToPeerType, readModel.ToPeerId),
+                        PeerId = peerHelper.ToPeer(readModel.ToPeerType, readModel.ToPeerId),
                         FromId = fromId,
                         Id = readModel.MessageId,
                         Out = readModel.SenderPeerId == selfUserId,
@@ -307,8 +301,8 @@ public class MessageConverterLatest : LayeredConverterBase, IMessageConverterLat
                 }
             default:
                 {
-                    var fromId = _peerHelper.ToPeer(PeerType.User, readModel.SenderPeerId);
-                    var toPeerId = _peerHelper.ToPeer(readModel.ToPeerType, readModel.ToPeerId);
+                    var fromId = peerHelper.ToPeer(PeerType.User, readModel.SenderPeerId);
+                    var toPeerId = peerHelper.ToPeer(readModel.ToPeerType, readModel.ToPeerId);
 
                     var m = new TMessage
                     {

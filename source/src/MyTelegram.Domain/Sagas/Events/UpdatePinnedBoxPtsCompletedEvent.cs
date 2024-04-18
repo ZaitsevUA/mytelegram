@@ -1,14 +1,9 @@
 ﻿namespace MyTelegram.Domain.Sagas.Events;
 
-public class UpdatePinnedBoxPtsCompletedEvent : AggregateEvent<UpdatePinnedMessageSaga, UpdatePinnedMessageSagaId>
+public class UpdatePinnedBoxPtsCompletedEvent(
+    long peerId,
+    int pts) : AggregateEvent<UpdatePinnedMessageSaga, UpdatePinnedMessageSagaId>
 {
-    public UpdatePinnedBoxPtsCompletedEvent(long peerId,
-        int pts)
-    {
-        PeerId = peerId;
-        Pts = pts;
-    }
-
-    public long PeerId { get; }
-    public int Pts { get; }
+    public long PeerId { get; } = peerId;
+    public int Pts { get; } = pts;
 }

@@ -1,13 +1,10 @@
 ﻿namespace MyTelegram.Domain.Commands.RpcResult;
 
-public class CreateRpcResultCommand : RequestCommand2<RpcResultAggregate, RpcResultId, IExecutionResult>
+public class CreateRpcResultCommand(
+    RpcResultId aggregateId,
+    RequestInfo requestInfo,
+    byte[] rpcData)
+    : RequestCommand2<RpcResultAggregate, RpcResultId, IExecutionResult>(aggregateId, requestInfo)
 {
-    public CreateRpcResultCommand(RpcResultId aggregateId,
-        RequestInfo requestInfo,
-        byte[] rpcData) : base(aggregateId, requestInfo)
-    {
-        RpcData = rpcData;
-    }
-
-    public byte[] RpcData { get; }
+    public byte[] RpcData { get; } = rpcData;
 }

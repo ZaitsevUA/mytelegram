@@ -7,61 +7,42 @@ using SendOutboxMessageCompletedEvent = MyTelegram.Domain.Sagas.Events.SendOutbo
 
 namespace MyTelegram.Messenger.QueryServer.DomainEventHandlers;
 
-public class MessageDomainEventHandler : DomainEventHandlerBase,
-    ISubscribeSynchronousTo<EditMessageSaga, EditMessageSagaId, OutboxMessageEditCompletedEvent>,
-    ISubscribeSynchronousTo<EditMessageSaga, EditMessageSagaId, InboxMessageEditCompletedEvent>,
-
-    ISubscribeSynchronousTo<SendMessageSaga, SendMessageSagaId, SendOutboxMessageCompletedEvent>,
-    ISubscribeSynchronousTo<SendMessageSaga, SendMessageSagaId, ReceiveInboxMessageCompletedEvent>,
-    ISubscribeSynchronousTo<MessageAggregate, MessageId, ChannelMessagePinnedEvent>,
-    ISubscribeSynchronousTo<MessageAggregate, MessageId, MessageReplyUpdatedEvent>
+public class MessageDomainEventHandler(
+    IObjectMessageSender objectMessageSender,
+    ICommandBus commandBus,
+    IIdGenerator idGenerator,
+    IAckCacheService ackCacheService,
+    IResponseCacheAppService responseCacheAppService,
+    ILayeredService<IMessageConverter> messageLayeredService,
+    IChatEventCacheHelper chatEventCacheHelper,
+    ILogger<MessageDomainEventHandler> logger,
+    IQueryProcessor queryProcessor,
+    ILayeredService<IUpdatesConverter> updatesLayeredService,
+    ILayeredService<IChatConverter> chatLayeredService,
+    IPhotoAppService photoAppService,
+    ILayeredService<IUserConverter> userLayeredService,
+    IPrivacyAppService privacyAppService)
+    : DomainEventHandlerBase(objectMessageSender,
+            commandBus,
+            idGenerator,
+            ackCacheService,
+            responseCacheAppService),
+        ISubscribeSynchronousTo<EditMessageSaga, EditMessageSagaId, OutboxMessageEditCompletedEvent>,
+        ISubscribeSynchronousTo<EditMessageSaga, EditMessageSagaId, InboxMessageEditCompletedEvent>,
+        ISubscribeSynchronousTo<SendMessageSaga, SendMessageSagaId, SendOutboxMessageCompletedEvent>,
+        ISubscribeSynchronousTo<SendMessageSaga, SendMessageSagaId, ReceiveInboxMessageCompletedEvent>,
+        ISubscribeSynchronousTo<MessageAggregate, MessageId, ChannelMessagePinnedEvent>,
+        ISubscribeSynchronousTo<MessageAggregate, MessageId, MessageReplyUpdatedEvent>
 
 
 {
-    private readonly IChatEventCacheHelper _chatEventCacheHelper;
-    private readonly ILayeredService<IChatConverter> _chatLayeredService;
-
-    private readonly ILogger<MessageDomainEventHandler> _logger;
-
     //private readonly ITlMessageConverter _messageConverter;
-    private readonly ILayeredService<IMessageConverter> _messageLayeredService;
-    private readonly IPhotoAppService _photoAppService;
-
-    private readonly IQueryProcessor _queryProcessor;
 
     //private readonly ITlUpdatesConverter _updatesConverter;
-    private readonly ILayeredService<IUpdatesConverter> _updatesLayeredService;
-    private readonly ILayeredService<IUserConverter> _userLayeredService;
-    private readonly IPrivacyAppService _privacyAppService;
-    public MessageDomainEventHandler(
-        IObjectMessageSender objectMessageSender,
-        ICommandBus commandBus,
-        IIdGenerator idGenerator,
-        IAckCacheService ackCacheService,
-        IResponseCacheAppService responseCacheAppService,
-        //ITlUpdatesConverter updatesConverter,
-        ILayeredService<IMessageConverter> messageLayeredService,
-        IChatEventCacheHelper chatEventCacheHelper,
-        ILogger<MessageDomainEventHandler> logger,
-        IQueryProcessor queryProcessor,
-        ILayeredService<IUpdatesConverter> updatesLayeredService, ILayeredService<IChatConverter> chatLayeredService,
-        IPhotoAppService photoAppService, ILayeredService<IUserConverter> userLayeredService, IPrivacyAppService privacyAppService) : base(objectMessageSender,
-        commandBus,
-        idGenerator,
-        ackCacheService,
-        responseCacheAppService)
-    {
-        //_updatesConverter = updatesConverter;
-        _messageLayeredService = messageLayeredService;
-        _chatEventCacheHelper = chatEventCacheHelper;
-        _logger = logger;
-        _queryProcessor = queryProcessor;
-        _updatesLayeredService = updatesLayeredService;
-        _chatLayeredService = chatLayeredService;
-        _photoAppService = photoAppService;
-        _userLayeredService = userLayeredService;
-        _privacyAppService = privacyAppService;
-    }
+    private readonly ILayeredService<IUserConverter> _userLayeredService = userLayeredService;
+    private readonly IPrivacyAppService _privacyAppService = privacyAppService;
+    //ITlUpdatesConverter updatesConverter,
+    //_updatesConverter = updatesConverter;
 
     public Task HandleAsync(
         IDomainEvent<EditMessageSaga, EditMessageSagaId, InboxMessageEditCompletedEvent> domainEvent,
@@ -69,8 +50,8 @@ public class MessageDomainEventHandler : DomainEventHandlerBase,
     {
         //var toPeer = domainEvent.AggregateEvent.ToPeer with { PeerId = domainEvent.AggregateEvent.OwnerPeerId };
         var toPeer = new Peer(PeerType.User, domainEvent.AggregateEvent.OwnerPeerId);
-        var updates = _updatesLayeredService.Converter.ToEditUpdates(domainEvent.AggregateEvent);
-        var layeredData = _updatesLayeredService.GetLayeredData(c => c.ToEditUpdates(domainEvent.AggregateEvent));
+        var updates = updatesLayeredService.Converter.ToEditUpdates(domainEvent.AggregateEvent);
+        var layeredData = updatesLayeredService.GetLayeredData(c => c.ToEditUpdates(domainEvent.AggregateEvent));
         return PushUpdatesToPeerAsync(toPeer,
             updates,
             pts: domainEvent.AggregateEvent.Pts,
@@ -85,9 +66,9 @@ public class MessageDomainEventHandler : DomainEventHandlerBase,
         CancellationToken cancellationToken)
     {
         var updates =
-            _updatesLayeredService.GetConverter(domainEvent.AggregateEvent.RequestInfo.Layer)
+            updatesLayeredService.GetConverter(domainEvent.AggregateEvent.RequestInfo.Layer)
                 .ToEditUpdates(domainEvent.AggregateEvent, domainEvent.AggregateEvent.SenderPeerId);
-        var layeredData = _updatesLayeredService.GetLayeredData(c =>
+        var layeredData = updatesLayeredService.GetLayeredData(c =>
             c.ToEditUpdates(domainEvent.AggregateEvent, domainEvent.AggregateEvent.SenderPeerId));
         await SendRpcMessageToClientAsync(domainEvent.AggregateEvent.RequestInfo,
             updates,
@@ -107,9 +88,9 @@ public class MessageDomainEventHandler : DomainEventHandlerBase,
         // Channel message shares the same message,edit out message should notify channel member
         if (domainEvent.AggregateEvent.ToPeer.PeerType == PeerType.Channel)
         {
-            var channelEditUpdates = _updatesLayeredService.Converter.ToEditUpdates(domainEvent.AggregateEvent, 0);
+            var channelEditUpdates = updatesLayeredService.Converter.ToEditUpdates(domainEvent.AggregateEvent, 0);
             var layeredChannelEditUpdates =
-                _updatesLayeredService.GetLayeredData(c => c.ToEditUpdates(domainEvent.AggregateEvent, 0));
+                updatesLayeredService.GetLayeredData(c => c.ToEditUpdates(domainEvent.AggregateEvent, 0));
             await PushUpdatesToPeerAsync(domainEvent.AggregateEvent.ToPeer,
                 channelEditUpdates,
                 pts: domainEvent.AggregateEvent.Pts,
@@ -146,18 +127,18 @@ public class MessageDomainEventHandler : DomainEventHandlerBase,
     private async Task HandleMigrateChatAsync(SendOutboxMessageCompletedEvent aggregateEvent)
     {
         var chatId = aggregateEvent.MessageItem.ToPeer.PeerId;
-        if (_chatEventCacheHelper.TryGetMigrateChannelId(chatId, out var channelId))
+        if (chatEventCacheHelper.TryGetMigrateChannelId(chatId, out var channelId))
         {
-            var chatReadModel = await _queryProcessor.ProcessAsync(new GetChatByChatIdQuery(chatId));
-            var channelReadModel = await _queryProcessor.ProcessAsync(new GetChannelByIdQuery(channelId));
-            var chatPhoto = await _photoAppService.GetPhotoAsync(chatReadModel!.PhotoId);
+            var chatReadModel = await queryProcessor.ProcessAsync(new GetChatByChatIdQuery(chatId));
+            var channelReadModel = await queryProcessor.ProcessAsync(new GetChannelByIdQuery(channelId));
+            var chatPhoto = await photoAppService.GetPhotoAsync(chatReadModel!.PhotoId);
 
-            var updates = _updatesLayeredService.GetConverter(aggregateEvent.RequestInfo.Layer)
+            var updates = updatesLayeredService.GetConverter(aggregateEvent.RequestInfo.Layer)
                 .ToMigrateChatUpdates(aggregateEvent, channelReadModel, chatReadModel!);
 
-            var channel = _chatLayeredService.GetConverter(aggregateEvent.RequestInfo.Layer)
+            var channel = chatLayeredService.GetConverter(aggregateEvent.RequestInfo.Layer)
                 .ToChannel(aggregateEvent.RequestInfo.UserId, channelReadModel, chatPhoto, null, false);
-            var chat = _chatLayeredService.GetConverter(aggregateEvent.RequestInfo.Layer)
+            var chat = chatLayeredService.GetConverter(aggregateEvent.RequestInfo.Layer)
                 .ToChat(aggregateEvent.RequestInfo.UserId, chatReadModel, chatPhoto);
             if (updates is TUpdates tUpdates)
             {
@@ -165,7 +146,7 @@ public class MessageDomainEventHandler : DomainEventHandlerBase,
                 tUpdates.Chats.Add(chat);
             }
 
-            var layeredData = _updatesLayeredService.GetLayeredData(c =>
+            var layeredData = updatesLayeredService.GetLayeredData(c =>
             {
                 var selfOtherDeviceUpdates = c.ToMigrateChatUpdates(aggregateEvent, channelReadModel, chatReadModel);
                 if (selfOtherDeviceUpdates is TUpdates tSelfOtherDeviceUpdates)
@@ -193,7 +174,7 @@ public class MessageDomainEventHandler : DomainEventHandlerBase,
 
     private async Task HandleCreateChannelAsync(SendOutboxMessageCompletedEvent aggregateEvent)
     {
-        if (_chatEventCacheHelper.TryRemoveChannelCreatedEvent(aggregateEvent.MessageItem.ToPeer.PeerId,
+        if (chatEventCacheHelper.TryRemoveChannelCreatedEvent(aggregateEvent.MessageItem.ToPeer.PeerId,
                 out var eventData))
         {
             //// migrate chat will send two messages,only process send normal group message
@@ -206,10 +187,10 @@ public class MessageDomainEventHandler : DomainEventHandlerBase,
             //}
 
             var channelId = eventData.ChannelId;
-            var updates = _updatesLayeredService.GetConverter(aggregateEvent.RequestInfo.Layer)
+            var updates = updatesLayeredService.GetConverter(aggregateEvent.RequestInfo.Layer)
                 .ToCreateChannelUpdates(eventData, aggregateEvent);
             var layeredData =
-                _updatesLayeredService.GetLayeredData(c => c.ToCreateChannelUpdates(eventData, aggregateEvent));
+                updatesLayeredService.GetLayeredData(c => c.ToCreateChannelUpdates(eventData, aggregateEvent));
             await SendRpcMessageToClientAsync(aggregateEvent.RequestInfo,
                 updates,
                 aggregateEvent.MessageItem.SenderPeer.PeerId
@@ -223,17 +204,17 @@ public class MessageDomainEventHandler : DomainEventHandlerBase,
         }
         else
         {
-            _logger.LogWarning("Can not find create channel cache info,channelId={ChannelId}",
+            logger.LogWarning("Can not find create channel cache info,channelId={ChannelId}",
                 aggregateEvent.MessageItem.ToPeer.PeerId);
         }
     }
 
     private async Task HandleCreateChatAsync(SendOutboxMessageCompletedEvent aggregateEvent)
     {
-        if (_chatEventCacheHelper.TryGetChatCreatedEvent(aggregateEvent.MessageItem.ToPeer.PeerId, out var eventData))
+        if (chatEventCacheHelper.TryGetChatCreatedEvent(aggregateEvent.MessageItem.ToPeer.PeerId, out var eventData))
         {
-            var chat = await _queryProcessor.ProcessAsync(new GetChatByChatIdQuery(aggregateEvent.MessageItem.ToPeer.PeerId));
-            var updates = _updatesLayeredService.GetConverter(aggregateEvent.RequestInfo.Layer)
+            var chat = await queryProcessor.ProcessAsync(new GetChatByChatIdQuery(aggregateEvent.MessageItem.ToPeer.PeerId));
+            var updates = updatesLayeredService.GetConverter(aggregateEvent.RequestInfo.Layer)
                 .ToCreateChatUpdates(eventData, aggregateEvent, chat!);
             var invitedUsers = new TInvitedUsers
             {
@@ -241,7 +222,7 @@ public class MessageDomainEventHandler : DomainEventHandlerBase,
                 MissingInvitees = new()
             };
             var layeredData =
-                _updatesLayeredService.GetLayeredData(c => c.ToCreateChatUpdates(eventData, aggregateEvent, chat!));
+                updatesLayeredService.GetLayeredData(c => c.ToCreateChatUpdates(eventData, aggregateEvent, chat!));
             await SendRpcMessageToClientAsync(aggregateEvent.RequestInfo,
                 invitedUsers,
                 pts: aggregateEvent.Pts);
@@ -254,24 +235,24 @@ public class MessageDomainEventHandler : DomainEventHandlerBase,
         }
         else
         {
-            _logger.LogWarning("Can not find cached chat info.{ToPeer}", aggregateEvent.MessageItem.ToPeer);
+            logger.LogWarning("Can not find cached chat info.{ToPeer}", aggregateEvent.MessageItem.ToPeer);
         }
     }
 
     private async Task HandleMigrateChatAsync(ReceiveInboxMessageCompletedEvent aggregateEvent)
     {
-        if (_chatEventCacheHelper.TryGetMigrateChannelId(aggregateEvent.MessageItem.ToPeer.PeerId, out var channelId))
+        if (chatEventCacheHelper.TryGetMigrateChannelId(aggregateEvent.MessageItem.ToPeer.PeerId, out var channelId))
         {
             var userId = aggregateEvent.MessageItem.OwnerPeer.PeerId;
             var chatReadModel =
-                await _queryProcessor.ProcessAsync(new GetChatByChatIdQuery(aggregateEvent.MessageItem.ToPeer.PeerId));
-            var channelReadModel = await _queryProcessor.ProcessAsync(new GetChannelByIdQuery(channelId));
-            var chatPhoto = await _photoAppService.GetPhotoAsync(chatReadModel!.PhotoId);
+                await queryProcessor.ProcessAsync(new GetChatByChatIdQuery(aggregateEvent.MessageItem.ToPeer.PeerId));
+            var channelReadModel = await queryProcessor.ProcessAsync(new GetChannelByIdQuery(channelId));
+            var chatPhoto = await photoAppService.GetPhotoAsync(chatReadModel!.PhotoId);
 
-            var updates = _updatesLayeredService.Converter.ToMigrateChatUpdates(aggregateEvent, channelId);
-            var latestLayerChannel = _chatLayeredService.Converter
+            var updates = updatesLayeredService.Converter.ToMigrateChatUpdates(aggregateEvent, channelId);
+            var latestLayerChannel = chatLayeredService.Converter
                 .ToChannel(userId, channelReadModel!, chatPhoto, null, false);
-            var latestLayerChat = _chatLayeredService.Converter
+            var latestLayerChat = chatLayeredService.Converter
                 .ToChat(userId, chatReadModel, chatPhoto);
 
             if (updates is TUpdates tUpdates)
@@ -281,11 +262,11 @@ public class MessageDomainEventHandler : DomainEventHandlerBase,
             }
 
             var layeredData =
-                _updatesLayeredService.GetLayeredData(c =>
+                updatesLayeredService.GetLayeredData(c =>
                 {
-                    var channel = _chatLayeredService.GetConverter(c.RequestLayer)
+                    var channel = chatLayeredService.GetConverter(c.RequestLayer)
                         .ToChannel(userId, channelReadModel!, chatPhoto, null, false);
-                    var chat = _chatLayeredService.GetConverter(c.RequestLayer)
+                    var chat = chatLayeredService.GetConverter(c.RequestLayer)
                         .ToChat(userId, chatReadModel, chatPhoto);
 
                     var layeredUpdates = c.ToMigrateChatUpdates(aggregateEvent, channelId);
@@ -307,13 +288,13 @@ public class MessageDomainEventHandler : DomainEventHandlerBase,
 
     private async Task HandleCreateChatAsync(ReceiveInboxMessageCompletedEvent aggregateEvent)
     {
-        if (_chatEventCacheHelper.TryGetChatCreatedEvent(aggregateEvent.MessageItem.ToPeer.PeerId, out var eventData))
+        if (chatEventCacheHelper.TryGetChatCreatedEvent(aggregateEvent.MessageItem.ToPeer.PeerId, out var eventData))
         {
-            var chat = await _queryProcessor.ProcessAsync(new GetChatByChatIdQuery(aggregateEvent.MessageItem.ToPeer.PeerId));
+            var chat = await queryProcessor.ProcessAsync(new GetChatByChatIdQuery(aggregateEvent.MessageItem.ToPeer.PeerId));
 
-            var updates = _updatesLayeredService.Converter.ToCreateChatUpdates(eventData, aggregateEvent, chat!);
+            var updates = updatesLayeredService.Converter.ToCreateChatUpdates(eventData, aggregateEvent, chat!);
             var layeredData =
-                _updatesLayeredService.GetLayeredData(c => c.ToCreateChatUpdates(eventData, aggregateEvent, chat!));
+                updatesLayeredService.GetLayeredData(c => c.ToCreateChatUpdates(eventData, aggregateEvent, chat!));
             await PushUpdatesToPeerAsync(aggregateEvent.MessageItem.OwnerPeer,
                 updates,
                 pts: aggregateEvent.Pts,
@@ -324,8 +305,8 @@ public class MessageDomainEventHandler : DomainEventHandlerBase,
 
     private Task HandleForwardMessageAsync(ReceiveInboxMessageCompletedEvent aggregateEvent)
     {
-        var updates = _updatesLayeredService.Converter.ToInboxForwardMessageUpdates(aggregateEvent);
-        var layeredData = _updatesLayeredService.GetLayeredData(c => c.ToInboxForwardMessageUpdates(aggregateEvent));
+        var updates = updatesLayeredService.Converter.ToInboxForwardMessageUpdates(aggregateEvent);
+        var layeredData = updatesLayeredService.GetLayeredData(c => c.ToInboxForwardMessageUpdates(aggregateEvent));
         return PushUpdatesToPeerAsync(aggregateEvent.MessageItem.OwnerPeer,
             updates,
             pts: aggregateEvent.Pts,
@@ -334,15 +315,15 @@ public class MessageDomainEventHandler : DomainEventHandlerBase,
 
     private async Task HandleInviteToChannelAsync(SendOutboxMessageCompletedEvent aggregateEvent)
     {
-        if (_chatEventCacheHelper.TryRemoveStartInviteToChannelEvent(aggregateEvent.MessageItem.ToPeer.PeerId,
+        if (chatEventCacheHelper.TryRemoveStartInviteToChannelEvent(aggregateEvent.MessageItem.ToPeer.PeerId,
                 out var startInviteToChannelEvent))
         {
             var channelId = aggregateEvent.MessageItem.ToPeer.PeerId;
             var item = aggregateEvent.MessageItem;
-            var channelReadModel = await _queryProcessor
+            var channelReadModel = await queryProcessor
                 .ProcessAsync(new GetChannelByIdQuery(item.ToPeer.PeerId));
 
-            var updates = _updatesLayeredService.GetConverter(aggregateEvent.RequestInfo.Layer)
+            var updates = updatesLayeredService.GetConverter(aggregateEvent.RequestInfo.Layer)
                 .ToInviteToChannelUpdates(
                     aggregateEvent,
                     startInviteToChannelEvent,
@@ -353,7 +334,7 @@ public class MessageDomainEventHandler : DomainEventHandlerBase,
                 Updates = updates,
                 MissingInvitees = new()
             };
-            var layeredData = _updatesLayeredService.GetLayeredData(c =>
+            var layeredData = updatesLayeredService.GetLayeredData(c =>
                 c.ToInviteToChannelUpdates(aggregateEvent, startInviteToChannelEvent, channelReadModel!, true));
 
             await SendRpcMessageToClientAsync(aggregateEvent.RequestInfo,
@@ -368,11 +349,11 @@ public class MessageDomainEventHandler : DomainEventHandlerBase,
                     onlySendToUserId: aggregateEvent.RequestInfo.UserId,
                     layeredData: layeredData);
 
-            var updatesForChannelMember = _updatesLayeredService.Converter.ToInviteToChannelUpdates(aggregateEvent,
+            var updatesForChannelMember = updatesLayeredService.Converter.ToInviteToChannelUpdates(aggregateEvent,
                 startInviteToChannelEvent,
                 channelReadModel!,
                 false);
-            var layeredUpdatesForChannelMember = _updatesLayeredService.GetLayeredData(c =>
+            var layeredUpdatesForChannelMember = updatesLayeredService.GetLayeredData(c =>
                 c.ToInviteToChannelUpdates(aggregateEvent,
                     startInviteToChannelEvent,
                     channelReadModel!,
@@ -401,9 +382,9 @@ public class MessageDomainEventHandler : DomainEventHandlerBase,
 
     private async Task HandleReceiveMessageAsync(ReceiveInboxMessageCompletedEvent aggregateEvent)
     {
-        var updates = _updatesLayeredService.Converter.ToUpdates(aggregateEvent);
+        var updates = updatesLayeredService.Converter.ToUpdates(aggregateEvent);
 
-        var layeredData = _updatesLayeredService.GetLayeredData(c => c.ToUpdates(aggregateEvent));
+        var layeredData = updatesLayeredService.GetLayeredData(c => c.ToUpdates(aggregateEvent));
         await PushUpdatesToPeerAsync(aggregateEvent.MessageItem.OwnerPeer,
             updates,
             pts: aggregateEvent.Pts,
@@ -421,7 +402,7 @@ public class MessageDomainEventHandler : DomainEventHandlerBase,
             return;
         }
 
-        var selfUpdates = _updatesLayeredService.GetConverter(aggregateEvent.RequestInfo.Layer)
+        var selfUpdates = updatesLayeredService.GetConverter(aggregateEvent.RequestInfo.Layer)
             .ToSelfUpdates(aggregateEvent);
         //var ptsType = PtsType.OtherUpdates;
         UpdatesType updatesType = UpdatesType.Updates;
@@ -431,7 +412,7 @@ public class MessageDomainEventHandler : DomainEventHandlerBase,
             updatesType = UpdatesType.NewMessages;
         }
 
-        var selfLayeredData = _updatesLayeredService.GetLayeredData(c => c.ToSelfUpdates(aggregateEvent));
+        var selfLayeredData = updatesLayeredService.GetLayeredData(c => c.ToSelfUpdates(aggregateEvent));
 
         // when reqMsgId==0?
         // forward message/bot message
@@ -456,10 +437,10 @@ public class MessageDomainEventHandler : DomainEventHandlerBase,
             );
         }
 
-        var selfOtherDeviceUpdates = _updatesLayeredService.GetConverter(aggregateEvent.RequestInfo.Layer)
+        var selfOtherDeviceUpdates = updatesLayeredService.GetConverter(aggregateEvent.RequestInfo.Layer)
             .ToSelfOtherDeviceUpdates(aggregateEvent);
         var layeredSelfOtherDeviceUpdates =
-            _updatesLayeredService.GetLayeredData(c => c.ToSelfOtherDeviceUpdates(aggregateEvent));
+            updatesLayeredService.GetLayeredData(c => c.ToSelfOtherDeviceUpdates(aggregateEvent));
 
         await PushUpdatesToPeerAsync(item.SenderPeer,
             selfOtherDeviceUpdates,
@@ -474,15 +455,15 @@ public class MessageDomainEventHandler : DomainEventHandlerBase,
     private async Task HandleSendMessageToChannelAsync(SendOutboxMessageCompletedEvent aggregateEvent)
     {
         var item = aggregateEvent.MessageItem;
-        var selfUpdates = _updatesLayeredService.GetConverter(aggregateEvent.RequestInfo.Layer)
+        var selfUpdates = updatesLayeredService.GetConverter(aggregateEvent.RequestInfo.Layer)
             .ToSelfUpdates(aggregateEvent);
-        var selfOtherDeviceUpdates = _updatesLayeredService.GetConverter(aggregateEvent.RequestInfo.Layer)
+        var selfOtherDeviceUpdates = updatesLayeredService.GetConverter(aggregateEvent.RequestInfo.Layer)
             .ToSelfOtherDeviceUpdates(aggregateEvent);
-        var layeredSelfUpdates = _updatesLayeredService.GetLayeredData(c => c.ToSelfUpdates(aggregateEvent));
-        var channelUpdates = _updatesLayeredService.GetConverter(aggregateEvent.RequestInfo.Layer)
+        var layeredSelfUpdates = updatesLayeredService.GetLayeredData(c => c.ToSelfUpdates(aggregateEvent));
+        var channelUpdates = updatesLayeredService.GetConverter(aggregateEvent.RequestInfo.Layer)
             .ToChannelMessageUpdates(aggregateEvent);
         var layeredChannelUpdates =
-            _updatesLayeredService.GetLayeredData(c => c.ToChannelMessageUpdates(aggregateEvent));
+            updatesLayeredService.GetLayeredData(c => c.ToChannelMessageUpdates(aggregateEvent));
         //var ptsType = PtsType.OtherUpdates;
         var updatesType = UpdatesType.Updates;
         if (item.MessageSubType == MessageSubType.Normal || item.MessageSubType == MessageSubType.ForwardMessage)
@@ -492,7 +473,7 @@ public class MessageDomainEventHandler : DomainEventHandlerBase,
         if (aggregateEvent.MessageItem.MessageSubType == MessageSubType.EditChannelPhoto)
         {
             var (channelReadModel, photoReadModel) = await GetChannelAsync(aggregateEvent.MessageItem.ToPeer.PeerId);
-            var selfChannel = _chatLayeredService.GetConverter(aggregateEvent.RequestInfo.Layer)
+            var selfChannel = chatLayeredService.GetConverter(aggregateEvent.RequestInfo.Layer)
                 .ToChannel(aggregateEvent.RequestInfo.UserId, channelReadModel, photoReadModel, null, false);
             if (selfUpdates is TUpdates tUpdates)
             {
@@ -504,7 +485,7 @@ public class MessageDomainEventHandler : DomainEventHandlerBase,
             }
             if (channelUpdates is TUpdates tUpdates1)
             {
-                var channel = _chatLayeredService.GetConverter(aggregateEvent.RequestInfo.Layer)
+                var channel = chatLayeredService.GetConverter(aggregateEvent.RequestInfo.Layer)
                     .ToChannel(0, channelReadModel, photoReadModel, null, false);
                 tUpdates1.Chats.Add(channel);
             }
@@ -548,17 +529,17 @@ public class MessageDomainEventHandler : DomainEventHandlerBase,
                 pts: aggregateEvent.Pts,
                 updatesType: updatesType,
                 //newMessage: newMessage,
-                layeredData: _updatesLayeredService.GetLayeredData(c => c.ToSelfOtherDeviceUpdates(aggregateEvent))
+                layeredData: updatesLayeredService.GetLayeredData(c => c.ToSelfOtherDeviceUpdates(aggregateEvent))
             );
         }
 
         // notify mentioned users
         if (aggregateEvent.MentionedUserIds?.Count > 0)
         {
-            var mentionedUpdates = _updatesLayeredService.GetConverter(aggregateEvent.RequestInfo.Layer)
+            var mentionedUpdates = updatesLayeredService.GetConverter(aggregateEvent.RequestInfo.Layer)
                 .ToChannelMessageUpdates(aggregateEvent, true);
             var layeredMentionUpdates =
-                _updatesLayeredService.GetLayeredData(c => c.ToChannelMessageUpdates(aggregateEvent, true));
+                updatesLayeredService.GetLayeredData(c => c.ToChannelMessageUpdates(aggregateEvent, true));
             foreach (var mentionedUserId in aggregateEvent.MentionedUserIds)
             {
                 if (mentionedUserId != aggregateEvent.RequestInfo.UserId)
@@ -580,15 +561,15 @@ public class MessageDomainEventHandler : DomainEventHandlerBase,
     }
     private async Task<(IChannelReadModel channelReadModel, IPhotoReadModel? photoReadModel)> GetChannelAsync(long channelId)
     {
-        var channelReadModel = await _queryProcessor.ProcessAsync(new GetChannelByIdQuery(channelId));
-        var photoReadModel = await _photoAppService.GetPhotoAsync(channelReadModel!.PhotoId);
+        var channelReadModel = await queryProcessor.ProcessAsync(new GetChannelByIdQuery(channelId));
+        var photoReadModel = await photoAppService.GetPhotoAsync(channelReadModel!.PhotoId);
         return (channelReadModel, photoReadModel);
     }
 
     private Task HandleUpdatePinnedMessageAsync(ReceiveInboxMessageCompletedEvent aggregateEvent)
     {
-        var updates = _updatesLayeredService.Converter.ToUpdatePinnedMessageUpdates(aggregateEvent);
-        var layeredData = _updatesLayeredService.GetLayeredData(c => c.ToUpdatePinnedMessageUpdates(aggregateEvent));
+        var updates = updatesLayeredService.Converter.ToUpdatePinnedMessageUpdates(aggregateEvent);
+        var layeredData = updatesLayeredService.GetLayeredData(c => c.ToUpdatePinnedMessageUpdates(aggregateEvent));
         return PushUpdatesToPeerAsync(aggregateEvent.MessageItem.OwnerPeer,
             updates,
             pts: aggregateEvent.Pts,
@@ -597,7 +578,7 @@ public class MessageDomainEventHandler : DomainEventHandlerBase,
 
     private async Task HandleUpdatePinnedMessageAsync(SendOutboxMessageCompletedEvent aggregateEvent)
     {
-        var updates = _updatesLayeredService.GetConverter(aggregateEvent.RequestInfo.Layer)
+        var updates = updatesLayeredService.GetConverter(aggregateEvent.RequestInfo.Layer)
             .ToUpdatePinnedMessageUpdates(aggregateEvent);
         await SendRpcMessageToClientAsync(aggregateEvent.RequestInfo,
             updates,
@@ -606,7 +587,7 @@ public class MessageDomainEventHandler : DomainEventHandlerBase,
             aggregateEvent.MessageItem.ToPeer.PeerType
         );
 
-        var layeredUpdates = _updatesLayeredService.GetLayeredData(c => c.ToUpdatePinnedMessageUpdates(aggregateEvent));
+        var layeredUpdates = updatesLayeredService.GetLayeredData(c => c.ToUpdatePinnedMessageUpdates(aggregateEvent));
         await PushUpdatesToPeerAsync(aggregateEvent.MessageItem.SenderPeer,
             updates,
             aggregateEvent.RequestInfo.AuthKeyId,
@@ -615,9 +596,9 @@ public class MessageDomainEventHandler : DomainEventHandlerBase,
 
         if (aggregateEvent.MessageItem.ToPeer.PeerType == PeerType.Channel)
         {
-            var channelUpdates = _updatesLayeredService.Converter.ToUpdatePinnedMessageServiceUpdates(aggregateEvent);
+            var channelUpdates = updatesLayeredService.Converter.ToUpdatePinnedMessageServiceUpdates(aggregateEvent);
             var layeredChannelUpdates =
-                _updatesLayeredService.GetLayeredData(c => c.ToUpdatePinnedMessageServiceUpdates(aggregateEvent));
+                updatesLayeredService.GetLayeredData(c => c.ToUpdatePinnedMessageServiceUpdates(aggregateEvent));
             await PushUpdatesToPeerAsync(aggregateEvent.MessageItem.ToPeer,
                 channelUpdates,
                 aggregateEvent.RequestInfo.AuthKeyId,
@@ -637,12 +618,12 @@ public class MessageDomainEventHandler : DomainEventHandlerBase,
     }
     public async Task HandleAsync(IDomainEvent<MessageAggregate, MessageId, MessageReplyUpdatedEvent> domainEvent, CancellationToken cancellationToken)
     {
-        var messageReadModel = await _queryProcessor.ProcessAsync(new GetMessageByIdQuery(MessageId
+        var messageReadModel = await queryProcessor.ProcessAsync(new GetMessageByIdQuery(MessageId
             .Create(domainEvent.AggregateEvent.OwnerChannelId, domainEvent.AggregateEvent.MessageId).Value), cancellationToken);
 
         if (messageReadModel != null)
         {
-            var message = _messageLayeredService.Converter.ToMessage(messageReadModel, null, null, 0);
+            var message = messageLayeredService.Converter.ToMessage(messageReadModel, null, null, 0);
             if (message is TMessage tMessage)
             {
                 tMessage.EditDate = DateTime.UtcNow.ToTimestamp();

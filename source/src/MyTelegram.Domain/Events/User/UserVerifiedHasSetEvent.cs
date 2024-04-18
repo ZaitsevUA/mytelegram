@@ -1,11 +1,6 @@
 ﻿namespace MyTelegram.Domain.Events.User;
 
-public class UserVerifiedHasSetEvent : AggregateEvent<UserAggregate, UserId>
+public class UserVerifiedHasSetEvent(bool verified) : AggregateEvent<UserAggregate, UserId>
 {
-    public UserVerifiedHasSetEvent(bool verified)
-    {
-        Verified = verified;
-    }
-
-    public bool Verified { get; }
+    public bool Verified { get; } = verified;
 }

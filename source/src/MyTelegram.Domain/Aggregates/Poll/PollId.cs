@@ -1,11 +1,7 @@
 ﻿namespace MyTelegram.Domain.Aggregates.Poll;
 
-public class PollId : Identity<PollId>
+public class PollId(string value) : Identity<PollId>(value)
 {
-    public PollId(string value) : base(value)
-    {
-    }
-
     public static PollId Create(long peerId,
         long pollId)
     {

@@ -1,30 +1,21 @@
 ﻿namespace MyTelegram.Domain.Events.Pts;
 
-public class PtsIncrementedEvent : RequestAggregateEvent2< PtsAggregate, PtsId> 
+public class PtsIncrementedEvent(
+    RequestInfo requestInfo,
+    long peerId,
+    int pts,
+    PtsChangeReason reason,
+    string messageBoxId)
+    : RequestAggregateEvent2<PtsAggregate, PtsId>(requestInfo)
 {
-    public PtsIncrementedEvent(
-        RequestInfo requestInfo,
-        long peerId,
-        int pts,
-        PtsChangeReason reason,
-        string messageBoxId ):base(requestInfo)
-    {
-        PeerId = peerId;
-        Pts = pts;
-        Reason = reason;
-        MessageBoxId = messageBoxId;
-        
-    }
+    public string MessageBoxId { get; } = messageBoxId;
 
-    public string MessageBoxId { get; }
-
-    public long PeerId { get; }
+    public long PeerId { get; } = peerId;
 
     /// <summary>
     ///     the new pts
     /// </summary>
-    public int Pts { get; }
+    public int Pts { get; } = pts;
 
-    public PtsChangeReason Reason { get; }
-    
+    public PtsChangeReason Reason { get; } = reason;
 }

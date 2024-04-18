@@ -1,12 +1,8 @@
 ﻿namespace MyTelegram.Domain.Events.Contact;
 
-public class ContactDeletedEvent : RequestAggregateEvent2<ContactAggregate, ContactId>
+public class ContactDeletedEvent(
+    RequestInfo requestInfo,
+    long targetUid) : RequestAggregateEvent2<ContactAggregate, ContactId>(requestInfo)
 {
-    public ContactDeletedEvent(RequestInfo requestInfo,
-        long targetUid) : base(requestInfo)
-    {
-        TargetUid = targetUid;
-    }
-
-    public long TargetUid { get; }
+    public long TargetUid { get; } = targetUid;
 }

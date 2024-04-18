@@ -1,14 +1,9 @@
 ﻿namespace MyTelegram.Domain.ValueObjects;
 
-public class BotCommand : ValueObject
+public class BotCommand(
+    string command,
+    string description) : ValueObject
 {
-    public BotCommand(string command,
-        string description)
-    {
-        Command = command;
-        Description = description;
-    }
-
-    public string Command { get; init; }
-    public string Description { get; init; }
+    public string Command { get; init; } = command;
+    public string Description { get; init; } = description;
 }

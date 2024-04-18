@@ -3,14 +3,9 @@ using MyTelegram.Core;
 
 namespace MyTelegram.Caching.Redis;
 
-public class CacheSerializer : ICacheSerializer
+public class CacheSerializer(JsonSerializerOptions options) : ICacheSerializer
 {
-    private readonly JsonSerializerOptions _options;
-
-    public CacheSerializer(JsonSerializerOptions options)
-    {
-        _options = options ?? throw new ArgumentNullException(nameof(options));
-    }
+    private readonly JsonSerializerOptions _options = options ?? throw new ArgumentNullException(nameof(options));
 
     public byte[] Serialize<T>(T obj)
     {

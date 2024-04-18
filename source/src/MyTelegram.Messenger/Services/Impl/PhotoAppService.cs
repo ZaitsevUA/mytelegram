@@ -1,14 +1,7 @@
 ﻿namespace MyTelegram.Messenger.Services.Impl;
 
-public class PhotoAppService : IPhotoAppService
+public class PhotoAppService(IQueryProcessor queryProcessor) : IPhotoAppService
 {
-    private readonly IQueryProcessor _queryProcessor;
-
-    public PhotoAppService(IQueryProcessor queryProcessor)
-    {
-        _queryProcessor = queryProcessor;
-    }
-
     public Task<IReadOnlyCollection<IPhotoReadModel>> GetPhotosAsync(IUserReadModel? userReadModel, IContactReadModel? contactReadModel = null)
     {
         if (userReadModel == null)
@@ -36,7 +29,7 @@ public class PhotoAppService : IPhotoAppService
             return Task.FromResult<IReadOnlyCollection<IPhotoReadModel>>(Array.Empty<IPhotoReadModel>());
         }
 
-        return _queryProcessor.ProcessAsync(new GetPhotosByPhotoIdLisQuery(photoIds), default);
+        return queryProcessor.ProcessAsync(new GetPhotosByPhotoIdLisQuery(photoIds), default);
     }
 
     public Task<IReadOnlyCollection<IPhotoReadModel>> GetPhotosAsync(IReadOnlyCollection<IUserReadModel> userReadModels, IReadOnlyCollection<IContactReadModel>? contactReadModels = null)
@@ -70,7 +63,7 @@ public class PhotoAppService : IPhotoAppService
             return Task.FromResult<IReadOnlyCollection<IPhotoReadModel>>(Array.Empty<IPhotoReadModel>());
         }
 
-        return _queryProcessor.ProcessAsync(new GetPhotosByPhotoIdLisQuery(photoIds.Distinct().ToList()), default);
+        return queryProcessor.ProcessAsync(new GetPhotosByPhotoIdLisQuery(photoIds.Distinct().ToList()), default);
     }
 
     public Task<IReadOnlyCollection<IPhotoReadModel>> GetPhotosAsync(IReadOnlyCollection<IChannelReadModel> channelReadModels)
@@ -89,7 +82,7 @@ public class PhotoAppService : IPhotoAppService
             return Task.FromResult<IReadOnlyCollection<IPhotoReadModel>>(Array.Empty<IPhotoReadModel>());
         }
 
-        return _queryProcessor.ProcessAsync(new GetPhotosByPhotoIdLisQuery(photoIds.Distinct().ToList()), default);
+        return queryProcessor.ProcessAsync(new GetPhotosByPhotoIdLisQuery(photoIds.Distinct().ToList()), default);
     }
 
     public Task<IPhotoReadModel?> GetPhotoAsync(long? photoId)
@@ -99,7 +92,7 @@ public class PhotoAppService : IPhotoAppService
             return Task.FromResult<IPhotoReadModel?>(null);
         }
 
-        return _queryProcessor.ProcessAsync(new GetPhotoByIdQuery(photoId.Value), default);
+        return queryProcessor.ProcessAsync(new GetPhotoByIdQuery(photoId.Value), default);
     }
 
     public Task<IReadOnlyCollection<IPhotoReadModel>> GetPhotosAsync(List<long> photoIds)
@@ -110,6 +103,6 @@ public class PhotoAppService : IPhotoAppService
             return Task.FromResult<IReadOnlyCollection<IPhotoReadModel>>(Array.Empty<IPhotoReadModel>());
         }
 
-        return _queryProcessor.ProcessAsync(new GetPhotosByPhotoIdLisQuery(photoIds.Distinct().ToList()), default);
+        return queryProcessor.ProcessAsync(new GetPhotosByPhotoIdLisQuery(photoIds.Distinct().ToList()), default);
     }
 }

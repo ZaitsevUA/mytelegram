@@ -1,14 +1,9 @@
 ﻿namespace MyTelegram.Domain.Events.Messaging;
 
-public class MessageViewsIncrementedEvent : AggregateEvent<MessageAggregate, MessageId>
+public class MessageViewsIncrementedEvent(
+    int messageId,
+    int views) : AggregateEvent<MessageAggregate, MessageId>
 {
-    public MessageViewsIncrementedEvent(int messageId,
-        int views)
-    {
-        MessageId = messageId;
-        Views = views;
-    }
-
-    public int MessageId { get; }
-    public int Views { get; }
+    public int MessageId { get; } = messageId;
+    public int Views { get; } = views;
 }

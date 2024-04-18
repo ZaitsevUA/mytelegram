@@ -1,13 +1,11 @@
 ﻿namespace MyTelegram.Domain.Sagas;
 
-public class EditBannedSaga : MyInMemoryAggregateSaga<EditBannedSaga, EditBannedSagaId, EditBannedSagaLocator>,
-    ISagaIsStartedBy<ChannelMemberAggregate, ChannelMemberId, ChannelMemberBannedRightsChangedEvent>
+public class EditBannedSaga(
+    EditBannedSagaId id,
+    IEventStore eventStore)
+    : MyInMemoryAggregateSaga<EditBannedSaga, EditBannedSagaId, EditBannedSagaLocator>(id, eventStore),
+        ISagaIsStartedBy<ChannelMemberAggregate, ChannelMemberId, ChannelMemberBannedRightsChangedEvent>
 {
-    public EditBannedSaga(EditBannedSagaId id,
-        IEventStore eventStore) : base(id, eventStore)
-    {
-    }
-
     public Task HandleAsync(IDomainEvent<ChannelMemberAggregate, ChannelMemberId, ChannelMemberBannedRightsChangedEvent> domainEvent,
         ISagaContext sagaContext,
         CancellationToken cancellationToken)

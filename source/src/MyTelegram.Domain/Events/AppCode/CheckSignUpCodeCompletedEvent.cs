@@ -1,6 +1,14 @@
 ﻿namespace MyTelegram.Domain.Events.AppCode;
 
-public class CheckSignUpCodeCompletedEvent : RequestAggregateEvent2<AppCodeAggregate, AppCodeId>
+public class CheckSignUpCodeCompletedEvent(
+    RequestInfo requestInfo,
+    bool isCodeValid,
+    long userId,
+    long accessHash,
+    string phoneNumber,
+    string firstName,
+    string? lastName)
+    : RequestAggregateEvent2<AppCodeAggregate, AppCodeId>(requestInfo)
 {
     //public AppCodeCheckCompletedEvent(long reqMsgId,
     //    bool isCodeValid,
@@ -15,27 +23,12 @@ public class CheckSignUpCodeCompletedEvent : RequestAggregateEvent2<AppCodeAggre
     //public bool IsCodeValid { get; }
     //public string ErrorMessage { get; }
     //
-    public CheckSignUpCodeCompletedEvent(RequestInfo requestInfo,
-        bool isCodeValid,
-        long userId,
-        long accessHash,
-        string phoneNumber,
-        string firstName,
-        string? lastName) : base(requestInfo)
-    {
-        IsCodeValid = isCodeValid;
-        UserId = userId;
-        AccessHash = accessHash;
-        PhoneNumber = phoneNumber;
-        FirstName = firstName;
-        LastName = lastName;
-    }
 
-    public long AccessHash { get; }
-    public string FirstName { get; }
+    public long AccessHash { get; } = accessHash;
+    public string FirstName { get; } = firstName;
 
-    public bool IsCodeValid { get; }
-    public string? LastName { get; }
-    public string PhoneNumber { get; }
-    public long UserId { get; }
+    public bool IsCodeValid { get; } = isCodeValid;
+    public string? LastName { get; } = lastName;
+    public string PhoneNumber { get; } = phoneNumber;
+    public long UserId { get; } = userId;
 }

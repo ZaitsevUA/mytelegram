@@ -1,15 +1,10 @@
 ﻿namespace MyTelegram.Domain.ValueObjects;
 
-public class InboxItem : ValueObject
+public class InboxItem(
+    long inboxOwnerPeerId,
+    int inboxMessageId) : ValueObject
 {
-    public InboxItem(long inboxOwnerPeerId,
-        int inboxMessageId)
-    {
-        InboxOwnerPeerId = inboxOwnerPeerId;
-        InboxMessageId = inboxMessageId;
-    }
+    public int InboxMessageId { get; init; } = inboxMessageId;
 
-    public int InboxMessageId { get; init; }
-
-    public long InboxOwnerPeerId { get; init; }
+    public long InboxOwnerPeerId { get; init; } = inboxOwnerPeerId;
 }

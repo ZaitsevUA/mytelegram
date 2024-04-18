@@ -1,10 +1,7 @@
 ﻿namespace MyTelegram.Domain.Sagas.Events;
 
 public class
-    UpdatePinnedMessageSagaStartedEvent : RequestAggregateEvent2<UpdatePinnedMessageSaga, UpdatePinnedMessageSagaId>,
-        IHasCorrelationId
-{
-    public UpdatePinnedMessageSagaStartedEvent(
+    UpdatePinnedMessageSagaStartedEvent(
         RequestInfo requestInfo,
         bool needWaitForOutboxPinnedUpdated,
         bool pinned,
@@ -19,43 +16,28 @@ public class
         Peer toPeer,
         long randomId,
         int date,
-        string? messageActionData
-    ) : base(requestInfo)
-    {
-        NeedWaitForOutboxPinnedUpdated = needWaitForOutboxPinnedUpdated;
-        Pinned = pinned;
-        PmOneSide = pmOneSide;
-        Silent = silent;
-        InboxCount = inboxCount;
-        ReplyToMsgId = replyToMsgId;
-        OwnerPeerId = ownerPeerId;
-        MessageId = messageId;
-        SenderPeerId = senderPeerId;
-        SenderMessageId = senderMessageId;
-        ToPeer = toPeer;
-        RandomId = randomId;
-        Date = date;
-        MessageActionData = messageActionData;
-    }
+        string? messageActionData)
+    : RequestAggregateEvent2<UpdatePinnedMessageSaga, UpdatePinnedMessageSagaId>(requestInfo),
+        IHasCorrelationId
+{
+    public int Date { get; } = date;
+    public int InboxCount { get; } = inboxCount;
 
-    public int Date { get; }
-    public int InboxCount { get; }
+    public string? MessageActionData { get; } = messageActionData;
+    public int MessageId { get; } = messageId;
+    public bool NeedWaitForOutboxPinnedUpdated { get; } = needWaitForOutboxPinnedUpdated;
 
-    public string? MessageActionData { get; }
-    public int MessageId { get; }
-    public bool NeedWaitForOutboxPinnedUpdated { get; }
+    public long OwnerPeerId { get; } = ownerPeerId;
+    public bool Pinned { get; } = pinned;
+    public bool PmOneSide { get; } = pmOneSide;
 
-    public long OwnerPeerId { get; }
-    public bool Pinned { get; }
-    public bool PmOneSide { get; }
+    public long RandomId { get; } = randomId;
+    public int ReplyToMsgId { get; } = replyToMsgId;
 
-    public long RandomId { get; }
-    public int ReplyToMsgId { get; }
-
-    public int SenderMessageId { get; }
-    public Peer ToPeer { get; }
-    public long SenderPeerId { get; }
-    public bool Silent { get; }
+    public int SenderMessageId { get; } = senderMessageId;
+    public Peer ToPeer { get; } = toPeer;
+    public long SenderPeerId { get; } = senderPeerId;
+    public bool Silent { get; } = silent;
 
     //public int MessageId { get; }
     ////public long ChannelId { get; }

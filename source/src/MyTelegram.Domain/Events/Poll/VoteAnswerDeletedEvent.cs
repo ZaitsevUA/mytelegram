@@ -1,14 +1,9 @@
 ﻿namespace MyTelegram.Domain.Aggregates.Poll;
 
-public class VoteAnswerDeletedEvent : AggregateEvent<PollAggregate, PollId>
+public class VoteAnswerDeletedEvent(
+    long pollId,
+    long voterPeerId) : AggregateEvent<PollAggregate, PollId>
 {
-    public VoteAnswerDeletedEvent(long pollId,
-        long voterPeerId)
-    {
-        PollId = pollId;
-        VoterPeerId = voterPeerId;
-    }
-
-    public long PollId { get; }
-    public long VoterPeerId { get; }
+    public long PollId { get; } = pollId;
+    public long VoterPeerId { get; } = voterPeerId;
 }

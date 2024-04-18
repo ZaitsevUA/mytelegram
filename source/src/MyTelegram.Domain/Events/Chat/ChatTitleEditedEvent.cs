@@ -1,22 +1,16 @@
 ﻿namespace MyTelegram.Domain.Events.Chat;
 
-public class ChatTitleEditedEvent : RequestAggregateEvent2<ChatAggregate, ChatId>
+public class ChatTitleEditedEvent(
+    RequestInfo requestInfo,
+    long chatId,
+    string title,
+    string messageActionData,
+    long randomId)
+    : RequestAggregateEvent2<ChatAggregate, ChatId>(requestInfo)
 {
-    public ChatTitleEditedEvent(RequestInfo requestInfo,
-        long chatId,
-        string title,
-        string messageActionData,
-        long randomId) : base(requestInfo)
-    {
-        ChatId = chatId;
-        Title = title;
-        MessageActionData = messageActionData;
-        RandomId = randomId;
-    }
-
-    public long ChatId { get; }
-    public string MessageActionData { get; }
-    public long RandomId { get; }
-    public string Title { get; }
+    public long ChatId { get; } = chatId;
+    public string MessageActionData { get; } = messageActionData;
+    public long RandomId { get; } = randomId;
+    public string Title { get; } = title;
 }
 

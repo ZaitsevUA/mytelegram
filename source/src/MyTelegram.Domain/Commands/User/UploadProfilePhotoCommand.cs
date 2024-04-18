@@ -1,27 +1,21 @@
 ﻿namespace MyTelegram.Domain.Commands.User;
 
-public class UploadProfilePhotoCommand : RequestCommand2<UserAggregate, UserId, IExecutionResult>
+public class UploadProfilePhotoCommand(
+    UserId aggregateId,
+    RequestInfo requestInfo,
+    long photoId,
+    bool fallback,
+    byte[]? photo,
+    VideoSizeEmojiMarkup? videoEmojiMarkup = null)
+    : RequestCommand2<UserAggregate, UserId, IExecutionResult>(aggregateId, requestInfo)
 {
     //public byte[]? Photo { get; }
     //public VideoSizeEmojiMarkup? VideoEmojiMarkup { get; }
 
-    public UploadProfilePhotoCommand(UserId aggregateId,
-        RequestInfo requestInfo,
-        //long fileId,
-        long photoId,
-        bool fallback,
-        byte[]? photo,
-        VideoSizeEmojiMarkup? videoEmojiMarkup = null
-    ) : base(aggregateId, requestInfo)
-    {
-        PhotoId = photoId;
-        Fallback = fallback;
-        Photo = photo;
-        VideoEmojiMarkup = videoEmojiMarkup;
-    }
+    //long fileId,
 
-    public long PhotoId { get; }
-    public bool Fallback { get; }
-    public byte[]? Photo { get; }
-    public VideoSizeEmojiMarkup? VideoEmojiMarkup { get; }
+    public long PhotoId { get; } = photoId;
+    public bool Fallback { get; } = fallback;
+    public byte[]? Photo { get; } = photo;
+    public VideoSizeEmojiMarkup? VideoEmojiMarkup { get; } = videoEmojiMarkup;
 }

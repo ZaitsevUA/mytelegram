@@ -5,18 +5,12 @@ using MyTelegram.Schema;
 
 namespace MyTelegram.Services.Services;
 
-public class InvokeAfterMsgProcessor : IInvokeAfterMsgProcessor //, ISingletonDependency
+public class InvokeAfterMsgProcessor(IHandlerHelper handlerHelper) : IInvokeAfterMsgProcessor //, ISingletonDependency
 {
-    private readonly IHandlerHelper _handlerHelper;
-
     //private readonly ConcurrentDictionary<long, int> _recentMessageIds = new();
     private readonly CircularBuffer<long> _recentMessageIds = new(50000);
     private readonly ConcurrentDictionary<long, InvokeAfterMsgItem> _requests = new();
     private readonly System.Threading.Channels.Channel<long> _completedReqMsgIds = Channel.CreateUnbounded<long>();
-    public InvokeAfterMsgProcessor(IHandlerHelper handlerHelper)
-    {
-        _handlerHelper = handlerHelper;
-    }
 
     public void AddToRecentMessageIdList(long messageId)
     {
@@ -64,7 +58,7 @@ public class InvokeAfterMsgProcessor : IInvokeAfterMsgProcessor //, ISingletonDe
     {
         if (_requests.TryGetValue(reqMsgId, out var item))
         {
-            if (!_handlerHelper.TryGetHandler(item.Query.ConstructorId, out var handler))
+            if (!handlerHelper.TryGetHandler(item.Query.ConstructorId, out var handler))
             {
                 throw new NotImplementedException($"Not supported query:{item.Query.ConstructorId:x2}");
             }
@@ -82,7 +76,7 @@ public class InvokeAfterMsgProcessor : IInvokeAfterMsgProcessor //, ISingletonDe
     public Task<IObject> HandleAsync(IRequestInput input,
         IObject query)
     {
-        if (!_handlerHelper.TryGetHandler(query.ConstructorId, out var handler))
+        if (!handlerHelper.TryGetHandler(query.ConstructorId, out var handler))
         {
             throw new NotSupportedException($"Not supported query:{query.ConstructorId:x2}");
         }

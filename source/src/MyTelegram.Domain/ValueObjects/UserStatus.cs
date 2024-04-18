@@ -2,20 +2,14 @@
 
 namespace MyTelegram.Domain.ValueObjects;
 
-public class UserStatus
+public class UserStatus(
+    long userId,
+    bool online)
 {
-    public UserStatus(long userId,
-        bool online)
-    {
-        UserId = userId;
-        Online = online;
-        LastUpdateDate = DateTime.UtcNow;
-    }
+    public DateTime LastUpdateDate { get; internal set; } = DateTime.UtcNow;
+    public bool Online { get; internal set; } = online;
 
-    public DateTime LastUpdateDate { get; internal set; }
-    public bool Online { get; internal set; }
-
-    public long UserId { get; internal set; }
+    public long UserId { get; internal set; } = userId;
 
     public void UpdateStatus(bool online)
     {
@@ -24,26 +18,22 @@ public class UserStatus
     }
 }
 
-public class Reaction : ValueObject
+public class Reaction(
+    long userId,
+    string? emoticon,
+    long? customEmojiDocumentId,
+    int? date = 0)
+    : ValueObject
 {
     //public Reaction()
     //{
     //}
 
-    public Reaction(long userId, string? emoticon,
-        long? customEmojiDocumentId, int? date = 0)
-    {
-        UserId = userId;
-        Emoticon = emoticon;
-        CustomEmojiDocumentId = customEmojiDocumentId;
-        Date = date;
-    }
+    public long UserId { get; set; } = userId;
+    public string? Emoticon { get; set; } = emoticon;
+    public long? CustomEmojiDocumentId { get; set; } = customEmojiDocumentId;
 
-    public long UserId { get; set; }
-    public string? Emoticon { get; set; }
-    public long? CustomEmojiDocumentId { get; set; }
-
-    public int? Date { get; set; }
+    public int? Date { get; set; } = date;
     //public int? ChosenOrder { get; set; }
 
     //public int GetReactionCount() => _count;
@@ -72,11 +62,16 @@ public class Reaction : ValueObject
     }
 }
 
-public class ReactionCount : ValueObject
+public class ReactionCount(
+    string? emoticon,
+    long? customEmojiDocumentId,
+    int count)
+    : ValueObject
 {
-    public string? Emoticon { get; internal set; }
-    public long? CustomEmojiDocumentId { get; internal set; }
-    public int Count { get; internal set; }
+    public string? Emoticon { get; internal set; } = emoticon;
+    public long? CustomEmojiDocumentId { get; internal set; } = customEmojiDocumentId;
+    public int Count { get; internal set; } = count;
+
     public int? ChosenOrder { get; set; }
     //public bool? CanSeeList { get; internal set; }
 
@@ -84,13 +79,6 @@ public class ReactionCount : ValueObject
     //{
     //}
 
-    public ReactionCount(string? emoticon,
-        long? customEmojiDocumentId, int count)
-    {
-        Emoticon = emoticon;
-        CustomEmojiDocumentId = customEmojiDocumentId;
-        Count = count;
-    }
     public void IncrementCount()
     {
         Count++;

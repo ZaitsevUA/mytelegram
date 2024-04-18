@@ -1,15 +1,8 @@
 ﻿namespace MyTelegram.Domain.Events.Messaging;
 
-public class MessageForwardedEvent : RequestAggregateEvent2<MessageAggregate, MessageId>
+public class MessageForwardedEvent(RequestInfo requestInfo, long randomId, MessageItem originalMessageItem)
+    : RequestAggregateEvent2<MessageAggregate, MessageId>(requestInfo)
 {
-    public long RandomId { get; }
-    public MessageItem OriginalMessageItem { get; }
-    
-
-    public MessageForwardedEvent(RequestInfo requestInfo, long randomId, MessageItem originalMessageItem) : base(requestInfo)
-    {
-        RandomId = randomId;
-        OriginalMessageItem = originalMessageItem;
-        
-    }
+    public long RandomId { get; } = randomId;
+    public MessageItem OriginalMessageItem { get; } = originalMessageItem;
 }

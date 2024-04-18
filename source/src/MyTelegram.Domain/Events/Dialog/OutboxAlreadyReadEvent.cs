@@ -1,25 +1,19 @@
 ﻿namespace MyTelegram.Domain.Events.Dialog;
 
-public class OutboxAlreadyReadEvent : RequestAggregateEvent2<DialogAggregate, DialogId>
+public class OutboxAlreadyReadEvent(
+    RequestInfo requestInfo,
+    int oldMaxMessageId,
+    int newMaxMessageId,
+    Peer toPeer)
+    : RequestAggregateEvent2<DialogAggregate, DialogId>(requestInfo)
 {
-    public OutboxAlreadyReadEvent(
-        RequestInfo requestInfo,
-        int oldMaxMessageId,
-        int newMaxMessageId,
-        //long senderMsgId,
-        Peer toPeer) : base(requestInfo)
-    {
+    //long senderMsgId,
+    //SenderMsgId = senderMsgId; 
 
-        OldMaxMessageId = oldMaxMessageId;
-        NewMaxMessageId = newMaxMessageId;
-        ToPeer = toPeer;
-        //SenderMsgId = senderMsgId; 
-    }
+    public int NewMaxMessageId { get; } = newMaxMessageId;
+    public Peer ToPeer { get; } = toPeer;
 
-    public int NewMaxMessageId { get; }
-    public Peer ToPeer { get; }
-
-    public int OldMaxMessageId { get; }
+    public int OldMaxMessageId { get; } = oldMaxMessageId;
 
     //public long SenderMsgId { get; } 
 

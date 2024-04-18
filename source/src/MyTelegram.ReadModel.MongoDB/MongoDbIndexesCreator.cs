@@ -56,16 +56,14 @@ namespace MyTelegram.ReadModel.MongoDB;
 //    }
 //}
 
-public class MongoDbIndexesCreator : MongoDbIndexesCreatorBase
-{
-    public MongoDbIndexesCreator(IMongoDatabase database,
-        IReadModelDescriptionProvider descriptionProvider,
-        IMongoDbEventPersistenceInitializer eventPersistenceInitializer) : base(database,
+public class MongoDbIndexesCreator(
+    IMongoDatabase database,
+    IReadModelDescriptionProvider descriptionProvider,
+    IMongoDbEventPersistenceInitializer eventPersistenceInitializer)
+    : MongoDbIndexesCreatorBase(database,
         descriptionProvider,
         eventPersistenceInitializer)
-    {
-    }
-
+{
     protected override async Task CreateAllIndexesCoreAsync()
     {
         await CreateIndexAsync<DialogReadModel>(p => p.OwnerId);

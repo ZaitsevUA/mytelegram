@@ -1,43 +1,30 @@
 ﻿namespace MyTelegram.Domain.Sagas.Events;
 
-public class ReadHistoryCompletedEvent : RequestAggregateEvent2<ReadHistorySaga, ReadHistorySagaId>
+public class ReadHistoryCompletedEvent(
+    RequestInfo requestInfo,
+    bool senderIsBot,
+    long readerUserId,
+    int readerMessageId,
+    int readerPts,
+    Peer readerToPeer,
+    long senderPeerId,
+    int senderPts,
+    int senderMessageId,
+    bool isOut,
+    bool outboxAlreadyRead,
+    string sourceCommandId)
+    : RequestAggregateEvent2<ReadHistorySaga, ReadHistorySagaId>(requestInfo)
 {
-    public ReadHistoryCompletedEvent(RequestInfo requestInfo,
-        bool senderIsBot,
-        long readerUserId,
-        int readerMessageId,
-        int readerPts,
-        Peer readerToPeer,
-        long senderPeerId,
-        int senderPts,
-        int senderMessageId,
-        bool isOut,
-        bool outboxAlreadyRead,
-        string sourceCommandId) : base(requestInfo)
-    {
-        SenderIsBot = senderIsBot;
-        ReaderUserId = readerUserId;
-        ReaderMessageId = readerMessageId;
-        ReaderPts = readerPts;
-        ReaderToPeer = readerToPeer;
-        SenderPeerId = senderPeerId;
-        SenderPts = senderPts;
-        SenderMessageId = senderMessageId;
-        IsOut = isOut;
-        OutboxAlreadyRead = outboxAlreadyRead;
-        SourceCommandId = sourceCommandId;
-    }
+    public bool IsOut { get; } = isOut;
+    public bool OutboxAlreadyRead { get; } = outboxAlreadyRead;
+    public int ReaderMessageId { get; } = readerMessageId;
+    public int ReaderPts { get; } = readerPts;
+    public Peer ReaderToPeer { get; } = readerToPeer;
+    public long ReaderUserId { get; } = readerUserId;
+    public bool SenderIsBot { get; } = senderIsBot;
+    public int SenderMessageId { get; } = senderMessageId;
+    public int SenderPts { get; } = senderPts;
 
-    public bool IsOut { get; }
-    public bool OutboxAlreadyRead { get; }
-    public int ReaderMessageId { get; }
-    public int ReaderPts { get; }
-    public Peer ReaderToPeer { get; }
-    public long ReaderUserId { get; } 
-    public bool SenderIsBot { get; }
-    public int SenderMessageId { get; }
-    public int SenderPts { get; }
-
-    public long SenderPeerId { get; }
-    public string SourceCommandId { get; }
+    public long SenderPeerId { get; } = senderPeerId;
+    public string SourceCommandId { get; } = sourceCommandId;
 }

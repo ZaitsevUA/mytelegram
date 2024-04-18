@@ -1,12 +1,9 @@
 ﻿namespace MyTelegram.Domain.Sagas.Events;
 
-public class ImportContactsCompletedEvent : RequestAggregateEvent2<ImportContactsSaga, ImportContactsSagaId>
+public class ImportContactsCompletedEvent(
+    RequestInfo requestInfo,
+    List<PhoneContact> phoneContacts)
+    : RequestAggregateEvent2<ImportContactsSaga, ImportContactsSagaId>(requestInfo)
 {
-    public ImportContactsCompletedEvent(RequestInfo requestInfo,
-        List<PhoneContact> phoneContacts) : base(requestInfo)
-    {
-        PhoneContacts = phoneContacts;
-    }
-
-    public List<PhoneContact> PhoneContacts { get; }
+    public List<PhoneContact> PhoneContacts { get; } = phoneContacts;
 }

@@ -2,31 +2,21 @@
 
 namespace MyTelegram.Messenger.TLObjectConverters.Impl.LatestLayer;
 
-public class DialogConverterLatest : LayeredConverterBase, IDialogConverterLatest
+public class DialogConverterLatest(
+    ILayeredService<IChatConverter> layeredChatService,
+    ILayeredService<IUserConverter> layeredUserService,
+    ILayeredService<IMessageConverter> layeredMessageService,
+    IObjectMapper objectMapper,
+    ILayeredService<IPeerNotifySettingsConverter> layeredPeerNotifySettingsService)
+    : LayeredConverterBase, IDialogConverterLatest
 {
-    private readonly ILayeredService<IChatConverter> _layeredChatService;
-    private readonly ILayeredService<IMessageConverter> _layeredMessageService;
-    private readonly ILayeredService<IPeerNotifySettingsConverter> _layeredPeerNotifySettingsService;
-    private readonly ILayeredService<IUserConverter> _layeredUserService;
     private IChatConverter? _chatConverter;
     private IMessageConverter? _messageConverter;
     private IUserConverter? _userConverter;
 
-    public DialogConverterLatest(
-        ILayeredService<IChatConverter> layeredChatService,
-        ILayeredService<IUserConverter> layeredUserService,
-        ILayeredService<IMessageConverter> layeredMessageService,
-        IObjectMapper objectMapper, ILayeredService<IPeerNotifySettingsConverter> layeredPeerNotifySettingsService)
-    {
-        _layeredChatService = layeredChatService;
-        _layeredUserService = layeredUserService;
-        _layeredMessageService = layeredMessageService;
-        ObjectMapper = objectMapper;
-        _layeredPeerNotifySettingsService = layeredPeerNotifySettingsService;
-    }
-
     public override int Layer => Layers.LayerLatest;
-    protected virtual IObjectMapper ObjectMapper { get; }
+    protected virtual IObjectMapper ObjectMapper { get; } = objectMapper;
+
     public virtual IDialogs ToDialogs(GetDialogOutput output)
     {
         var dialogs = new List<IDialog>();
@@ -218,25 +208,25 @@ public class DialogConverterLatest : LayeredConverterBase, IDialogConverterLates
 
     protected virtual IChatConverter GetChatConverter()
     {
-        return _chatConverter ??= _layeredChatService.GetConverter(GetLayer());
+        return _chatConverter ??= layeredChatService.GetConverter(GetLayer());
     }
 
     protected virtual IMessageConverter GetMessageConverter()
     {
-        return _messageConverter ??= _layeredMessageService.GetConverter(GetLayer());
+        return _messageConverter ??= layeredMessageService.GetConverter(GetLayer());
     }
 
     protected virtual IPeerNotifySettings? GetPeerNotifySettings(PeerNotifySettings? peerNotifySettings)
     {
         var layer = GetLayer();
-        var converter = _layeredPeerNotifySettingsService.GetConverter(layer);
+        var converter = layeredPeerNotifySettingsService.GetConverter(layer);
         var settings = converter.ToPeerNotifySettings(peerNotifySettings);
 
-        return _layeredPeerNotifySettingsService.GetConverter(GetLayer()).ToPeerNotifySettings(peerNotifySettings);
+        return layeredPeerNotifySettingsService.GetConverter(GetLayer()).ToPeerNotifySettings(peerNotifySettings);
     }
 
     protected virtual IUserConverter GetUserConverter()
     {
-        return _userConverter ??= _layeredUserService.GetConverter(GetLayer());
+        return _userConverter ??= layeredUserService.GetConverter(GetLayer());
     }
 }

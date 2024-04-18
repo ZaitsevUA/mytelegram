@@ -1,25 +1,18 @@
 ﻿namespace MyTelegram.Messenger.Services.IdGenerator;
 
-public abstract class HiLoValueGenerator<TValue> : ValueGenerator<TValue>
+public abstract class HiLoValueGenerator<TValue>(HiLoValueGeneratorState generatorState) : ValueGenerator<TValue>
 {
-    private readonly HiLoValueGeneratorState _generatorState;
-
-    protected HiLoValueGenerator(HiLoValueGeneratorState generatorState)
-    {
-        _generatorState = generatorState;
-    }
-
     public override TValue Next(IdType idType,
         long key)
     {
-        return _generatorState.Next<TValue>(idType, key, GetNewLowValue);
+        return generatorState.Next<TValue>(idType, key, GetNewLowValue);
     }
 
     public override ValueTask<TValue> NextAsync(IdType idType,
         long key,
         CancellationToken cancellationToken = default)
     {
-        return _generatorState.NextAsync<TValue>(idType, key, GetNewLowValueAsync, cancellationToken);
+        return generatorState.NextAsync<TValue>(idType, key, GetNewLowValueAsync, cancellationToken);
     }
 
     //protected abstract HiLoValueGeneratorState GetGeneratorState(IdType idType,

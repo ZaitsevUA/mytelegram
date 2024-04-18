@@ -1,20 +1,15 @@
 ﻿namespace MyTelegram.Domain.Sagas;
 
-public class EditChannelTitleSaga : MyInMemoryAggregateSaga<EditChannelTitleSaga, EditChannelTitleSagaId, EditChannelTitleSagaLocator>,
-    ISagaIsStartedBy<ChannelAggregate, ChannelId, ChannelTitleEditedEvent>
+public class EditChannelTitleSaga(EditChannelTitleSagaId id, IEventStore eventStore, IIdGenerator idGenerator)
+    : MyInMemoryAggregateSaga<EditChannelTitleSaga, EditChannelTitleSagaId, EditChannelTitleSagaLocator>(id,
+            eventStore),
+        ISagaIsStartedBy<ChannelAggregate, ChannelId, ChannelTitleEditedEvent>
 {
-    private readonly IIdGenerator _idGenerator;
-
-    public EditChannelTitleSaga(EditChannelTitleSagaId id, IEventStore eventStore, IIdGenerator idGenerator) : base(id, eventStore)
-    {
-        _idGenerator = idGenerator;
-    }
-
     public async Task HandleAsync(IDomainEvent<ChannelAggregate, ChannelId, ChannelTitleEditedEvent> domainEvent,
         ISagaContext sagaContext,
         CancellationToken cancellationToken)
     {
-        var outMessageId = await _idGenerator.NextIdAsync(IdType.MessageId, domainEvent.AggregateEvent.ChannelId, cancellationToken: cancellationToken);
+        var outMessageId = await idGenerator.NextIdAsync(IdType.MessageId, domainEvent.AggregateEvent.ChannelId, cancellationToken: cancellationToken);
         var aggregateId = MessageId.Create(domainEvent.AggregateEvent.ChannelId, outMessageId);
         var ownerPeer = new Peer(PeerType.Channel, domainEvent.AggregateEvent.ChannelId);
         var senderPeer = new Peer(PeerType.User, domainEvent.AggregateEvent.RequestInfo.UserId);

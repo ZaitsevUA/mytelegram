@@ -7,16 +7,13 @@ using System.Linq.Expressions;
 
 namespace MyTelegram.EventFlow.MongoDB.ReadStores;
 
-public class MongoDbQueryOnlyReadModelStore<TReadModel> : MongoDbQueryOnlyReadModelStore<TReadModel, IMongoDbContext>
-    where TReadModel : class, IReadModel
-{
-    public MongoDbQueryOnlyReadModelStore(IQueryOnlyReadModelDescriptionProvider readModelDescriptionProvider,
-        IMongoDbContextFactory<IMongoDbContext> dbContextFactory,
-        ILogger<MongoDbQueryOnlyReadModelStore<TReadModel, IMongoDbContext>> logger) : base(
-        readModelDescriptionProvider, dbContextFactory, logger)
-    {
-    }
-}
+public class MongoDbQueryOnlyReadModelStore<TReadModel>(
+    IQueryOnlyReadModelDescriptionProvider readModelDescriptionProvider,
+    IMongoDbContextFactory<IMongoDbContext> dbContextFactory,
+    ILogger<MongoDbQueryOnlyReadModelStore<TReadModel, IMongoDbContext>> logger)
+    : MongoDbQueryOnlyReadModelStore<TReadModel, IMongoDbContext>(readModelDescriptionProvider, dbContextFactory,
+        logger)
+    where TReadModel : class, IReadModel;
 
 public class MongoDbQueryOnlyReadModelStore<TReadModel, TDbContext>(
         IQueryOnlyReadModelDescriptionProvider readModelDescriptionProvider,

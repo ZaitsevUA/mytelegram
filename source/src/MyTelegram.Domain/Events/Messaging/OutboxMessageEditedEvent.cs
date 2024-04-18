@@ -1,40 +1,31 @@
 ﻿namespace MyTelegram.Domain.Events.Messaging;
 
-public class OutboxMessageEditedEvent : RequestAggregateEvent2<MessageAggregate, MessageId>
+public class OutboxMessageEditedEvent(
+    RequestInfo requestInfo,
+    IReadOnlyCollection<InboxItem>? inboxItems,
+    MessageItem oldMessageItem,
+    int messageId,
+    string newMessage,
+    int editDate,
+    byte[]? entities,
+    byte[]? media,
+    List<ReactionCount>? reactions,
+    List<Reaction>? recentReactions)
+    : RequestAggregateEvent2<MessageAggregate, MessageId>(requestInfo)
 {
-    public OutboxMessageEditedEvent(RequestInfo requestInfo,
-        IReadOnlyCollection<InboxItem>? inboxItems,
-        MessageItem oldMessageItem,
-        int messageId,
-        string newMessage,
-        int editDate,
-        byte[]? entities,
-        byte[]? media,
-        List<ReactionCount>? reactions,
-        List<Reaction>? recentReactions) : base(requestInfo)
-    {
-        InboxItems = inboxItems;
-        OldMessageItem = oldMessageItem;
-        MessageId = messageId;
-        NewMessage = newMessage;
-        Entities = entities;
-        Media = media;
-        Reactions = reactions;
-        RecentReactions = recentReactions;
-        //ChatMembers = chatMembers;
-        EditDate = editDate;
-
-    }
+    //ChatMembers = chatMembers;
 
 
-    public IReadOnlyCollection<InboxItem>? InboxItems { get; }
-    public MessageItem OldMessageItem { get; }
-    public int MessageId { get; }
-    public string NewMessage { get; }
-    public byte[]? Entities { get; }
-    public byte[]? Media { get; }
-    public List<ReactionCount>? Reactions { get; }
-    public List<Reaction>? RecentReactions { get; }
+    public IReadOnlyCollection<InboxItem>? InboxItems { get; } = inboxItems;
+    public MessageItem OldMessageItem { get; } = oldMessageItem;
+    public int MessageId { get; } = messageId;
+    public string NewMessage { get; } = newMessage;
+    public byte[]? Entities { get; } = entities;
+    public byte[]? Media { get; } = media;
+    public List<ReactionCount>? Reactions { get; } = reactions;
+
+    public List<Reaction>? RecentReactions { get; } = recentReactions;
+
     //public List<long>? ChatMembers { get; }
-    public int EditDate { get; }
+    public int EditDate { get; } = editDate;
 }

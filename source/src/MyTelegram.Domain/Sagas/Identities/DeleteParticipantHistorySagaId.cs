@@ -1,8 +1,3 @@
 ﻿namespace MyTelegram.Domain.Sagas.Identities;
 
-public class DeleteParticipantHistorySagaId :SingleValueObject<string>, ISagaId
-{
-    public DeleteParticipantHistorySagaId(string value) : base(value)
-    {
-    }
-}
+public class DeleteParticipantHistorySagaId(string value) : SingleValueObject<string>(value), ISagaId;

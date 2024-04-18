@@ -4,23 +4,17 @@ using Microsoft.Extensions.Logging;
 
 namespace MyTelegram.Services.Services;
 
-public class MessageQueueProcessor2<TData> : IMessageQueueProcessor<TData>
+public class MessageQueueProcessor2<TData>(
+    ILogger<MessageQueueProcessor2<TData>> logger,
+    IDataProcessor<TData> dataProcessor)
+    : IMessageQueueProcessor<TData>
 {
     private const int MaxQueueCount = 1000;
-    private readonly IDataProcessor<TData> _dataProcessor;
-    private readonly ILogger<MessageQueueProcessor2<TData>> _logger;
     private readonly ConcurrentDictionary<long, Channel<TData>> _queues = new();
     private readonly SemaphoreSlim _semaphoreSlim = new(1, 1);
     private bool _isInited;
 
     private readonly BlockingCollection<Channel<TData>> _channels = new();
-
-    public MessageQueueProcessor2(ILogger<MessageQueueProcessor2<TData>> logger,
-        IDataProcessor<TData> dataProcessor)
-    {
-        _logger = logger;
-        _dataProcessor = dataProcessor;
-    }
 
     public Task ProcessAsync()
     {
@@ -38,11 +32,11 @@ public class MessageQueueProcessor2<TData> : IMessageQueueProcessor<TData>
                         {
                             try
                             {
-                                await _dataProcessor.ProcessAsync(item);
+                                await dataProcessor.ProcessAsync(item);
                             }
                             catch (Exception ex)
                             {
-                                _logger.LogError(ex, "Process message queue error:");
+                                logger.LogError(ex, "Process message queue error:");
                             }
                         }
                     }
@@ -93,7 +87,7 @@ public class MessageQueueProcessor2<TData> : IMessageQueueProcessor<TData>
 
         if (!queue!.Writer.TryWrite(message))
         {
-            _logger.LogWarning("Can not write message to queue");
+            logger.LogWarning("Can not write message to queue");
         }
     }
 

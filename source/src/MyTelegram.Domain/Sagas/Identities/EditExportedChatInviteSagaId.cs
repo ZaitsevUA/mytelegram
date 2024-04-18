@@ -2,9 +2,4 @@
 
 [JsonConverter(typeof(SystemTextJsonSingleValueObjectConverter<EditExportedChatInviteSagaId>))]
 
-public class EditExportedChatInviteSagaId : SingleValueObject<string>, ISagaId
-{
-    public EditExportedChatInviteSagaId(string value) : base(value)
-    {
-    }
-}
+public class EditExportedChatInviteSagaId(string value) : SingleValueObject<string>(value), ISagaId;

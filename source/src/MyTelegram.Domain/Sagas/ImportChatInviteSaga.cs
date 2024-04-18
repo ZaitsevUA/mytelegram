@@ -3,14 +3,10 @@ using MyTelegram.Schema.Extensions;
 
 namespace MyTelegram.Domain.Sagas;
 
-public class ImportChatInviteSaga :
-    MyInMemoryAggregateSaga<ImportChatInviteSaga, ImportChatInviteSagaId, ImportChatInviteSagaLocator>,
+public class ImportChatInviteSaga(ImportChatInviteSagaId id, IEventStore eventStore) :
+    MyInMemoryAggregateSaga<ImportChatInviteSaga, ImportChatInviteSagaId, ImportChatInviteSagaLocator>(id, eventStore),
     ISagaIsStartedBy<ChatInviteAggregate, ChatInviteId, ChatInviteImportedEvent>
 {
-    public ImportChatInviteSaga(ImportChatInviteSagaId id, IEventStore eventStore) : base(id, eventStore)
-    {
-    }
-
     public async Task HandleAsync(IDomainEvent<ChatInviteAggregate, ChatInviteId, ChatInviteImportedEvent> domainEvent, ISagaContext sagaContext, CancellationToken cancellationToken)
     {
         if (domainEvent.AggregateEvent.ChatInviteRequestState == ChatInviteRequestState.NotNeedApprove)

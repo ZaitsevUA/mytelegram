@@ -4,31 +4,22 @@ using MyTelegram.Domain.Extensions;
 
 namespace MyTelegram.Messenger.CommandServer.DomainEventHandlers;
 
-public class SendAppCodeEventHandler :
-    ISubscribeSynchronousTo<AppCodeAggregate, AppCodeId, AppCodeCreatedEvent>
+public class SendAppCodeEventHandler(
+    ILogger<SendAppCodeEventHandler> logger,
+    IEventBus eventBus,
+    IMessageAppService messageAppService,
+    IRandomHelper randomHelper)
+    :
+        ISubscribeSynchronousTo<AppCodeAggregate, AppCodeId, AppCodeCreatedEvent>
 {
-    private readonly ILogger<SendAppCodeEventHandler> _logger;
-    private readonly IMessageAppService _messageAppService;
-    private readonly IRandomHelper _randomHelper;
-    private readonly IEventBus _eventBus;
-    public SendAppCodeEventHandler(
-        ILogger<SendAppCodeEventHandler> logger,
-        IEventBus eventBus, IMessageAppService messageAppService, IRandomHelper randomHelper)
-    {
-        _logger = logger;
-        _eventBus = eventBus;
-        _messageAppService = messageAppService;
-        _randomHelper = randomHelper;
-    }
-
     public async Task HandleAsync(IDomainEvent<AppCodeAggregate, AppCodeId, AppCodeCreatedEvent> domainEvent,
         CancellationToken cancellationToken)
     {
-        _logger.LogInformation("##### Send app code:phoneNumber={PhoneNumber},code={Code}",
+        logger.LogInformation("##### Send app code:phoneNumber={PhoneNumber},code={Code}",
             domainEvent.AggregateEvent.PhoneNumber,
             domainEvent.AggregateEvent.Code
         );
-        await _eventBus.PublishAsync(new AppCodeCreatedIntegrationEvent(domainEvent.AggregateEvent.UserId, domainEvent.AggregateEvent.PhoneNumber, domainEvent.AggregateEvent.Code, domainEvent.AggregateEvent.Expire));
+        await eventBus.PublishAsync(new AppCodeCreatedIntegrationEvent(domainEvent.AggregateEvent.UserId, domainEvent.AggregateEvent.PhoneNumber, domainEvent.AggregateEvent.Code, domainEvent.AggregateEvent.Expire));
 
         if (domainEvent.AggregateEvent.UserId != 0)
         {
@@ -53,11 +44,11 @@ public class SendAppCodeEventHandler :
                 MyTelegramServerDomainConsts.OfficialUserId,
                 new Peer(PeerType.User, domainEvent.AggregateEvent.UserId),
                 message,
-                _randomHelper.NextLong(),
+                randomHelper.NextLong(),
                 entities: entities
             );
 
-            await _messageAppService.SendMessageAsync(sendMessageInput);
+            await messageAppService.SendMessageAsync(sendMessageInput);
         }
     }
 }

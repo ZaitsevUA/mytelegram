@@ -2,29 +2,24 @@
 
 namespace MyTelegram.Messenger.QueryServer.DomainEventHandlers;
 
-public class ChatDomainEventHandler : DomainEventHandlerBase,
-    //ISubscribeSynchronousTo<ChatAggregate, ChatId, ChatCreatedEvent>,
-    ISubscribeSynchronousTo<ChatAggregate, ChatId, ChatDefaultBannedRightsEditedEvent>,
-    ISubscribeSynchronousTo<ChatAggregate, ChatId, ChatAboutEditedEvent>,
-    ISubscribeSynchronousTo<ChatAggregate, ChatId, ChatDeletedEvent>
+public class ChatDomainEventHandler(
+    IObjectMessageSender objectMessageSender,
+    ICommandBus commandBus,
+    IIdGenerator idGenerator,
+    IAckCacheService ackCacheService,
+    IResponseCacheAppService responseCacheAppService,
+    IChatEventCacheHelper chatEventCacheHelper)
+    : DomainEventHandlerBase(objectMessageSender,
+            commandBus,
+            idGenerator,
+            ackCacheService,
+            responseCacheAppService),
+        //ISubscribeSynchronousTo<ChatAggregate, ChatId, ChatCreatedEvent>,
+        ISubscribeSynchronousTo<ChatAggregate, ChatId, ChatDefaultBannedRightsEditedEvent>,
+        ISubscribeSynchronousTo<ChatAggregate, ChatId, ChatAboutEditedEvent>,
+        ISubscribeSynchronousTo<ChatAggregate, ChatId, ChatDeletedEvent>
 
 {
-    private readonly IChatEventCacheHelper _chatEventCacheHelper;
-
-    public ChatDomainEventHandler(IObjectMessageSender objectMessageSender,
-        ICommandBus commandBus,
-        IIdGenerator idGenerator,
-        IAckCacheService ackCacheService,
-        IResponseCacheAppService responseCacheAppService,
-        IChatEventCacheHelper chatEventCacheHelper) : base(objectMessageSender,
-        commandBus,
-        idGenerator,
-        ackCacheService,
-        responseCacheAppService)
-    {
-        _chatEventCacheHelper = chatEventCacheHelper;
-    }
-
     public Task HandleAsync(IDomainEvent<ChatAggregate, ChatId, ChatAboutEditedEvent> domainEvent,
         CancellationToken cancellationToken)
     {
@@ -34,7 +29,7 @@ public class ChatDomainEventHandler : DomainEventHandlerBase,
     public Task HandleAsync(IDomainEvent<ChatAggregate, ChatId, ChatCreatedEvent> domainEvent,
         CancellationToken cancellationToken)
     {
-        _chatEventCacheHelper.Add(domainEvent.AggregateEvent);
+        chatEventCacheHelper.Add(domainEvent.AggregateEvent);
         //_createdChatDict.TryAdd(domainEvent.AggregateEvent.ChatId, domainEvent.AggregateEvent);
         return Task.CompletedTask;
     }

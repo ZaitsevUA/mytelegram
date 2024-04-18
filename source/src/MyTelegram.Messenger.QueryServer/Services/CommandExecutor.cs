@@ -4,18 +4,13 @@ using EventFlow.Commands;
 
 namespace MyTelegram.Messenger.QueryServer.Services;
 
-public class CommandExecutor<TAggregate, TIdentity, TExecutionResult> : ICommandExecutor<TAggregate, TIdentity, TExecutionResult>
+public class CommandExecutor<TAggregate, TIdentity, TExecutionResult>(ICommandBus commandBus)
+    : ICommandExecutor<TAggregate, TIdentity, TExecutionResult>
     where TAggregate : IAggregateRoot<TIdentity>
     where TIdentity : IIdentity
     where TExecutionResult : IExecutionResult
 {
     private readonly Channel<ICommand<TAggregate, TIdentity, TExecutionResult>> _commands = Channel.CreateUnbounded<ICommand<TAggregate, TIdentity, TExecutionResult>>();
-    private readonly ICommandBus _commandBus;
-
-    public CommandExecutor(ICommandBus commandBus)
-    {
-        _commandBus = commandBus;
-    }
 
     public Task ProcessCommandAsync()
     {
@@ -25,7 +20,7 @@ public class CommandExecutor<TAggregate, TIdentity, TExecutionResult> : ICommand
             {
                 while (_commands.Reader.TryRead(out var command))
                 {
-                    await _commandBus.PublishAsync(command, default);
+                    await commandBus.PublishAsync(command, default);
                 }
             }
         });

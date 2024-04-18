@@ -1,29 +1,21 @@
 ﻿namespace MyTelegram.Domain.Commands.AppCode;
 
-public class SendAppCodeCommand : RequestCommand2<AppCodeAggregate, AppCodeId, IExecutionResult>
+public class SendAppCodeCommand(
+    AppCodeId aggregateId,
+    RequestInfo requestInfo,
+    long userId,
+    string phoneNumber,
+    string code,
+    string phoneCodeHash,
+    int expire,
+    long creationTime)
+    : RequestCommand2<AppCodeAggregate, AppCodeId, IExecutionResult>(aggregateId, requestInfo)
 {
-    public SendAppCodeCommand(AppCodeId aggregateId,
-        RequestInfo requestInfo,
-        long userId,
-        string phoneNumber,
-        string code,
-        string phoneCodeHash,
-        int expire,
-        long creationTime) : base(aggregateId, requestInfo)
-    {
-        UserId = userId;
-        PhoneNumber = phoneNumber;
-        Code = code;
-        PhoneCodeHash = phoneCodeHash;
-        Expire = expire;
-        CreationTime = creationTime;
-    }
+    public string Code { get; } = code;
+    public long CreationTime { get; } = creationTime;
+    public int Expire { get; } = expire;
 
-    public string Code { get; }
-    public long CreationTime { get; }
-    public int Expire { get; }
-
-    public string PhoneCodeHash { get; }
-    public long UserId { get; }
-    public string PhoneNumber { get; }
+    public string PhoneCodeHash { get; } = phoneCodeHash;
+    public long UserId { get; } = userId;
+    public string PhoneNumber { get; } = phoneNumber;
 }

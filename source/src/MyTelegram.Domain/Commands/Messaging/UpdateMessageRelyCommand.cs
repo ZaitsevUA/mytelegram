@@ -1,11 +1,7 @@
 ﻿namespace MyTelegram.Domain.Commands.Messaging;
 
-public class UpdateMessageRelyCommand : Command<MessageAggregate, MessageId, IExecutionResult>
+public class UpdateMessageRelyCommand(MessageId aggregateId, int pts)
+    : Command<MessageAggregate, MessageId, IExecutionResult>(aggregateId)
 {
-    public int Pts { get; }
-
-    public UpdateMessageRelyCommand(MessageId aggregateId,int pts) : base(aggregateId)
-    {
-        Pts = pts;
-    }
+    public int Pts { get; } = pts;
 }

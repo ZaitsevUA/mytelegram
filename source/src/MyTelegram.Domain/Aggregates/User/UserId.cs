@@ -1,12 +1,8 @@
 ﻿namespace MyTelegram.Domain.Aggregates.User;
 
 [JsonConverter(typeof(SystemTextJsonSingleValueObjectConverter<UserId>))]
-public class UserId : Identity<UserId>
+public class UserId(string value) : Identity<UserId>(value)
 {
-    public UserId(string value) : base(value)
-    {
-    }
-
     public static UserId Create(long userId)
     {
         return NewDeterministic(GuidFactories.Deterministic.Namespaces.Commands, $"user_{userId}");

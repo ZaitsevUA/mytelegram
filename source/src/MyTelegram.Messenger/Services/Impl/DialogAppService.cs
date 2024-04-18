@@ -1,42 +1,32 @@
 ﻿namespace MyTelegram.Messenger.Services.Impl;
 
-public class DialogAppService : BaseAppService, IDialogAppService
+public class DialogAppService(
+    ICommandBus commandBus,
+    IQueryProcessor queryProcessor,
+    IPhotoAppService photoAppService,
+    IPrivacyAppService privacyAppService,
+    IOffsetHelper offsetHelper)
+    : BaseAppService, IDialogAppService
 {
-    private readonly ICommandBus _commandBus;
-    private readonly IQueryProcessor _queryProcessor;
-    private readonly IPhotoAppService _photoAppService;
-    private readonly IPrivacyAppService _privacyAppService;
-    private readonly IOffsetHelper _offsetHelper;
-
-    public DialogAppService(ICommandBus commandBus,
-        IQueryProcessor queryProcessor, IPhotoAppService photoAppService, IPrivacyAppService privacyAppService, IOffsetHelper offsetHelper)
-    {
-        _commandBus = commandBus;
-        _queryProcessor = queryProcessor;
-        _photoAppService = photoAppService;
-        _privacyAppService = privacyAppService;
-        _offsetHelper = offsetHelper;
-    }
-
     public async Task ReorderPinnedDialogsAsync(ReorderPinnedDialogsInput input)
     {
         var order = 0;
         foreach (var peer in input.OrderedPeerList)
         {
             var command = new SetPinnedOrderCommand(DialogId.Create(input.SelfUserId, peer), order);
-            await _commandBus.PublishAsync(command, CancellationToken.None);
+            await commandBus.PublishAsync(command, CancellationToken.None);
             order++;
         }
     }
 
     public async Task<GetDialogOutput> GetDialogsAsync(GetDialogInput input)
     {
-        var offset = _offsetHelper.GetOffsetInfo(input);
+        var offset = offsetHelper.GetOffsetInfo(input);
         DateTime? offsetDate = null;
         if (input.OffsetPeer != null && input.OffsetPeer.PeerType != PeerType.Empty)
         {
             var dialogId = DialogId.Create(input.OwnerId, input.OffsetPeer.PeerType, input.OffsetPeer.PeerId);
-            var dialog = await _queryProcessor.ProcessAsync(new GetDialogByIdQuery(dialogId));
+            var dialog = await queryProcessor.ProcessAsync(new GetDialogByIdQuery(dialogId));
             offsetDate = dialog?.CreationTime;
         }
 
@@ -46,7 +36,7 @@ public class DialogAppService : BaseAppService, IDialogAppService
             offset,
             input.Limit,
             input.PeerIdList);
-        var dialogList = await _queryProcessor.ProcessAsync(query);
+        var dialogList = await queryProcessor.ProcessAsync(query);
         if (input.Pinned == true)
         {
             dialogList = dialogList.OrderBy(p => p.PinnedOrder).ToList();
@@ -61,7 +51,7 @@ public class DialogAppService : BaseAppService, IDialogAppService
             .ToList();
         var channelList = channelIdList.Count == 0
             ? new List<IChannelReadModel>()
-            : await _queryProcessor
+            : await queryProcessor
                 .ProcessAsync(new GetChannelByChannelIdListQuery(channelIdList))
          ;
 
@@ -73,7 +63,7 @@ public class DialogAppService : BaseAppService, IDialogAppService
             .Select(p => MessageId.Create(input.OwnerId, p.ChannelHistoryMinId).Value).ToList();
         topMessageIdList.RemoveAll(p => minIdList.Contains(p));
         var messageReadModels =
-            await _queryProcessor.ProcessAsync(new GetMessagesByIdListQuery(topMessageIdList));
+            await queryProcessor.ProcessAsync(new GetMessagesByIdListQuery(topMessageIdList));
 
         var extraChatUserIdList = new List<long>();
         foreach (var messageReadModel in messageReadModels)
@@ -120,18 +110,18 @@ public class DialogAppService : BaseAppService, IDialogAppService
         userIdList.AddRange(extraChatUserIdList);
 
         var userList =
-            await _queryProcessor.ProcessAsync(new GetUsersByUidListQuery(userIdList))
+            await queryProcessor.ProcessAsync(new GetUsersByUidListQuery(userIdList))
          ;
-        var contactList = await _queryProcessor
+        var contactList = await queryProcessor
             .ProcessAsync(new GetContactListQuery(input.OwnerId, userIdList))
      ;
 
         var chatList = chatIdList.Count == 0
             ? new List<IChatReadModel>()
-            : await _queryProcessor
+            : await queryProcessor
                 .ProcessAsync(new GetChatByChatIdListQuery(chatIdList));
 
-        var privacyList = await _privacyAppService.GetPrivacyListAsync(userIdList);
+        var privacyList = await privacyAppService.GetPrivacyListAsync(userIdList);
         // reset dialog top message box id
         var channelDict = channelList.ToDictionary(k => k.ChannelId, v => v);
         foreach (var dialogReadModel in dialogList)
@@ -148,7 +138,7 @@ public class DialogAppService : BaseAppService, IDialogAppService
         IReadOnlyCollection<IChannelMemberReadModel> channelMemberList = new List<IChannelMemberReadModel>();
         if (channelIdList.Count > 0)
         {
-            channelMemberList = await _queryProcessor
+            channelMemberList = await queryProcessor
                 .ProcessAsync(new GetChannelMemberListByChannelIdListQuery(input.OwnerId, channelIdList));
         }
 
@@ -159,8 +149,8 @@ public class DialogAppService : BaseAppService, IDialogAppService
         if (pollIdList.Count > 0)
         {
             pollReadModels =
-                await _queryProcessor.ProcessAsync(new GetPollsQuery(pollIdList));
-            chosenOptions = await _queryProcessor
+                await queryProcessor.ProcessAsync(new GetPollsQuery(pollIdList));
+            chosenOptions = await queryProcessor
                 .ProcessAsync(new GetChosenVoteAnswersQuery(pollIdList, query.OwnerId))
          ;
         }
@@ -173,7 +163,7 @@ public class DialogAppService : BaseAppService, IDialogAppService
         photoIds.AddRange(contactList.Select(p => p.PhotoId ?? 0));
         photoIds.RemoveAll(p => p == 0);
 
-        var photos = await _photoAppService.GetPhotosAsync(photoIds);
+        var photos = await photoAppService.GetPhotosAsync(photoIds);
 
         return new GetDialogOutput(input.OwnerId,
             dialogList,

@@ -1,11 +1,6 @@
 ﻿namespace MyTelegram.Domain.Aggregates.PeerNotifySettings;
 
-public class PeerNotifySettingsSnapshot : ISnapshot
+public class PeerNotifySettingsSnapshot(ValueObjects.PeerNotifySettings peerNotifySettings) : ISnapshot
 {
-    public PeerNotifySettingsSnapshot(ValueObjects.PeerNotifySettings peerNotifySettings)
-    {
-        PeerNotifySettings = peerNotifySettings;
-    }
-
-    public ValueObjects.PeerNotifySettings PeerNotifySettings { get; }
+    public ValueObjects.PeerNotifySettings PeerNotifySettings { get; } = peerNotifySettings;
 }

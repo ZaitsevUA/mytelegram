@@ -1,13 +1,12 @@
 ﻿namespace MyTelegram.Domain.Commands.Poll;
 
-public class VoteCommand : RequestCommand2<PollAggregate, PollId, IExecutionResult>
+public class VoteCommand(
+    PollId aggregateId,
+    RequestInfo requestInfo,
+    long voteUserPeerId,
+    IReadOnlyCollection<string> options)
+    : RequestCommand2<PollAggregate, PollId, IExecutionResult>(aggregateId, requestInfo)
 {
-    public long VoteUserPeerId { get; }
-    public IReadOnlyCollection<string> Options { get; }
-
-    public VoteCommand(PollId aggregateId, RequestInfo requestInfo, long voteUserPeerId, IReadOnlyCollection<string> options) : base(aggregateId, requestInfo)
-    {
-        VoteUserPeerId = voteUserPeerId;
-        Options = options;
-    }
+    public long VoteUserPeerId { get; } = voteUserPeerId;
+    public IReadOnlyCollection<string> Options { get; } = options;
 }

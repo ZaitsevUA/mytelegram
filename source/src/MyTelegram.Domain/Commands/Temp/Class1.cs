@@ -8,78 +8,72 @@ using MyTelegram.Domain.Sagas;
 
 namespace MyTelegram.Domain.Commands.Temp;
 
-public class StartForwardMessagesCommand : RequestCommand2<TempAggregate, TempId, IExecutionResult>
+public class StartForwardMessagesCommand(
+    TempId aggregateId,
+    RequestInfo requestInfo,
+    bool silent,
+    bool background,
+    bool withMyScore,
+    bool dropAuthor,
+    bool dropMediaCaptions,
+    bool noForwards,
+    Peer fromPeer,
+    Peer toPeer,
+    List<int> messageIds,
+    List<long> randomIds,
+    int? scheduleDate,
+    Peer? sendAs,
+    bool forwardFromLinkedChannel)
+    : RequestCommand2<TempAggregate, TempId, IExecutionResult>(aggregateId, requestInfo)
 {
-    public bool Silent { get; }
-    public bool Background { get; }
-    public bool WithMyScore { get; }
-    public bool DropAuthor { get; }
-    public bool DropMediaCaptions { get; }
-    public bool NoForwards { get; }
-    public Peer FromPeer { get; }
-    public Peer ToPeer { get; }
-    public List<int> MessageIds { get; }
-    public List<long> RandomIds { get; }
-    public int? ScheduleDate { get; }
-    public Peer? SendAs { get; }
-    public bool ForwardFromLinkedChannel { get; }
-
-    public StartForwardMessagesCommand(TempId aggregateId, RequestInfo requestInfo, bool silent, bool background, bool withMyScore, bool dropAuthor,
-        bool dropMediaCaptions, bool noForwards, Peer fromPeer, Peer toPeer,
-        List<int> messageIds, List<long> randomIds, int? scheduleDate, Peer? sendAs, bool forwardFromLinkedChannel) : base(aggregateId, requestInfo)
-    {
-        Silent = silent;
-        Background = background;
-        WithMyScore = withMyScore;
-        DropAuthor = dropAuthor;
-        DropMediaCaptions = dropMediaCaptions;
-        NoForwards = noForwards;
-        FromPeer = fromPeer;
-        ToPeer = toPeer;
-        MessageIds = messageIds;
-        RandomIds = randomIds;
-        ScheduleDate = scheduleDate;
-        SendAs = sendAs;
-        ForwardFromLinkedChannel = forwardFromLinkedChannel;
-    }
+    public bool Silent { get; } = silent;
+    public bool Background { get; } = background;
+    public bool WithMyScore { get; } = withMyScore;
+    public bool DropAuthor { get; } = dropAuthor;
+    public bool DropMediaCaptions { get; } = dropMediaCaptions;
+    public bool NoForwards { get; } = noForwards;
+    public Peer FromPeer { get; } = fromPeer;
+    public Peer ToPeer { get; } = toPeer;
+    public List<int> MessageIds { get; } = messageIds;
+    public List<long> RandomIds { get; } = randomIds;
+    public int? ScheduleDate { get; } = scheduleDate;
+    public Peer? SendAs { get; } = sendAs;
+    public bool ForwardFromLinkedChannel { get; } = forwardFromLinkedChannel;
 }
 
-public class StartDeleteReplyMessagesCommand : RequestCommand2<TempAggregate, TempId, IExecutionResult>
+public class StartDeleteReplyMessagesCommand(
+    TempId aggregateId,
+    RequestInfo requestInfo,
+    long channelId,
+    List<int> messageIds,
+    int newTopMessageId)
+    : RequestCommand2<TempAggregate, TempId, IExecutionResult>(aggregateId, requestInfo)
 {
-    public long ChannelId { get; }
-    public List<int> MessageIds { get; }
-    public int NewTopMessageId { get; }
-
-    public StartDeleteReplyMessagesCommand(TempId aggregateId, RequestInfo requestInfo, long channelId, List<int> messageIds, int newTopMessageId) : base(aggregateId, requestInfo)
-    {
-        ChannelId = channelId;
-        MessageIds = messageIds;
-        NewTopMessageId = newTopMessageId;
-    }
+    public long ChannelId { get; } = channelId;
+    public List<int> MessageIds { get; } = messageIds;
+    public int NewTopMessageId { get; } = newTopMessageId;
 }
 
-public class StartSetDiscussionGroupCommand : RequestCommand2<TempAggregate, TempId, IExecutionResult>
+public class StartSetDiscussionGroupCommand(
+    TempId aggregateId,
+    RequestInfo requestInfo,
+    long broadcastChannelId,
+    long? discussionGroupChannelId)
+    : RequestCommand2<TempAggregate, TempId, IExecutionResult>(aggregateId, requestInfo)
 {
-    public long BroadcastChannelId { get; }
-    public long? DiscussionGroupChannelId { get; }
-
-    public StartSetDiscussionGroupCommand(TempId aggregateId, RequestInfo requestInfo, long broadcastChannelId, long? discussionGroupChannelId) : base(aggregateId, requestInfo)
-    {
-        BroadcastChannelId = broadcastChannelId;
-        DiscussionGroupChannelId = discussionGroupChannelId;
-    }
+    public long BroadcastChannelId { get; } = broadcastChannelId;
+    public long? DiscussionGroupChannelId { get; } = discussionGroupChannelId;
 }
 
-public class StartPinForwardedChannelMessageCommand : RequestCommand2<TempAggregate, TempId, IExecutionResult>
+public class StartPinForwardedChannelMessageCommand(
+    TempId aggregateId,
+    RequestInfo requestInfo,
+    long channelId,
+    int messageId)
+    : RequestCommand2<TempAggregate, TempId, IExecutionResult>(aggregateId, requestInfo)
 {
-    public long ChannelId { get; }
-    public int MessageId { get; }
-
-    public StartPinForwardedChannelMessageCommand(TempId aggregateId, RequestInfo requestInfo, long channelId, int messageId) : base(aggregateId, requestInfo)
-    {
-        ChannelId = channelId;
-        MessageId = messageId;
-    }
+    public long ChannelId { get; } = channelId;
+    public int MessageId { get; } = messageId;
 }
 
 public class StartDeleteMessagesCommand(

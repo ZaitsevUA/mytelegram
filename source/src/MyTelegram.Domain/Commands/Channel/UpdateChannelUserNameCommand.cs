@@ -1,17 +1,13 @@
 ﻿namespace MyTelegram.Domain.Commands.Channel;
 
-public class UpdateChannelUserNameCommand : RequestCommand2<ChannelAggregate, ChannelId, IExecutionResult>//,
-                                                                                                          //IHasCorrelationId
+public class UpdateChannelUserNameCommand(
+    ChannelId aggregateId,
+    RequestInfo requestInfo,
+    long channelId,
+    string userName)
+    : RequestCommand2<ChannelAggregate, ChannelId, IExecutionResult>(aggregateId, requestInfo) //,
+//IHasCorrelationId
 {
-    public UpdateChannelUserNameCommand(ChannelId aggregateId,
-        RequestInfo requestInfo,
-        long channelId,
-        string userName) : base(aggregateId, requestInfo)
-    {
-        ChannelId = channelId;
-        UserName = userName;
-    }
-
-    public long ChannelId { get; }
-    public string UserName { get; }
+    public long ChannelId { get; } = channelId;
+    public string UserName { get; } = userName;
 }

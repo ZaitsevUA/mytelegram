@@ -3,18 +3,11 @@ using EventFlow;
 
 namespace MyTelegram.Domain.Sagas;
 
-public class InMemorySagaStore : SagaStore, IInMemorySagaStore
+public class InMemorySagaStore(IServiceProvider serviceProvider) : SagaStore, IInMemorySagaStore
 {
-    private readonly IServiceProvider _serviceProvider;
     private readonly ConcurrentDictionary<ISagaId, ISaga> _sagas = new();
     //private readonly AsyncLock _asyncLock = new();
     private readonly ConcurrentDictionary<Type, Func<ISagaId, ISaga>> _sagaCreators = new();
-
-    public InMemorySagaStore(
-        IServiceProvider serviceProvider)
-    {
-        _serviceProvider = serviceProvider;
-    }
 
     public override async Task<ISaga> UpdateAsync(
         ISagaId sagaId,
@@ -23,7 +16,7 @@ public class InMemorySagaStore : SagaStore, IInMemorySagaStore
         Func<ISaga, CancellationToken, Task> updateSaga,
         CancellationToken cancellationToken)
     {
-        var commandBus = _serviceProvider.GetRequiredService<ICommandBus>();
+        var commandBus = serviceProvider.GetRequiredService<ICommandBus>();
 
         if (!_sagas.TryGetValue(sagaId, out var saga))
         {

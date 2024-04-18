@@ -16,20 +16,13 @@
 //    }
 //}
 
-public class CheckMessageViewLogSuccessEvent : RequestAggregateEvent2<MessageViewLogAggregate, MessageViewLogId>
+public class CheckMessageViewLogSuccessEvent(
+    RequestInfo requestInfo,
+    int messageId,
+    bool alreadyIncremented)
+    : RequestAggregateEvent2<MessageViewLogAggregate, MessageViewLogId>(requestInfo)
 {
-    public CheckMessageViewLogSuccessEvent(
-        RequestInfo requestInfo,
-        int messageId,
-        bool alreadyIncremented) : base(requestInfo)
-    {
-        AlreadyIncremented = alreadyIncremented;
+    public bool AlreadyIncremented { get; } = alreadyIncremented;
 
-        MessageId = messageId;
-    }
-
-    public bool AlreadyIncremented { get; }
-
-    public int MessageId { get; }
-
+    public int MessageId { get; } = messageId;
 }

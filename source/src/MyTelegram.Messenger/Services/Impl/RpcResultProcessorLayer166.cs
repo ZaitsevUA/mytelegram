@@ -1,38 +1,30 @@
 ﻿namespace MyTelegram.Messenger.Services.Impl;
 
-public class RpcResultProcessorLayer166 : IRpcResultProcessorLayer166
+public class RpcResultProcessorLayer166(
+    ILayeredService<IMessageConverter> layeredMessageService,
+    ILayeredService<IUserConverter> layeredUserService,
+    ILayeredService<IChatConverter> layeredChatService)
+    : IRpcResultProcessorLayer166
 {
-    private readonly ILayeredService<IChatConverter> _layeredChatService;
-    private readonly ILayeredService<IMessageConverter> _layeredMessageService;
-    private readonly ILayeredService<IUserConverter> _layeredUserService;
-    public RpcResultProcessorLayer166(ILayeredService<IMessageConverter> layeredMessageService,
-        ILayeredService<IUserConverter> layeredUserService,
-        ILayeredService<IChatConverter> layeredChatService)
-    {
-        _layeredMessageService = layeredMessageService;
-        _layeredUserService = layeredUserService;
-        _layeredChatService = layeredChatService;
-    }
-
     public virtual int Layer => Layers.Layer166;
 
     public int RequestLayer { get; set; }
 
     public IFound ToFound(SearchContactOutput output, int layer)
     {
-        var userList = _layeredUserService.GetConverter(layer).ToUserList(output.SelfUserId, output.UserList, output.PhotoList, output.ContactList, output.PrivacyList);
+        var userList = layeredUserService.GetConverter(layer).ToUserList(output.SelfUserId, output.UserList, output.PhotoList, output.ContactList, output.PrivacyList);
         var peerList = output.UserList.Select(p => (IPeer)new TPeerUser { UserId = p.UserId }).ToList();
         peerList.AddRange(output.MyChannelList.Select(p => (IPeer)new TPeerChannel { ChannelId = p.ChannelId }));
         var otherPeerList = output.ChannelList.Select(p => (IPeer)new TPeerChannel { ChannelId = p.ChannelId });
         //var chatList = ToChannelList(output.ChannelList, output.SelfUserId);
-        var myChannelList = _layeredChatService.GetConverter(layer).ToChannelList(
+        var myChannelList = layeredChatService.GetConverter(layer).ToChannelList(
             output.SelfUserId,
             output.MyChannelList,
             output.PhotoList,
             output.MyChannelList.Select(p => p.ChannelId).ToList(),
             output.ChannelMemberList).ToList();
 
-        var otherChannelList = _layeredChatService.GetConverter(layer).ToChannelList(
+        var otherChannelList = layeredChatService.GetConverter(layer).ToChannelList(
             output.SelfUserId,
             output.ChannelList,
             output.PhotoList,
@@ -50,10 +42,10 @@ public class RpcResultProcessorLayer166 : IRpcResultProcessorLayer166
 
     public IMessages ToMessages(GetMessageOutput output, int layer)
     {
-        var messageList = _layeredMessageService.GetConverter(layer).ToMessages(output.MessageList, output.PollList, output.ChosenPollOptions, output.SelfUserId);
-        var userList = _layeredUserService.GetConverter(layer).ToUserList(output.SelfUserId, output.UserList, output.PhotoList, output.ContactList, output.PrivacyList);
-        var chatList = _layeredChatService.GetConverter(layer).ToChatList(output.SelfUserId, output.ChatList, output.PhotoList).ToList();
-        var channelList = _layeredChatService.GetConverter(layer).ToChannelList(
+        var messageList = layeredMessageService.GetConverter(layer).ToMessages(output.MessageList, output.PollList, output.ChosenPollOptions, output.SelfUserId);
+        var userList = layeredUserService.GetConverter(layer).ToUserList(output.SelfUserId, output.UserList, output.PhotoList, output.ContactList, output.PrivacyList);
+        var chatList = layeredChatService.GetConverter(layer).ToChatList(output.SelfUserId, output.ChatList, output.PhotoList).ToList();
+        var channelList = layeredChatService.GetConverter(layer).ToChannelList(
             output.SelfUserId,
             output.ChannelList,
             output.PhotoList,

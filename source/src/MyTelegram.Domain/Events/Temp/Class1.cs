@@ -2,67 +2,58 @@
 
 namespace MyTelegram.Domain.Events.Temp;
 
-public class ForwardMessagesStartedEvent : RequestAggregateEvent2<TempAggregate, TempId>
+public class ForwardMessagesStartedEvent(
+    RequestInfo requestInfo,
+    bool silent,
+    bool background,
+    bool withMyScore,
+    bool dropAuthor,
+    bool dropMediaCaptions,
+    bool noForwards,
+    Peer fromPeer,
+    Peer toPeer,
+    List<int> messageIds,
+    List<long> randomIds,
+    int? scheduleDate,
+    Peer? sendAs,
+    bool forwardFromLinkedChannel)
+    : RequestAggregateEvent2<TempAggregate, TempId>(requestInfo)
 {
-    public bool Silent { get; }
-    public bool Background { get; }
-    public bool WithMyScore { get; }
-    public bool DropAuthor { get; }
-    public bool DropMediaCaptions { get; }
-    public bool NoForwards { get; }
-    public Peer FromPeer { get; }
-    public Peer ToPeer { get; }
-    public List<int> MessageIds { get; }
-    public List<long> RandomIds { get; }
-    public int? ScheduleDate { get; }
-    public Peer? SendAs { get; }
-    public bool ForwardFromLinkedChannel { get; }
-
-    public ForwardMessagesStartedEvent(RequestInfo requestInfo, bool silent, bool background, bool withMyScore, bool dropAuthor,
-        bool dropMediaCaptions, bool noForwards, Peer fromPeer,
-        Peer toPeer,
-        List<int> messageIds, List<long> randomIds, int? scheduleDate, Peer? sendAs, bool forwardFromLinkedChannel) : base(requestInfo)
-    {
-        Silent = silent;
-        Background = background;
-        WithMyScore = withMyScore;
-        DropAuthor = dropAuthor;
-        DropMediaCaptions = dropMediaCaptions;
-        NoForwards = noForwards;
-        FromPeer = fromPeer;
-        ToPeer = toPeer;
-        MessageIds = messageIds;
-        RandomIds = randomIds;
-        ScheduleDate = scheduleDate;
-        SendAs = sendAs;
-        ForwardFromLinkedChannel = forwardFromLinkedChannel;
-    }
+    public bool Silent { get; } = silent;
+    public bool Background { get; } = background;
+    public bool WithMyScore { get; } = withMyScore;
+    public bool DropAuthor { get; } = dropAuthor;
+    public bool DropMediaCaptions { get; } = dropMediaCaptions;
+    public bool NoForwards { get; } = noForwards;
+    public Peer FromPeer { get; } = fromPeer;
+    public Peer ToPeer { get; } = toPeer;
+    public List<int> MessageIds { get; } = messageIds;
+    public List<long> RandomIds { get; } = randomIds;
+    public int? ScheduleDate { get; } = scheduleDate;
+    public Peer? SendAs { get; } = sendAs;
+    public bool ForwardFromLinkedChannel { get; } = forwardFromLinkedChannel;
 }
 
-public class DeleteReplyMessagesStartedEvent : RequestAggregateEvent2<TempAggregate, TempId>
+public class DeleteReplyMessagesStartedEvent(
+    RequestInfo requestInfo,
+    long channelId,
+    List<int> messageIds,
+    int newTopMessageId)
+    : RequestAggregateEvent2<TempAggregate, TempId>(requestInfo)
 {
-    public long ChannelId { get; }
-    public List<int> MessageIds { get; }
-    public int NewTopMessageId { get; }
-
-    public DeleteReplyMessagesStartedEvent(RequestInfo requestInfo, long channelId, List<int> messageIds, int newTopMessageId) : base(requestInfo)
-    {
-        ChannelId = channelId;
-        MessageIds = messageIds;
-        NewTopMessageId = newTopMessageId;
-    }
+    public long ChannelId { get; } = channelId;
+    public List<int> MessageIds { get; } = messageIds;
+    public int NewTopMessageId { get; } = newTopMessageId;
 }
 
-public class SetChannelDiscussionGroupStartedEvent : RequestAggregateEvent2<TempAggregate, TempId>
+public class SetChannelDiscussionGroupStartedEvent(
+    RequestInfo requestInfo,
+    long broadcastChannelId,
+    long? discussionGroupChannelId)
+    : RequestAggregateEvent2<TempAggregate, TempId>(requestInfo)
 {
-    public long BroadcastChannelId { get; }
-    public long? DiscussionGroupChannelId { get; }
-
-    public SetChannelDiscussionGroupStartedEvent(RequestInfo requestInfo, long broadcastChannelId, long? discussionGroupChannelId) : base(requestInfo)
-    {
-        BroadcastChannelId = broadcastChannelId;
-        DiscussionGroupChannelId = discussionGroupChannelId;
-    }
+    public long BroadcastChannelId { get; } = broadcastChannelId;
+    public long? DiscussionGroupChannelId { get; } = discussionGroupChannelId;
 }
 
 public class PinForwardedChannelMessageStartedEvent

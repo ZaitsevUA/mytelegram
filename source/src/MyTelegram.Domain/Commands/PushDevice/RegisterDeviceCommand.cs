@@ -1,58 +1,46 @@
 ﻿namespace MyTelegram.Domain.Commands.PushDevice;
 
-public class RegisterDeviceCommand : Command<PushDeviceAggregate, PushDeviceId, IExecutionResult>, IHasRequestInfo
+public class RegisterDeviceCommand(
+    PushDeviceId aggregateId,
+    RequestInfo requestInfo,
+    long userId,
+    long authKeyId,
+    int tokenType,
+    string token,
+    bool noMuted,
+    bool appSandbox,
+    byte[]? secret,
+    IReadOnlyList<long>? otherUids)
+    : Command<PushDeviceAggregate, PushDeviceId, IExecutionResult>(aggregateId), IHasRequestInfo
 {
-    public RegisterDeviceCommand(PushDeviceId aggregateId,
-        RequestInfo requestInfo,
-        long userId,
-        long authKeyId,
-        int tokenType,
-        string token,
-        bool noMuted,
-        bool appSandbox,
-        byte[]? secret,
-        IReadOnlyList<long>? otherUids
-    ) : base(aggregateId)
-    {
-        RequestInfo = requestInfo;
-        UserId = userId;
-        AuthKeyId = authKeyId;
-        TokenType = tokenType;
-        Token = token;
-        NoMuted = noMuted;
-        AppSandbox = appSandbox;
-        Secret = secret;
-        OtherUids = otherUids;
-    }
-
     /// <summary>
     ///     If (boolTrue) is transmitted, a sandbox-certificate will be used during transmission.
     /// </summary>
-    public bool AppSandbox { get; }
+    public bool AppSandbox { get; } = appSandbox;
 
-    public long AuthKeyId { get; }
+    public long AuthKeyId { get; } = authKeyId;
 
     /// <summary>
     ///     Avoid receiving (silent and invisible background) notifications. Useful to save battery.
     /// </summary>
-    public bool NoMuted { get; }
+    public bool NoMuted { get; } = noMuted;
 
     /// <summary>
     ///     List of user identifiers of other users currently using the client
     /// </summary>
-    public IReadOnlyList<long>? OtherUids { get; }
+    public IReadOnlyList<long>? OtherUids { get; } = otherUids;
 
     /// <summary>
     ///     For FCM and APNS VoIP, optional encryption key used to encrypt push notifications
     /// </summary>
-    public byte[]? Secret { get; }
+    public byte[]? Secret { get; } = secret;
 
     /// <summary>
     ///     Device token
     /// </summary>
-    public string Token { get; }
+    public string Token { get; } = token;
 
-    public int TokenType { get; }
+    public int TokenType { get; } = tokenType;
 
     // Device token type.
     //      Possible values:
@@ -70,6 +58,6 @@ public class RegisterDeviceCommand : Command<PushDeviceAggregate, PushDeviceId, 
     //      12 - Tizen (token for tizen push)
     // 
     //  For 10 web push, the token must be a JSON-encoded object containing the keys described in PUSH updates
-    public long UserId { get; }
-    public RequestInfo RequestInfo { get; }
+    public long UserId { get; } = userId;
+    public RequestInfo RequestInfo { get; } = requestInfo;
 }

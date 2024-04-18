@@ -1,37 +1,19 @@
 ﻿namespace MyTelegram.Messenger.Services.Impl;
 
-public class MessageAppService : BaseAppService, IMessageAppService
+public class MessageAppService(
+    IQueryProcessor queryProcessor,
+    ICommandBus commandBus,
+    IObjectMapper objectMapper,
+    IPeerHelper peerHelper,
+    IBlockCacheAppService blockCacheAppService,
+    IPhotoAppService photoAppService,
+    IPrivacyAppService privacyAppService,
+    IOffsetHelper offsetHelper,
+    IAccessHashHelper accessHashHelper,
+    IIdGenerator idGenerator)
+    : BaseAppService, IMessageAppService
 {
-    private readonly IBlockCacheAppService _blockCacheAppService;
-    private readonly ICommandBus _commandBus;
-    private readonly IObjectMapper _objectMapper;
-    private readonly IOffsetHelper _offsetHelper;
-    private readonly IPeerHelper _peerHelper;
-    private readonly IPhotoAppService _photoAppService;
-    private readonly IPrivacyAppService _privacyAppService;
-    private readonly IQueryProcessor _queryProcessor;
-    private readonly IAccessHashHelper _accessHashHelper;
-    private readonly IIdGenerator _idGenerator;
-
-    public MessageAppService(
-        IQueryProcessor queryProcessor,
-        ICommandBus commandBus,
-        IObjectMapper objectMapper,
-        IPeerHelper peerHelper,
-        IBlockCacheAppService blockCacheAppService, IPhotoAppService photoAppService,
-        IPrivacyAppService privacyAppService, IOffsetHelper offsetHelper, IAccessHashHelper accessHashHelper, IIdGenerator idGenerator)
-    {
-        _queryProcessor = queryProcessor;
-        _commandBus = commandBus;
-        _objectMapper = objectMapper;
-        _peerHelper = peerHelper;
-        _blockCacheAppService = blockCacheAppService;
-        _photoAppService = photoAppService;
-        _privacyAppService = privacyAppService;
-        _offsetHelper = offsetHelper;
-        _accessHashHelper = accessHashHelper;
-        _idGenerator = idGenerator;
-    }
+    private readonly IAccessHashHelper _accessHashHelper = accessHashHelper;
 
     public async Task<GetMessageOutput> GetChannelDifferenceAsync(GetDifferenceInput input)
     {
@@ -90,12 +72,12 @@ public class MessageAppService : BaseAppService, IMessageAppService
     {
         if (input.ToPeer.PeerType == PeerType.User)
         {
-            if (await _blockCacheAppService.IsBlockedAsync(input.ToPeer.PeerId, input.SenderUserId))
+            if (await blockCacheAppService.IsBlockedAsync(input.ToPeer.PeerId, input.SenderUserId))
             {
                 RpcErrors.RpcErrors400.UserIsBlocked.ThrowRpcError();
             }
 
-            if (await _blockCacheAppService.IsBlockedAsync(input.SenderUserId, input.ToPeer.PeerId))
+            if (await blockCacheAppService.IsBlockedAsync(input.SenderUserId, input.ToPeer.PeerId))
             {
                 RpcErrors.RpcErrors400.YouBlockedUser.ThrowRpcError();
             }
@@ -136,7 +118,7 @@ public class MessageAppService : BaseAppService, IMessageAppService
                 case PeerType.Channel:
 
                     var sendAsPeerId =
-                        await _queryProcessor.ProcessAsync(new GetSendAsPeerIdQuery(input.RequestInfo.UserId, input.SendAs.PeerId));
+                        await queryProcessor.ProcessAsync(new GetSendAsPeerIdQuery(input.RequestInfo.UserId, input.SendAs.PeerId));
                     if (sendAsPeerId == null)
                     {
                         RpcErrors.RpcErrors400.SendAsPeerInvalid.ThrowRpcError();
@@ -171,7 +153,7 @@ public class MessageAppService : BaseAppService, IMessageAppService
             return null;
         }
 
-        var channelReadModel = await _queryProcessor.ProcessAsync(new GetChannelByIdQuery(input.ToPeer.PeerId));
+        var channelReadModel = await queryProcessor.ProcessAsync(new GetChannelByIdQuery(input.ToPeer.PeerId));
         if (channelReadModel!.Broadcast)
         {
             var admin = channelReadModel.AdminList.FirstOrDefault(p => p.UserId == input.SenderUserId);
@@ -188,7 +170,7 @@ public class MessageAppService : BaseAppService, IMessageAppService
         }
 
         var channelMemberReadModel =
-            await _queryProcessor.ProcessAsync(new GetChannelMemberByUserIdQuery(channelReadModel.ChannelId,
+            await queryProcessor.ProcessAsync(new GetChannelMemberByUserIdQuery(channelReadModel.ChannelId,
                 input.SenderUserId));
 
         if (channelMemberReadModel == null)
@@ -214,7 +196,7 @@ public class MessageAppService : BaseAppService, IMessageAppService
                 switch (messageEntity)
                 {
                     case TInputMessageEntityMentionName inputMessageEntityMentionName:
-                        var userPeer = _peerHelper.GetPeer(inputMessageEntityMentionName.UserId);
+                        var userPeer = peerHelper.GetPeer(inputMessageEntityMentionName.UserId);
                         mentionedUserIds.Add(userPeer.PeerId);
                         break;
                     case TMessageEntityMention messageEntityMention:
@@ -251,7 +233,7 @@ public class MessageAppService : BaseAppService, IMessageAppService
             return null;
         }
 
-        var chatReadModel = await _queryProcessor.ProcessAsync(new GetChatByChatIdQuery(input.ToPeer.PeerId));
+        var chatReadModel = await queryProcessor.ProcessAsync(new GetChatByChatIdQuery(input.ToPeer.PeerId));
         if (chatReadModel == null)
         {
             RpcErrors.RpcErrors400.ChatIdInvalid.ThrowRpcError();
@@ -276,7 +258,7 @@ public class MessageAppService : BaseAppService, IMessageAppService
         // Reply to user:  ToPeerId=Input.UserId,OwnerPeerId=input.ToPeerId,MessageId=replyToMsgId
 
         var replyToMsgItems =
-            await _queryProcessor.ProcessAsync(new GetReplyToMsgIdListQuery(input.ToPeer, input.SenderUserId, replyToMsgId));
+            await queryProcessor.ProcessAsync(new GetReplyToMsgIdListQuery(input.ToPeer, input.SenderUserId, replyToMsgId));
         //var idType = input.ToPeer.PeerType == PeerType.Channel ? IdType.ChannelMessageId : IdType.MessageId;
         var idType = IdType.MessageId;
         var post = channelReadModel?.Broadcast ?? false;
@@ -285,11 +267,11 @@ public class MessageAppService : BaseAppService, IMessageAppService
 
         if (post && channelReadModel!.Signatures)
         {
-            var user = await _queryProcessor.ProcessAsync(new GetUserByIdQuery(input.RequestInfo.UserId));
+            var user = await queryProcessor.ProcessAsync(new GetUserByIdQuery(input.RequestInfo.UserId));
             postAuthor = $"{user!.FirstName} {user.LastName}";
         }
 
-        var messageId = await _idGenerator.NextIdAsync(idType, ownerPeerId);
+        var messageId = await idGenerator.NextIdAsync(idType, ownerPeerId);
 
         var date = CurrentDate;
         var messageItem = new MessageItem(
@@ -331,7 +313,7 @@ public class MessageAppService : BaseAppService, IMessageAppService
             linkedChannelId,
             chatMembers
             );
-        await _commandBus.PublishAsync(command);
+        await commandBus.PublishAsync(command);
     }
 
     private (List<TMessageEntityMention> mentions, List<string> userNameList) GetMentions(string message)
@@ -359,8 +341,8 @@ public class MessageAppService : BaseAppService, IMessageAppService
     private Task<GetMessageOutput> GetMessagesCoreAsync<TRequest>(TRequest input)
         where TRequest : GetPagedListInput
     {
-        var offset = _offsetHelper.GetOffsetInfo(input);
-        var query = _objectMapper.Map<TRequest, GetMessagesQuery>(input);
+        var offset = offsetHelper.GetOffsetInfo(input);
+        var query = objectMapper.Map<TRequest, GetMessagesQuery>(input);
         query.Offset = offset;
 
         return GetMessagesInternalAsync(query);
@@ -369,7 +351,7 @@ public class MessageAppService : BaseAppService, IMessageAppService
     private async Task<GetMessageOutput> GetMessagesInternalAsync(GetMessagesQuery query, IReadOnlyCollection<long>? users = null,
         IReadOnlyCollection<long>? chats = null)
     {
-        var messageList = await _queryProcessor.ProcessAsync(query);
+        var messageList = await queryProcessor.ProcessAsync(query);
 
         var extraChatUserIdList = new List<long>();
         if (users?.Count > 0)
@@ -412,7 +394,7 @@ public class MessageAppService : BaseAppService, IMessageAppService
             extraChatUserIdList.Add(messageReadModel.SenderPeerId);
         }
 
-        var chatOrChannelPeers = chats?.Count > 0 ? chats.Select(_peerHelper.GetPeer).ToList() : new List<Peer>(0);
+        var chatOrChannelPeers = chats?.Count > 0 ? chats.Select(peerHelper.GetPeer).ToList() : new List<Peer>(0);
 
         var userIdList = messageList.Where(p => p.ToPeerType == PeerType.User).Select(p => p.ToPeerId).ToList();
         var chatIdList = messageList.Where(p => p.ToPeerType == PeerType.Chat).Select(p => p.ToPeerId).ToList();
@@ -427,18 +409,18 @@ public class MessageAppService : BaseAppService, IMessageAppService
             channelIdList.AddRange(chatOrChannelPeers.Where(p => p.PeerType == PeerType.Channel).Select(p => p.PeerId));
         }
 
-        var userList = await _queryProcessor.ProcessAsync(new GetUsersByUidListQuery(userIdList));
+        var userList = await queryProcessor.ProcessAsync(new GetUsersByUidListQuery(userIdList));
         var chatList = chatIdList.Count == 0
             ? new List<IChatReadModel>()
-            : await _queryProcessor
+            : await queryProcessor
                 .ProcessAsync(new GetChatByChatIdListQuery(chatIdList));
 
         var channelList = channelIdList.Count == 0
                 ? new List<IChannelReadModel>()
-                : await _queryProcessor
+                : await queryProcessor
                     .ProcessAsync(new GetChannelByChannelIdListQuery(channelIdList));
 
-        var contactList = await _queryProcessor
+        var contactList = await queryProcessor
                 .ProcessAsync(new GetContactListQuery(query.SelfUserId, userIdList));
         var photoIds = new List<long>();
         photoIds.AddRange(chatList.Select(p => p.PhotoId ?? 0));
@@ -448,20 +430,20 @@ public class MessageAppService : BaseAppService, IMessageAppService
         photoIds.AddRange(contactList.Select(p => p.PhotoId ?? 0));
         photoIds.RemoveAll(p => p == 0);
 
-        var photoList = await _photoAppService.GetPhotosAsync(photoIds);
+        var photoList = await photoAppService.GetPhotosAsync(photoIds);
 
         IReadOnlyCollection<long> joinedChannelIdList = new List<long>();
         if (channelIdList.Count > 0)
         {
-            joinedChannelIdList = await _queryProcessor
+            joinedChannelIdList = await queryProcessor
                 .ProcessAsync(new GetJoinedChannelIdListQuery(query.SelfUserId, channelIdList));
         }
 
-        var privacyList = await _privacyAppService.GetPrivacyListAsync(userIdList);
+        var privacyList = await privacyAppService.GetPrivacyListAsync(userIdList);
         IReadOnlyCollection<IChannelMemberReadModel> channelMemberList = new List<IChannelMemberReadModel>();
         if (joinedChannelIdList.Count > 0)
         {
-            channelMemberList = await _queryProcessor
+            channelMemberList = await queryProcessor
                 .ProcessAsync(
                     new GetChannelMemberListByChannelIdListQuery(query.SelfUserId, joinedChannelIdList.ToList()));
         }
@@ -478,8 +460,8 @@ public class MessageAppService : BaseAppService, IMessageAppService
 
         if (pollIdList.Count > 0)
         {
-            pollReadModels = await _queryProcessor.ProcessAsync(new GetPollsQuery(pollIdList));
-            chosenOptions = await _queryProcessor
+            pollReadModels = await queryProcessor.ProcessAsync(new GetPollsQuery(pollIdList));
+            chosenOptions = await queryProcessor
                 .ProcessAsync(new GetChosenVoteAnswersQuery(pollIdList, query.SelfUserId));
         }
 

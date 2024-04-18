@@ -1,11 +1,7 @@
 ﻿namespace MyTelegram.Domain.Commands.Dialog;
 
-public class UpdateTopMessageIdCommand : Command<DialogAggregate, DialogId, IExecutionResult>
+public class UpdateTopMessageIdCommand(DialogId aggregateId, int newTopMessageId)
+    : Command<DialogAggregate, DialogId, IExecutionResult>(aggregateId)
 {
-    public int NewTopMessageId { get; }
-
-    public UpdateTopMessageIdCommand(DialogId aggregateId, int newTopMessageId) : base(aggregateId)
-    {
-        NewTopMessageId = newTopMessageId;
-    }
+    public int NewTopMessageId { get; } = newTopMessageId;
 }

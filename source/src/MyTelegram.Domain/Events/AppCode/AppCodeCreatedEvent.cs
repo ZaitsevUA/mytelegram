@@ -1,27 +1,19 @@
 ﻿namespace MyTelegram.Domain.Events.AppCode;
 
-public class AppCodeCreatedEvent : RequestAggregateEvent2<AppCodeAggregate, AppCodeId>
+public class AppCodeCreatedEvent(
+    RequestInfo requestInfo,
+    long userId,
+    string phoneNumber,
+    string code,
+    int expire,
+    string phoneCodeHash,
+    long creationTime)
+    : RequestAggregateEvent2<AppCodeAggregate, AppCodeId>(requestInfo)
 {
-    public AppCodeCreatedEvent(RequestInfo requestInfo,
-        long userId,
-        string phoneNumber,
-        string code,
-        int expire,
-        string phoneCodeHash,
-        long creationTime) : base(requestInfo)
-    {
-        UserId = userId;
-        PhoneNumber = phoneNumber;
-        Code = code;
-        Expire = expire;
-        PhoneCodeHash = phoneCodeHash;
-        CreationTime = creationTime;
-    }
-
-    public string Code { get; }
-    public long CreationTime { get; }
-    public int Expire { get; }
-    public string PhoneCodeHash { get; }
-    public string PhoneNumber { get; }
-    public long UserId { get; }
+    public string Code { get; } = code;
+    public long CreationTime { get; } = creationTime;
+    public int Expire { get; } = expire;
+    public string PhoneCodeHash { get; } = phoneCodeHash;
+    public string PhoneNumber { get; } = phoneNumber;
+    public long UserId { get; } = userId;
 }

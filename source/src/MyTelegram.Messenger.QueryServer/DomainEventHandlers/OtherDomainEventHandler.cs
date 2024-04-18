@@ -6,18 +6,35 @@ using MyTelegram.Services.TLObjectConverters;
 
 namespace MyTelegram.Messenger.QueryServer.DomainEventHandlers;
 
-public class OtherDomainEventHandler : DomainEventHandlerBase,
-    ISubscribeSynchronousTo<SignInSaga, SignInSagaId, SignInSuccessEvent>,
-    ISubscribeSynchronousTo<SignInSaga, SignInSagaId, SignUpRequiredEvent>,
-    //ISubscribeSynchronousTo<AppCodeAggregate, AppCodeId, SignUpRequiredEvent>,
-    ISubscribeSynchronousTo<UpdatePinnedMessageSaga, UpdatePinnedMessageSagaId, UpdatePinnedMessageCompletedEvent>,
-    //ISubscribeSynchronousTo<DeleteMessageSaga, DeleteMessageSagaId, DeleteMessagesCompletedEvent>,
-    //ISubscribeSynchronousTo<DeleteMessageSaga2, DeleteMessageSaga2Id, DeleteMessagesCompletedEvent2>,
-    ISubscribeSynchronousTo<ClearHistorySaga, ClearHistorySagaId, ClearSingleUserHistoryCompletedEvent>,
-    //ISubscribeSynchronousTo<DeleteParticipantHistorySaga, DeleteParticipantHistorySagaId, DeleteParticipantHistoryCompletedEvent>,
-    ISubscribeSynchronousTo<PeerNotifySettingsAggregate, PeerNotifySettingsId, PeerNotifySettingsUpdatedEvent>,
-    ISubscribeSynchronousTo<UserAggregate, UserId, UserGlobalPrivacySettingsChangedEvent>,
-    ISubscribeSynchronousTo<PinForwardedChannelMessageSaga, PinForwardedChannelMessageSagaId, PinChannelMessagePtsIncrementedEvent>
+public class OtherDomainEventHandler(
+    IObjectMessageSender objectMessageSender,
+    ICommandBus commandBus,
+    IIdGenerator idGenerator,
+    IAckCacheService ackCacheService,
+    IResponseCacheAppService responseCacheAppService,
+    IEventBus eventBus,
+    ILogger<OtherDomainEventHandler> logger,
+    ILayeredService<IUpdatesConverter> layeredUpdatesService,
+    ILayeredService<IAuthorizationConverter> layeredAuthorizationService,
+    ILayeredService<IUserConverter> layeredUserService,
+    ICacheManager<GlobalPrivacySettingsCacheItem> cacheManager)
+    : DomainEventHandlerBase(objectMessageSender,
+            commandBus,
+            idGenerator,
+            ackCacheService,
+            responseCacheAppService),
+        ISubscribeSynchronousTo<SignInSaga, SignInSagaId, SignInSuccessEvent>,
+        ISubscribeSynchronousTo<SignInSaga, SignInSagaId, SignUpRequiredEvent>,
+        //ISubscribeSynchronousTo<AppCodeAggregate, AppCodeId, SignUpRequiredEvent>,
+        ISubscribeSynchronousTo<UpdatePinnedMessageSaga, UpdatePinnedMessageSagaId, UpdatePinnedMessageCompletedEvent>,
+        //ISubscribeSynchronousTo<DeleteMessageSaga, DeleteMessageSagaId, DeleteMessagesCompletedEvent>,
+        //ISubscribeSynchronousTo<DeleteMessageSaga2, DeleteMessageSaga2Id, DeleteMessagesCompletedEvent2>,
+        ISubscribeSynchronousTo<ClearHistorySaga, ClearHistorySagaId, ClearSingleUserHistoryCompletedEvent>,
+        //ISubscribeSynchronousTo<DeleteParticipantHistorySaga, DeleteParticipantHistorySagaId, DeleteParticipantHistoryCompletedEvent>,
+        ISubscribeSynchronousTo<PeerNotifySettingsAggregate, PeerNotifySettingsId, PeerNotifySettingsUpdatedEvent>,
+        ISubscribeSynchronousTo<UserAggregate, UserId, UserGlobalPrivacySettingsChangedEvent>,
+        ISubscribeSynchronousTo<PinForwardedChannelMessageSaga, PinForwardedChannelMessageSagaId,
+            PinChannelMessagePtsIncrementedEvent>
 
 //,
 //ISubscribeSynchronousTo<DeleteMessagesSaga4, DeleteMessagesSaga4Id, DeleteSelfMessagesCompletedEvent4>,
@@ -27,36 +44,7 @@ public class OtherDomainEventHandler : DomainEventHandlerBase,
 //ISubscribeSynchronousTo<DeleteChannelMessagesSaga,DeleteChannelMessagesSagaId, DeleteChannelMessagesCompletedEvent>
 
 {
-    private readonly IObjectMessageSender _objectMessageSender;
-    private readonly IEventBus _eventBus;
-    private readonly ILayeredService<IAuthorizationConverter> _layeredAuthorizationService;
-    private readonly ILayeredService<IUpdatesConverter> _layeredUpdatesService;
-    private readonly ILayeredService<IUserConverter> _layeredUserService;
-    private readonly ILogger<OtherDomainEventHandler> _logger;
-    private readonly ICacheManager<GlobalPrivacySettingsCacheItem> _cacheManager;
-    public OtherDomainEventHandler(IObjectMessageSender objectMessageSender,
-        ICommandBus commandBus,
-        IIdGenerator idGenerator,
-        IAckCacheService ackCacheService,
-        IResponseCacheAppService responseCacheAppService,
-        IEventBus eventBus,
-        ILogger<OtherDomainEventHandler> logger,
-        ILayeredService<IUpdatesConverter> layeredUpdatesService,
-        ILayeredService<IAuthorizationConverter> layeredAuthorizationService,
-        ILayeredService<IUserConverter> layeredUserService, ICacheManager<GlobalPrivacySettingsCacheItem> cacheManager) : base(objectMessageSender,
-        commandBus,
-        idGenerator,
-        ackCacheService,
-        responseCacheAppService)
-    {
-        _objectMessageSender = objectMessageSender;
-        _eventBus = eventBus;
-        _logger = logger;
-        _layeredUpdatesService = layeredUpdatesService;
-        _layeredAuthorizationService = layeredAuthorizationService;
-        _layeredUserService = layeredUserService;
-        _cacheManager = cacheManager;
-    }
+    private readonly IObjectMessageSender _objectMessageSender = objectMessageSender;
 
     public async Task HandleAsync(
         IDomainEvent<ClearHistorySaga, ClearHistorySagaId, ClearSingleUserHistoryCompletedEvent> domainEvent,
@@ -76,11 +64,11 @@ public class OtherDomainEventHandler : DomainEventHandlerBase,
         }
 
         var date = DateTime.UtcNow.ToTimestamp();
-        var updates = _layeredUpdatesService.GetConverter(domainEvent.AggregateEvent.RequestInfo.Layer)
+        var updates = layeredUpdatesService.GetConverter(domainEvent.AggregateEvent.RequestInfo.Layer)
             .ToDeleteMessagesUpdates(domainEvent.AggregateEvent.ToPeerType,
                 domainEvent.AggregateEvent.DeletedBoxItem,
                 date);
-        var layeredData = _layeredUpdatesService.GetLayeredData(c =>
+        var layeredData = layeredUpdatesService.GetLayeredData(c =>
             c.ToDeleteMessagesUpdates(domainEvent.AggregateEvent.ToPeerType,
                 domainEvent.AggregateEvent.DeletedBoxItem,
                 date));
@@ -102,7 +90,7 @@ public class OtherDomainEventHandler : DomainEventHandlerBase,
             r,
             domainEvent.AggregateEvent.RequestInfo.UserId, domainEvent.AggregateEvent.Pts);
 
-        var selfOtherDeviceUpdates = _layeredUpdatesService.Converter.ToDeleteMessagesUpdates(PeerType.User,
+        var selfOtherDeviceUpdates = layeredUpdatesService.Converter.ToDeleteMessagesUpdates(PeerType.User,
             new DeletedBoxItem(domainEvent.AggregateEvent.RequestInfo.UserId, domainEvent.AggregateEvent.Pts,
                 domainEvent.AggregateEvent.PtsCount, domainEvent.AggregateEvent.MessageIds),
             DateTime.UtcNow.ToTimestamp());
@@ -112,11 +100,11 @@ public class OtherDomainEventHandler : DomainEventHandlerBase,
 
     public Task HandleAsync(IDomainEvent<DeleteMessagesSaga4, DeleteMessagesSaga4Id, DeleteOtherParticipantMessagesCompletedEvent4> domainEvent, CancellationToken cancellationToken)
     {
-        var updates = _layeredUpdatesService.Converter.ToDeleteMessagesUpdates(PeerType.User,
+        var updates = layeredUpdatesService.Converter.ToDeleteMessagesUpdates(PeerType.User,
             new DeletedBoxItem(domainEvent.AggregateEvent.UserId, domainEvent.AggregateEvent.Pts,
                 domainEvent.AggregateEvent.PtsCount, domainEvent.AggregateEvent.MessageIds),
             DateTime.UtcNow.ToTimestamp());
-        var layeredUpdates = _layeredUpdatesService.GetLayeredData(c => c.ToDeleteMessagesUpdates(PeerType.User,
+        var layeredUpdates = layeredUpdatesService.GetLayeredData(c => c.ToDeleteMessagesUpdates(PeerType.User,
             new DeletedBoxItem(domainEvent.AggregateEvent.UserId, domainEvent.AggregateEvent.Pts,
                 domainEvent.AggregateEvent.PtsCount, domainEvent.AggregateEvent.MessageIds),
             DateTime.UtcNow.ToTimestamp()));
@@ -301,12 +289,12 @@ public class OtherDomainEventHandler : DomainEventHandlerBase,
         CancellationToken cancellationToken)
     {
         var tempAuthKeyId = domainEvent.AggregateEvent.TempAuthKeyId;
-        await _eventBus.PublishAsync(new UserSignInSuccessEvent(tempAuthKeyId,
+        await eventBus.PublishAsync(new UserSignInSuccessEvent(tempAuthKeyId,
                 domainEvent.AggregateEvent.PermAuthKeyId,
                 domainEvent.AggregateEvent.UserId,
                 domainEvent.AggregateEvent.HasPassword ? PasswordState.WaitingForVerify : PasswordState.None))
      ;
-        _logger.LogDebug(
+        logger.LogDebug(
             "########################### User sign in success:{UserId} with tempAuthKeyId:{TempAuthKeyId} permAuthKeyId:{PermAuthKeyId} layer:{Layer}",
             domainEvent.AggregateEvent.UserId,
             domainEvent.AggregateEvent.TempAuthKeyId,
@@ -329,10 +317,10 @@ public class OtherDomainEventHandler : DomainEventHandlerBase,
             return;
         }
 
-        var user = _layeredUserService.GetConverter(domainEvent.AggregateEvent.RequestInfo.Layer)
+        var user = layeredUserService.GetConverter(domainEvent.AggregateEvent.RequestInfo.Layer)
             .ToUser(domainEvent.AggregateEvent);
 
-        var r = _layeredAuthorizationService.GetConverter(domainEvent.AggregateEvent.RequestInfo.Layer)
+        var r = layeredAuthorizationService.GetConverter(domainEvent.AggregateEvent.RequestInfo.Layer)
             .CreateAuthorization(user);
 
         //await SendRpcMessageToClientAsync(domainEvent.AggregateEvent.RequestInfo, r);
@@ -347,7 +335,7 @@ public class OtherDomainEventHandler : DomainEventHandlerBase,
         CancellationToken cancellationToken)
     {
         return SendRpcMessageToClientAsync(domainEvent.AggregateEvent.RequestInfo,
-            _layeredAuthorizationService.GetConverter(domainEvent.AggregateEvent.RequestInfo.Layer)
+            layeredAuthorizationService.GetConverter(domainEvent.AggregateEvent.RequestInfo.Layer)
                 .CreateSignUpAuthorization());
     }
 
@@ -355,7 +343,7 @@ public class OtherDomainEventHandler : DomainEventHandlerBase,
         IDomainEvent<UpdatePinnedMessageSaga, UpdatePinnedMessageSagaId, UpdatePinnedMessageCompletedEvent> domainEvent,
         CancellationToken cancellationToken)
     {
-        var r = _layeredUpdatesService.GetConverter(domainEvent.AggregateEvent.RequestInfo.Layer)
+        var r = layeredUpdatesService.GetConverter(domainEvent.AggregateEvent.RequestInfo.Layer)
             .ToSelfUpdatePinnedMessageUpdates(domainEvent.AggregateEvent);
         if (domainEvent.AggregateEvent.PmOneSide || domainEvent.AggregateEvent.ShouldReplyRpcResult)
         {
@@ -367,7 +355,7 @@ public class OtherDomainEventHandler : DomainEventHandlerBase,
                 domainEvent.AggregateEvent.ToPeer.PeerType
             );
             var layeredData =
-                _layeredUpdatesService.GetLayeredData(c =>
+                layeredUpdatesService.GetLayeredData(c =>
                     c.ToSelfUpdatePinnedMessageUpdates(domainEvent.AggregateEvent));
             await PushUpdatesToPeerAsync(
                 new Peer(PeerType.User, domainEvent.AggregateEvent.OwnerPeerId),
@@ -382,10 +370,10 @@ public class OtherDomainEventHandler : DomainEventHandlerBase,
                 domainEvent.AggregateEvent.ToPeer.PeerType == PeerType.Channel
                     ? new Peer(PeerType.Channel, domainEvent.AggregateEvent.OwnerPeerId)
                     : new Peer(PeerType.User, domainEvent.AggregateEvent.OwnerPeerId),
-                _layeredUpdatesService.Converter.ToUpdatePinnedMessageUpdates(domainEvent.AggregateEvent),
+                layeredUpdatesService.Converter.ToUpdatePinnedMessageUpdates(domainEvent.AggregateEvent),
                 excludeUserId: domainEvent.AggregateEvent.SenderPeerId,
                 pts: domainEvent.AggregateEvent.Pts,
-                layeredData: _layeredUpdatesService.GetLayeredData(c =>
+                layeredData: layeredUpdatesService.GetLayeredData(c =>
                     c.ToUpdatePinnedMessageUpdates(domainEvent.AggregateEvent))
             );
         }
@@ -430,7 +418,7 @@ public class OtherDomainEventHandler : DomainEventHandlerBase,
 
     public Task HandleAsync(IDomainEvent<UserAggregate, UserId, UserGlobalPrivacySettingsChangedEvent> domainEvent, CancellationToken cancellationToken)
     {
-        return _cacheManager.SetAsync(
+        return cacheManager.SetAsync(
             GlobalPrivacySettingsCacheItem.GetCacheKey(domainEvent.AggregateEvent.RequestInfo.UserId),
             new GlobalPrivacySettingsCacheItem(domainEvent.AggregateEvent.GlobalPrivacySettings.ArchiveAndMuteNewNoncontactPeers,
                 domainEvent.AggregateEvent.GlobalPrivacySettings.KeepArchivedUnmuted,
@@ -450,7 +438,7 @@ public class OtherDomainEventHandler : DomainEventHandlerBase,
             Offset = domainEvent.AggregateEvent.Offset
         };
         await SendRpcMessageToClientAsync(domainEvent.AggregateEvent.RequestInfo, r);
-        var selfOtherDeviceUpdates = _layeredUpdatesService.Converter.ToDeleteMessagesUpdates(PeerType.User,
+        var selfOtherDeviceUpdates = layeredUpdatesService.Converter.ToDeleteMessagesUpdates(PeerType.User,
             new DeletedBoxItem(domainEvent.AggregateEvent.RequestInfo.UserId, domainEvent.AggregateEvent.Pts,
                 domainEvent.AggregateEvent.PtsCount, domainEvent.AggregateEvent.MessageIds),
             DateTime.UtcNow.ToTimestamp());
@@ -461,11 +449,11 @@ public class OtherDomainEventHandler : DomainEventHandlerBase,
 
     public Task HandleAsync(IDomainEvent<DeleteMessagesSaga4, DeleteMessagesSaga4Id, DeleteOtherParticipantHistoryCompletedEvent4> domainEvent, CancellationToken cancellationToken)
     {
-        var updates = _layeredUpdatesService.Converter.ToDeleteMessagesUpdates(PeerType.User,
+        var updates = layeredUpdatesService.Converter.ToDeleteMessagesUpdates(PeerType.User,
             new DeletedBoxItem(domainEvent.AggregateEvent.UserId, domainEvent.AggregateEvent.Pts,
                 domainEvent.AggregateEvent.PtsCount, domainEvent.AggregateEvent.MessageIds),
             DateTime.UtcNow.ToTimestamp());
-        var layeredUpdates = _layeredUpdatesService.GetLayeredData(c => c.ToDeleteMessagesUpdates(PeerType.User,
+        var layeredUpdates = layeredUpdatesService.GetLayeredData(c => c.ToDeleteMessagesUpdates(PeerType.User,
             new DeletedBoxItem(domainEvent.AggregateEvent.UserId, domainEvent.AggregateEvent.Pts,
                 domainEvent.AggregateEvent.PtsCount, domainEvent.AggregateEvent.MessageIds),
             DateTime.UtcNow.ToTimestamp()));

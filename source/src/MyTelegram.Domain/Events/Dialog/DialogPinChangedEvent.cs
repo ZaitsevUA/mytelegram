@@ -1,15 +1,11 @@
 ﻿namespace MyTelegram.Domain.Events.Dialog;
 
-public class DialogPinChangedEvent : RequestAggregateEvent2<DialogAggregate, DialogId>
+public class DialogPinChangedEvent(
+    RequestInfo requestInfo,
+    long ownerPeerId,
+    bool pinned)
+    : RequestAggregateEvent2<DialogAggregate, DialogId>(requestInfo)
 {
-    public DialogPinChangedEvent(RequestInfo requestInfo,
-        long ownerPeerId,
-        bool pinned) : base(requestInfo)
-    {
-        OwnerPeerId = ownerPeerId;
-        Pinned = pinned;
-    }
-
-    public long OwnerPeerId { get; }
-    public bool Pinned { get; }
+    public long OwnerPeerId { get; } = ownerPeerId;
+    public bool Pinned { get; } = pinned;
 }

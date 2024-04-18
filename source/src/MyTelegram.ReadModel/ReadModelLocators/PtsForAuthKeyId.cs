@@ -2,12 +2,8 @@
 
 namespace MyTelegram.ReadModel.ReadModelLocators;
 
-public class PtsForAuthKeyId : Identity<PtsForAuthKeyId>
+public class PtsForAuthKeyId(string value) : Identity<PtsForAuthKeyId>(value)
 {
-    public PtsForAuthKeyId(string value) : base(value)
-    {
-    }
-
     public static PtsForAuthKeyId Create(long ownerPeerId, long permAuthKeyId)
     {
         return NewDeterministic(GuidFactories.Deterministic.Namespaces.Commands,

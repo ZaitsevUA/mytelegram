@@ -1,17 +1,10 @@
 ﻿namespace MyTelegram.Domain.Events.Messaging;
 
-public class MessageReplyUpdatedEvent : AggregateEvent<MessageAggregate, MessageId>
+public class MessageReplyUpdatedEvent(long ownerChannelId, long channelId, int messageId, int pts)
+    : AggregateEvent<MessageAggregate, MessageId>
 {
-    public long OwnerChannelId { get; }
-    public long ChannelId { get; }
-    public int MessageId { get; }
-    public int Pts { get; }
-
-    public MessageReplyUpdatedEvent(long ownerChannelId, long channelId, int messageId,int pts)
-    {
-        OwnerChannelId = ownerChannelId;
-        ChannelId = channelId;
-        MessageId = messageId;
-        Pts = pts;
-    }
+    public long OwnerChannelId { get; } = ownerChannelId;
+    public long ChannelId { get; } = channelId;
+    public int MessageId { get; } = messageId;
+    public int Pts { get; } = pts;
 }

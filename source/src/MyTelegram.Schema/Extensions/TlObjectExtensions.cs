@@ -5,22 +5,15 @@ using MyTelegram.Schema.Serializer;
 
 namespace MyTelegram.Schema.Extensions;
 
-public sealed class ArrayPoolBufferWriterWrapper<T> : IDisposable
+public sealed class ArrayPoolBufferWriterWrapper<T>(ArrayBufferWriter<T> writer) : IDisposable
 {
-    private readonly ArrayBufferWriter<T> _writer;
+    public ArrayBufferWriter<T> Writer => writer;
 
-    public ArrayPoolBufferWriterWrapper(ArrayBufferWriter<T> writer)
-    {
-        _writer = writer;
-    }
-
-    public ArrayBufferWriter<T> Writer => _writer;
-
-    public int WrittenCount => _writer.WrittenCount;
+    public int WrittenCount => writer.WrittenCount;
 
     public void Dispose()
     {
-        _writer.Clear();
+        writer.Clear();
         ArrayBufferWriterPool<T>.Return(this);
     }
 }

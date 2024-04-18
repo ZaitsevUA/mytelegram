@@ -148,17 +148,11 @@ public class HiLoValueGeneratorState : IDisposable
     public virtual void Dispose()
         => _semaphoreSlim.Dispose();
 
-    private sealed class HiLoValue
+    private sealed class HiLoValue(long low, long high)
     {
-        public HiLoValue(long low, long high)
-        {
-            Low = low;
-            High = high;
-        }
+        public long Low { get; } = low;
 
-        public long Low { get; }
-
-        public long High { get; }
+        public long High { get; } = high;
 
         public HiLoValue NextValue()
             => new(Low + 1, High);

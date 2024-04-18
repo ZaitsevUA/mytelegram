@@ -1,17 +1,11 @@
 ﻿namespace MyTelegram.Messenger.Services.Caching;
 
-internal sealed class AccessHashHelper : IAccessHashHelper
+internal sealed class AccessHashHelper(
+    IQueryProcessor queryProcessor,
+    IPeerHelper peerHelper)
+    : IAccessHashHelper
 {
     private readonly ConcurrentDictionary<long, long> _accessHashCaches = new();
-    private readonly IPeerHelper _peerHelper;
-    private readonly IQueryProcessor _queryProcessor;
-
-    public AccessHashHelper(IQueryProcessor queryProcessor,
-        IPeerHelper peerHelper)
-    {
-        _queryProcessor = queryProcessor;
-        _peerHelper = peerHelper;
-    }
 
     public void AddAccessHash(long id, long accessHash)
     {
@@ -28,7 +22,7 @@ internal sealed class AccessHashHelper : IAccessHashHelper
         }
         if (accessHashType == null)
         {
-            var peer = _peerHelper.GetPeer(id);
+            var peer = peerHelper.GetPeer(id);
             switch (peer.PeerType)
             {
                 case PeerType.Channel:
@@ -42,7 +36,7 @@ internal sealed class AccessHashHelper : IAccessHashHelper
             }
         }
 
-        var accessHashReadModel = await _queryProcessor.ProcessAsync(new GetAccessHashQueryByIdQuery(id));
+        var accessHashReadModel = await queryProcessor.ProcessAsync(new GetAccessHashQueryByIdQuery(id));
 
         if (accessHashReadModel != null)
         {
@@ -53,7 +47,7 @@ internal sealed class AccessHashHelper : IAccessHashHelper
         switch (accessHashType)
         {
             case AccessHashType.User:
-                var userReadModel = await _queryProcessor.ProcessAsync(new GetUserByIdQuery(id));
+                var userReadModel = await queryProcessor.ProcessAsync(new GetUserByIdQuery(id));
                 if (userReadModel != null)
                 {
                     _accessHashCaches.TryAdd(id, userReadModel.AccessHash);
@@ -63,7 +57,7 @@ internal sealed class AccessHashHelper : IAccessHashHelper
                 break;
 
             case AccessHashType.Channel:
-                var channelReadModel = await _queryProcessor.ProcessAsync(new GetChannelByIdQuery(id));
+                var channelReadModel = await queryProcessor.ProcessAsync(new GetChannelByIdQuery(id));
                 if (channelReadModel != null)
                 {
                     _accessHashCaches.TryAdd(id, channelReadModel.AccessHash);

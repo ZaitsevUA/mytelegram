@@ -1,23 +1,17 @@
 ﻿namespace MyTelegram.Domain.Sagas;
 
 public class
-    EditChatTitleSaga : MyInMemoryAggregateSaga<EditChatTitleSaga, EditChatTitleSagaId, EditChatTitleSagaLocator>,
+    EditChatTitleSaga(EditChatTitleSagaId id, IEventStore eventStore, IIdGenerator idGenerator)
+    : MyInMemoryAggregateSaga<EditChatTitleSaga, EditChatTitleSagaId, EditChatTitleSagaLocator>(id, eventStore),
         ISagaIsStartedBy<ChatAggregate, ChatId, ChatTitleEditedEvent>
 {
-    private readonly IIdGenerator _idGenerator;
-
-    public EditChatTitleSaga(EditChatTitleSagaId id, IEventStore eventStore, IIdGenerator idGenerator) : base(id, eventStore)
-    {
-        _idGenerator = idGenerator;
-    }
-
     public async Task HandleAsync(IDomainEvent<ChatAggregate, ChatId, ChatTitleEditedEvent> domainEvent,
         ISagaContext sagaContext,
         CancellationToken cancellationToken)
     {
         var ownerPeerId = domainEvent.AggregateEvent.RequestInfo.UserId;
         var toPeerId = domainEvent.AggregateEvent.ChatId;
-        var outMessageId = await _idGenerator.NextIdAsync(IdType.MessageId, ownerPeerId, cancellationToken: cancellationToken);
+        var outMessageId = await idGenerator.NextIdAsync(IdType.MessageId, ownerPeerId, cancellationToken: cancellationToken);
         var aggregateId = MessageId.Create(ownerPeerId, outMessageId);
         var ownerPeer = new Peer(PeerType.User, ownerPeerId);
         var toPeer = new Peer(PeerType.Chat, toPeerId);

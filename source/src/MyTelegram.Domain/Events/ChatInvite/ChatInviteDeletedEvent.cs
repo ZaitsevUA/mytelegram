@@ -1,13 +1,8 @@
 ﻿namespace MyTelegram.Domain.Events.ChatInvite;
 
-public class ChatInviteDeletedEvent : RequestAggregateEvent2<ChatInviteAggregate, ChatInviteId>
+public class ChatInviteDeletedEvent(RequestInfo requestInfo, long channelId, long inviteId)
+    : RequestAggregateEvent2<ChatInviteAggregate, ChatInviteId>(requestInfo)
 {
-    public long ChannelId { get; }
-    public long InviteId { get; }
-
-    public ChatInviteDeletedEvent(RequestInfo requestInfo,long channelId,long inviteId) : base(requestInfo)
-    {
-        ChannelId = channelId;
-        InviteId = inviteId;
-    }
+    public long ChannelId { get; } = channelId;
+    public long InviteId { get; } = inviteId;
 }

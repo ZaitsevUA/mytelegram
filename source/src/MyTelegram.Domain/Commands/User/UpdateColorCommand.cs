@@ -1,16 +1,12 @@
 ﻿namespace MyTelegram.Domain.Commands.User;
 
-public class UpdateUserColorCommand : RequestCommand2<UserAggregate, UserId, IExecutionResult>
+public class UpdateUserColorCommand(
+    UserId aggregateId,
+    RequestInfo requestInfo,
+    PeerColor? color,
+    bool forProfile)
+    : RequestCommand2<UserAggregate, UserId, IExecutionResult>(aggregateId, requestInfo)
 {
-    public PeerColor? Color { get; }
-    public bool ForProfile { get; }
-
-    public UpdateUserColorCommand(UserId aggregateId, RequestInfo requestInfo,
-        PeerColor? color,
-        bool forProfile
-    ) : base(aggregateId, requestInfo)
-    {
-        Color = color;
-        ForProfile = forProfile;
-    }
+    public PeerColor? Color { get; } = color;
+    public bool ForProfile { get; } = forProfile;
 }

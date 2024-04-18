@@ -6,77 +6,47 @@ public class GetUpdatesOutput
     public GetMessageOutput MessageOutput { get; set; }
 }
 
-public class GetMessageOutput
+public class GetMessageOutput(
+    IReadOnlyCollection<IChannelReadModel> channelList,
+    IReadOnlyCollection<IChannelMemberReadModel> channelMemberList,
+    IReadOnlyCollection<IChatReadModel> chatList,
+    IReadOnlyCollection<IContactReadModel> contactList,
+    IReadOnlyCollection<long> joinedChannelIdList,
+    IReadOnlyCollection<IMessageReadModel> messageList,
+    IReadOnlyCollection<IPrivacyReadModel> privacyList,
+    IReadOnlyCollection<IUserReadModel> userList,
+    IReadOnlyCollection<IPhotoReadModel> photoList,
+    IReadOnlyCollection<IPollReadModel>? pollList,
+    IReadOnlyCollection<IPollAnswerVoterReadModel>? chosenPollOptions,
+    bool hasMoreData,
+    bool isSearchGlobal,
+    int pts,
+    long selfUserId,
+    int limit)
 {
-    public GetMessageOutput(IReadOnlyCollection<IChannelReadModel> channelList,
-        IReadOnlyCollection<IChannelMemberReadModel> channelMemberList,
-        IReadOnlyCollection<IChatReadModel> chatList,
-        IReadOnlyCollection<IContactReadModel> contactList,
-        IReadOnlyCollection<long> joinedChannelIdList,
-        IReadOnlyCollection<IMessageReadModel> messageList,
-        IReadOnlyCollection<IPrivacyReadModel> privacyList,
-        IReadOnlyCollection<IUserReadModel> userList,
-        IReadOnlyCollection<IPhotoReadModel> photoList,
-        IReadOnlyCollection<IPollReadModel>? pollList,
-        IReadOnlyCollection<IPollAnswerVoterReadModel>? chosenPollOptions,
-        bool hasMoreData,
-        bool isSearchGlobal,
-        int pts,
-        long selfUserId,
-        int limit)
-    {
-        ChannelList = channelList;
-        ChannelMemberList = channelMemberList;
-        ChatList = chatList;
-        ContactList = contactList;
-        JoinedChannelIdList = joinedChannelIdList;
-        MessageList = messageList;
-        PrivacyList = privacyList;
-        UserList = userList;
-        PhotoList = photoList;
-        PollList = pollList;
-        ChosenPollOptions = chosenPollOptions;
-        HasMoreData = hasMoreData;
-        IsSearchGlobal = isSearchGlobal;
-        Pts = pts;
-        SelfUserId = selfUserId;
-        Limit = limit;
-    }
     //    public void SetChannelReadModelList(IReadOnlyCollection<IChannelReadModel> channelReadModels)
     //{
     //    ChannelList = channelReadModels;
     //}
 
-    public GetMessageOutput()
+    public GetMessageOutput() : this(Array.Empty<IChannelReadModel>(), Array.Empty<IChannelMemberReadModel>(), Array.Empty<IChatReadModel>(), Array.Empty<IContactReadModel>(), Array.Empty<long>(), Array.Empty<IMessageReadModel>(), Array.Empty<IPrivacyReadModel>(), Array.Empty<IUserReadModel>(), Array.Empty<IPhotoReadModel>(), Array.Empty<IPollReadModel>(), Array.Empty<IPollAnswerVoterReadModel>(), false, false, 0, 0, 0)
     {
-        ChannelList = Array.Empty<IChannelReadModel>();
-        PhotoList = Array.Empty<IPhotoReadModel>();
-        ChannelMemberList = Array.Empty<IChannelMemberReadModel>();
-        ChatList = Array.Empty<IChatReadModel>();
-        ContactList = Array.Empty<IContactReadModel>();
-        JoinedChannelIdList = Array.Empty<long>();
-        MessageList = Array.Empty<IMessageReadModel>();
-        PrivacyList = Array.Empty<IPrivacyReadModel>();
-        UserList = Array.Empty<IUserReadModel>();
-        PollList = Array.Empty<IPollReadModel>();
-        ChosenPollOptions = Array.Empty<IPollAnswerVoterReadModel>();
     }
 
-    public IReadOnlyCollection<IChannelReadModel> ChannelList { get; internal set; }
-    public IReadOnlyCollection<IPhotoReadModel> PhotoList { get; internal set; }
-    public IReadOnlyCollection<IChannelMemberReadModel> ChannelMemberList { get; init; }
-    public IReadOnlyCollection<IChatReadModel> ChatList { get; init; }
-    public IReadOnlyCollection<IContactReadModel> ContactList { get; init; }
-    public IReadOnlyCollection<long> JoinedChannelIdList { get; init; }
-    public IReadOnlyCollection<IMessageReadModel> MessageList { get; init; }
-    public IReadOnlyCollection<IPrivacyReadModel> PrivacyList { get; init; }
-    public IReadOnlyCollection<IUserReadModel> UserList { get; init; }
-    public IReadOnlyCollection<IPollReadModel>? PollList { get; init; }
-    public IReadOnlyCollection<IPollAnswerVoterReadModel>? ChosenPollOptions { get; init; }
-    public bool HasMoreData { get; init; }
-    public bool IsSearchGlobal { get; init; }
-    public int Pts { get; init; }
-    public long SelfUserId { get; set; }
-    public int Limit { get; set; }
-
+    public IReadOnlyCollection<IChannelReadModel> ChannelList { get; internal set; } = channelList;
+    public IReadOnlyCollection<IPhotoReadModel> PhotoList { get; internal set; } = photoList;
+    public IReadOnlyCollection<IChannelMemberReadModel> ChannelMemberList { get; init; } = channelMemberList;
+    public IReadOnlyCollection<IChatReadModel> ChatList { get; init; } = chatList;
+    public IReadOnlyCollection<IContactReadModel> ContactList { get; init; } = contactList;
+    public IReadOnlyCollection<long> JoinedChannelIdList { get; init; } = joinedChannelIdList;
+    public IReadOnlyCollection<IMessageReadModel> MessageList { get; init; } = messageList;
+    public IReadOnlyCollection<IPrivacyReadModel> PrivacyList { get; init; } = privacyList;
+    public IReadOnlyCollection<IUserReadModel> UserList { get; init; } = userList;
+    public IReadOnlyCollection<IPollReadModel>? PollList { get; init; } = pollList;
+    public IReadOnlyCollection<IPollAnswerVoterReadModel>? ChosenPollOptions { get; init; } = chosenPollOptions;
+    public bool HasMoreData { get; init; } = hasMoreData;
+    public bool IsSearchGlobal { get; init; } = isSearchGlobal;
+    public int Pts { get; init; } = pts;
+    public long SelfUserId { get; set; } = selfUserId;
+    public int Limit { get; set; } = limit;
 }

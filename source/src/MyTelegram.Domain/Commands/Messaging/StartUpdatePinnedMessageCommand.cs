@@ -1,28 +1,20 @@
 ﻿namespace MyTelegram.Domain.Commands.Messaging;
 
-public class StartUpdatePinnedMessageCommand : RequestCommand2<MessageAggregate, MessageId, IExecutionResult>
+public class StartUpdatePinnedMessageCommand(
+    MessageId aggregateId,
+    RequestInfo requestInfo,
+    bool pinned,
+    bool pmOneSide,
+    bool silent,
+    int date,
+    long randomId,
+    string messageActionData)
+    : RequestCommand2<MessageAggregate, MessageId, IExecutionResult>(aggregateId, requestInfo)
 {
-    public StartUpdatePinnedMessageCommand(MessageId aggregateId,
-        RequestInfo requestInfo,
-        bool pinned,
-        bool pmOneSide,
-        bool silent,
-        int date,
-        long randomId,
-        string messageActionData) : base(aggregateId, requestInfo)
-    {
-        Pinned = pinned;
-        PmOneSide = pmOneSide;
-        Silent = silent;
-        Date = date;
-        RandomId = randomId;
-        MessageActionData = messageActionData;
-    }
-
-    public bool Pinned { get; }
-    public bool PmOneSide { get; }
-    public bool Silent { get; }
-    public int Date { get; }
-    public long RandomId { get; }
-    public string MessageActionData { get; }
+    public bool Pinned { get; } = pinned;
+    public bool PmOneSide { get; } = pmOneSide;
+    public bool Silent { get; } = silent;
+    public int Date { get; } = date;
+    public long RandomId { get; } = randomId;
+    public string MessageActionData { get; } = messageActionData;
 }

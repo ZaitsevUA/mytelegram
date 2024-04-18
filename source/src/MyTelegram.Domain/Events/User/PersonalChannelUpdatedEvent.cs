@@ -1,13 +1,7 @@
 ﻿namespace MyTelegram.Domain.Events.User;
 
-public class PersonalChannelUpdatedEvent : AggregateEvent<UserAggregate, UserId>
+public class PersonalChannelUpdatedEvent(long userId, long? personalChannelId) : AggregateEvent<UserAggregate, UserId>
 {
-    public long UserId { get; }
-    public long? PersonalChannelId { get; }
-
-    public PersonalChannelUpdatedEvent(long userId,long? personalChannelId)
-    {
-        UserId = userId;
-        PersonalChannelId = personalChannelId;
-    }
+    public long UserId { get; } = userId;
+    public long? PersonalChannelId { get; } = personalChannelId;
 }

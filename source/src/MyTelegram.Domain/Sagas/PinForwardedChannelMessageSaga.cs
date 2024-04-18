@@ -10,12 +10,7 @@ namespace MyTelegram.Domain.Sagas;
 
 
 [JsonConverter(typeof(SystemTextJsonSingleValueObjectConverter<PinForwardedChannelMessageSagaId>))]
-public class PinForwardedChannelMessageSagaId : Identity<PinForwardedChannelMessageSagaId>, ISagaId
-{
-    public PinForwardedChannelMessageSagaId(string value) : base(value)
-    {
-    }
-}
+public class PinForwardedChannelMessageSagaId(string value) : Identity<PinForwardedChannelMessageSagaId>(value), ISagaId;
 
 public class
     PinChannelMessagePtsIncrementedEvent(long channelId, int messageId, int pts) : AggregateEvent<PinForwardedChannelMessageSaga,
