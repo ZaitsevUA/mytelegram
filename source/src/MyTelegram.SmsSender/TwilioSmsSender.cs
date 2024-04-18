@@ -20,7 +20,6 @@ public class TwilioSmsSender : ISmsSender
     }
 
     public bool Enabled => _optionsSnapshot.Value.Enabled;
-
     public async Task SendAsync(SmsMessage smsMessage)
     {
         if (!_optionsSnapshot.Value.Enabled)
@@ -39,6 +38,7 @@ public class TwilioSmsSender : ISmsSender
         {
             phoneNumber = $"+{phoneNumber}";
         }
+
         var resource = await MessageResource.CreateAsync(new PhoneNumber(phoneNumber),
             from: new PhoneNumber(_optionsSnapshot.Value.FromNumber),
             body: smsMessage.Text);
