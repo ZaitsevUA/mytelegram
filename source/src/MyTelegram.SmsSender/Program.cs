@@ -41,6 +41,7 @@ builder.ConfigureServices((context,
     services) =>
 {
     services.Configure<TwilioSmsOptions>(context.Configuration.GetRequiredSection("TwilioSms"));
+    services.Configure<VonageSmsOptions>(context.Configuration.GetRequiredSection("VonageSms"));
     services.Configure<EventBusRabbitMqOptions>(context.Configuration.GetRequiredSection("RabbitMQ:EventBus"));
     services.Configure<RabbitMqOptions>(context.Configuration.GetRequiredSection("RabbitMQ:Connections:Default"));
 

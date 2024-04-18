@@ -5,6 +5,7 @@ public static class Extensions
     {
         services.AddTransient<AppCodeEventHandler>();
         services.AddTransient<ISmsSender, TwilioSmsSender>();
+        services.AddTransient<ISmsSender, VonageSmsSender>();
 
         return services;
     }

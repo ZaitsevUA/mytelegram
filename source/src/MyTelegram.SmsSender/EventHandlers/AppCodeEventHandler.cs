@@ -1,6 +1,6 @@
 ﻿namespace MyTelegram.SmsSender.EventHandlers;
 
-public class AppCodeEventHandler(ISmsSender smsSender, ILogger<AppCodeEventHandler> logger)
+public class AppCodeEventHandler(ISmsSenderFactory smsSenderFactory, ILogger<AppCodeEventHandler> logger)
     : IEventHandler<AppCodeCreatedIntegrationEvent>
 {
     public async Task HandleEventAsync(AppCodeCreatedIntegrationEvent eventData)
@@ -20,6 +20,7 @@ public class AppCodeEventHandler(ISmsSender smsSender, ILogger<AppCodeEventHandl
 
         try
         {
+            var smsSender = smsSenderFactory.Create(eventData.PhoneNumber);
             await smsSender.SendAsync(phoneNumber, $"MyTelegram code:{eventData.Code}");
         }
         catch (Exception ex)
