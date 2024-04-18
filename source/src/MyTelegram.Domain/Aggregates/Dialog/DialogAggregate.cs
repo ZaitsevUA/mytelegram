@@ -9,6 +9,11 @@ public class DialogAggregate : MyInMemorySnapshotAggregateRoot<DialogAggregate, 
         Register(_state);
     }
 
+    public void UpdateDialog(long ownerUserId, Peer toPeer, int topMessageId, int pts)
+    {
+        Emit(new DialogUpdatedEvent(ownerUserId, toPeer, topMessageId, pts));
+    }
+
     public void ClearChannelHistory(RequestInfo requestInfo, int availableMinId)
     {
         Specs.AggregateIsCreated.ThrowDomainErrorIfNotSatisfied(this);

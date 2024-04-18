@@ -74,7 +74,6 @@ public class ReadHistorySaga : MyInMemoryAggregateSaga<ReadHistorySaga, ReadHist
         var command = new UpdateReadOutboxMaxIdCommand(
             DialogId.Create(senderUserId, PeerType.User, _state.RequestInfo.UserId), _state.RequestInfo,
             senderMessageId);
-        Console.WriteLine($"UpdateReadOutboxMaxId:senderUserId={senderUserId} _state.RequestInfo.UserId={_state.RequestInfo.UserId} senderMessageId={senderMessageId}");
         Publish(command);
     }
 

@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 
 namespace MyTelegram.Messenger.NativeAot;
 
-// Generation time:2024-04-14 01:59:34Z
+// Generation time:2024-04-17 08:28:18Z
 // MyTelegram.Domain
 [JsonSerializable(typeof(MyTelegram.Domain.Aggregates.Channel.ChannelSnapshot))]
 [JsonSerializable(typeof(MyTelegram.Domain.Aggregates.Chat.ChatSnapshot))]
@@ -97,6 +97,7 @@ namespace MyTelegram.Messenger.NativeAot;
 [JsonSerializable(typeof(MyTelegram.Domain.Events.Dialog.DialogMsgIdPinnedEvent))]
 [JsonSerializable(typeof(MyTelegram.Domain.Events.Dialog.DialogPinChangedEvent))]
 [JsonSerializable(typeof(MyTelegram.Domain.Events.Dialog.DialogUnreadMarkChangedEvent))]
+[JsonSerializable(typeof(MyTelegram.Domain.Events.Dialog.DialogUpdatedEvent))]
 [JsonSerializable(typeof(MyTelegram.Domain.Events.Dialog.DraftClearedEvent))]
 [JsonSerializable(typeof(MyTelegram.Domain.Events.Dialog.DraftSavedEvent))]
 [JsonSerializable(typeof(MyTelegram.Domain.Events.Dialog.HistoryClearedEvent))]

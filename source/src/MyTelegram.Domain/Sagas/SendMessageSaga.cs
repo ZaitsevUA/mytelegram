@@ -166,6 +166,15 @@ public class SendMessageSaga : MyInMemoryAggregateSaga<SendMessageSaga, SendMess
                 //globalSeqNo
             /*_state.BotUserIds*/));
 
+        var command = new UpdateDialogCommand(
+            DialogId.Create(_state.MessageItem.SenderUserId, _state.MessageItem.ToPeer),
+            _state.MessageItem.SenderUserId,
+            _state.MessageItem.ToPeer,
+            _state.MessageItem.MessageId,
+            pts
+        );
+        Publish(command);
+
         if (_state.MessageItem.ToPeer.PeerType == PeerType.Channel)
         {
             SetChannelPts(_state.MessageItem.ToPeer.PeerId, pts, _state.MessageItem.MessageId);

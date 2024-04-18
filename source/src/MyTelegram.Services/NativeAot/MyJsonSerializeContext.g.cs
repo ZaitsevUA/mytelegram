@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 
 namespace MyTelegram.Services.NativeAot;
 
-// Generation time:2024-04-14 01:59:34Z ,count:65
+// Generation time:2024-04-17 08:28:18Z ,count:65
 // MyTelegram.Core
 [JsonSerializable(typeof(MyTelegram.Core.AcksDataReceivedEvent))]
 [JsonSerializable(typeof(MyTelegram.Core.AppCodeCreatedIntegrationEvent))]

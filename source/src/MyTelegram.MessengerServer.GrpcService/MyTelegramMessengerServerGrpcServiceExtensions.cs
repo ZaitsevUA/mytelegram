@@ -2,6 +2,7 @@
 using EventFlow.Extensions;
 using EventFlow.MongoDB.Extensions;
 using MyTelegram.Domain.EventFlow;
+using MyTelegram.EventFlow.MongoDB;
 using MyTelegram.QueryHandlers.MongoDB.Channel;
 using MyTelegram.QueryHandlers.MongoDB.Chat;
 using MyTelegram.ReadModel.MongoDB;
@@ -27,6 +28,8 @@ public static class MyTelegramMessengerServerGrpcServiceExtensions
                     typeof(GetChatByChatIdQueryHandler),
                     typeof(GetChannelMembersByChannelIdQueryHandler)
                 );
+                options.AddMyMongoDbReadModel();
+
                 configure?.Invoke(options);
             })
             //.AddMyTelegramCoreServices()
