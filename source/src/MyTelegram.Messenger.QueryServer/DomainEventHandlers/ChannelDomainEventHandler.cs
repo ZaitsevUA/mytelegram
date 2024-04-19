@@ -347,7 +347,9 @@ public class ChannelDomainEventHandler(
         {
             await PushUpdatesToPeerAsync(new Peer(PeerType.Channel, channelId),
                 //channelId, 
-                updates);
+                updates,
+                excludeUserId: requestInfo.UserId
+                );
         }
     }
 
