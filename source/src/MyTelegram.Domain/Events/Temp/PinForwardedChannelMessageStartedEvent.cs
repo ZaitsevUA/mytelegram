@@ -1,6 +1,4 @@
-﻿using MyTelegram.Domain.Aggregates.Temp;
-
-namespace MyTelegram.Domain.Events.Temp;
+﻿namespace MyTelegram.Domain.Events.Temp;
 
 public class PinForwardedChannelMessageStartedEvent
     (RequestInfo requestInfo, long channelId, int messageId) : RequestAggregateEvent2<TempAggregate, TempId>(

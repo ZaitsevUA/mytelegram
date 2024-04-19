@@ -1,6 +1,4 @@
-﻿using MyTelegram.Domain.Aggregates.Temp;
-
-namespace MyTelegram.Domain.CommandHandlers.Temp;
+﻿namespace MyTelegram.Domain.CommandHandlers.Temp;
 
 public class StartDeleteMessagesCommandHandler : CommandHandler<TempAggregate, TempId, StartDeleteMessagesCommand>
 {

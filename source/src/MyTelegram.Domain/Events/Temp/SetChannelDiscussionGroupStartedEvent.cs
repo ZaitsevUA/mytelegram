@@ -1,6 +1,4 @@
-﻿using MyTelegram.Domain.Aggregates.Temp;
-
-namespace MyTelegram.Domain.Events.Temp;
+﻿namespace MyTelegram.Domain.Events.Temp;
 
 public class SetChannelDiscussionGroupStartedEvent(
     RequestInfo requestInfo,

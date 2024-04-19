@@ -1,6 +1,4 @@
-﻿using MyTelegram.Domain.Aggregates.Temp;
-
-namespace MyTelegram.Domain.Events.Temp;
+﻿namespace MyTelegram.Domain.Events.Temp;
 
 public class DeleteHistoryStartedEvent
     (RequestInfo requestInfo, IReadOnlyCollection<MessageItemToBeDeleted> messageItems, bool revoke, bool deleteGroupMessagesForEveryone) :

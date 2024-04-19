@@ -1,6 +1,5 @@
 ﻿namespace MyTelegram.Domain.Aggregates.Temp;
 
-public class TempId(string value) : Identity<TempId>(value);
 /// <summary>
 /// Add this temp aggregate only for triggering a domain event to start new saga
 /// All domain events will not be saved

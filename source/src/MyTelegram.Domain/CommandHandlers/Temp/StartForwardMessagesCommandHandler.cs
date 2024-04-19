@@ -1,7 +1,4 @@
-﻿using MyTelegram.Domain.Aggregates.Temp;
-using MyTelegram.Domain.Commands.Temp;
-
-namespace MyTelegram.Domain.CommandHandlers.Temp;
+﻿namespace MyTelegram.Domain.CommandHandlers.Temp;
 
 public class StartForwardMessagesCommandHandler : CommandHandler<TempAggregate, TempId, StartForwardMessagesCommand>
 {

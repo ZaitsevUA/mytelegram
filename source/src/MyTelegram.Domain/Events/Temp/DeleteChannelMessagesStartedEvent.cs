@@ -1,6 +1,4 @@
-﻿using MyTelegram.Domain.Aggregates.Temp;
-
-namespace MyTelegram.Domain.Events.Temp;
+﻿namespace MyTelegram.Domain.Events.Temp;
 
 public class DeleteChannelMessagesStartedEvent(RequestInfo requestInfo, long channelId, List<int> messageIds, int newTopMessageId,
     int? newTopMessageIdForDiscussionGroup, long? discussionGroupChannelId, IReadOnlyCollection<int>? repliesMessageIds) : RequestAggregateEvent2<TempAggregate, TempId>(requestInfo)

@@ -1,6 +1,4 @@
-﻿using MyTelegram.Domain.Aggregates.Temp;
-
-namespace MyTelegram.Domain.Commands.Temp;
+﻿namespace MyTelegram.Domain.Commands.Temp;
 
 public class StartDeleteParticipantHistoryCommand(TempId aggregateId,
     RequestInfo requestInfo, long channelId, List<int> messageIds, int newTopMessageId) : RequestCommand2<TempAggregate, TempId, IExecutionResult>(aggregateId, requestInfo)

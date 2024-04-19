@@ -1,12 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MyTelegram.Domain.Aggregates.Temp;
-using MyTelegram.Domain.Sagas;
-
-namespace MyTelegram.Domain.Commands.Temp;
+﻿namespace MyTelegram.Domain.Commands.Temp;
 
 public class StartForwardMessagesCommand(
     TempId aggregateId,

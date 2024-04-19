@@ -1,6 +1,4 @@
-﻿using MyTelegram.Domain.Aggregates.Temp;
-
-namespace MyTelegram.Domain.Events.Temp;
+﻿namespace MyTelegram.Domain.Events.Temp;
 
 public class DeleteParticipantHistoryStartedEvent(RequestInfo requestInfo, long channelId, List<int> messageIds, int newTopMessageId) : RequestAggregateEvent2<TempAggregate, TempId>(requestInfo)
 {

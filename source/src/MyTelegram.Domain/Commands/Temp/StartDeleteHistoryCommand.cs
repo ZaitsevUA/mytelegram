@@ -1,6 +1,4 @@
-﻿using MyTelegram.Domain.Aggregates.Temp;
-
-namespace MyTelegram.Domain.Commands.Temp;
+﻿namespace MyTelegram.Domain.Commands.Temp;
 
 public class StartDeleteHistoryCommand(
     TempId aggregateId,

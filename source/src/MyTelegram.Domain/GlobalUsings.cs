@@ -32,6 +32,7 @@ global using MyTelegram.Domain.Aggregates.RpcResult;
 global using MyTelegram.Domain.Aggregates.User;
 global using MyTelegram.Domain.Aggregates.UserName;
 global using MyTelegram.Domain.Aggregates.ChatInvite;
+global using MyTelegram.Domain.Aggregates.Temp;
 global using MyTelegram.Domain.Commands.AppCode;
 global using MyTelegram.Domain.Commands.Channel;
 global using MyTelegram.Domain.Commands.Chat;
