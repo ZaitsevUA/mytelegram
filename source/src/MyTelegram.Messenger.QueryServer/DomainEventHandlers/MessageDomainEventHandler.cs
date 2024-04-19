@@ -460,21 +460,46 @@ public class MessageDomainEventHandler(
         var selfOtherDeviceUpdates = updatesLayeredService.GetConverter(aggregateEvent.RequestInfo.Layer)
             .ToSelfOtherDeviceUpdates(aggregateEvent);
         var layeredSelfUpdates = updatesLayeredService.GetLayeredData(c => c.ToSelfUpdates(aggregateEvent));
+
+        IChannelReadModel? channelReadModel = null;
+        IPhotoReadModel? photoReadModel = null;
+        IChat? chat = null;
+        var isEditChannelPhoto = aggregateEvent.MessageItem.MessageSubType == MessageSubType.EditChannelPhoto;
+
+        if (isEditChannelPhoto)
+        {
+            (channelReadModel, photoReadModel) = await GetChannelAsync(aggregateEvent.MessageItem.ToPeer.PeerId);
+            chat = chatLayeredService.GetConverter(aggregateEvent.RequestInfo.Layer)
+                .ToChannel(0, channelReadModel!, photoReadModel, null, false);
+        }
+
         var channelUpdates = updatesLayeredService.GetConverter(aggregateEvent.RequestInfo.Layer)
-            .ToChannelMessageUpdates(aggregateEvent);
+        .ToChannelMessageUpdates(aggregateEvent);
         var layeredChannelUpdates =
-            updatesLayeredService.GetLayeredData(c => c.ToChannelMessageUpdates(aggregateEvent));
-        //var ptsType = PtsType.OtherUpdates;
+            updatesLayeredService.GetLayeredData(c =>
+            {
+                var d = c.ToChannelMessageUpdates(aggregateEvent);
+                if (chat != null)
+                {
+                    if (d is TUpdates tUpdates)
+                    {
+                        tUpdates.Chats.Add(chat);
+                    }
+                }
+
+                return d;
+
+            });
         var updatesType = UpdatesType.Updates;
         if (item.MessageSubType == MessageSubType.Normal || item.MessageSubType == MessageSubType.ForwardMessage)
         {
             updatesType = UpdatesType.NewMessages;
         }
-        if (aggregateEvent.MessageItem.MessageSubType == MessageSubType.EditChannelPhoto)
+
+        if (isEditChannelPhoto)
         {
-            var (channelReadModel, photoReadModel) = await GetChannelAsync(aggregateEvent.MessageItem.ToPeer.PeerId);
             var selfChannel = chatLayeredService.GetConverter(aggregateEvent.RequestInfo.Layer)
-                .ToChannel(aggregateEvent.RequestInfo.UserId, channelReadModel, photoReadModel, null, false);
+                .ToChannel(aggregateEvent.RequestInfo.UserId, channelReadModel!, photoReadModel, null, false);
             if (selfUpdates is TUpdates tUpdates)
             {
                 tUpdates.Chats.Add(selfChannel);
@@ -483,12 +508,15 @@ public class MessageDomainEventHandler(
             {
                 tSelfOtherDeviceUpdates.Chats.Add(selfChannel);
             }
-            if (channelUpdates is TUpdates tUpdates1)
+
+            if (chat != null)
             {
-                var channel = chatLayeredService.GetConverter(aggregateEvent.RequestInfo.Layer)
-                    .ToChannel(0, channelReadModel, photoReadModel, null, false);
-                tUpdates1.Chats.Add(channel);
+                if (channelUpdates is TUpdates tUpdates1)
+                {
+                    tUpdates1.Chats.Add(chat);
+                }
             }
+
         }
 
         var globalSeqNo = await SavePushUpdatesAsync(item.ToPeer.PeerId,
