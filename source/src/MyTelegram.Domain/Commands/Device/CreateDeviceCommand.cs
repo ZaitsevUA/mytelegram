@@ -20,7 +20,7 @@ public class CreateDeviceCommand(
     string langCode,
     string ip,
     int layer)
-    : RequestCommand2<DeviceAggregate, DeviceId, IExecutionResult>(aggregateId, requestInfo)
+    : Command<DeviceAggregate, DeviceId, IExecutionResult>(aggregateId), IHasRequestInfo
 {
     public int ApiId { get; } = apiId;
     public string AppName { get; } = appName;
@@ -39,12 +39,5 @@ public class CreateDeviceCommand(
     public string SystemVersion { get; } = systemVersion;
     public long TempAuthKeyId { get; } = tempAuthKeyId;
     public long UserId { get; } = userId;
-
-    protected override IEnumerable<byte[]> GetSourceIdComponents()
-    {
-        yield return BitConverter.GetBytes(RequestInfo.ReqMsgId);
-        yield return BitConverter.GetBytes(PermAuthKeyId);
-        yield return BitConverter.GetBytes(TempAuthKeyId);
-        yield return BitConverter.GetBytes(Hash);
-    }
+    public RequestInfo RequestInfo { get; } = requestInfo;
 }
