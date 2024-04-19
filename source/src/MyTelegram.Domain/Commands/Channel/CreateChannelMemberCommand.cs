@@ -10,7 +10,7 @@ public class CreateChannelMemberCommand(
     bool isBot,
     long? chatInviteId,
     ChatJoinType chatJoinType = ChatJoinType.InvitedByAdmin)
-    : /*Request*/Command<ChannelMemberAggregate, ChannelMemberId, IExecutionResult>(aggregateId),IHasRequestInfo
+    : /*Request*/RequestCommand2<ChannelMemberAggregate, ChannelMemberId, IExecutionResult>(aggregateId, requestInfo)
 {
     //long reqMsgId,
 
@@ -21,5 +21,11 @@ public class CreateChannelMemberCommand(
     public long? ChatInviteId { get; } = chatInviteId;
     public ChatJoinType ChatJoinType { get; } = chatJoinType;
     public long UserId { get; } = userId;
-    public RequestInfo RequestInfo { get; } = requestInfo;
+
+    protected override IEnumerable<byte[]> GetSourceIdComponents()
+    {
+        yield return BitConverter.GetBytes(RequestInfo.ReqMsgId);
+        yield return BitConverter.GetBytes(ChannelId);
+        yield return BitConverter.GetBytes(UserId);
+    }
 }
