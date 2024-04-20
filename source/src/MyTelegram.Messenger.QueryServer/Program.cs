@@ -7,7 +7,6 @@ using MyTelegram.Messenger;
 using MyTelegram.Messenger.NativeAot;
 using MyTelegram.Messenger.QueryServer.BackgroundServices;
 using MyTelegram.Messenger.QueryServer.Extensions;
-using MyTelegram.Schema.Extensions;
 using MyTelegram.Services.NativeAot;
 using Serilog;
 using Serilog.Sinks.SystemConsole.Themes;
@@ -59,7 +58,11 @@ builder.ConfigureAppConfiguration(options =>
 builder.ConfigureServices((ctx,
     services) =>
 {
-    services.Configure<MyTelegramMessengerServerOptions>(ctx.Configuration.GetRequiredSection("App"));
+    services.AddOptions<MyTelegramMessengerServerOptions>()
+        .Bind(ctx.Configuration.GetRequiredSection("App"))
+        .ValidateDataAnnotations()
+        .ValidateOnStart()
+        ;
     services.Configure<EventBusRabbitMqOptions>(ctx.Configuration.GetRequiredSection("RabbitMQ:EventBus"));
     services.Configure<RabbitMqOptions>(ctx.Configuration.GetRequiredSection("RabbitMQ:Connections:Default"));
 

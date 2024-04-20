@@ -91,16 +91,14 @@ internal sealed class SendCodeHandler : RpcResultObjectHandler<MyTelegram.Schema
             }
         }
 
-        var verificationCode = _options.Value.FixedVerifyCode;
-        if (verificationCode == null || verificationCode == 0)
+        string code = _options.Value.FixedVerifyCode;
+        if (string.IsNullOrEmpty(code))
         {
-            verificationCode = _randomHelper.NextInt(10000, 99999);
+            code = _randomHelper.GenerateRandomNumber(_options.Value.VerificationCodeLength);
         }
 
-        var code = verificationCode.ToString();
-
         var phoneCodeHash = Guid.NewGuid().ToString("N");
-        var timeout = 300; //300s
+        var timeout = _options.Value.VerificationCodeExpirationSeconds;
 
         var expire = DateTime.UtcNow.AddSeconds(timeout).ToTimestamp();
         var appCodeId = AppCodeId.Create(obj.PhoneNumber.ToPhoneNumber(), phoneCodeHash);
