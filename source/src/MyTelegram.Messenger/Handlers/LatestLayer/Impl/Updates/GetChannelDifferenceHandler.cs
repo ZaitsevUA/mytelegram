@@ -102,7 +102,7 @@ internal sealed class GetChannelDifferenceHandler : RpcResultObjectHandler<MyTel
 
             var allUpdateList = updatesReadModels.Where(p => p.UpdatesType == UpdatesType.Updates)
                 .SelectMany(p => p.Updates ?? new List<IUpdate>(0)).ToList();
-            _logger.LogInformation("Get channelDifference:updatesCount={Count} {@Input} {@Data},fromPts={Pts} channel updates count={Count}", updatesReadModels.Count, input, new { }, obj.Pts, updatesReadModels.Count);
+            //_logger.LogInformation("Get channelDifference:updatesCount={Count} {@Input} {@Data},fromPts={Pts} channel updates count={Count}", updatesReadModels.Count, input, new { }, obj.Pts, updatesReadModels.Count);
             return _layeredService.GetConverter(input.Layer).ToChannelDifference(dto, isChannelMember, allUpdateList, maxPts);
         }
 
