@@ -1,24 +1,13 @@
 ﻿namespace MyTelegram.Core;
 
-public class RandomHelper : IRandomHelper//, ISingletonDependency
+public class RandomHelper : IRandomHelper
 {
     private const string Characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-
-    public void NextBytes(byte[] buffer)
+    private const string NumberCharacters = "0123456789";
+    public string GenerateRandomNumber(int length)
     {
-        //_rng.GetBytes(buffer);
-        //ThreadLocalRandom.NextBytes(buffer);
-        Random.Shared.NextBytes(buffer);
-    }
-
-    public byte[] NextBytes(int length)
-    {
-        var buffer = new byte[length];
-        //_rng.GetBytes(buffer);
-        //ThreadLocalRandom.NextBytes(buffer);
-        Random.Shared.NextBytes(buffer);
-
-        return buffer;
+        return new(Enumerable.Repeat(NumberCharacters, length)
+            .Select(s => s[Random.Shared.Next(s.Length)]).ToArray());
     }
 
     public string GenerateRandomString(int length)
@@ -27,6 +16,18 @@ public class RandomHelper : IRandomHelper//, ISingletonDependency
             .Select(s => s[Random.Shared.Next(s.Length)]).ToArray());
     }
 
+    public void NextBytes(byte[] buffer)
+    {
+        Random.Shared.NextBytes(buffer);
+    }
+
+    public byte[] NextBytes(int length)
+    {
+        var buffer = new byte[length];
+        Random.Shared.NextBytes(buffer);
+
+        return buffer;
+    }
     public int NextInt(int min,
         int max)
     {
