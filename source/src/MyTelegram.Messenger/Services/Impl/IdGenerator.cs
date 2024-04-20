@@ -56,7 +56,7 @@ public class IdGenerator(
 
         if (sw.Elapsed.TotalMilliseconds > 100)
         {
-            logger.LogWarning("[{Timespan}]Generate id to slow,idType={IdType},id={Id}", sw.Elapsed, idType, id);
+            logger.LogWarning("[{Timespan}]Generate id too slow,idType={IdType},id={Id}", sw.Elapsed, idType, id);
         }
 
         return nextId + GetInitId(idType);
