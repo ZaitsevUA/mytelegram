@@ -1,14 +1,14 @@
 # MyTelegram
 
-[![API Layer](https://img.shields.io/badge/API_Layer-174-blueviolet)](https://corefork.telegram.org/methods)
+[![API Layer](https://img.shields.io/badge/API_Layer-177-blueviolet)](https://corefork.telegram.org/methods)
 [![MTProto](https://img.shields.io/badge/MTProto_Protocol-2.0-green)](https://corefork.telegram.org/mtproto/)
 [![Support Chat](https://img.shields.io/badge/Chat_with_us-on_Telegram-0088cc)](https://t.me/+S-aNBoRvCRpPyXrR)
 
-MyTelegram is [Telegram server side api](https://core.telegram.org/api) implementation written in c#,support private deployment
+MyTelegram is telegram server side api implementation written in c#,support private deployment
 
 ## Features
 
-- API Layer: **`174`**
+- API Layer: **`177`**
 - [MTProto transports](https://corefork.telegram.org/mtproto/mtproto-transports): **`Abridged`**,**`Intermediate`**
 - Private chat
 - Group chat
@@ -49,7 +49,7 @@ build\docker\5.build-gateway-server.sh
    https://github.com/loyldg/mytelegram/blob/dev/docker/compose/docker-compose.yml
    https://github.com/loyldg/mytelegram/blob/dev/docker/compose/.env
    ```
-2. Change the IP address in **.env**,replace `192.168.1.100` with the IP address of gateway server
+2. Replace `192.168.1.100` with your own server IP in `.env`
 3. Run the following command in the directory where the docker-compose.yml file is located
    ```
    docker compose up
@@ -62,8 +62,8 @@ build\docker\5.build-gateway-server.sh
 3. Install MongoDB
 4. Intall RabbitMQ
 5. Install Minio
-6. Modify server configuration in `start-all.bat`/`start-all.sh`,replace `192.168.1.100` with the IP address of gateway server
-7. Run `start-all.bat`/`start-all.sh`
+6. Replace `192.168.1.100` with your own server IP in `start-all.bat`
+7. Run `start-all.bat`
 8. Run telegram client 
 4. Default verification code is `22222`
 
