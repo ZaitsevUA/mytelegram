@@ -35,10 +35,10 @@ public class SendAppCodeEventHandler(
             var sendMessageInput = new SendMessageInput(
                 new RequestInfo(0,
                     MyTelegramServerDomainConsts.OfficialUserId,
-                    domainEvent.AggregateEvent.RequestInfo.AuthKeyId,
-                    domainEvent.AggregateEvent.RequestInfo.PermAuthKeyId,
-                    Guid.NewGuid(),
                     0,
+                    0,
+                    Guid.NewGuid(),
+                    MyTelegramServerDomainConsts.Layer,
                     DateTime.UtcNow.ToTimestamp()
                 ),
                 MyTelegramServerDomainConsts.OfficialUserId,
