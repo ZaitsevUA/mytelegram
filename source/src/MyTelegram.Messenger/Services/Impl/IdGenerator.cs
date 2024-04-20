@@ -70,6 +70,7 @@ public class IdGenerator(
             IdType.UserId => MyTelegramServerDomainConsts.UserIdInitId + 10000, // Reserve the first 10,000 users for testing
             IdType.BotUserId => MyTelegramServerDomainConsts.BotUserInitId,
             IdType.ChatId => MyTelegramServerDomainConsts.ChatIdInitId,
+            IdType.Pts => MyTelegramServerDomainConsts.PtsInitId,
             _ => 0
         };
     }
