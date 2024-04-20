@@ -14,12 +14,17 @@ public class DialogReadModel : IDialogReadModel,
     IAmReadModelFor<DialogAggregate, DialogId, HistoryClearedEvent>,
     IAmReadModelFor<DialogAggregate, DialogId, ParticipantHistoryClearedEvent>,
     IAmReadModelFor<DialogAggregate, DialogId, DialogPinChangedEvent>,
+    IAmReadModelFor<DialogAggregate, DialogId, UpdateReadChannelOutboxEvent>,
     IAmReadModelFor<DialogAggregate, DialogId, PinnedOrderChangedEvent>,
     IAmReadModelFor<MessageAggregate, MessageId, OutboxMessagePinnedUpdatedEvent>,
     IAmReadModelFor<MessageAggregate, MessageId, InboxMessagePinnedUpdatedEvent>,
     IAmReadModelFor<MessageAggregate, MessageId, OutboxMessageCreatedEvent>,
     IAmReadModelFor<SendMessageSaga, SendMessageSagaId, SendOutboxMessageCompletedEvent>,
-    IAmReadModelFor<PeerNotifySettingsAggregate, PeerNotifySettingsId, PeerNotifySettingsUpdatedEvent>
+    IAmReadModelFor<PeerNotifySettingsAggregate, PeerNotifySettingsId, PeerNotifySettingsUpdatedEvent>,
+    IAmReadModelFor<DialogAggregate, DialogId, ReadInboxMaxIdUpdatedEvent>,
+    IAmReadModelFor<DialogAggregate, DialogId, ReadOutboxMaxIdUpdatedEvent>,
+    IAmReadModelFor<DialogAggregate, DialogId, TopMessageIdUpdatedEvent>,
+    IAmReadModelFor<DialogAggregate, DialogId, UpdateReadChannelInboxEvent>
 {
     public virtual int ChannelHistoryMinId { get; private set; }
     public virtual DateTime CreationTime { get; private set; }
@@ -64,7 +69,7 @@ public class DialogReadModel : IDialogReadModel,
         CancellationToken cancellationToken)
     {
         ChannelHistoryMinId = domainEvent.AggregateEvent.HistoryMinId;
-        IsDeleted = true;
+        //IsDeleted = true;
         return Task.CompletedTask;
     }
 
@@ -109,7 +114,7 @@ public class DialogReadModel : IDialogReadModel,
     {
         ChannelHistoryMinId = domainEvent.AggregateEvent.HistoryMinId;
 
-        IsDeleted = true;
+        //IsDeleted = true;
 
         return Task.CompletedTask;
     }
@@ -159,7 +164,7 @@ public class DialogReadModel : IDialogReadModel,
         CancellationToken cancellationToken)
     {
         ChannelHistoryMinId = domainEvent.AggregateEvent.HistoryMinId;
-        IsDeleted = true;
+        //IsDeleted = true;
         return Task.CompletedTask;
     }
 
@@ -215,14 +220,15 @@ public class DialogReadModel : IDialogReadModel,
         CancellationToken cancellationToken)
     {
         Id = domainEvent.AggregateIdentity.Value;
-        OwnerId = domainEvent.AggregateEvent.OwnerPeerId;
-        TopMessage = domainEvent.AggregateEvent.MessageId;
-        //TopMessageBoxId = domainEvent.AggregateEvent.MessageBoxId.Value;
-        ToPeerType = domainEvent.AggregateEvent.ToPeer.PeerType;
-        ToPeerId = domainEvent.AggregateEvent.ToPeer.PeerId;
+        TopMessage= domainEvent.AggregateEvent.MessageId;
+        //OwnerId = domainEvent.AggregateEvent.OwnerPeerId;
+        //TopMessage = domainEvent.AggregateEvent.MessageId;
+        ////TopMessageBoxId = domainEvent.AggregateEvent.MessageBoxId.Value;
+        //ToPeerType = domainEvent.AggregateEvent.ToPeer.PeerType;
+        //ToPeerId = domainEvent.AggregateEvent.ToPeer.PeerId;
 
-        //ReadInboxMaxId = domainEvent.AggregateEvent.MessageId;
-        MaxSendOutMessageId = domainEvent.AggregateEvent.MessageId;
+        ////ReadInboxMaxId = domainEvent.AggregateEvent.MessageId;
+        //MaxSendOutMessageId = domainEvent.AggregateEvent.MessageId;
 
         //Pts=domainEvent.AggregateEvent.
         if (!Version.HasValue)
@@ -315,6 +321,42 @@ public class DialogReadModel : IDialogReadModel,
             domainEvent.AggregateEvent.MessageItem.ToPeer).Value;
 
         Pts = domainEvent.AggregateEvent.Pts;
+
+        return Task.CompletedTask;
+    }
+    public Task ApplyAsync(IReadModelContext context, IDomainEvent<DialogAggregate, DialogId, UpdateReadChannelOutboxEvent> domainEvent, CancellationToken cancellationToken)
+    {
+        Id = DialogId.Create(domainEvent.AggregateEvent.MessageSenderUserId, PeerType.Channel, domainEvent.AggregateEvent.ChannelId).Value;
+
+        ReadOutboxMaxId = domainEvent.AggregateEvent.MaxId;
+
+        return Task.CompletedTask;
+    }
+
+    public Task ApplyAsync(IReadModelContext context, IDomainEvent<DialogAggregate, DialogId, ReadInboxMaxIdUpdatedEvent> domainEvent, CancellationToken cancellationToken)
+    {
+        ReadInboxMaxId = domainEvent.AggregateEvent.ReadInboxMaxId;
+
+        return Task.CompletedTask;
+    }
+
+    public Task ApplyAsync(IReadModelContext context, IDomainEvent<DialogAggregate, DialogId, ReadOutboxMaxIdUpdatedEvent> domainEvent, CancellationToken cancellationToken)
+    {
+        ReadOutboxMaxId = domainEvent.AggregateEvent.ReadOutboxMaxId;
+
+        return Task.CompletedTask;
+    }
+
+    public Task ApplyAsync(IReadModelContext context, IDomainEvent<DialogAggregate, DialogId, TopMessageIdUpdatedEvent> domainEvent, CancellationToken cancellationToken)
+    {
+        TopMessage = domainEvent.AggregateEvent.NewTopMessageId;
+
+        return Task.CompletedTask;
+    }
+
+    public Task ApplyAsync(IReadModelContext context, IDomainEvent<DialogAggregate, DialogId, UpdateReadChannelInboxEvent> domainEvent, CancellationToken cancellationToken)
+    {
+        ReadInboxMaxId = domainEvent.AggregateEvent.MaxId;
 
         return Task.CompletedTask;
     }

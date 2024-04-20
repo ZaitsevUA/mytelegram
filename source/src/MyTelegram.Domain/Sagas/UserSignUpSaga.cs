@@ -1,16 +1,10 @@
 ﻿namespace MyTelegram.Domain.Sagas;
 
-public class UserSignUpSaga : AggregateSaga<UserSignUpSaga, UserSignUpSagaId, UserSignUpSagaLocator>,
-    ISagaIsStartedBy<AppCodeAggregate, AppCodeId, CheckSignUpCodeCompletedEvent>,
-    IApply<UserSignUpSuccessEvent>
+public class UserSignUpSaga(UserSignUpSagaId id, IIdGenerator idGenerator)
+    : AggregateSaga<UserSignUpSaga, UserSignUpSagaId, UserSignUpSagaLocator>(id),
+        ISagaIsStartedBy<AppCodeAggregate, AppCodeId, CheckSignUpCodeCompletedEvent>,
+        IApply<UserSignUpSuccessEvent>
 {
-    private readonly IIdGenerator _idGenerator;
-
-    public UserSignUpSaga(UserSignUpSagaId id, IIdGenerator idGenerator) : base(id)
-    {
-        _idGenerator = idGenerator;
-    }
-
     public void Apply(UserSignUpSuccessEvent aggregateEvent)
     {
     }
@@ -22,7 +16,7 @@ public class UserSignUpSaga : AggregateSaga<UserSignUpSaga, UserSignUpSagaId, Us
         var userId = domainEvent.AggregateEvent.UserId;
         if (userId == 0)
         {
-            userId = await _idGenerator.NextLongIdAsync(IdType.UserId, cancellationToken: cancellationToken)
+            userId = await idGenerator.NextLongIdAsync(IdType.UserId, cancellationToken: cancellationToken)
                 ;
 
             var createUserCommand = new CreateUserCommand(UserId.Create(userId),

@@ -1,44 +1,34 @@
 ﻿namespace MyTelegram.Domain.Sagas.Events;
 
-public class OutboxMessageEditCompletedEvent : RequestAggregateEvent2<EditMessageSaga, EditMessageSagaId>
+public class OutboxMessageEditCompletedEvent(
+    RequestInfo requestInfo,
+    long ownerPeerId,
+    long senderPeerId,
+    int messageId,
+    bool post,
+    int? views,
+    string message,
+    int pts,
+    int date,
+    Peer toPeer,
+    byte[]? entities,
+    byte[]? media,
+    MessageFwdHeader? fwdHeader,
+    MessageReply? reply)
+    : RequestAggregateEvent2<EditMessageSaga, EditMessageSagaId>(requestInfo)
 {
-    public OutboxMessageEditCompletedEvent(RequestInfo requestInfo,
-        long ownerPeerId,
-        long senderPeerId,
-        int messageId,
-        bool post,
-        int? views,
-        string message,
-        int pts,
-        int date,
-        Peer toPeer,
-        byte[]? entities,
-        byte[]? media
-    ) : base(requestInfo)
-    {
-        OwnerPeerId = ownerPeerId;
-        SenderPeerId = senderPeerId;
-        MessageId = messageId;
-        Post = post;
-        Views = views;
-        Message = message;
-        Pts = pts;
-        Date = date;
-        ToPeer = toPeer;
-        Entities = entities;
-        Media = media;
-    }
+    public int Date { get; } = date;
+    public Peer ToPeer { get; } = toPeer;
+    public byte[]? Entities { get; } = entities;
+    public byte[]? Media { get; } = media;
+    public MessageFwdHeader? FwdHeader { get; } = fwdHeader;
+    public MessageReply? Reply { get; } = reply;
+    public string Message { get; } = message;
+    public int MessageId { get; } = messageId;
+    public long OwnerPeerId { get; } = ownerPeerId;
+    public bool Post { get; } = post;
+    public int Pts { get; } = pts;
 
-    public int Date { get; }
-    public Peer ToPeer { get; }
-    public byte[]? Entities { get; }
-    public byte[]? Media { get; }
-    public string Message { get; }
-    public int MessageId { get; }
-    public long OwnerPeerId { get; }
-    public bool Post { get; }
-    public int Pts { get; }
-
-    public long SenderPeerId { get; }
-    public int? Views { get; }
+    public long SenderPeerId { get; } = senderPeerId;
+    public int? Views { get; } = views;
 }

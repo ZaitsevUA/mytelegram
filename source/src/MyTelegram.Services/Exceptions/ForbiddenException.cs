@@ -1,9 +1,3 @@
 ﻿namespace MyTelegram.Services.Exceptions;
 
-public class ForbiddenException : RpcException
-{
-    public ForbiddenException(
-        string errorMessage) : base(403, errorMessage)
-    {
-    }
-}
+public class ForbiddenException(string errorMessage) : RpcException(403, errorMessage);

@@ -2,11 +2,7 @@
 
 namespace MyTelegram.Messenger.QueryServer.Services;
 
-public class PushReadModelMongoDbContext : DefaultReadModelMongoDbContext
+public class PushReadModelMongoDbContext(IConfiguration configuration) : DefaultReadModelMongoDbContext(configuration)
 {
-    public PushReadModelMongoDbContext(IConfiguration configuration) : base(configuration)
-    {
-    }
-
     protected override string GetKeyOfDatabaseNameInConfiguration() => "App:QueryServerReadModelDatabaseName";
 }

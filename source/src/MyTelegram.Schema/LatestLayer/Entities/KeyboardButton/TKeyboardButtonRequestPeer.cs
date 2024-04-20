@@ -4,7 +4,7 @@
 namespace MyTelegram.Schema;
 
 ///<summary>
-/// Prompts the user to select and share a peer with the bot using <a href="https://corefork.telegram.org/method/messages.sendBotRequestedPeer">messages.sendBotRequestedPeer</a>
+/// Prompts the user to select and share one or more peers with the bot using <a href="https://corefork.telegram.org/method/messages.sendBotRequestedPeer">messages.sendBotRequestedPeer</a>
 /// See <a href="https://corefork.telegram.org/constructor/keyboardButtonRequestPeer" />
 ///</summary>
 [TlObject(0x53d7bfd8)]
@@ -22,10 +22,14 @@ public sealed class TKeyboardButtonRequestPeer : IKeyboardButton
     public int ButtonId { get; set; }
 
     ///<summary>
-    /// Filtering criteria to use for the peer selection list shown to the user. <br>The list should display all existing peers of the specified type, and should also offer an option for the user to create and immediately use a peer of the specified type, if needed.
+    /// Filtering criteria to use for the peer selection list shown to the user. <br>The list should display all existing peers of the specified type, and should also offer an option for the user to create and immediately use one or more (up to <code>max_quantity</code>) peers of the specified type, if needed.
     /// See <a href="https://corefork.telegram.org/type/RequestPeerType" />
     ///</summary>
     public MyTelegram.Schema.IRequestPeerType PeerType { get; set; }
+
+    ///<summary>
+    /// Maximum number of peers that can be chosne.
+    ///</summary>
     public int MaxQuantity { get; set; }
 
     public void ComputeFlag()

@@ -1,18 +1,12 @@
 ﻿namespace MyTelegram.Domain.ValueObjects;
 
-public class ChatMember : ValueObject
+public class ChatMember(
+    long userId,
+    long inviterId,
+    int date) : ValueObject
 {
-    public ChatMember(long userId,
-        long inviterId,
-        int date)
-    {
-        UserId = userId;
-        InviterId = inviterId;
-        Date = date;
-    }
+    public int Date { get; init; } = date;
+    public long InviterId { get; init; } = inviterId;
 
-    public int Date { get; init; }
-    public long InviterId { get; init; }
-
-    public long UserId { get; init; }
+    public long UserId { get; init; } = userId;
 }

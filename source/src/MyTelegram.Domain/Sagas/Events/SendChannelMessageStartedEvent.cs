@@ -19,5 +19,3 @@
 
 //    public int? Views { get; }
 //}
-
-

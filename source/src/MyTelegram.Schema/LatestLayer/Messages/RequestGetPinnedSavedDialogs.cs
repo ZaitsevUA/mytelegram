@@ -4,6 +4,7 @@
 namespace MyTelegram.Schema.Messages;
 
 ///<summary>
+/// Get pinned <a href="https://corefork.telegram.org/api/saved-messages">saved dialogs, see here »</a> for more info.
 /// See <a href="https://corefork.telegram.org/method/messages.getPinnedSavedDialogs" />
 ///</summary>
 [TlObject(0xd63d94e0)]

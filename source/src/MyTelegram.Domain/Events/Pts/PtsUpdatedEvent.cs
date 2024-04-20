@@ -1,32 +1,24 @@
 ﻿namespace MyTelegram.Domain.Events.Pts;
 
-public class PtsUpdatedEvent : AggregateEvent<PtsAggregate, PtsId>
+public class PtsUpdatedEvent(
+    long peerId,
+    long permAuthKeyId,
+    int newPts,
+    int date,
+    long globalSeqNo,
+    int changedUnreadCount)
+    : AggregateEvent<PtsAggregate, PtsId>
 {
-    public PtsUpdatedEvent(long peerId,
-        long permAuthKeyId,
-        int newPts,
-        int date,
-        long globalSeqNo,
-        int changedUnreadCount
-        //bool incrementUnreadCount
-    )
-    {
-        PeerId = peerId;
-        PermAuthKeyId = permAuthKeyId;
-        NewPts = newPts;
-        Date = date;
-        GlobalSeqNo = globalSeqNo;
-        ChangedUnreadCount = changedUnreadCount;
-        //IncrementUnreadCount = incrementUnreadCount;
-    }
+    //bool incrementUnreadCount
+    //IncrementUnreadCount = incrementUnreadCount;
 
-    public int NewPts { get; }
-    public int Date { get; }
-    public long GlobalSeqNo { get; }
+    public int NewPts { get; } = newPts;
+    public int Date { get; } = date;
+    public long GlobalSeqNo { get; } = globalSeqNo;
 
-    public int ChangedUnreadCount { get; }
+    public int ChangedUnreadCount { get; } = changedUnreadCount;
     //public bool IncrementUnreadCount { get; }
 
-    public long PeerId { get; }
-    public long PermAuthKeyId { get; }
+    public long PeerId { get; } = peerId;
+    public long PermAuthKeyId { get; } = permAuthKeyId;
 }

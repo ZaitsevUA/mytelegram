@@ -1,16 +1,11 @@
 ﻿namespace MyTelegram.ReadModel.InMemory;
 
-public class MyInMemoryReadStore<TReadModel> : ReadModelStore<TReadModel>, IMyInMemoryReadStore<TReadModel>
+public class MyInMemoryReadStore<TReadModel>(ILogger<InMemoryReadStore<TReadModel>> logger)
+    : ReadModelStore<TReadModel>(logger), IMyInMemoryReadStore<TReadModel>
     where TReadModel : class, IReadModel
 {
     private readonly AsyncLock _asyncLock = new();
     private readonly Dictionary<string, ReadModelEnvelope<TReadModel>> _readModels = new();
-
-    public MyInMemoryReadStore(
-        ILogger<InMemoryReadStore<TReadModel>> logger)
-        : base(logger)
-    {
-    }
 
     public async Task<IQueryable<TReadModel>> AsQueryable(CancellationToken cancellationToken = default)
     {

@@ -1,12 +1,8 @@
 ﻿namespace MyTelegram.Domain.Commands.User;
 
-public class SetVerifiedCommand : Command<UserAggregate, UserId, IExecutionResult>
+public class SetVerifiedCommand(
+    UserId aggregateId,
+    bool verified) : Command<UserAggregate, UserId, IExecutionResult>(aggregateId)
 {
-    public SetVerifiedCommand(UserId aggregateId,
-        bool verified) : base(aggregateId)
-    {
-        Verified = verified;
-    }
-
-    public bool Verified { get; }
+    public bool Verified { get; } = verified;
 }

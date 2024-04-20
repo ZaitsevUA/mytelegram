@@ -43,9 +43,25 @@ public sealed class TMessageActionGiftCode : IMessageAction
     /// Slug of the <a href="https://corefork.telegram.org/api/links#premium-giftcode-links">Telegram Premium giftcode link</a>
     ///</summary>
     public string Slug { get; set; }
+
+    ///<summary>
+    /// Three-letter ISO 4217 <a href="https://corefork.telegram.org/bots/payments#supported-currencies">currency</a> code
+    ///</summary>
     public string? Currency { get; set; }
+
+    ///<summary>
+    /// Total price in the smallest units of the currency (integer, not float/double). For example, for a price of <code>US$ 1.45</code> pass <code>amount = 145</code>. See the exp parameter in <a href="https://corefork.telegram.org/bots/payments/currencies.json">currencies.json</a>, it shows the number of digits past the decimal point for each currency (2 for the majority of currencies).
+    ///</summary>
     public long? Amount { get; set; }
+
+    ///<summary>
+    /// If set, the gift was made using the specified cryptocurrency.
+    ///</summary>
     public string? CryptoCurrency { get; set; }
+
+    ///<summary>
+    /// If <code>crypto_currency</code> is set, contains the paid amount, in the smallest units of the cryptocurrency.
+    ///</summary>
     public long? CryptoAmount { get; set; }
 
     public void ComputeFlag()

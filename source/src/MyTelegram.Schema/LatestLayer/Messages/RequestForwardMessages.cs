@@ -38,6 +38,7 @@ namespace MyTelegram.Schema.Messages;
 /// 400 QUIZ_ANSWER_MISSING You can forward a quiz while hiding the original author only after choosing an option in the quiz.
 /// 500 RANDOM_ID_DUPLICATE You provided a random ID that was already used.
 /// 400 RANDOM_ID_INVALID A provided random ID is invalid.
+/// 400 SCHEDULE_BOT_NOT_ALLOWED Bots cannot schedule messages.
 /// 400 SCHEDULE_DATE_TOO_LATE You can't schedule a message this far in the future.
 /// 400 SCHEDULE_TOO_MUCH There are too many scheduled messages.
 /// 400 SEND_AS_PEER_INVALID You can't send messages as the specified peer.
@@ -52,10 +53,10 @@ namespace MyTelegram.Schema.Messages;
 /// 400 YOU_BLOCKED_USER You blocked this user.
 /// See <a href="https://corefork.telegram.org/method/messages.forwardMessages" />
 ///</summary>
-[TlObject(0xc661bbc4)]
+[TlObject(0xd5039208)]
 public sealed class RequestForwardMessages : IRequest<MyTelegram.Schema.IUpdates>
 {
-    public uint ConstructorId => 0xc661bbc4;
+    public uint ConstructorId => 0xd5039208;
     ///<summary>
     /// Flags, see <a href="https://corefork.telegram.org/mtproto/TL-combinators#conditional-fields">TL conditional fields</a>
     ///</summary>
@@ -134,6 +135,7 @@ public sealed class RequestForwardMessages : IRequest<MyTelegram.Schema.IUpdates
     /// See <a href="https://corefork.telegram.org/type/InputPeer" />
     ///</summary>
     public MyTelegram.Schema.IInputPeer? SendAs { get; set; }
+    public MyTelegram.Schema.IInputQuickReplyShortcut? QuickReplyShortcut { get; set; }
 
     public void ComputeFlag()
     {
@@ -146,6 +148,7 @@ public sealed class RequestForwardMessages : IRequest<MyTelegram.Schema.IUpdates
         if (/*TopMsgId != 0 && */TopMsgId.HasValue) { Flags[9] = true; }
         if (/*ScheduleDate != 0 && */ScheduleDate.HasValue) { Flags[10] = true; }
         if (SendAs != null) { Flags[13] = true; }
+        if (QuickReplyShortcut != null) { Flags[17] = true; }
     }
 
     public void Serialize(IBufferWriter<byte> writer)
@@ -160,6 +163,7 @@ public sealed class RequestForwardMessages : IRequest<MyTelegram.Schema.IUpdates
         if (Flags[9]) { writer.Write(TopMsgId.Value); }
         if (Flags[10]) { writer.Write(ScheduleDate.Value); }
         if (Flags[13]) { writer.Write(SendAs); }
+        if (Flags[17]) { writer.Write(QuickReplyShortcut); }
     }
 
     public void Deserialize(ref SequenceReader<byte> reader)
@@ -178,5 +182,6 @@ public sealed class RequestForwardMessages : IRequest<MyTelegram.Schema.IUpdates
         if (Flags[9]) { TopMsgId = reader.ReadInt32(); }
         if (Flags[10]) { ScheduleDate = reader.ReadInt32(); }
         if (Flags[13]) { SendAs = reader.Read<MyTelegram.Schema.IInputPeer>(); }
+        if (Flags[17]) { QuickReplyShortcut = reader.Read<MyTelegram.Schema.IInputQuickReplyShortcut>(); }
     }
 }

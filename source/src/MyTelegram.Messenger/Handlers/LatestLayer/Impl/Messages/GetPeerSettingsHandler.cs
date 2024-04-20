@@ -1,5 +1,7 @@
 ﻿// ReSharper disable All
 
+using TPeerSettings = MyTelegram.Schema.TPeerSettings;
+
 namespace MyTelegram.Handlers.Messages;
 
 ///<summary>
@@ -72,6 +74,11 @@ internal sealed class GetPeerSettingsHandler : RpcResultObjectHandler<MyTelegram
 
         var r = await _peerSettingsAppService.GetPeerSettingsAsync(userId, peer.PeerId);
         var settings = _layeredService.GetConverter(input.Layer).ToPeerSettings(peer.PeerId, r, contactType);
+
+        if (r == null && peer.PeerType == PeerType.Channel)
+        {
+            settings = new TPeerSettings();
+        }
 
         var peerSettings = new MyTelegram.Schema.Messages.TPeerSettings
         {

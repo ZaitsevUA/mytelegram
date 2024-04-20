@@ -1,5 +1,7 @@
 ﻿// ReSharper disable All
 
+using MyTelegram.Schema;
+
 namespace MyTelegram.Handlers.Photos;
 
 ///<summary>
@@ -32,7 +34,7 @@ internal sealed class UploadProfilePhotoHandler : RpcResultObjectHandler<MyTeleg
         _commandBus = commandBus;
     }
 
-    protected override async Task<MyTelegram.Schema.Photos.IPhoto> HandleCoreAsync(IRequestInput input,
+    protected async override Task<MyTelegram.Schema.Photos.IPhoto> HandleCoreAsync(IRequestInput input,
         MyTelegram.Schema.Photos.RequestUploadProfilePhoto obj)
     {
         var file = obj.File ?? obj.Video;
@@ -70,7 +72,7 @@ internal sealed class UploadProfilePhotoHandler : RpcResultObjectHandler<MyTeleg
             input.ToRequestInfo(),
             r.PhotoId,
             obj.Fallback,
-            //r.Photo.ToBytes(),
+            r.Photo.ToBytes(),
             videoSizeEmojiMarkup
         );
         await _commandBus.PublishAsync(command, default);

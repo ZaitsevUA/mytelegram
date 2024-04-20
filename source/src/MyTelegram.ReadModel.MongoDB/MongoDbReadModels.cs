@@ -69,9 +69,9 @@ public class PushDeviceReadModel : Impl.PushDeviceReadModel, IMongoDbReadModel
 {
 }
 
-public class PushUpdatesReadModel : Impl.PushUpdatesReadModel, IMongoDbReadModel
-{
-}
+//public class PushUpdatesReadModel : Impl.PushUpdatesReadModel, IMongoDbReadModel
+//{
+//}
 
 public class ReadingHistoryReadModel : Impl.ReadingHistoryReadModel, IMongoDbReadModel
 {

@@ -2,20 +2,16 @@
 
 namespace MyTelegram.EventBus.Rebus;
 
-public class RebusDistributedEventHandlerAdapter<TEventData> : IHandleMessages<TEventData>, IRebusDistributedEventHandlerAdapter
+public class RebusDistributedEventHandlerAdapter<TEventData>(
+    RebusEventBus rebusDistributedEventBus,
+    IEventBusSubscriptionsManager eventBusSubscriptionsManager)
+    : IHandleMessages<TEventData>, IRebusDistributedEventHandlerAdapter
 {
-    protected RebusEventBus RebusDistributedEventBus { get; }
-    private readonly IEventBusSubscriptionsManager _eventBusSubscriptionsManager;
-
-    public RebusDistributedEventHandlerAdapter(RebusEventBus rebusDistributedEventBus, IEventBusSubscriptionsManager eventBusSubscriptionsManager)
-    {
-        RebusDistributedEventBus = rebusDistributedEventBus;
-        _eventBusSubscriptionsManager = eventBusSubscriptionsManager;
-    }
+    protected RebusEventBus RebusDistributedEventBus { get; } = rebusDistributedEventBus;
 
     public async Task Handle(TEventData message)
     {
-        var eventName = _eventBusSubscriptionsManager.GetEventKey(typeof(TEventData));
+        var eventName = eventBusSubscriptionsManager.GetEventKey(typeof(TEventData));
         await RebusDistributedEventBus.ProcessEventAsync(eventName, message);
     }
 }

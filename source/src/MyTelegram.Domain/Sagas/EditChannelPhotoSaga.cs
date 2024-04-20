@@ -1,21 +1,16 @@
 ﻿namespace MyTelegram.Domain.Sagas;
 
 public class
-    EditChannelPhotoSaga : MyInMemoryAggregateSaga<EditChannelPhotoSaga, EditChannelPhotoSagaId, EditChannelPhotoSagaLocator>,
+    EditChannelPhotoSaga(EditChannelPhotoSagaId id, IEventStore eventStore, IIdGenerator idGenerator)
+    : MyInMemoryAggregateSaga<EditChannelPhotoSaga, EditChannelPhotoSagaId, EditChannelPhotoSagaLocator>(id,
+            eventStore),
         ISagaIsStartedBy<ChannelAggregate, ChannelId, ChannelPhotoEditedEvent>
 {
-    private readonly IIdGenerator _idGenerator;
-
-    public EditChannelPhotoSaga(EditChannelPhotoSagaId id, IEventStore eventStore, IIdGenerator idGenerator) : base(id, eventStore)
-    {
-        _idGenerator = idGenerator;
-    }
-
     public async Task HandleAsync(IDomainEvent<ChannelAggregate, ChannelId, ChannelPhotoEditedEvent> domainEvent,
         ISagaContext sagaContext,
         CancellationToken cancellationToken)
     {
-        var outMessageId = await _idGenerator.NextIdAsync(IdType.MessageId, domainEvent.AggregateEvent.ChannelId, cancellationToken: cancellationToken);
+        var outMessageId = await idGenerator.NextIdAsync(IdType.MessageId, domainEvent.AggregateEvent.ChannelId, cancellationToken: cancellationToken);
         var aggregateId = MessageId.Create(domainEvent.AggregateEvent.ChannelId, outMessageId);
         var ownerPeer = new Peer(PeerType.Channel, domainEvent.AggregateEvent.ChannelId);
         var senderPeer = new Peer(PeerType.User, domainEvent.AggregateEvent.RequestInfo.UserId);
@@ -24,6 +19,7 @@ public class
             ownerPeer,
             ownerPeer,
             senderPeer,
+            senderPeer.PeerId,
             outMessageId,
             string.Empty,
             DateTime.UtcNow.ToTimestamp(),

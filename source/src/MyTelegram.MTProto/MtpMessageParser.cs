@@ -1,28 +1,16 @@
 ﻿namespace MyTelegram.MTProto;
 
-public class MtpMessageParser : IMtpMessageParser
+public class MtpMessageParser(
+    ILogger<MtpMessageParser> logger,
+    IUnencryptedMessageParser unencryptedMessageParser,
+    IEncryptedMessageParser encryptedMessageParser,
+    IFirstPacketParser firstPacketParser,
+    IAesHelper aesHelper)
+    : IMtpMessageParser
 {
     private const int ConnectionStartPrefixSize = 64;
     private const int MaxPacketLength = 1024 * 1024 * 10;
     private const int UnObfuscationFirstPacketLength = 4;
-    private readonly IAesHelper _aesHelper;
-    private readonly IEncryptedMessageParser _encryptedMessageParser;
-    private readonly IFirstPacketParser _firstPacketParser;
-    private readonly ILogger<MtpMessageParser> _logger;
-    private readonly IUnencryptedMessageParser _unencryptedMessageParser;
-
-    public MtpMessageParser(ILogger<MtpMessageParser> logger,
-        IUnencryptedMessageParser unencryptedMessageParser,
-        IEncryptedMessageParser encryptedMessageParser,
-        IFirstPacketParser firstPacketParser,
-        IAesHelper aesHelper)
-    {
-        _logger = logger;
-        _unencryptedMessageParser = unencryptedMessageParser;
-        _encryptedMessageParser = encryptedMessageParser;
-        _firstPacketParser = firstPacketParser;
-        _aesHelper = aesHelper;
-    }
 
     public void ProcessFirstUnencryptedPacket(ref ReadOnlySequence<byte> buffer,
         IClientData d)
@@ -59,11 +47,11 @@ public class MtpMessageParser : IMtpMessageParser
                 var authKeyId = BinaryPrimitives.ReadInt64LittleEndian(span);
                 if (authKeyId == 0)
                 {
-                    message = _unencryptedMessageParser.Parse(span[..length]);
+                    message = unencryptedMessageParser.Parse(span[..length]);
                 }
                 else
                 {
-                    message = _encryptedMessageParser.Parse(span[..length]);
+                    message = encryptedMessageParser.Parse(span[..length]);
                 }
 
                 return true;
@@ -83,7 +71,7 @@ public class MtpMessageParser : IMtpMessageParser
     {
         if (d.ObfuscationEnabled)
         {
-            _aesHelper.Ctr128Encrypt(encryptedBytes, d.SendKey, d.SendCtrState);
+            aesHelper.Ctr128Encrypt(encryptedBytes, d.SendKey, d.SendCtrState);
         }
     }
 
@@ -144,7 +132,7 @@ public class MtpMessageParser : IMtpMessageParser
         }
         else
         {
-            _logger.LogWarning(
+            logger.LogWarning(
                 "[ConnectionId={ConnectionId}] Invalid packet,length is greater than {MaxFirstByte},but first byte is not {MaxFirstByte},first byte={FirstByte}",
                 d.ConnectionId,
                 maxFirstByteValue,
@@ -212,7 +200,7 @@ public class MtpMessageParser : IMtpMessageParser
     public void ProcessFirstUnencryptedPacket(ReadOnlySpan<byte> buffer,
         IClientData d)
     {
-        var data = _firstPacketParser.Parse(buffer);
+        var data = firstPacketParser.Parse(buffer);
 
         d.IsFirstPacketParsed = true;
         d.ObfuscationEnabled = data.ObfuscationEnabled;
@@ -244,7 +232,7 @@ public class MtpMessageParser : IMtpMessageParser
         var packetLength = GetPacketLength(buffer, clientData, out var skipCount);
         if (packetLength > MaxPacketLength)
         {
-            _logger.LogWarning(
+            logger.LogWarning(
                 "[ConnectionId={ConnectionId}] Packet length is greater than the max value({MaxPacketLength})",
                 clientData.ConnectionId,
                 MaxPacketLength);
@@ -255,7 +243,7 @@ public class MtpMessageParser : IMtpMessageParser
 
         if (reader.Remaining < packetLength)
         {
-            _logger.LogDebug(
+            logger.LogDebug(
                 "[ConnectionId={ConnectionId}] Packet length is {ActualLength},remaining is {Remaining} need more data({MoreDataBytes})",
                 clientData.ConnectionId,
                 packetLength,
@@ -276,7 +264,7 @@ public class MtpMessageParser : IMtpMessageParser
 
         data = reader.UnreadSequence.Slice(skipCount, packetLength);
         buffer = reader.UnreadSequence.Slice(data.End);
-        _logger.LogTrace("[ConnectionId={ConnectionId}] Packet length is {PacketLength}",
+        logger.LogTrace("[ConnectionId={ConnectionId}] Packet length is {PacketLength}",
             clientData.ConnectionId,
             packetLength);
 

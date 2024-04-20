@@ -1,14 +1,10 @@
 ﻿namespace MyTelegram.Domain.Aggregates.RpcResult;
 
 [JsonConverter(typeof(SystemTextJsonSingleValueObjectConverter<RpcResultId>))]
-public class RpcResultId : MyIdentity<RpcResultId>
+public class RpcResultId(string value) : Identity<RpcResultId>(value)
 {
-    public RpcResultId(string value) : base(value)
+    public static RpcResultId Create(long userId,long reqMsgId)
     {
-    }
-
-    public static RpcResultId Create(string sourceId)
-    {
-        return NewDeterministic(GuidFactories.Deterministic.Namespaces.Commands, sourceId);
+        return NewDeterministic(GuidFactories.Deterministic.Namespaces.Commands, $"{userId}-{reqMsgId}");
     }
 }

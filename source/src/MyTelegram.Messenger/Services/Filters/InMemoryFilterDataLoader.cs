@@ -1,20 +1,12 @@
 ﻿namespace MyTelegram.Messenger.Services.Filters;
 
-public class InMemoryFilterDataLoader : IInMemoryFilterDataLoader
+public class InMemoryFilterDataLoader(
+    ICuckooFilter cuckooFilter,
+    IQueryProcessor queryProcessor,
+    ILogger<InMemoryFilterDataLoader> logger)
+    : IInMemoryFilterDataLoader
 {
-    private readonly ICuckooFilter _cuckooFilter;
-    private readonly IQueryProcessor _queryProcessor;
     private readonly int _pageSize = 1000;
-    private readonly ILogger<InMemoryFilterDataLoader> _logger;
-    public InMemoryFilterDataLoader(
-        ICuckooFilter cuckooFilter,
-        IQueryProcessor queryProcessor,
-        ILogger<InMemoryFilterDataLoader> logger)
-    {
-        _cuckooFilter = cuckooFilter;
-        _queryProcessor = queryProcessor;
-        _logger = logger;
-    }
 
     public async Task LoadAllFilterDataAsync()
     {
@@ -25,15 +17,15 @@ public class InMemoryFilterDataLoader : IInMemoryFilterDataLoader
 
         while (hasMoreData)
         {
-            var userNameList = await _queryProcessor.ProcessAsync(new GetAllUserNameQuery(skip, _pageSize));
+            var userNameList = await queryProcessor.ProcessAsync(new GetAllUserNameQuery(skip, _pageSize));
             hasMoreData = userNameList.Count == _pageSize;
             count += userNameList.Count;
             foreach (var userName in userNameList)
             {
-                await _cuckooFilter.AddAsync(Encoding.UTF8.GetBytes($"{MyTelegramServerDomainConsts.UserNameCuckooFilterKey}_{userName}"));
+                await cuckooFilter.AddAsync(Encoding.UTF8.GetBytes($"{MyTelegramServerDomainConsts.UserNameCuckooFilterKey}_{userName}"));
             }
             skip += _pageSize;
         }
-        _logger.LogInformation("Load userName list ok,count={Count}", count);
+        logger.LogInformation("Load userName list ok,count={Count}", count);
     }
 }

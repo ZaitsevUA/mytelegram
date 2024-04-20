@@ -53,5 +53,9 @@ public interface IWallPaperSettings : IObject
     /// Clockwise rotation angle of the gradient, in degrees; 0-359. Should be always divisible by 45.
     ///</summary>
     int? Rotation { get; set; }
+
+    ///<summary>
+    /// If set, this wallpaper can be used as a channel wallpaper and is represented by the specified UTF-8 emoji.
+    ///</summary>
     string? Emoticon { get; set; }
 }

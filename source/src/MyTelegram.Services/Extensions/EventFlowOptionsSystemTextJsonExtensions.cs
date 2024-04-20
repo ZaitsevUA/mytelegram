@@ -1,8 +1,10 @@
-﻿using EventFlow;
+﻿using System.Collections;
+using EventFlow;
 using EventFlow.Core;
 using Microsoft.Extensions.DependencyInjection;
 using MyTelegram.Services.NativeAot;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace MyTelegram.Services.Extensions;
 
@@ -23,6 +25,7 @@ public static class EventFlowOptionsSystemTextJsonExtensions
         var serializer = new SystemTextJsonSerializer((jsonOptions) =>
         {
             //jsonOptions.TypeInfoResolver = new PolymorphicTypeResolver();
+            jsonOptions.TypeInfoResolverChain.Add(MyJsonSerializeContext.Default);
             jsonOptions.Converters.Add(new BitArrayConverter());
             configure?.Invoke(jsonOptions);
         });

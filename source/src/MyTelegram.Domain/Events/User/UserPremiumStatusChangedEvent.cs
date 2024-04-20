@@ -1,15 +1,9 @@
 ﻿namespace MyTelegram.Domain.Events.User;
 
-public class UserPremiumStatusChangedEvent : AggregateEvent<UserAggregate, UserId>
+public class UserPremiumStatusChangedEvent(long userId, string phoneNumber, bool premium)
+    : AggregateEvent<UserAggregate, UserId>
 {
-    public UserPremiumStatusChangedEvent(long userId,string phoneNumber, bool premium)
-    {
-        UserId = userId;
-        PhoneNumber = phoneNumber;
-        Premium = premium;
-    }
-
-    public long UserId { get; }
-    public string PhoneNumber { get; }
-    public bool Premium { get; }
+    public long UserId { get; } = userId;
+    public string PhoneNumber { get; } = phoneNumber;
+    public bool Premium { get; } = premium;
 }

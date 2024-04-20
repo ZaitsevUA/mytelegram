@@ -56,16 +56,14 @@ namespace MyTelegram.ReadModel.MongoDB;
 //    }
 //}
 
-public class MongoDbIndexesCreator : MongoDbIndexesCreatorBase
-{
-    public MongoDbIndexesCreator(IMongoDatabase database,
-        IReadModelDescriptionProvider descriptionProvider,
-        IMongoDbEventPersistenceInitializer eventPersistenceInitializer) : base(database,
+public class MongoDbIndexesCreator(
+    IMongoDatabase database,
+    IReadModelDescriptionProvider descriptionProvider,
+    IMongoDbEventPersistenceInitializer eventPersistenceInitializer)
+    : MongoDbIndexesCreatorBase(database,
         descriptionProvider,
         eventPersistenceInitializer)
-    {
-    }
-
+{
     protected override async Task CreateAllIndexesCoreAsync()
     {
         await CreateIndexAsync<DialogReadModel>(p => p.OwnerId);
@@ -102,9 +100,9 @@ public class MongoDbIndexesCreator : MongoDbIndexesCreatorBase
         await CreateIndexAsync<UserNameReadModel>(p => p.UserName);
         await CreateIndexAsync<UserNameReadModel>(p => p.PeerId);
 
-        await CreateIndexAsync<PushUpdatesReadModel>(p => p.PeerId);
-        await CreateIndexAsync<PushUpdatesReadModel>(p => p.Pts);
-        await CreateIndexAsync<PushUpdatesReadModel>(p => p.SeqNo);
+        //await CreateIndexAsync<PushUpdatesReadModel>(p => p.PeerId);
+        //await CreateIndexAsync<PushUpdatesReadModel>(p => p.Pts);
+        //await CreateIndexAsync<PushUpdatesReadModel>(p => p.SeqNo);
 
         await CreateIndexAsync<ReadingHistoryReadModel>(p => p.MessageId);
         await CreateIndexAsync<ReadingHistoryReadModel>(p => p.TargetPeerId);
@@ -115,11 +113,10 @@ public class MongoDbIndexesCreator : MongoDbIndexesCreatorBase
         await CreateIndexAsync<PtsForAuthKeyIdReadModel>(p => p.GlobalSeqNo);
         await CreateIndexAsync<PtsForAuthKeyIdReadModel>(p => p.Pts);
 
-        await CreateIndexAsync<RpcResultReadModel>(p => p.SourceId);
-        await CreateIndexAsync<RpcResultReadModel>(p => p.PeerId);
+        await CreateIndexAsync<RpcResultReadModel>(p => p.ReqMsgId);
 
-        await CreateIndexAsync<ReplyReadModel>(p => p.SavedFromPeerId);
-        await CreateIndexAsync<ReplyReadModel>(p => p.SavedFromMsgId);
+        await CreateIndexAsync<ReplyReadModel>(p => p.ChannelId);
+        await CreateIndexAsync<ReplyReadModel>(p => p.MessageId);
 
         await CreateIndexAsync<DialogFilterReadModel>(p => p.OwnerUserId);
         await CreateIndexAsync<PollReadModel>(p => p.ToPeerId);

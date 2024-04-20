@@ -2,36 +2,29 @@
 
 namespace MyTelegram.Services.Services;
 
-public class SessionMessageDataProcessor : IDataProcessor<ISessionMessage>
+public class SessionMessageDataProcessor(IEventBus eventBus) : IDataProcessor<ISessionMessage>
 {
-    private readonly IEventBus _eventBus;
-
-    public SessionMessageDataProcessor(IEventBus eventBus)
-    {
-        _eventBus = eventBus;
-    }
-
     public async Task ProcessAsync(ISessionMessage data)
     {
         switch (data)
         {
             case DataResultResponseReceivedEvent dataResultResponseReceivedEvent:
-                await _eventBus.PublishAsync(dataResultResponseReceivedEvent);
+                await eventBus.PublishAsync(dataResultResponseReceivedEvent);
                 break;
             case DataResultResponseWithUserIdReceivedEvent dataResultResponseWithUserIdReceivedEvent:
-                await _eventBus.PublishAsync(dataResultResponseWithUserIdReceivedEvent);
+                await eventBus.PublishAsync(dataResultResponseWithUserIdReceivedEvent);
                 break;
             case FileDataResultResponseReceivedEvent fileDataResultResponseReceivedEvent:
-                await _eventBus.PublishAsync(fileDataResultResponseReceivedEvent);
+                await eventBus.PublishAsync(fileDataResultResponseReceivedEvent);
                 break;
             case LayeredAuthKeyIdMessageCreatedIntegrationEvent layeredAuthKeyIdMessageCreatedIntegrationEvent:
-                await _eventBus.PublishAsync(layeredAuthKeyIdMessageCreatedIntegrationEvent);
+                await eventBus.PublishAsync(layeredAuthKeyIdMessageCreatedIntegrationEvent);
                 break;
             case LayeredPushMessageCreatedIntegrationEvent layeredPushMessageCreatedIntegrationEvent:
-                await _eventBus.PublishAsync(layeredPushMessageCreatedIntegrationEvent);
+                await eventBus.PublishAsync(layeredPushMessageCreatedIntegrationEvent);
                 break;
             case PushMessageToPeerEvent pushMessageToPeerEvent:
-                await _eventBus.PublishAsync(pushMessageToPeerEvent);
+                await eventBus.PublishAsync(pushMessageToPeerEvent);
                 break;
             //case PushSessionMessageToAuthKeyIdEvent pushSessionMessageToAuthKeyIdEvent:
             //    await _eventBus.PublishAsync(pushSessionMessageToAuthKeyIdEvent);

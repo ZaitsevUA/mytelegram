@@ -1,21 +1,15 @@
 ﻿namespace MyTelegram.MTProto;
 
-public class MessageQueueProcessor2<TData> : IMessageQueueProcessor<TData>
+public class MessageQueueProcessor2<TData>(
+    ILogger<MessageQueueProcessor2<TData>> logger,
+    IDataProcessor<TData> dataProcessor)
+    : IMessageQueueProcessor<TData>
 {
     //private readonly Channel<TData> _queue = Channel.CreateUnbounded<TData>();
     private const int MaxQueueCount = 1000;
-    private readonly IDataProcessor<TData> _dataProcessor;
-    private readonly ILogger<MessageQueueProcessor2<TData>> _logger;
     private readonly ConcurrentDictionary<long, Channel<TData>> _queues = new();
     private readonly SemaphoreSlim _semaphoreSlim = new(1, 1);
     private bool _isInited;
-
-    public MessageQueueProcessor2(ILogger<MessageQueueProcessor2<TData>> logger,
-        IDataProcessor<TData> dataProcessor)
-    {
-        _logger = logger;
-        _dataProcessor = dataProcessor;
-    }
 
     public void Enqueue(TData message,
         long key)
@@ -31,7 +25,7 @@ public class MessageQueueProcessor2<TData> : IMessageQueueProcessor<TData>
 
         if (!queue!.Writer.TryWrite(message))
         {
-            _logger.LogWarning("Can not write message to queue");
+            logger.LogWarning("Can not write message to queue");
         }
     }
 
@@ -79,11 +73,11 @@ public class MessageQueueProcessor2<TData> : IMessageQueueProcessor<TData>
                         try
                         {
                             //await func(item);
-                            await _dataProcessor.ProcessAsync(item);
+                            await dataProcessor.ProcessAsync(item);
                         }
                         catch (Exception ex)
                         {
-                            _logger.LogError(ex, "Process message queue error:");
+                            logger.LogError(ex, "Process message queue error:");
                         }
                     }
                 }
@@ -130,7 +124,7 @@ public class MessageQueueProcessor2<TData> : IMessageQueueProcessor<TData>
             return true;
         }
 
-        _logger.LogWarning("Can not find queue for key {Key}", key);
+        logger.LogWarning("Can not find queue for key {Key}", key);
         return false;
     }
 }

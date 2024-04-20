@@ -4,16 +4,40 @@
 namespace MyTelegram.Schema.Messages;
 
 ///<summary>
+/// Deletes messages forwarded from a specific peer to <a href="https://corefork.telegram.org/api/saved-messages">saved messages »</a>.
+/// <para>Possible errors</para>
+/// Code Type Description
+/// 400 PEER_ID_INVALID The provided peer id is invalid.
 /// See <a href="https://corefork.telegram.org/method/messages.deleteSavedHistory" />
 ///</summary>
 [TlObject(0x6e98102b)]
 public sealed class RequestDeleteSavedHistory : IRequest<MyTelegram.Schema.Messages.IAffectedHistory>
 {
     public uint ConstructorId => 0x6e98102b;
+    ///<summary>
+    /// Flags, see <a href="https://corefork.telegram.org/mtproto/TL-combinators#conditional-fields">TL conditional fields</a>
+    ///</summary>
     public BitArray Flags { get; set; } = new BitArray(32);
+
+    ///<summary>
+    /// Peer, whose messages will be deleted from <a href="https://corefork.telegram.org/api/saved-messages">saved messages »</a>
+    /// See <a href="https://corefork.telegram.org/type/InputPeer" />
+    ///</summary>
     public MyTelegram.Schema.IInputPeer Peer { get; set; }
+
+    ///<summary>
+    /// Maximum ID of message to delete
+    ///</summary>
     public int MaxId { get; set; }
+
+    ///<summary>
+    /// Delete all messages newer than this UNIX timestamp
+    ///</summary>
     public int? MinDate { get; set; }
+
+    ///<summary>
+    /// Delete all messages older than this UNIX timestamp
+    ///</summary>
     public int? MaxDate { get; set; }
 
     public void ComputeFlag()

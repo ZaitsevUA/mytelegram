@@ -7,33 +7,21 @@ public class SendAsPeerConverterLatest : ISendAsPeerConverterLatest
 
     public int RequestLayer { get; set; }
 
-    public virtual ISendAsPeers ToSendAsPeers(long userId,
-        long channelId,
-        long channelCreatorId,
-        IChat? channel,
-        IUser? user)
+    public virtual ISendAsPeers ToSendAsPeers(IList<IChat> channels)
     {
-        if (channelCreatorId == userId)
+        var sendAsPeers = new TSendAsPeers
         {
-            return new TSendAsPeers
+            Peers = new TVector<ISendAsPeer>(channels.Select(p => new TSendAsPeer
             {
-                Chats = channel == null ? new TVector<IChat>() : new TVector<IChat>(channel),
-                Users = new TVector<IUser>(),
-                Peers = new TVector<ISendAsPeer>(new TSendAsPeer
+                Peer = new TPeerChannel
                 {
-                    Peer = new TPeerChannel { ChannelId = channelId }
-                })
-            };
-        }
-
-        return new TSendAsPeers
-        {
-            Chats = new TVector<IChat>(),
-            Users = user == null ? new TVector<IUser>() : new TVector<IUser>(user),
-            Peers = new TVector<ISendAsPeer>(new TSendAsPeer
-            {
-                Peer = new TPeerUser { UserId = userId }
-            })
+                    ChannelId = p.Id
+                }
+            })),
+            Chats = new(),
+            Users = new(),
         };
+
+        return sendAsPeers;
     }
 }

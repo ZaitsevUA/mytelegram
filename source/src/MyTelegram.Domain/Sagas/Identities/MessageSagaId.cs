@@ -1,8 +1,4 @@
 ﻿namespace MyTelegram.Domain.Sagas.Identities;
 
-public class MessageSagaId : MyIdentity<MessageSagaId>, ISagaId
-{
-    public MessageSagaId(string value) : base(value)
-    {
-    }
-}
+[JsonConverter(typeof(SystemTextJsonSingleValueObjectConverter<MessageSagaId>))]
+public class MessageSagaId(string value) : SingleValueObject<string>(value), ISagaId;

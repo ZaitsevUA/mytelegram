@@ -27,7 +27,7 @@ internal sealed class ResetAuthorizationsHandler : RpcResultObjectHandler<MyTele
         RequestResetAuthorizations obj)
     {
         var deviceList = await _queryProcessor
-            .ProcessAsync(new GetDeviceByUidQuery(input.UserId), default);
+            .ProcessAsync(new GetDeviceByUserIdQuery(input.UserId), default);
         foreach (var deviceReadModel in deviceList)
         {
             if (deviceReadModel.PermAuthKeyId == input.PermAuthKeyId)

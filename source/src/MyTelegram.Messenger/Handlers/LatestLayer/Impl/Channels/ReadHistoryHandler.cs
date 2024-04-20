@@ -34,25 +34,35 @@ internal sealed class ReadHistoryHandler : RpcResultObjectHandler<MyTelegram.Sch
 
             var messageReadModel =
                 await _queryProcessor.ProcessAsync(
-                    new GetMessageByIdQuery(MessageId.Create(inputChannel.ChannelId, obj.MaxId).Value), default);
+                    new GetMessageByIdQuery(MessageId.Create(inputChannel.ChannelId, obj.MaxId).Value));
 
             if (messageReadModel == null)
             {
                 RpcErrors.RpcErrors400.MessageIdInvalid.ThrowRpcError();
             }
 
-            var command = new ReadChannelInboxMessageCommand(
+            var dialogReadModel = await _queryProcessor.ProcessAsync(
+                new GetDialogByIdQuery(DialogId.Create(input.UserId, inputChannel.ChannelId.ToChannelPeer())));
+            if (dialogReadModel == null)
+            {
+                RpcErrors.RpcErrors400.ChannelIdInvalid.ThrowRpcError();
+            }
+
+            if (dialogReadModel!.ReadInboxMaxId >= obj.MaxId)
+            {
+                return new TBoolFalse();
+            }
+
+            var command = new UpdateReadChannelInboxCommand(
                 DialogId.Create(input.UserId, PeerType.Channel, inputChannel.ChannelId),
                 input.ToRequestInfo(),
-                input.UserId,
-                inputChannel.ChannelId,
-                obj.MaxId,
-                messageReadModel!.SenderPeerId,
-                null);
-            await _commandBus.PublishAsync(command, default);
+                messageReadModel!.SenderUserId,
+                obj.MaxId
+            );
+            await _commandBus.PublishAsync(command);
             return null!;
         }
 
-        throw new NotSupportedException("not supported peer,read channel history only support channel");
+        throw new NotImplementedException();
     }
 }

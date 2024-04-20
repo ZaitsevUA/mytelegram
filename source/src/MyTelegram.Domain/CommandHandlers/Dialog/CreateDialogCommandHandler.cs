@@ -11,7 +11,7 @@ public class CreateDialogCommandHandler : CommandHandler<DialogAggregate, Dialog
             command.OwnerId,
             command.ToPeer,
             command.ChannelHistoryMinId,
-            command.TopMessageId);
+            command.TopMessageId );
 
         return Task.CompletedTask;
     }

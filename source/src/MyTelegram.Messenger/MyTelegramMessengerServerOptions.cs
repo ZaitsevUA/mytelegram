@@ -1,4 +1,5 @@
-﻿namespace MyTelegram.Messenger;
+﻿using System.ComponentModel.DataAnnotations;
+namespace MyTelegram.Messenger;
 #nullable disable
 public class MyTelegramMessengerServerOptions
 {
@@ -6,7 +7,12 @@ public class MyTelegramMessengerServerOptions
     public string FileServerGrpcServiceUrl { get; set; }
     public string IdGeneratorGrpcServiceUrl { get; set; }
     public string MessengerServerGrpcServiceUrl { get; set; }
-    public int? FixedVerifyCode { get; set; }
+    [RegularExpression("^([\\d]{3,6})|(\\s*)$")]
+    public string FixedVerifyCode { get; set; }
+    [Range(3, 6)]
+    public int VerificationCodeLength { get; set; } = 4;
+    [Range(60, int.MaxValue)]
+    public int VerificationCodeExpirationSeconds { get; set; } = 300;
     public int ConfirmEmailLoginCount { get; set; }
     public string JoinChatDomain { get; set; }
     public int ChannelGetDifferenceIntervalSeconds { get; set; }

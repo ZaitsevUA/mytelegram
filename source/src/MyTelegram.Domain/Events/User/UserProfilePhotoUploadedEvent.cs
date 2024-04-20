@@ -1,30 +1,28 @@
 ﻿namespace MyTelegram.Domain.Events.User;
 
-public class UserProfilePhotoUploadedEvent : RequestAggregateEvent2<UserAggregate, UserId>
+public class UserProfilePhotoUploadedEvent(
+    RequestInfo requestInfo,
+    long photoId,
+    bool fallback,
+    VideoSizeEmojiMarkup? videoEmojiMarkup)
+    : RequestAggregateEvent2<UserAggregate, UserId>(requestInfo)
 {
     //public bool HasVideo { get; }
     //public double VideoStartTs { get; }
 
-    public UserProfilePhotoUploadedEvent(RequestInfo requestInfo,
-        long photoId,
-        bool fallback,
-        //long userId,
-        //UserItem userItem,
-        VideoSizeEmojiMarkup? videoEmojiMarkup
-        /*, bool hasVideo, double videoStartTs*/) : base(requestInfo)
-    {
-        PhotoId = photoId;
-        Fallback = fallback;
-        //UserId = userId;
-        //UserItem = userItem;
-        VideoEmojiMarkup = videoEmojiMarkup;
-        //HasVideo = hasVideo;
-        //VideoStartTs = videoStartTs;
-    }
+    //long userId,
+    //UserItem userItem,
+    /*, bool hasVideo, double videoStartTs*/
+    //UserId = userId;
+    //UserItem = userItem;
+    //HasVideo = hasVideo;
+    //VideoStartTs = videoStartTs;
 
-    public long PhotoId { get; }
-    public bool Fallback { get; }
+    public long PhotoId { get; } = photoId;
+
+    public bool Fallback { get; } = fallback;
+
     //public long UserId { get; }
     //public UserItem UserItem { get; }
-    public VideoSizeEmojiMarkup? VideoEmojiMarkup { get; }
+    public VideoSizeEmojiMarkup? VideoEmojiMarkup { get; } = videoEmojiMarkup;
 }

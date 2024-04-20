@@ -19,6 +19,11 @@ public sealed class RequestUpdateColor : IRequest<MyTelegram.Schema.IUpdates>
     /// Flags, see <a href="https://corefork.telegram.org/mtproto/TL-combinators#conditional-fields">TL conditional fields</a>
     ///</summary>
     public BitArray Flags { get; set; } = new BitArray(32);
+
+    ///<summary>
+    /// Whether to change the accent color emoji pattern of the profile page; otherwise, the accent color and emoji pattern of messages will be changed.
+    /// See <a href="https://corefork.telegram.org/type/true" />
+    ///</summary>
     public bool ForProfile { get; set; }
 
     ///<summary>
@@ -28,7 +33,7 @@ public sealed class RequestUpdateColor : IRequest<MyTelegram.Schema.IUpdates>
     public MyTelegram.Schema.IInputChannel Channel { get; set; }
 
     ///<summary>
-    /// <a href="https://corefork.telegram.org/api/colors">ID of the accent color palette »</a> to use (not RGB24, see <a href="https://corefork.telegram.org/api/colors">here »</a> for more info).
+    /// <a href="https://corefork.telegram.org/api/colors">ID of the accent color palette »</a> to use (not RGB24, see <a href="https://corefork.telegram.org/api/colors">here »</a> for more info); if not set, the default palette is used.
     ///</summary>
     public int? Color { get; set; }
 

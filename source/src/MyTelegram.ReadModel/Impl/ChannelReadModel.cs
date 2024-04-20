@@ -2,6 +2,7 @@
 public class ChannelReadModel : IChannelReadModel,
     IAmReadModelFor<ChannelAggregate, ChannelId, ChannelCreatedEvent>,
     IAmReadModelFor<ChannelAggregate, ChannelId, IncrementParticipantCountEvent>,
+    //IAmReadModelFor<MessageSaga, MessageSagaId, SendChannelMessageSuccessEvent>,
     IAmReadModelFor<ChannelAggregate, ChannelId, StartSendChannelMessageEvent>,
     IAmReadModelFor<ChannelAggregate, ChannelId, ChannelTitleEditedEvent>,
     IAmReadModelFor<ChannelAggregate, ChannelId, ChannelAboutEditedEvent>,
@@ -14,8 +15,15 @@ public class ChannelReadModel : IChannelReadModel,
     IAmReadModelFor<ChannelMemberAggregate, ChannelMemberId, ChannelMemberLeftEvent>,
     IAmReadModelFor<ChannelMemberAggregate, ChannelMemberId, ChannelMemberBannedRightsChangedEvent>,
     IAmReadModelFor<ChannelMemberAggregate, ChannelMemberId, ChannelMemberJoinedEvent>,
-    IAmReadModelFor<ChannelAggregate, ChannelId, SetDiscussionGroupEvent>,
-IAmReadModelFor<ChannelAggregate, ChannelId, ChannelColorUpdatedEvent>
+    IAmReadModelFor<ChannelAggregate, ChannelId, DiscussionGroupUpdatedEvent>,
+    IAmReadModelFor<ChannelAggregate, ChannelId, ChannelColorUpdatedEvent>,
+    IAmReadModelFor<ChannelAggregate,ChannelId, LinkedChannelChangedEvent>,
+
+    IAmReadModelFor<DeleteChannelMessagesSaga,DeleteChannelMessagesSagaId, DeleteChannelMessagesCompletedEvent>,
+    IAmReadModelFor<DeleteChannelMessagesSaga,DeleteChannelMessagesSagaId, DeleteChannelHistoryCompletedEvent>,
+    IAmReadModelFor<DeleteReplyMessagesSaga, DeleteReplyMessagesSagaId, DeleteReplyMessagesCompletedEvent>
+    //IAmReadModelFor<ChannelAggregate, ChannelId, ChannelAvailableReactionsChangedEvent>
+
 {
     public string? About { get; private set; }
     public long AccessHash { get; private set; }
@@ -55,6 +63,7 @@ IAmReadModelFor<ChannelAggregate, ChannelId, ChannelColorUpdatedEvent>
     public PeerColor? ProfileColor { get; private set; }
     public long? BackgroundEmojiId { get; private set; }
     public int? Level { get; private set; }
+    public bool HasLink { get; private set; }
 
     //public ReactionType ReactionType { get; private set; }
     //public bool AllowCustomReaction { get; private set; }
@@ -254,10 +263,11 @@ IAmReadModelFor<ChannelAggregate, ChannelId, ChannelColorUpdatedEvent>
     //    return Task.CompletedTask;
     //}
     public Task ApplyAsync(IReadModelContext context,
-        IDomainEvent<ChannelAggregate, ChannelId, SetDiscussionGroupEvent> domainEvent,
+        IDomainEvent<ChannelAggregate, ChannelId, DiscussionGroupUpdatedEvent> domainEvent,
         CancellationToken cancellationToken)
     {
         LinkedChatId = domainEvent.AggregateEvent.GroupChannelId;
+        HasLink = domainEvent.AggregateEvent.GroupChannelId.HasValue;
 
         return Task.CompletedTask;
     }
@@ -273,17 +283,65 @@ IAmReadModelFor<ChannelAggregate, ChannelId, ChannelColorUpdatedEvent>
 
         return Task.CompletedTask;
     }
+
+    //public Task ApplyAsync(IReadModelContext context,
+    //    IDomainEvent<ChannelAggregate, ChannelId, ChannelAvailableReactionsChangedEvent> domainEvent,
+    //    CancellationToken cancellationToken)
+    //{
+    //    ReactionType= domainEvent.AggregateEvent.ReactionType;
+    //    AllowCustomReaction = domainEvent.AggregateEvent.AllowCustom;
+    //    AvailableReactions= domainEvent.AggregateEvent.AvailableReactions;
+    //    return Task.CompletedTask;
+    //}
+
+
+
+
     public Task ApplyAsync(IReadModelContext context, IDomainEvent<ChannelAggregate, ChannelId, ChannelColorUpdatedEvent> domainEvent, CancellationToken cancellationToken)
     {
         if (domainEvent.AggregateEvent.ForProfile)
         {
             Color = domainEvent.AggregateEvent.Color;
+
         }
         else
         {
             ProfileColor = domainEvent.AggregateEvent.Color;
         }
         BackgroundEmojiId = domainEvent.AggregateEvent.BackgroundEmojiId;
+
+        return Task.CompletedTask;
+    }
+
+    public Task ApplyAsync(IReadModelContext context, IDomainEvent<ChannelAggregate, ChannelId, LinkedChannelChangedEvent> domainEvent, CancellationToken cancellationToken)
+    {
+        LinkedChatId = domainEvent.AggregateEvent.LinkedChannelId;
+        HasLink= domainEvent.AggregateEvent.LinkedChannelId.HasValue;
+
+        return Task.CompletedTask;
+    }
+
+    public Task ApplyAsync(IReadModelContext context, IDomainEvent<DeleteChannelMessagesSaga, DeleteChannelMessagesSagaId, DeleteChannelMessagesCompletedEvent> domainEvent, CancellationToken cancellationToken)
+    {
+        TopMessageId = domainEvent.AggregateEvent.NewTopMessageId;
+
+        return Task.CompletedTask;
+    }
+
+    public Task ApplyAsync(IReadModelContext context, IDomainEvent<DeleteReplyMessagesSaga, DeleteReplyMessagesSagaId, DeleteReplyMessagesCompletedEvent> domainEvent, CancellationToken cancellationToken)
+    {
+        TopMessageId = domainEvent.AggregateEvent.NewTopMessageId;
+
+        return Task.CompletedTask;
+    }
+
+    public Task ApplyAsync(IReadModelContext context, IDomainEvent<DeleteChannelMessagesSaga, DeleteChannelMessagesSagaId, DeleteChannelHistoryCompletedEvent> domainEvent, CancellationToken cancellationToken)
+    {
+        if (domainEvent.AggregateEvent.NewTopMessageId != 0)
+        {
+            TopMessageId = domainEvent.AggregateEvent.NewTopMessageId;
+        }
+
         return Task.CompletedTask;
     }
 }

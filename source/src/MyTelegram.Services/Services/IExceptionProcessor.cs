@@ -1,8 +1,11 @@
-﻿namespace MyTelegram.Services.Services;
+﻿using MyTelegram.Schema;
+
+namespace MyTelegram.Services.Services;
 
 public interface IExceptionProcessor
 {
     Task HandleExceptionAsync(Exception ex,
+        IObject requestData,
         //int errorCode,
         //string errorMessage,
         long userId,

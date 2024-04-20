@@ -1,21 +1,14 @@
 ﻿namespace MyTelegram.Messenger.Services;
 
-public class GetMessagesInput : GetPagedListInput
+public class GetMessagesInput(
+    long selfUserId,
+    long ownerUid,
+    List<int> messageIdList,
+    Peer? peer)
+    : GetPagedListInput
 {
-    public GetMessagesInput(
-        long selfUserId,
-        long ownerUid,
-        List<int> messageIdList,
-        Peer? peer)
-    {
-        SelfUserId = selfUserId;
-        OwnerPeerId = ownerUid;
-        MessageIdList = messageIdList;
-        Peer = peer;
-    }
-
-    public List<int> MessageIdList { get; }
-    public long OwnerPeerId { get; }
-    public Peer? Peer { get; }
-    public long SelfUserId { get; }
+    public List<int> MessageIdList { get; } = messageIdList;
+    public long OwnerPeerId { get; } = ownerUid;
+    public Peer? Peer { get; } = peer;
+    public long SelfUserId { get; } = selfUserId;
 }

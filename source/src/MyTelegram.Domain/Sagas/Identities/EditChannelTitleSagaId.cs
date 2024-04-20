@@ -1,9 +1,4 @@
 ﻿namespace MyTelegram.Domain.Sagas.Identities;
 
 [JsonConverter(typeof(SystemTextJsonSingleValueObjectConverter<EditChannelTitleSagaId>))]
-public class EditChannelTitleSagaId : SingleValueObject<string>, ISagaId
-{
-    public EditChannelTitleSagaId(string value) : base(value)
-    {
-    }
-}
+public class EditChannelTitleSagaId(string value) : SingleValueObject<string>(value), ISagaId;

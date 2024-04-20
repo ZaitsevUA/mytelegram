@@ -5,6 +5,10 @@ namespace MyTelegram.Schema.Chatlists;
 
 ///<summary>
 /// Dismiss new pending peers recently added to a <a href="https://corefork.telegram.org/api/links#chat-folder-links">chat folder deep link »</a>.
+/// <para>Possible errors</para>
+/// Code Type Description
+/// 400 FILTER_ID_INVALID The specified filter ID is invalid.
+/// 400 FILTER_NOT_SUPPORTED The specified filter cannot be used in this context.
 /// See <a href="https://corefork.telegram.org/method/chatlists.hideChatlistUpdates" />
 ///</summary>
 [TlObject(0x66e486fb)]

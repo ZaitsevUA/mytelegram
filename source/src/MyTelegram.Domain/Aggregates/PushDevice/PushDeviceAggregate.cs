@@ -1,13 +1,9 @@
 ﻿namespace MyTelegram.Domain.Aggregates.PushDevice;
 
-public class PushDeviceAggregate : AggregateRoot<PushDeviceAggregate, PushDeviceId>,
+public class PushDeviceAggregate(PushDeviceId id) : AggregateRoot<PushDeviceAggregate, PushDeviceId>(id),
     IApply<PushDeviceRegisteredEvent>,
     IApply<PushDeviceUnRegisteredEvent>
 {
-    public PushDeviceAggregate(PushDeviceId id) : base(id)
-    {
-    }
-
     public void Apply(PushDeviceRegisteredEvent aggregateEvent)
     {
     }

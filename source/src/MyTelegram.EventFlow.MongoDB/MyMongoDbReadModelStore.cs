@@ -12,48 +12,45 @@ using System.Linq.Expressions;
 
 namespace MyTelegram.EventFlow.MongoDB;
 
-public class MyMongoDbReadModelStore<TReadModel> :
-    MyMongoDbReadModelStore<TReadModel, IMongoDbContext>
+public class MyMongoDbReadModelStore<TReadModel>(
+    ILogger<MongoDbReadModelStore<TReadModel>> logger,
+    IReadModelDescriptionProvider readModelDescriptionProvider,
+    ITransientFaultHandler<IOptimisticConcurrencyRetryStrategy> transientFaultHandler,
+    IMongoDbContextFactory<IMongoDbContext> dbContextFactory,
+    IMemoryCache memoryCache,
+    IReadModelCacheStrategy readModelCacheStrategy,
+    IReadModelUpdateStrategy readModelUpdateStrategy,
+    IReadModelUpdateManager readModelUpdateManager)
+    :
+        MyMongoDbReadModelStore<TReadModel, IMongoDbContext>(logger, readModelDescriptionProvider,
+            transientFaultHandler, dbContextFactory, memoryCache, readModelCacheStrategy, readModelUpdateStrategy,
+            readModelUpdateManager)
+    where TReadModel : class, IMongoDbReadModel;
+
+public class MyMongoDbReadModelStore<TReadModel, TDbContext>(
+    ILogger<MongoDbReadModelStore<TReadModel>> logger,
+    IReadModelDescriptionProvider readModelDescriptionProvider,
+    ITransientFaultHandler<IOptimisticConcurrencyRetryStrategy> transientFaultHandler,
+    IMongoDbContextFactory<TDbContext> dbContextFactory,
+    IMemoryCache memoryCache,
+    IReadModelCacheStrategy readModelCacheStrategy,
+    IReadModelUpdateStrategy readModelUpdateStrategy,
+    IReadModelUpdateManager readModelUpdateManager)
+    : MongoDbReadModelStore<TReadModel>(logger, dbContextFactory.CreateContext().GetDatabase(),
+        readModelDescriptionProvider, transientFaultHandler), IMyMongoDbReadModelStore<TReadModel>
     where TReadModel : class, IMongoDbReadModel
+    where TDbContext : IMongoDbContext
 {
-    public MyMongoDbReadModelStore(ILogger<MongoDbReadModelStore<TReadModel>> logger, IReadModelDescriptionProvider readModelDescriptionProvider, ITransientFaultHandler<IOptimisticConcurrencyRetryStrategy> transientFaultHandler, IMongoDbContextFactory<IMongoDbContext> dbContextFactory, IMemoryCache memoryCache, IReadModelCacheStrategy readModelCacheStrategy, IReadModelUpdateStrategy readModelUpdateStrategy, IReadModelUpdateManager readModelUpdateManager) : base(logger, readModelDescriptionProvider, transientFaultHandler, dbContextFactory, memoryCache, readModelCacheStrategy, readModelUpdateStrategy, readModelUpdateManager)
-    {
-    }
-}
-
-public class MyMongoDbReadModelStore<TReadModel, TDbContext> : MongoDbReadModelStore<TReadModel>, IMyMongoDbReadModelStore<TReadModel> where TReadModel : class, IMongoDbReadModel
-where TDbContext : IMongoDbContext
-{
-    private readonly ILogger<MongoDbReadModelStore<TReadModel>> _logger;
+    private readonly ILogger<MongoDbReadModelStore<TReadModel>> _logger = logger;
     //private readonly IMongoDbReadModelDatabaseFactory _databaseFactory;
-    private readonly IMongoDbContextFactory<TDbContext> _dbContextFactory;
-    private readonly IReadModelDescriptionProvider _readModelDescriptionProvider;
-    private readonly IMemoryCache _memoryCache;
-    private readonly IReadModelCacheStrategy _readModelCacheStrategy;
-    private readonly IReadModelUpdateStrategy _readModelUpdateStrategy;
+    private readonly IReadModelDescriptionProvider _readModelDescriptionProvider = readModelDescriptionProvider;
+    private readonly IReadModelCacheStrategy _readModelCacheStrategy = readModelCacheStrategy;
+    private readonly IReadModelUpdateStrategy _readModelUpdateStrategy = readModelUpdateStrategy;
     //private readonly IMyInMemoryReadStore<TReadModel> _myInMemoryReadStore;
-    private readonly IReadModelUpdateManager _readModelUpdateManager;
 
-    public MyMongoDbReadModelStore(ILogger<MongoDbReadModelStore<TReadModel>> logger,
-        IReadModelDescriptionProvider readModelDescriptionProvider,
-        ITransientFaultHandler<IOptimisticConcurrencyRetryStrategy> transientFaultHandler,
-        IMongoDbContextFactory<TDbContext> dbContextFactory,
-        IMemoryCache memoryCache,
-        IReadModelCacheStrategy readModelCacheStrategy,
-        IReadModelUpdateStrategy readModelUpdateStrategy, IReadModelUpdateManager readModelUpdateManager)
-        : base(logger, dbContextFactory.CreateContext().GetDatabase(), readModelDescriptionProvider, transientFaultHandler)
-    {
-        _logger = logger;
-        _readModelDescriptionProvider = readModelDescriptionProvider;
-        _dbContextFactory = dbContextFactory;
-        _memoryCache = memoryCache;
-        _readModelCacheStrategy = readModelCacheStrategy;
-        _readModelUpdateStrategy = readModelUpdateStrategy;
-        _readModelUpdateManager = readModelUpdateManager;
-        //_myInMemoryReadStore = myInMemoryReadStore;
-    }
+    //_myInMemoryReadStore = myInMemoryReadStore;
 
-    private IMongoDatabase GetDatabase() => _dbContextFactory.CreateContext().GetDatabase();
+    private IMongoDatabase GetDatabase() => dbContextFactory.CreateContext().GetDatabase();
 
     public Task<IAggregateFluent<TResult>> AggregateAsync<TResult, TKey>(
         Expression<Func<TReadModel, bool>> filter,
@@ -95,11 +92,11 @@ where TDbContext : IMongoDbContext
 
     public override async Task<ReadModelEnvelope<TReadModel>> GetAsync(string id, CancellationToken cancellationToken)
     {
-        var updateStrategy = await _readModelUpdateManager.GetReadModelUpdateStrategyAsync<TReadModel>();
+        var updateStrategy = await readModelUpdateManager.GetReadModelUpdateStrategyAsync<TReadModel>();
         //if (await _readModelCacheStrategy.ShouldCacheReadModelAsync<TReadModel>())
         if (updateStrategy == UpdateStrategy.All || updateStrategy == UpdateStrategy.UpdateCache)
         {
-            var item = await _memoryCache.GetOrCreateAsync(CacheKey.With(typeof(TReadModel), id),
+            var item = await memoryCache.GetOrCreateAsync(CacheKey.With(typeof(TReadModel), id),
                 cacheEntry =>
                 {
                     cacheEntry.SlidingExpiration = TimeSpan.FromDays(3);
@@ -121,7 +118,7 @@ where TDbContext : IMongoDbContext
     public override async Task UpdateAsync(IReadOnlyCollection<ReadModelUpdate> readModelUpdates, IReadModelContextFactory readModelContextFactory,
         Func<IReadModelContext, IReadOnlyCollection<IDomainEvent>, ReadModelEnvelope<TReadModel>, CancellationToken, Task<ReadModelUpdateResult<TReadModel>>> updateReadModel, CancellationToken cancellationToken)
     {
-        var updateStrategy = await _readModelUpdateManager.GetReadModelUpdateStrategyAsync<TReadModel>();
+        var updateStrategy = await readModelUpdateManager.GetReadModelUpdateStrategyAsync<TReadModel>();
 
         //await base.UpdateAsync(readModelUpdates, readModelContextFactory, updateReadModel, cancellationToken);
         switch (updateStrategy)
@@ -184,7 +181,7 @@ where TDbContext : IMongoDbContext
 
                 if (readModelContext.IsMarkedForDeletion)
                 {
-                    _memoryCache.Remove(CacheKey.With(typeof(TReadModel), readModelId));
+                    memoryCache.Remove(CacheKey.With(typeof(TReadModel), readModelId));
 
                     // Console.WriteLine($"Delete in memory readModel:{readModelId}");
                 }
@@ -198,7 +195,7 @@ where TDbContext : IMongoDbContext
 
     private Task UpdateInMemoryReadModelAsync(ReadModelEnvelope<TReadModel> envelope)
     {
-        _memoryCache.Set(CacheKey.With(typeof(TReadModel), envelope.ReadModelId), envelope);
+        memoryCache.Set(CacheKey.With(typeof(TReadModel), envelope.ReadModelId), envelope);
         return Task.CompletedTask;
     }
 }

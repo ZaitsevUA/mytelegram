@@ -1,9 +1,4 @@
 namespace MyTelegram.Domain.Sagas.Identities;
 
 [JsonConverter(typeof(SystemTextJsonSingleValueObjectConverter<ImportChatInviteSagaId>))]
-public class ImportChatInviteSagaId : SingleValueObject<string>, ISagaId
-{
-    public ImportChatInviteSagaId(string value) : base(value)
-    {
-    }
-}
+public class ImportChatInviteSagaId(string value) : SingleValueObject<string>(value), ISagaId;

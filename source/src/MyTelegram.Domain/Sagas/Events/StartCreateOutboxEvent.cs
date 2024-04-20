@@ -13,5 +13,3 @@
 
 //    public OutboxCreatedEvent Outbox { get; }
 //}
-
-

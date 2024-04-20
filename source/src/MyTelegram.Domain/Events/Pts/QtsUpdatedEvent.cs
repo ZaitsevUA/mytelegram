@@ -1,15 +1,10 @@
 ﻿namespace MyTelegram.Domain.Events.Pts;
 
-public class QtsUpdatedEvent : AggregateEvent<PtsAggregate, PtsId>
+public class QtsUpdatedEvent(
+    long peerId,
+    int newQts) : AggregateEvent<PtsAggregate, PtsId>
 {
-    public QtsUpdatedEvent(long peerId,
-        int newQts)
-    {
-        PeerId = peerId;
-        NewQts = newQts;
-    }
+    public int NewQts { get; } = newQts;
 
-    public int NewQts { get; }
-
-    public long PeerId { get; }
+    public long PeerId { get; } = peerId;
 }

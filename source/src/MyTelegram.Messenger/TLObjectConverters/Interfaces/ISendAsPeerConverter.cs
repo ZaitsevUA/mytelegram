@@ -2,5 +2,5 @@
 
 public interface ISendAsPeerConverter : ILayeredConverter
 {
-    ISendAsPeers ToSendAsPeers(long userId, long channelId, long channelCreatorId, IChat? channel, IUser? user);
+    ISendAsPeers ToSendAsPeers(IList<IChat> channels);
 }

@@ -1,16 +1,11 @@
 ﻿namespace MyTelegram.Domain.Commands.Channel;
 
-public class ReadChannelLatestNoneBotOutboxMessageCommand : Command<ChannelAggregate, ChannelId, IExecutionResult>,
-    IHasCorrelationId
+public class ReadChannelLatestNoneBotOutboxMessageCommand(
+    ChannelId aggregateId,
+    RequestInfo requestInfo,
+    string sourceCommandId)
+    : RequestCommand2<ChannelAggregate, ChannelId, IExecutionResult>(aggregateId, requestInfo) //,
+//IHasCorrelationId
 {
-    public ReadChannelLatestNoneBotOutboxMessageCommand(ChannelId aggregateId,
-        string sourceCommandId,
-        Guid correlationId) : base(aggregateId)
-    {
-        SourceCommandId = sourceCommandId;
-        CorrelationId = correlationId;
-    }
-
-    public string SourceCommandId { get; }
-    public Guid CorrelationId { get; }
+    public string SourceCommandId { get; } = sourceCommandId;
 }

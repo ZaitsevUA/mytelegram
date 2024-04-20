@@ -22,7 +22,7 @@ namespace MyTelegram.Handlers.Messages;
 /// 400 YOU_BLOCKED_USER You blocked this user.
 /// See <a href="https://corefork.telegram.org/method/messages.addChatUser" />
 ///</summary>
-internal sealed class AddChatUserHandler : RpcResultObjectHandler<MyTelegram.Schema.Messages.RequestAddChatUser, MyTelegram.Schema.IUpdates>,
+internal sealed class AddChatUserHandler : RpcResultObjectHandler<MyTelegram.Schema.Messages.RequestAddChatUser, MyTelegram.Schema.Messages.IInvitedUsers>,
     Messages.IAddChatUserHandler
 {
     private readonly ICommandBus _commandBus;
@@ -43,7 +43,7 @@ internal sealed class AddChatUserHandler : RpcResultObjectHandler<MyTelegram.Sch
         _privacyAppService = privacyAppService;
     }
 
-    protected override async Task<IUpdates> HandleCoreAsync(IRequestInput input,
+    protected override async Task<MyTelegram.Schema.Messages.IInvitedUsers> HandleCoreAsync(IRequestInput input,
         RequestAddChatUser obj)
     {
         if (obj.UserId is TInputUser inputUser)

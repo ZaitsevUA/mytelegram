@@ -1,8 +1,4 @@
 ﻿namespace MyTelegram.Domain.Commands.Messaging;
 
-public class IncrementViewsCommand : Command<MessageAggregate, MessageId, IExecutionResult>
-{
-    public IncrementViewsCommand(MessageId aggregateId) : base(aggregateId)
-    {
-    }
-}
+public class IncrementViewsCommand(MessageId aggregateId)
+    : Command<MessageAggregate, MessageId, IExecutionResult>(aggregateId);

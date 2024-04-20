@@ -7,10 +7,10 @@ namespace MyTelegram.Schema;
 /// Phone call
 /// See <a href="https://corefork.telegram.org/constructor/phoneCall" />
 ///</summary>
-[TlObject(0x967f7c67)]
+[TlObject(0x30535af5)]
 public sealed class TPhoneCall : IPhoneCall
 {
-    public uint ConstructorId => 0x967f7c67;
+    public uint ConstructorId => 0x30535af5;
     ///<summary>
     /// Flags, see <a href="https://corefork.telegram.org/mtproto/TL-combinators#conditional-fields">TL conditional fields</a>
     ///</summary>
@@ -78,12 +78,13 @@ public sealed class TPhoneCall : IPhoneCall
     /// When was the call actually started
     ///</summary>
     public int StartDate { get; set; }
+    public MyTelegram.Schema.IDataJSON? CustomParameters { get; set; }
 
     public void ComputeFlag()
     {
         if (P2pAllowed) { Flags[5] = true; }
         if (Video) { Flags[6] = true; }
-
+        if (CustomParameters != null) { Flags[7] = true; }
     }
 
     public void Serialize(IBufferWriter<byte> writer)
@@ -101,6 +102,7 @@ public sealed class TPhoneCall : IPhoneCall
         writer.Write(Protocol);
         writer.Write(Connections);
         writer.Write(StartDate);
+        if (Flags[7]) { writer.Write(CustomParameters); }
     }
 
     public void Deserialize(ref SequenceReader<byte> reader)
@@ -118,5 +120,6 @@ public sealed class TPhoneCall : IPhoneCall
         Protocol = reader.Read<MyTelegram.Schema.IPhoneCallProtocol>();
         Connections = reader.Read<TVector<MyTelegram.Schema.IPhoneConnection>>();
         StartDate = reader.ReadInt32();
+        if (Flags[7]) { CustomParameters = reader.Read<MyTelegram.Schema.IDataJSON>(); }
     }
 }

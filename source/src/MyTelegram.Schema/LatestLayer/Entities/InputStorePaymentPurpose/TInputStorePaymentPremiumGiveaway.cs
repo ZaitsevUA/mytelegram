@@ -21,6 +21,11 @@ public sealed class TInputStorePaymentPremiumGiveaway : IInputStorePaymentPurpos
     /// See <a href="https://corefork.telegram.org/type/true" />
     ///</summary>
     public bool OnlyNewSubscribers { get; set; }
+
+    ///<summary>
+    /// If set, giveaway winners are public and will be listed in a <a href="https://corefork.telegram.org/constructor/messageMediaGiveawayResults">messageMediaGiveawayResults</a> message that will be automatically sent to the channel once the giveaway ends.
+    /// See <a href="https://corefork.telegram.org/type/true" />
+    ///</summary>
     public bool WinnersAreVisible { get; set; }
 
     ///<summary>
@@ -38,6 +43,10 @@ public sealed class TInputStorePaymentPremiumGiveaway : IInputStorePaymentPurpos
     /// The set of users that can participate to the giveaway can be restricted by passing here an explicit whitelist of up to <a href="https://corefork.telegram.org/api/config#giveaway-countries-max">giveaway_countries_max</a> countries, specified as two-letter ISO 3166-1 alpha-2 country codes.
     ///</summary>
     public TVector<string>? CountriesIso2 { get; set; }
+
+    ///<summary>
+    /// Can contain a textual description of additional giveaway prizes.
+    ///</summary>
     public string? PrizeDescription { get; set; }
 
     ///<summary>

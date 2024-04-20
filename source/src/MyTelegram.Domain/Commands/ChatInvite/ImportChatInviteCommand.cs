@@ -2,14 +2,13 @@
 
 namespace MyTelegram.Domain.Commands.ChatInvite;
 
-public class ImportChatInviteCommand : RequestCommand2<ChatInviteAggregate, ChatInviteId, IExecutionResult>
+public class ImportChatInviteCommand(
+    ChatInviteId aggregateId,
+    RequestInfo requestInfo,
+    ChatInviteRequestState chatInviteRequestState,
+    int date)
+    : RequestCommand2<ChatInviteAggregate, ChatInviteId, IExecutionResult>(aggregateId, requestInfo)
 {
-    public ChatInviteRequestState ChatInviteRequestState { get; }
-    public int Date { get; }
-
-    public ImportChatInviteCommand(ChatInviteId aggregateId, RequestInfo requestInfo, ChatInviteRequestState chatInviteRequestState, int date) : base(aggregateId, requestInfo)
-    {
-        ChatInviteRequestState = chatInviteRequestState;
-        Date = date;
-    }
+    public ChatInviteRequestState ChatInviteRequestState { get; } = chatInviteRequestState;
+    public int Date { get; } = date;
 }

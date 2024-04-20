@@ -1,12 +1,8 @@
 ﻿namespace MyTelegram.Domain.Sagas.Events;
 
-public class ImportContactsStartedEvent : RequestAggregateEvent2<ImportContactsSaga, ImportContactsSagaId>
+public class ImportContactsStartedEvent(
+    RequestInfo requestInfo,
+    int count) : RequestAggregateEvent2<ImportContactsSaga, ImportContactsSagaId>(requestInfo)
 {
-    public ImportContactsStartedEvent(RequestInfo requestInfo,
-        int count):base(requestInfo)
-    {
-        Count = count;
-    }
-
-    public int Count { get; }
+    public int Count { get; } = count;
 }

@@ -1,24 +1,21 @@
 ﻿namespace MyTelegram.Domain.Events.Channel;
 
-public class ChannelPhotoEditedEvent : RequestAggregateEvent2<ChannelAggregate, ChannelId>
+public class ChannelPhotoEditedEvent(
+    RequestInfo requestInfo,
+    long channelId,
+    long? photoId,
+    string messageActionData,
+    long randomId)
+    : RequestAggregateEvent2<ChannelAggregate, ChannelId>(requestInfo)
 {
-    public ChannelPhotoEditedEvent(RequestInfo requestInfo,
-        long channelId,
-        //byte[] photo,
-        long? photoId,
-        string messageActionData,
-        long randomId) : base(requestInfo)
-    {
-        ChannelId = channelId;
-        PhotoId = photoId;
-        //Photo = photo;
-        MessageActionData = messageActionData;
-        RandomId = randomId;
-    }
+    //byte[] photo,
+    //Photo = photo;
 
-    public long ChannelId { get; }
-    public long? PhotoId { get; }
-    public string MessageActionData { get; }
+    public long ChannelId { get; } = channelId;
+    public long? PhotoId { get; } = photoId;
+
+    public string MessageActionData { get; } = messageActionData;
+
     //public byte[] Photo { get; }
-    public long RandomId { get; }
+    public long RandomId { get; } = randomId;
 }

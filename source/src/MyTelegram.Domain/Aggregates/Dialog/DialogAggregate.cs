@@ -9,10 +9,15 @@ public class DialogAggregate : MyInMemorySnapshotAggregateRoot<DialogAggregate, 
         Register(_state);
     }
 
-    public void ClearChannelHistory(RequestInfo requestInfo)
+    public void UpdateDialog(long ownerUserId, Peer toPeer, int topMessageId, int pts)
+    {
+        Emit(new DialogUpdatedEvent(ownerUserId, toPeer, topMessageId, pts));
+    }
+
+    public void ClearChannelHistory(RequestInfo requestInfo, int availableMinId)
     {
         Specs.AggregateIsCreated.ThrowDomainErrorIfNotSatisfied(this);
-        Emit(new ChannelHistoryClearedEvent(requestInfo, _state.TopMessage));
+        Emit(new ChannelHistoryClearedEvent(requestInfo, _state.ToPeer.PeerId, availableMinId));
     }
 
     public void ClearDraft()
@@ -28,8 +33,7 @@ public class DialogAggregate : MyInMemorySnapshotAggregateRoot<DialogAggregate, 
         string messageActionData,
         long randomId,
         List<int> messageIdListToBeDelete,
-        int nextMaxId,
-        Guid correlationId)
+        int nextMaxId)
     {
         Specs.AggregateIsCreated.ThrowDomainErrorIfNotSatisfied(this);
         Emit(new HistoryClearedEvent(requestInfo,
@@ -40,14 +44,14 @@ public class DialogAggregate : MyInMemorySnapshotAggregateRoot<DialogAggregate, 
             messageActionData,
             randomId,
             messageIdListToBeDelete,
-            nextMaxId,
-            correlationId));
+            nextMaxId
+        ));
     }
 
-    public void ClearParticipantHistory(Guid correlationId)
+    public void ClearParticipantHistory(RequestInfo requestInfo)
     {
         Specs.AggregateIsCreated.ThrowDomainErrorIfNotSatisfied(this);
-        Emit(new ParticipantHistoryClearedEvent(_state.OwnerId, _state.TopMessage, correlationId));
+        Emit(new ParticipantHistoryClearedEvent(requestInfo, _state.OwnerId, _state.TopMessage));
     }
 
     public void Create(
@@ -64,30 +68,6 @@ public class DialogAggregate : MyInMemorySnapshotAggregateRoot<DialogAggregate, 
             topMessageId,
             DateTime.UtcNow
         ));
-    }
-
-    protected override Task<DialogSnapshot> CreateSnapshotAsync(CancellationToken cancellationToken)
-    {
-        return Task.FromResult(new DialogSnapshot(
-            _state.OwnerId,
-            _state.TopMessage,
-            _state.ReadInboxMaxId,
-            _state.ReadOutboxMaxId,
-            _state.UnreadCount,
-            _state.ToPeer,
-            _state.UnreadMark,
-            _state.Pinned,
-            _state.ChannelHistoryMinId,
-            _state.Draft
-        ));
-    }
-
-    protected override Task LoadSnapshotAsync(DialogSnapshot snapshot,
-        ISnapshotMetadata metadata,
-        CancellationToken cancellationToken)
-    {
-        _state.LoadSnapshot(snapshot);
-        return Task.CompletedTask;
     }
 
     public void MarkDialogAsUnread(bool unread)
@@ -247,5 +227,60 @@ public class DialogAggregate : MyInMemorySnapshotAggregateRoot<DialogAggregate, 
     {
         Specs.AggregateIsCreated.ThrowDomainErrorIfNotSatisfied(this);
         Emit(new DialogPinChangedEvent(requestInfo, _state.OwnerId, pinned));
+    }
+
+    public void UpdateReadChannelInbox(RequestInfo requestInfo, long messageSenderUserId, int maxId)
+    {
+        Specs.AggregateIsCreated.ThrowDomainErrorIfNotSatisfied(this);
+        Emit(new UpdateReadChannelInboxEvent(requestInfo, messageSenderUserId, _state.ToPeer.PeerId, maxId));
+    }
+
+    public void UpdateReadChannelOutbox(RequestInfo requestInfo, int maxId)
+    {
+        Specs.AggregateIsCreated.ThrowDomainErrorIfNotSatisfied(this);
+        Emit(new UpdateReadChannelOutboxEvent(requestInfo, _state.OwnerId, _state.ToPeer.PeerId, maxId));
+    }
+
+    public void UpdateReadInboxMaxId(RequestInfo requestInfo, int maxId, long senderUserId, int senderMessageId)
+    {
+        Specs.AggregateIsCreated.ThrowDomainErrorIfNotSatisfied(this);
+        Emit(new ReadInboxMaxIdUpdatedEvent(requestInfo, _state.OwnerId, _state.ToPeer.PeerId, maxId, senderUserId,
+            senderMessageId));
+    }
+
+    public void UpdateReadOutboxMaxId(RequestInfo requestInfo, int maxId)
+    {
+        Specs.AggregateIsCreated.ThrowDomainErrorIfNotSatisfied(this);
+        Emit(new ReadOutboxMaxIdUpdatedEvent(requestInfo, _state.OwnerId, _state.ToPeer.PeerId, maxId));
+    }
+
+    public void UpdateTopMessageId(int newTopMessageId)
+    {
+        Specs.AggregateIsCreated.ThrowDomainErrorIfNotSatisfied(this);
+        Emit(new TopMessageIdUpdatedEvent(_state.OwnerId, _state.ToPeer, newTopMessageId));
+    }
+    protected override Task<DialogSnapshot> CreateSnapshotAsync(CancellationToken cancellationToken)
+    {
+        return Task.FromResult(new DialogSnapshot(
+            _state.OwnerId,
+            _state.TopMessage,
+            _state.ReadInboxMaxId,
+            _state.ReadOutboxMaxId,
+            _state.UnreadCount,
+            _state.ToPeer,
+            _state.UnreadMark,
+            _state.Pinned,
+            _state.ChannelHistoryMinId,
+            _state.Draft,
+            _state.UnreadMentionsCount
+        ));
+    }
+
+    protected override Task LoadSnapshotAsync(DialogSnapshot snapshot,
+        ISnapshotMetadata metadata,
+        CancellationToken cancellationToken)
+    {
+        _state.LoadSnapshot(snapshot);
+        return Task.CompletedTask;
     }
 }

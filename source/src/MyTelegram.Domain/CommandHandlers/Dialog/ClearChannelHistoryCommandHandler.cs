@@ -6,7 +6,7 @@ public class ClearChannelHistoryCommandHandler : CommandHandler<DialogAggregate,
         ClearChannelHistoryCommand command,
         CancellationToken cancellationToken)
     {
-        aggregate.ClearChannelHistory(command.RequestInfo);
+        aggregate.ClearChannelHistory(command.RequestInfo,command.AvailableMinId);
         return Task.CompletedTask;
     }
 }

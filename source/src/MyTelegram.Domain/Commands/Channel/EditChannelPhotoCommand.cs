@@ -1,22 +1,20 @@
 ﻿namespace MyTelegram.Domain.Commands.Channel;
 
-public class EditChannelPhotoCommand : RequestCommand2<ChannelAggregate, ChannelId, IExecutionResult>//, IHasCorrelationId
+public class EditChannelPhotoCommand(
+    ChannelId aggregateId,
+    RequestInfo requestInfo,
+    long? fileId,
+    string messageActionData,
+    long randomId)
+    : RequestCommand2<ChannelAggregate, ChannelId, IExecutionResult>(aggregateId, requestInfo) //, IHasCorrelationId
 {
-    public EditChannelPhotoCommand(ChannelId aggregateId,
-        RequestInfo requestInfo,
-        long? fileId,
-        //byte[] photo,
-        string messageActionData,
-        long randomId) : base(aggregateId, requestInfo)
-    {
-        FileId = fileId;
-        //Photo = photo;
-        MessageActionData = messageActionData;
-        RandomId = randomId;
-    }
+    //byte[] photo,
+    //Photo = photo;
 
-    public long? FileId { get; }
-    public string MessageActionData { get; }
+    public long? FileId { get; } = fileId;
+
+    public string MessageActionData { get; } = messageActionData;
+
     //public byte[] Photo { get; }
-    public long RandomId { get; }
+    public long RandomId { get; } = randomId;
 }

@@ -1,14 +1,9 @@
 ﻿namespace MyTelegram.Domain.Sagas.Events;
 
-public class ReceiveInboxMessageCompletedEvent : AggregateEvent<SendMessageSaga, SendMessageSagaId>
+public class ReceiveInboxMessageCompletedEvent(MessageItem messageItem, int pts, string? chatTitle)
+    : AggregateEvent<SendMessageSaga, SendMessageSagaId>
 {
-    public MessageItem MessageItem { get; }
-    public int Pts { get; }
-    public string? ChatTitle { get; }
-    public ReceiveInboxMessageCompletedEvent(MessageItem messageItem, int pts, string? chatTitle)
-    {
-        MessageItem = messageItem;
-        Pts = pts;
-        ChatTitle = chatTitle;
-    }
+    public MessageItem MessageItem { get; } = messageItem;
+    public int Pts { get; } = pts;
+    public string? ChatTitle { get; } = chatTitle;
 }

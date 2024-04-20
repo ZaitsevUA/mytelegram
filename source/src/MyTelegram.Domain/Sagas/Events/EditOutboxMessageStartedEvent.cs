@@ -1,32 +1,21 @@
 ﻿namespace MyTelegram.Domain.Sagas.Events;
 
-public class EditOutboxMessageStartedEvent : RequestAggregateEvent2<EditMessageSaga, EditMessageSagaId>
+public class EditOutboxMessageStartedEvent(
+    RequestInfo requestInfo,
+    MessageItem oldMessageItem,
+    int messageId,
+    string newMessage,
+    int editDate,
+    int inboxCount,
+    byte[]? entities,
+    byte[]? media)
+    : RequestAggregateEvent2<EditMessageSaga, EditMessageSagaId>(requestInfo)
 {
-    public EditOutboxMessageStartedEvent(
-        RequestInfo requestInfo,
-        MessageItem oldMessageItem,
-        int messageId,
-        string newMessage,
-        int editDate,
-        int inboxCount,
-        byte[]? entities,
-        byte[]? media
-    ) : base(requestInfo)
-    {
-        OldMessageItem = oldMessageItem;
-        MessageId = messageId;
-        NewMessage = newMessage;
-        Entities = entities;
-        EditDate = editDate;
-        InboxCount = inboxCount;
-        Media = media;
-    }
-
-    public int EditDate { get; }
-    public byte[]? Entities { get; }
-    public int InboxCount { get; }
-    public byte[]? Media { get; }
-    public string NewMessage { get; }
-    public int MessageId { get; }
-    public MessageItem OldMessageItem { get; }
+    public int EditDate { get; } = editDate;
+    public byte[]? Entities { get; } = entities;
+    public int InboxCount { get; } = inboxCount;
+    public byte[]? Media { get; } = media;
+    public string NewMessage { get; } = newMessage;
+    public int MessageId { get; } = messageId;
+    public MessageItem OldMessageItem { get; } = oldMessageItem;
 }

@@ -1,20 +1,15 @@
 ﻿namespace MyTelegram.Domain.Commands.Pts;
 
-public class UpdateGlobalSeqNoCommand : Command<PtsAggregate, PtsId, IExecutionResult>
+public class UpdateGlobalSeqNoCommand(
+    PtsId aggregateId,
+    long peerId,
+    long permAuthKeyId,
+    long globalSeqNo)
+    : Command<PtsAggregate, PtsId, IExecutionResult>(aggregateId)
 {
-    public UpdateGlobalSeqNoCommand(PtsId aggregateId,
-        long peerId,
-        long permAuthKeyId,
-        long globalSeqNo) : base(aggregateId)
-    {
-        PeerId = peerId;
-        PermAuthKeyId = permAuthKeyId;
-        GlobalSeqNo = globalSeqNo;
-    }
-
-    public long GlobalSeqNo { get; }
-    public long PeerId { get; }
-    public long PermAuthKeyId { get; }
+    public long GlobalSeqNo { get; } = globalSeqNo;
+    public long PeerId { get; } = peerId;
+    public long PermAuthKeyId { get; } = permAuthKeyId;
 }
 
 //public class UpdateChannelPtsForUserCommand : Command<ChannelPtsAggregate, ChannelPtsId, IExecutionResult>

@@ -15,6 +15,10 @@ public class DialogReadModelLocator : IDialogReadModelLocator
         {
             switch (aggregateEvent)
             {
+                case UpdateReadChannelOutboxEvent updateReadChannelOutboxEvent:
+                    yield return DialogId.Create(updateReadChannelOutboxEvent.MessageSenderUserId, PeerType.Channel,
+                        updateReadChannelOutboxEvent.ChannelId).Value;
+                    break;
                 case OutboxMessageCreatedEvent outboxCreatedEvent:
                     //yield return outboxCreatedEvent.DialogId.Value;
                     yield return DialogId.Create(outboxCreatedEvent.RequestInfo.UserId,

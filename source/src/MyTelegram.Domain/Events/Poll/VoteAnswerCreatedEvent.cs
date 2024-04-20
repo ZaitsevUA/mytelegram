@@ -1,21 +1,14 @@
 ﻿namespace MyTelegram.Domain.Aggregates.Poll;
 
-public class VoteAnswerCreatedEvent : AggregateEvent<PollAggregate, PollId>
+public class VoteAnswerCreatedEvent(
+    long pollId,
+    long voterPeerId,
+    string option,
+    bool correct)
+    : AggregateEvent<PollAggregate, PollId>
 {
-    public VoteAnswerCreatedEvent(
-        long pollId,
-        long voterPeerId,
-        string option,
-        bool correct)
-    {
-        PollId = pollId;
-        VoterPeerId = voterPeerId;
-        Option = option;
-        Correct = correct;
-    }
-
-    public long PollId { get; }
-    public long VoterPeerId { get; }
-    public string Option { get; }
-    public bool Correct { get; }
+    public long PollId { get; } = pollId;
+    public long VoterPeerId { get; } = voterPeerId;
+    public string Option { get; } = option;
+    public bool Correct { get; } = correct;
 }

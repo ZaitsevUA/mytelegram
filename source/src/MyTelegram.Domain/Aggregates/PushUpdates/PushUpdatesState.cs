@@ -10,7 +10,7 @@ public class PushUpdatesState : AggregateState<PushUpdatesAggregate, PushUpdates
     public long OnlySendToThisAuthKeyId { get; private set; }
     public long PeerId { get; private set; }
     public int Pts { get; private set; }
-    public PtsType PtsType { get; private set; }
+    //public PtsType PtsType { get; private set; }
     public long SeqNo { get; private set; }
 
     public void Apply(EncryptedPushUpdatesCreatedEvent aggregateEvent)
@@ -19,13 +19,13 @@ public class PushUpdatesState : AggregateState<PushUpdatesAggregate, PushUpdates
 
     public void Apply(PushUpdatesCreatedEvent aggregateEvent)
     {
-        PeerId = aggregateEvent.ToPeer.PeerId;
-        ExcludeAuthKeyId = aggregateEvent.ExcludeAuthKeyId;
-        ExcludeUid = aggregateEvent.ExcludeUid;
-        OnlySendToThisAuthKeyId = aggregateEvent.OnlySendToThisAuthKeyId;
-        Data = aggregateEvent.Data;
-        Pts = aggregateEvent.Pts;
-        PtsType = aggregateEvent.PtsType;
-        SeqNo = aggregateEvent.SeqNo;
+        //PeerId = aggregateEvent.ToPeer.PeerId;
+        //ExcludeAuthKeyId = aggregateEvent.ExcludeAuthKeyId;
+        //ExcludeUid = aggregateEvent.ExcludeUid;
+        //OnlySendToThisAuthKeyId = aggregateEvent.OnlySendToThisAuthKeyId;
+        //Data = aggregateEvent.Data;
+        //Pts = aggregateEvent.Pts;
+        //PtsType = aggregateEvent.PtsType;
+        //SeqNo = aggregateEvent.SeqNo;
     }
-}
+} 

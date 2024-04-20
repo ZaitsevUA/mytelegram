@@ -1,17 +1,12 @@
 ﻿namespace MyTelegram.Domain.Commands.Channel;
 
-public class TogglePreHistoryHiddenCommand : RequestCommand2<ChannelAggregate, ChannelId, IExecutionResult>
+public class TogglePreHistoryHiddenCommand(
+    ChannelId aggregateId,
+    RequestInfo requestInfo,
+    bool hidden,
+    long selfUserId)
+    : RequestCommand2<ChannelAggregate, ChannelId, IExecutionResult>(aggregateId, requestInfo)
 {
-    public TogglePreHistoryHiddenCommand(ChannelId aggregateId,
-        RequestInfo requestInfo,
-        bool hidden,
-        long selfUserId
-    ) : base(aggregateId, requestInfo)
-    {
-        Hidden = hidden;
-        SelfUserId = selfUserId;
-    }
-
-    public bool Hidden { get; }
-    public long SelfUserId { get; }
+    public bool Hidden { get; } = hidden;
+    public long SelfUserId { get; } = selfUserId;
 }

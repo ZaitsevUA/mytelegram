@@ -1,14 +1,14 @@
 ﻿namespace MyTelegram.Domain.Commands.Messaging;
 
-public class ReadInboxHistoryCommand : RequestCommand2<MessageAggregate, MessageId, IExecutionResult>
+public class ReadInboxHistoryCommand(
+    MessageId aggregateId,
+    RequestInfo requestInfo,
+    long readerUserId,
+    int date)
+    : Command<MessageAggregate, MessageId, IExecutionResult>(aggregateId), IHasRequestInfo
 {
-    public long ReaderUserId { get; }
-    public int Date { get; }
-    public ReadInboxHistoryCommand(MessageId aggregateId,
-        RequestInfo requestInfo, long readerUserId,
-        int date) : base(aggregateId, requestInfo)
-    {
-        ReaderUserId = readerUserId;
-        Date = date;
-    }
+    public long ReaderUserId { get; } = readerUserId;
+    public int Date { get; } = date;
+
+    public RequestInfo RequestInfo { get; } = requestInfo;
 }

@@ -1,31 +1,22 @@
 ﻿namespace MyTelegram.Domain.Commands.Channel;
 
-public class EditChannelAdminCommand : RequestCommand2<ChannelAggregate, ChannelId, IExecutionResult>
+public class EditChannelAdminCommand(
+    ChannelId aggregateId,
+    RequestInfo requestInfo,
+    long promotedBy,
+    bool canEdit,
+    long userId,
+    bool isBot,
+    ChatAdminRights adminRights,
+    string rank,
+    int date)
+    : RequestCommand2<ChannelAggregate, ChannelId, IExecutionResult>(aggregateId, requestInfo)
 {
-    public EditChannelAdminCommand(ChannelId aggregateId,
-        RequestInfo requestInfo,
-        long promotedBy,
-        bool canEdit,
-        long userId,
-        bool isBot,
-        ChatAdminRights adminRights,
-        string rank,
-        int date) : base(aggregateId, requestInfo)
-    {
-        PromotedBy = promotedBy;
-        CanEdit = canEdit;
-        UserId = userId;
-        IsBot = isBot;
-        AdminRights = adminRights;
-        Rank = rank;
-        Date = date;
-    }
-
-    public ChatAdminRights AdminRights { get; }
-    public bool CanEdit { get; }
-    public long PromotedBy { get; }
-    public string Rank { get; }
-    public int Date { get; }
-    public long UserId { get; }
-    public bool IsBot { get; }
+    public ChatAdminRights AdminRights { get; } = adminRights;
+    public bool CanEdit { get; } = canEdit;
+    public long PromotedBy { get; } = promotedBy;
+    public string Rank { get; } = rank;
+    public int Date { get; } = date;
+    public long UserId { get; } = userId;
+    public bool IsBot { get; } = isBot;
 }

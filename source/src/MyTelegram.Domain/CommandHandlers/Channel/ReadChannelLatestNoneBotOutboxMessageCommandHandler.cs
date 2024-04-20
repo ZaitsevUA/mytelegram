@@ -7,7 +7,7 @@ public class ReadChannelLatestNoneBotOutboxMessageCommandHandler : CommandHandle
         ReadChannelLatestNoneBotOutboxMessageCommand command,
         CancellationToken cancellationToken)
     {
-        aggregate.ReadChannelLatestNoneBotOutboxMessage(command.SourceCommandId, command.CorrelationId);
+        aggregate.ReadChannelLatestNoneBotOutboxMessage(command.RequestInfo, command.SourceCommandId);
         return Task.CompletedTask;
     }
 }

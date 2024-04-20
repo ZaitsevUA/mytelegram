@@ -9,7 +9,7 @@ public static class Extension
     {
         if (channel is TInputChannel inputChannel)
         {
-            return new Peer(PeerType.Channel, inputChannel.ChannelId, inputChannel.AccessHash);
+            return new Peer(PeerType.Channel, inputChannel.ChannelId/*, inputChannel.AccessHash*/);
         }
 
         RpcErrors.RpcErrors400.ChannelIdInvalid.ThrowRpcError();
@@ -44,14 +44,14 @@ public static class Extension
     {
         PeerType peerType;
         long peerId;
-        long accessHash = 0;
+        //long accessHash = 0;
 
         switch (peer)
         {
             case TInputPeerChannel inputPeerChannel:
                 peerType = PeerType.Channel;
                 peerId = inputPeerChannel.ChannelId;
-                accessHash = inputPeerChannel.AccessHash;
+                //accessHash = inputPeerChannel.AccessHash;
                 break;
                 //case TInputPeerChannelFromMessage inputPeerChannelFromMessage:
                 //    peerType = PeerType.Channel;
@@ -73,7 +73,7 @@ public static class Extension
             case TInputPeerUser inputPeerUser:
                 peerType = PeerType.User;
                 peerId = inputPeerUser.UserId;
-                accessHash = inputPeerUser.AccessHash;
+                //accessHash = inputPeerUser.AccessHash;
                 break;
             //case TInputPeerUserFromMessage inputPeerUserFromMessage:
             //break;
@@ -86,7 +86,7 @@ public static class Extension
             peerType = PeerType.Self;
         }
 
-        return new Peer(peerType, peerId, accessHash);
+        return new Peer(peerType, peerId/*, accessHash*/);
     }
 
     public static Peer ToPeer(this IInputUser userPeer,
@@ -94,12 +94,12 @@ public static class Extension
     {
         var peerId = 0L;
         var peerType = PeerType.User;
-        var accessHash = 0L;
+        //var accessHash = 0L;
         switch (userPeer)
         {
             case TInputUser inputUser:
                 peerId = inputUser.UserId;
-                accessHash = inputUser.AccessHash;
+                //accessHash = inputUser.AccessHash;
                 break;
             case TInputUserEmpty:
                 break;
@@ -115,7 +115,7 @@ public static class Extension
                 throw new ArgumentOutOfRangeException(nameof(userPeer));
         }
 
-        return new Peer(peerType, peerId, accessHash);
+        return new Peer(peerType, peerId/*, accessHash*/);
     }
 
     [return: NotNullIfNotNull("peer")]

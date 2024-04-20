@@ -1,31 +1,25 @@
 ﻿namespace MyTelegram.Domain.Sagas.Events;
 
-public class SendMessageSagaStartedEvent : RequestAggregateEvent2<SendMessageSaga, SendMessageSagaId>
+public class SendMessageSagaStartedEvent(
+    RequestInfo requestInfo,
+    MessageItem messageItem,
+    List<long>? mentionedUserIds,
+    List<ReplyToMsgItem>? replyToMsgItems,
+    bool clearDraft,
+    int groupItemCount,
+    long? linkedChannelId,
+    List<long>? chatMembers)
+    : RequestAggregateEvent2<SendMessageSaga, SendMessageSagaId>(requestInfo)
 {
-    public MessageItem MessageItem { get; }
-    public List<long>? MentionedUserIds { get; }
-    public List<ReplyToMsgItem>? ReplyToMsgItems { get; }
-    public bool ClearDraft { get; }
-    public int GroupItemCount { get; }
-    public long? LinkedChannelId { get; }
+    public MessageItem MessageItem { get; } = messageItem;
+    public List<long>? MentionedUserIds { get; } = mentionedUserIds;
+    public List<ReplyToMsgItem>? ReplyToMsgItems { get; } = replyToMsgItems;
+    public bool ClearDraft { get; } = clearDraft;
+    public int GroupItemCount { get; } = groupItemCount;
+    public long? LinkedChannelId { get; } = linkedChannelId;
 
-    public List<long>? ChatMembers { get; }
+    public List<long>? ChatMembers { get; } = chatMembers;
     //public bool ForwardFromLinkedChannel { get; }
 
-    public SendMessageSagaStartedEvent(RequestInfo requestInfo, MessageItem messageItem, List<long>? mentionedUserIds,
-        List<ReplyToMsgItem>? replyToMsgItems,
-        bool clearDraft,
-        int groupItemCount,
-        long? linkedChannelId,
-        List<long>? chatMembers) : base(requestInfo)
-    {
-        MessageItem = messageItem;
-        MentionedUserIds = mentionedUserIds;
-        ReplyToMsgItems = replyToMsgItems;
-        ClearDraft = clearDraft;
-        GroupItemCount = groupItemCount;
-        LinkedChannelId = linkedChannelId;
-        ChatMembers = chatMembers;
-        //ForwardFromLinkedChannel = forwardFromLinkedChannel;
-    }
+    //ForwardFromLinkedChannel = forwardFromLinkedChannel;
 }

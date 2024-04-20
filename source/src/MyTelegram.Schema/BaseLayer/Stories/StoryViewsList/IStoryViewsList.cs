@@ -18,7 +18,15 @@ public interface IStoryViewsList : IObject
     /// Total number of results that can be fetched
     ///</summary>
     int Count { get; set; }
+
+    ///<summary>
+    /// Total number of story views
+    ///</summary>
     int ViewsCount { get; set; }
+
+    ///<summary>
+    /// Total number of story forwards/reposts
+    ///</summary>
     int ForwardsCount { get; set; }
 
     ///<summary>
@@ -31,6 +39,11 @@ public interface IStoryViewsList : IObject
     /// See <a href="https://corefork.telegram.org/type/StoryView" />
     ///</summary>
     TVector<MyTelegram.Schema.IStoryView> Views { get; set; }
+
+    ///<summary>
+    /// Mentioned chats
+    /// See <a href="https://corefork.telegram.org/type/Chat" />
+    ///</summary>
     TVector<MyTelegram.Schema.IChat> Chats { get; set; }
 
     ///<summary>

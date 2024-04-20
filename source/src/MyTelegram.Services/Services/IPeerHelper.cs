@@ -1,4 +1,5 @@
 ﻿using MyTelegram.Schema;
+using System.Diagnostics.CodeAnalysis;
 
 namespace MyTelegram.Services.Services;
 
@@ -6,7 +7,8 @@ public interface IPeerHelper
 {
     Peer GetChannel(IInputChannel channel);
 
-    Peer GetPeer(IInputPeer peer,
+    [return: NotNullIfNotNull(nameof(peer))]
+    Peer? GetPeer(IInputPeer? peer,
         long selfUserId = 0);
 
     Peer GetPeer(IInputUser userPeer,

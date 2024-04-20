@@ -38,7 +38,7 @@ public interface IUpdatesConverter : ILayeredConverter
         int date);
 
     IUpdates ToReadHistoryUpdates(ReadHistoryCompletedEvent eventData);
-
+    IUpdates ToReadHistoryUpdates(UpdateOutboxMaxIdCompletedSagaEvent eventData);
     IUpdates ToSelfOtherDeviceUpdates(SendOutboxMessageCompletedEvent aggregateEvent);
 
     IUpdates ToSelfUpdatePinnedMessageUpdates(UpdatePinnedMessageCompletedEvent aggregateEvent);

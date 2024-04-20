@@ -4,12 +4,7 @@ namespace MyTelegram.EventBus;
 
 public class EventHandlerInvoker : IEventHandlerInvoker
 {
-    private readonly ConcurrentDictionary<string, IEventHandlerMethodExecutor> _cache;
-
-    public EventHandlerInvoker()
-    {
-        _cache = new ConcurrentDictionary<string, IEventHandlerMethodExecutor>();
-    }
+    private readonly ConcurrentDictionary<string, IEventHandlerMethodExecutor> _cache = new();
 
     public async Task InvokeAsync(IEventHandler eventHandler,
         object eventData,

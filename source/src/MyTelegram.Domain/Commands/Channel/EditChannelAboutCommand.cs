@@ -1,17 +1,12 @@
 ﻿namespace MyTelegram.Domain.Commands.Channel;
 
-public class EditChannelAboutCommand : RequestCommand2<ChannelAggregate, ChannelId, IExecutionResult>
+public class EditChannelAboutCommand(
+    ChannelId aggregateId,
+    RequestInfo requestInfo,
+    long selfUserId,
+    string? about)
+    : RequestCommand2<ChannelAggregate, ChannelId, IExecutionResult>(aggregateId, requestInfo)
 {
-    public EditChannelAboutCommand(ChannelId aggregateId,
-        RequestInfo requestInfo,
-        long selfUserId,
-        string? about
-    ) : base(aggregateId, requestInfo)
-    {
-        SelfUserId = selfUserId;
-        About = about;
-    }
-
-    public string? About { get; }
-    public long SelfUserId { get; }
+    public string? About { get; } = about;
+    public long SelfUserId { get; } = selfUserId;
 }

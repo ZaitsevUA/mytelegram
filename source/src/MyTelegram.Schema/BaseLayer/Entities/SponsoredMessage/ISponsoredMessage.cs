@@ -23,6 +23,7 @@ public interface ISponsoredMessage : IObject
     /// Whether a profile photo bubble should be displayed for this message, like for messages sent in groups. The photo shown in the bubble is obtained either from the peer contained in <code>from_id</code>, or from <code>chat_invite</code>.
     ///</summary>
     bool ShowPeerPhoto { get; set; }
+    bool CanReport { get; set; }
 
     ///<summary>
     /// Message ID

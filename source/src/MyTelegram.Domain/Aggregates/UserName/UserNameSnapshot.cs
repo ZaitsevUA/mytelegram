@@ -1,15 +1,10 @@
 ﻿namespace MyTelegram.Domain.Aggregates.UserName;
 
-public class UserNameSnapshot : ISnapshot
+public class UserNameSnapshot(
+    string userName,
+    bool isDeleted) : ISnapshot
 {
-    public UserNameSnapshot(string userName,
-        bool isDeleted)
-    {
-        UserName = userName;
-        IsDeleted = isDeleted;
-    }
+    public bool IsDeleted { get; } = isDeleted;
 
-    public bool IsDeleted { get; }
-
-    public string UserName { get; }
+    public string UserName { get; } = userName;
 }

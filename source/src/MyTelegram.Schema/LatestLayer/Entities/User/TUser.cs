@@ -153,6 +153,7 @@ public sealed class TUser : IUser, ILayeredUser
     ///</summary>
     public bool StoriesUnavailable { get; set; }
     public bool ContactRequirePremium { get; set; }
+    public bool BotBusiness { get; set; }
 
     ///<summary>
     /// ID of the user
@@ -269,6 +270,7 @@ public sealed class TUser : IUser, ILayeredUser
         if (StoriesHidden) { Flags2[3] = true; }
         if (StoriesUnavailable) { Flags2[4] = true; }
         if (ContactRequirePremium) { Flags2[10] = true; }
+        if (BotBusiness) { Flags2[11] = true; }
         if (/*AccessHash != 0 &&*/ AccessHash.HasValue) { Flags[0] = true; }
         if (FirstName != null) { Flags[1] = true; }
         if (LastName != null) { Flags[2] = true; }
@@ -339,6 +341,7 @@ public sealed class TUser : IUser, ILayeredUser
         if (Flags2[3]) { StoriesHidden = true; }
         if (Flags2[4]) { StoriesUnavailable = true; }
         if (Flags2[10]) { ContactRequirePremium = true; }
+        if (Flags2[11]) { BotBusiness = true; }
         Id = reader.ReadInt64();
         if (Flags[0]) { AccessHash = reader.ReadInt64(); }
         if (Flags[1]) { FirstName = reader.ReadString(); }

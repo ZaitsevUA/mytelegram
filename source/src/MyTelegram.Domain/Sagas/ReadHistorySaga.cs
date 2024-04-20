@@ -1,240 +1,266 @@
-﻿namespace MyTelegram.Domain.Sagas;
+﻿//using System;
+//using System.Threading;
+//using System.Threading.Tasks;
+//using EventFlow.Aggregates;
+//using EventFlow.Sagas;
+//using EventFlow.Sagas.AggregateSagas;
+//using EventFlow.ValueObjects;
+//using MyTelegramServer.Domain.Aggregates.Dialog;
+//using MyTelegramServer.Domain.Aggregates.Pts;
+//using MyTelegramServer.Domain.Commands.Dialog;
+//using MyTelegramServer.Domain.Commands.Pts;
+//using MyTelegramServer.Domain.Events;
+//using MyTelegramServer.Domain.Events.Dialog;
+//using MyTelegramServer.Domain.ValueObjects;
 
-public class ReadHistorySaga : MyInMemoryAggregateSaga<ReadHistorySaga, ReadHistorySagaId,
-        ReadHistorySagaLocator>,
-    ISagaIsStartedBy<DialogAggregate, DialogId, ReadInboxMessage2Event>,
-    ISagaHandles<MessageAggregate, MessageId, InboxMessageHasReadEvent>,
-    ISagaHandles<DialogAggregate, DialogId, OutboxMessageHasReadEvent>,
-    ISagaHandles<DialogAggregate, DialogId, OutboxAlreadyReadEvent>,
-    ISagaHandles<ChatAggregate, ChatId, ReadLatestNoneBotOutboxMessageEvent>,
-    IApply<ReadHistoryCompletedEvent>
-{
-    private readonly IIdGenerator _idGenerator;
-    private readonly ReadHistoryState _state = new();
+//namespace MyTelegramServer.Domain.Sagas
+//{
+//    public class ReadHistorySagaId : SingleValueObject<string>, ISagaId
+//    {
+//        public ReadHistorySagaId(string value) : base(value)
+//        {
+//        }
+//    }
 
-    public ReadHistorySaga(ReadHistorySagaId id, IEventStore eventStore, IIdGenerator idGenerator) : base(id, eventStore)
-    {
-        _idGenerator = idGenerator;
-        Register(_state);
-    }
+//    public class ReadHistorySagaLocator : ISagaLocator
+//    {
+//        public Task<ISagaId> LocateSagaAsync(IDomainEvent domainEvent,
+//            CancellationToken cancellationToken)
+//        {
+//            var id = domainEvent.GetAggregateEvent() as IHasCorrelationId;
 
-    public int SenderPts => _state.SenderPts;
+//            return Task.FromResult<ISagaId>(new ReadHistorySagaId(id.CorrelationId.ToString("n")));
+//        }
+//    }
 
-    public long SenderPeerId => _state.SenderPeerId;
+//    public class ReadHistoryState : AggregateState<ReadHistorySaga, ReadHistorySagaId, ReadHistoryState>,
+//        IApply<ReadHistoryStartedEvent>,
+//        IApply<ReadOutboxHistoryEvent>,
+//        //IApply<ReadHistoryCompletedEvent>,
+//        IHasRequestMessageId
+//    {
+//        public long SenderPeerId { get; private set; }
+//        public int SenderMessageId { get; private set; }
+//        public int ReaderPts { get; private set; }
+//        public int SenderPts { get; private set; }
+//        public bool SenderIsBot { get; private set; }
+//        public long ReaderUid { get; private set; }
+//        public int ReaderMessageId { get; private set; }
+//        public bool Out { get; private set; }
+//        public PeerType ToPeerType { get; private set; }
+//        public long ToPeerId { get; private set; }
 
-    public void Apply(ReadHistoryCompletedEvent aggregateEvent)
-    {
-        CompleteAsync();
-    }
+//        private bool _outboxHasRead;
+//        internal bool ReadHistoryCompleted => Out || _outboxHasRead;
+
+//        public void Apply(ReadHistoryStartedEvent aggregateEvent)
+//        {
+//            SenderPeerId = aggregateEvent.SenderPeerId;
+//            SenderMessageId = aggregateEvent.SenderMessageId;
+//            ReaderUid = aggregateEvent.ReaderUid;
+//            ReaderMessageId = aggregateEvent.ReaderMessageId;
+//            ReaderPts = aggregateEvent.ReaderPts;
+//            SenderPts = aggregateEvent.SenderPts;
+//            SenderIsBot = aggregateEvent.SenderIsBot;
+
+//            Out = aggregateEvent.Out;
+//            ReqMsgId = aggregateEvent.ReqMsgId;
+//            ToPeerType = aggregateEvent.ToPeerType;
+//            ToPeerId = aggregateEvent.ToPeerId;
+
+//        }
+
+//        public void Apply(ReadOutboxHistoryEvent aggregateEvent)
+//        {
+//            _outboxHasRead = true;
+//        }
+
+//        public long ReqMsgId { get; private set; }
+//        public void Apply(ReadHistoryCompletedEvent aggregateEvent)
+//        {
+
+//        }
+//    }
+
+//    public class ReadHistorySaga : AggregateSaga<ReadHistorySaga, ReadHistorySagaId, ReadHistorySagaLocator>,
+//        ISagaIsStartedBy<DialogAggregate, DialogId, ReadInboxMessageEvent>,
+//        ISagaHandles<DialogAggregate, DialogId, OutboxMessageHasReadEvent>,
+//        IApply<ReadHistoryCompletedEvent>
+//    {
+//        private readonly ReadHistoryState _state = new();
+//        public ReadHistorySaga(ReadHistorySagaId id) : base(id)
+//        {
+//            Register(_state);
+//        }
+
+//        public Task HandleAsync(IDomainEvent<DialogAggregate, DialogId, ReadInboxMessageEvent> domainEvent,
+//            ISagaContext sagaContext,
+//            CancellationToken cancellationToken)
+//        {
+//            //TestConsoleLogger.WriteLine($"start read history saga...{domainEvent.AggregateEvent.ReqMsgId}");
+//            Emit(new ReadHistoryStartedEvent(domainEvent.AggregateEvent.SenderPeerId,
+//                domainEvent.AggregateEvent.SenderMessageId,
+//                domainEvent.AggregateEvent.OwnerPeerId,
+//                domainEvent.AggregateEvent.MaxMessageId,
+//                domainEvent.AggregateEvent.Out,
+//                domainEvent.AggregateEvent.ReqMsgId,
+//                domainEvent.AggregateEvent.ToPeerType,
+//                domainEvent.AggregateEvent.ToPeerId,
+//                domainEvent.AggregateEvent.ReaderPts,
+//                domainEvent.AggregateEvent.SenderPts,
+//                domainEvent.AggregateEvent.SenderIsBot
+//                ));
+//            IncrementPts(domainEvent.AggregateEvent.OwnerPeerId, PtsChangeReason.ReadInboxMessage, domainEvent.AggregateEvent.CorrelationId);
+//            if (!domainEvent.AggregateEvent.Out && !domainEvent.AggregateEvent.SenderIsBot)
+//            {
+//                var dialogId = DialogId.Create(domainEvent.AggregateEvent.SenderPeerId,
+//                    new Peer(PeerType.User, domainEvent.AggregateEvent.OwnerPeerId));
+//                var outboxMessageHasReadCommand =
+//                    new OutboxMessageHasReadCommand(dialogId, domainEvent.AggregateEvent.SenderMessageId,
+//                        domainEvent.AggregateEvent.SenderPeerId, domainEvent.AggregateEvent.CorrelationId);
+//                Publish(outboxMessageHasReadCommand);
+//            }
+
+//            //increment pts
+//            HandleReadHistoryCompleted(domainEvent.AggregateEvent.SenderIsBot);
+//            return Task.CompletedTask;
+//        }
+
+//        public Task HandleAsync(IDomainEvent<DialogAggregate, DialogId, OutboxMessageHasReadEvent> domainEvent,
+//            ISagaContext sagaContext,
+//            CancellationToken cancellationToken)
+//        {
+//            //Emit(new ReadHistoryCompletedEvent());
+//            Emit(new ReadOutboxHistoryEvent(domainEvent.AggregateEvent.OwnerPeerId, domainEvent.AggregateEvent.MaxMessageId));
+//            IncrementPts(domainEvent.AggregateEvent.OwnerPeerId, PtsChangeReason.OutboxMessageHasRead, domainEvent.AggregateEvent.CorrelationId);
+//            HandleReadHistoryCompleted();
+//            return Task.CompletedTask;
+//        }
+
+//        private void IncrementPts(long peerId, PtsChangeReason reason, Guid correlationId)
+//        {
+//            var incrementPtsCommand = new IncrementPtsCommand(PtsId.Create(peerId), reason, correlationId);
+//            Publish(incrementPtsCommand);
+//        }
+
+//        private void HandleReadHistoryCompleted(bool forceCompletedByReadBotResponse = false)
+//        {
+//            if (_state.ReadHistoryCompleted || forceCompletedByReadBotResponse)
+//            {
+//                //Complete();
+//                Emit(new ReadHistoryCompletedEvent(_state.ReaderUid, _state.ReqMsgId, _state.SenderPeerId,
+//                    _state.Out, _state.SenderMessageId, _state.ToPeerType,
+//                    _state.ToPeerId, _state.ReaderPts, _state.SenderPts, _state.SenderIsBot));
+//            }
+//        }
+
+//        public void Apply(ReadHistoryCompletedEvent aggregateEvent)
+//        {
+//            Complete();
+//        }
+//    }
+
+//    public class ReadHistoryStartedEvent : AggregateEvent<ReadHistorySaga, ReadHistorySagaId>
+//    {
+//        public ReadHistoryStartedEvent(long senderUid,
+//            int senderMessageId,
+//            long readerUid,
+//            int readerMessageId,
+//            bool @out,
+//            long reqMsgId,
+//            PeerType toPeerType,
+//            long toPeerId,
+//            int readerPts,
+//            int senderPts,
+//            bool senderIsBot
+
+//            )
+//        {
+//            SenderPeerId = senderUid;
+//            SenderMessageId = senderMessageId;
+//            ReaderUid = readerUid;
+//            ReaderMessageId = readerMessageId;
+//            Out = @out;
+//            ReqMsgId = reqMsgId;
+//            ToPeerType = toPeerType;
+//            ToPeerId = toPeerId;
+//            ReaderPts = readerPts;
+//            SenderPts = senderPts;
+//            SenderIsBot = senderIsBot;
+//        }
+//        //public ReadHistoryStartedEvent(ReadInboxMessageEvent eventData)
+//        //{
+//        //    EventData = eventData;
+//        //}
+
+//        //public ReadInboxMessageEvent EventData { get; }
+
+//        public long SenderPeerId { get; }
+//        public int SenderMessageId { get; }
+//        public long ReaderUid { get; }
+//        public int ReaderMessageId { get; }
+//        public bool Out { get; }
+//        public long ReqMsgId { get; }
+//        public PeerType ToPeerType { get; }
+//        public long ToPeerId { get; }
+//        public int ReaderPts { get; private set; }
+//        public int SenderPts { get; private set; }
+//        public bool SenderIsBot { get; }
+//    }
+
+//    public class ReadOutboxHistoryEvent : AggregateEvent<ReadHistorySaga, ReadHistorySagaId>
+//    {
+//        public ReadOutboxHistoryEvent(long senderUid,
+//            int senderMessageId)
+//        {
+//            SenderPeerId = senderUid;
+//            SenderMessageId = senderMessageId;
+//        }
+
+//        public long SenderPeerId { get; }
+//        public int SenderMessageId { get; }
+//    }
+
+//    public class ReadHistoryCompletedEvent : AggregateEvent<ReadHistorySaga, ReadHistorySagaId>, IHasRequestMessageId
+//    {
+//        public ReadHistoryCompletedEvent(long readerUid,
+//            long reqMsgId,
+//            long senderUid,
+//            bool @out,
+//            int senderMessageId,
+//            PeerType toPeerType,
+//            long toPeerId,
+//            int readerPts,
+//            int senderPts,
+//            bool senderIsBot
+
+//            )
+//        {
+//            ReaderUid = readerUid;
+//            ReqMsgId = reqMsgId;
+//            SenderPeerId = senderUid;
+//            Out = @out;
+//            SenderMessageId = senderMessageId;
+//            ToPeerType = toPeerType;
+//            ToPeerId = toPeerId;
+//            ReaderPts = readerPts;
+//            SenderPts = senderPts;
+//            SenderIsBot = senderIsBot;
+//        }
+
+//        public long ReaderUid { get; }
+//        public long ReqMsgId { get; }
+
+//        public long SenderPeerId { get; }
+//        public int SenderMessageId { get; }
+//        public PeerType ToPeerType { get; }
+//        public long ToPeerId { get; }
+//        public int ReaderPts { get; }
+//        public int SenderPts { get; }
+//        public bool SenderIsBot { get; }
+//        public int CurrentReaderPts { get; }
+//        public bool Out { get; }
+//    }
+//}
 
 
-    public Task HandleAsync(IDomainEvent<ChatAggregate, ChatId, ReadLatestNoneBotOutboxMessageEvent> domainEvent,
-        ISagaContext sagaContext,
-        CancellationToken cancellationToken)
-    {
-        Emit(new ReadHistoryReadLatestNoneBotOutboxMessageEvent(domainEvent.AggregateEvent.SenderPeerId));
-        if (domainEvent.AggregateEvent.SenderPeerId != _state.ReaderUserId)
-        {
-            SendReadOutboxMessageCommand(domainEvent.AggregateEvent.SenderPeerId,
-                new Peer(PeerType.Chat, domainEvent.AggregateEvent.ChatId),
-                domainEvent.AggregateEvent.SenderMessageId);
-        }
-        else
-        {
-            HandleReadHistoryCompleted();
-        }
-
-        return Task.CompletedTask;
-    }
-
-    public Task HandleAsync(IDomainEvent<DialogAggregate, DialogId, OutboxAlreadyReadEvent> domainEvent,
-        ISagaContext sagaContext,
-        CancellationToken cancellationToken)
-    {
-        CreateReadHistory(domainEvent.AggregateEvent.NewMaxMessageId);
-
-        if (!_state.NeedReadLatestNoneBotOutboxMessage)
-        {
-            HandleReadHistoryCompleted(true);
-        }
-
-        return Task.CompletedTask;
-    }
-
-    public async Task HandleAsync(IDomainEvent<DialogAggregate, DialogId, OutboxMessageHasReadEvent> domainEvent,
-        ISagaContext sagaContext,
-        CancellationToken cancellationToken)
-    {
-        Emit(new ReadHistoryOutboxHasReadEvent(
-            _state.RequestInfo,
-            domainEvent.AggregateEvent.OwnerPeerId,
-            domainEvent.AggregateEvent.MaxMessageId));
-        await IncrementPtsAsync(
-            domainEvent.AggregateEvent.OwnerPeerId,
-            0,
-            0,
-            PtsChangeReason.OutboxMessageHasRead);
-
-        CreateReadHistory(_state.SenderMessageId);
-    }
-
-    public Task HandleAsync(IDomainEvent<MessageAggregate, MessageId, InboxMessageHasReadEvent> domainEvent,
-        ISagaContext sagaContext,
-        CancellationToken cancellationToken)
-    {
-        var senderIsBot = false;
-        var needReadLatestNoneBotOutboxMessage = domainEvent.AggregateEvent.ToPeer.PeerType == PeerType.Chat &&
-                                                 senderIsBot;
-        Emit(new ReadHistoryInboxHasReadEvent(domainEvent.AggregateEvent.IsOut,
-            senderIsBot,
-            needReadLatestNoneBotOutboxMessage));
-        if (!domainEvent.AggregateEvent.IsOut /*&& !domainEvent.AggregateEvent.SenderIsBot*/)
-        {
-            var toPeerForSender =
-                GetToPeerForSender(domainEvent.AggregateEvent.ToPeer, domainEvent.AggregateEvent.ReaderUid);
-
-            SendReadOutboxMessageCommand(domainEvent.AggregateEvent.SenderPeerId,
-                toPeerForSender,
-                domainEvent.AggregateEvent.SenderMessageId);
-        }
-
-        if (needReadLatestNoneBotOutboxMessage)
-        {
-            var readLatestNoneBotOutboxMessageCommand =
-                new ReadLatestNoneBotOutboxMessageCommand(
-                    ChatId.Create(domainEvent.AggregateEvent.ToPeer.PeerId),
-                    domainEvent.AggregateEvent.RequestInfo,
-                    domainEvent.Metadata.SourceId.Value);
-            Publish(readLatestNoneBotOutboxMessageCommand);
-        }
-
-        HandleReadHistoryCompleted();
-        return Task.CompletedTask;
-    }
-
-    public async Task HandleAsync(IDomainEvent<DialogAggregate, DialogId, ReadInboxMessage2Event> domainEvent,
-        ISagaContext sagaContext,
-        CancellationToken cancellationToken)
-    {
-        Emit(new ReadHistoryStartedEvent(domainEvent.AggregateEvent.RequestInfo,
-            domainEvent.AggregateEvent.OwnerPeerId,
-            domainEvent.AggregateEvent.MaxMessageId,
-            domainEvent.AggregateEvent.ToPeer,
-            domainEvent.Metadata.SourceId.Value));
-
-        await IncrementPtsAsync(domainEvent.AggregateEvent.OwnerPeerId,
-            domainEvent.AggregateEvent.ReadCount,
-            domainEvent.AggregateEvent.UnreadCount,
-            PtsChangeReason.ReadInboxMessage);
-
-        var command = new ReadInboxHistoryCommand(
-            MessageId.Create(domainEvent.AggregateEvent.OwnerPeerId, domainEvent.AggregateEvent.MaxMessageId),
-            domainEvent.AggregateEvent.RequestInfo,
-            domainEvent.AggregateEvent.ReaderUserId,
-            DateTime.UtcNow.ToTimestamp()
-        );
-
-        Publish(command);
-    }
-
-    private void CreateReadHistory(int senderMsgId)
-    {
-        var toPeerId = _state.ReaderToPeer.PeerId;
-        //if (_state.ReaderToPeer.PeerType == PeerType.Channel || _state.ReaderToPeer.PeerType == PeerType.Chat)
-        {
-            var command = new CreateReadingHistoryCommand(ReadingHistoryId.Create(_state.ReaderUserId,
-                    //toPeerId,
-                    toPeerId,
-                    senderMsgId),
-                _state.ReaderUserId,
-                toPeerId,
-                senderMsgId,
-                DateTime.UtcNow.ToTimestamp());
-
-            Publish(command);
-        }
-    }
-
-    private static Peer GetToPeerForSender(Peer readerToPeer,
-        long readerPeerId)
-    {
-        if (readerToPeer.PeerType == PeerType.User)
-        {
-            return new Peer(PeerType.User, readerPeerId);
-        }
-
-        return readerToPeer;
-    }
-
-    private void HandleReadHistoryCompleted(bool outboxAlreadyRead = false)
-    {
-        if (_state.ReadHistoryCompleted || outboxAlreadyRead)
-        {
-            //Complete();
-            Emit(new ReadHistoryCompletedEvent(_state.RequestInfo,
-                _state.SenderIsBot,
-                _state.ReaderUserId,
-                _state.ReaderMessageId,
-                _state.ReaderPts,
-                _state.ReaderToPeer,
-                _state.SenderPeerId,
-                _state.SenderPts,
-                _state.SenderMessageId,
-                _state.IsOut,
-                outboxAlreadyRead,
-                _state.SourceCommandId
-            ));
-        }
-    }
-
-    //private void IncrementPts(long peerId, PtsChangeReason reason, Guid correlationId)
-    //{
-    //    var incrementPtsCommand = new IncrementPtsCommand(PtsId.Create(peerId), reason, correlationId);
-    //    Publish(incrementPtsCommand);
-    //}
-
-    private async Task IncrementPtsAsync(long peerId,
-        int readCount,
-        int unreadCount,
-        PtsChangeReason reason)
-    {
-        var pts = await _idGenerator.NextIdAsync(IdType.Pts, peerId);
-
-        var requestInfo = _state.RequestInfo;
-        if (reason == PtsChangeReason.OutboxMessageHasRead)
-        {
-            requestInfo = _state.RequestInfo with { PermAuthKeyId = 0 };
-        }
-
-        Emit(new ReadHistoryPtsIncrementEvent(
-            requestInfo,
-            peerId,
-            pts,
-            readCount,
-            unreadCount,
-            reason));
-        HandleReadHistoryCompleted();
-    }
-
-    //protected override Task LoadSnapshotAsync(ReadHistorySagaSnapshot snapshot,
-    //    ISnapshotMetadata metadata,
-    //    CancellationToken cancellationToken)
-    //{
-    //    _state.LoadSnapshot(snapshot);
-    //    return Task.CompletedTask;
-    //}
-
-    private void SendReadOutboxMessageCommand(
-        long senderPeerId,
-        Peer toPeer,
-        int senderMessageId)
-    {
-        var senderDialogId = DialogId.Create(senderPeerId, toPeer);
-        var outboxMessageHasReadCommand = new OutboxMessageHasReadCommand(senderDialogId,
-            _state.RequestInfo,
-            senderMessageId,
-            senderPeerId,
-            toPeer);
-        Publish(outboxMessageHasReadCommand);
-    }
-}

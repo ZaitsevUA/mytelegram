@@ -1,18 +1,11 @@
 ﻿namespace MyTelegram.Domain.Events.Chat;
 
-public class ClearGroupChatHistoryStartedEvent : RequestAggregateEvent2<ChatAggregate, ChatId>
+public class ClearGroupChatHistoryStartedEvent(
+    RequestInfo requestInfo,
+    long chatId,
+    IReadOnlyList<ChatMember> memberUidList)
+    : RequestAggregateEvent2<ChatAggregate, ChatId>(requestInfo)
 {
-    public ClearGroupChatHistoryStartedEvent(
-        RequestInfo requestInfo,
-        long chatId,
-        IReadOnlyList<ChatMember> memberUidList) : base(requestInfo)
-    {
-        ChatId = chatId;
-        MemberUidList = memberUidList;
-
-    }
-
-    public long ChatId { get; }
-    public IReadOnlyList<ChatMember> MemberUidList { get; }
-
+    public long ChatId { get; } = chatId;
+    public IReadOnlyList<ChatMember> MemberUidList { get; } = memberUidList;
 }

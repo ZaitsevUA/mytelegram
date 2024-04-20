@@ -1,15 +1,11 @@
 ﻿namespace MyTelegram.Domain.Aggregates.Dialog;
 
-public class DialogFilterUpdatedEvent : RequestAggregateEvent2<DialogFilterAggregate, DialogFilterId>
+public class DialogFilterUpdatedEvent(
+    RequestInfo requestInfo,
+    long ownerUserId,
+    DialogFilter filter)
+    : RequestAggregateEvent2<DialogFilterAggregate, DialogFilterId>(requestInfo)
 {
-    public DialogFilterUpdatedEvent(RequestInfo requestInfo,
-        long ownerUserId,
-        DialogFilter filter) : base(requestInfo)
-    {
-        OwnerUserId = ownerUserId;
-        Filter = filter;
-    }
-
-    public long OwnerUserId { get; }
-    public DialogFilter Filter { get; }
+    public long OwnerUserId { get; } = ownerUserId;
+    public DialogFilter Filter { get; } = filter;
 }

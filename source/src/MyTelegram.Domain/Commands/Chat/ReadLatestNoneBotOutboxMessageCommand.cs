@@ -1,13 +1,10 @@
 ﻿namespace MyTelegram.Domain.Commands.Chat;
 
-public class ReadLatestNoneBotOutboxMessageCommand : RequestCommand2<ChatAggregate, ChatId, IExecutionResult>
+public class ReadLatestNoneBotOutboxMessageCommand(
+    ChatId aggregateId,
+    RequestInfo requestInfo,
+    string sourceCommandId)
+    : RequestCommand2<ChatAggregate, ChatId, IExecutionResult>(aggregateId, requestInfo)
 {
-    public ReadLatestNoneBotOutboxMessageCommand(ChatId aggregateId,
-        RequestInfo requestInfo,
-        string sourceCommandId) : base(aggregateId, requestInfo)
-    {
-        SourceCommandId = sourceCommandId;
-    }
-
-    public string SourceCommandId { get; }
+    public string SourceCommandId { get; } = sourceCommandId;
 }

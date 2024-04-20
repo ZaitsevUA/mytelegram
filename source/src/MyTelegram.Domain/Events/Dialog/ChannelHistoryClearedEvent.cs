@@ -1,13 +1,11 @@
 ﻿namespace MyTelegram.Domain.Events.Dialog;
 
-public class ChannelHistoryClearedEvent : RequestAggregateEvent2<DialogAggregate, DialogId>
+public class ChannelHistoryClearedEvent(RequestInfo requestInfo,
+        long channelId,
+        int historyMinId)
+    : RequestAggregateEvent2<DialogAggregate, DialogId>(requestInfo)
 {
-    public ChannelHistoryClearedEvent(RequestInfo requestInfo,
-        int historyMinId) : base(requestInfo)
-    {
-        HistoryMinId = historyMinId;
-    }
-
     //public long OwnerPeerId { get; }
-    public int HistoryMinId { get; }
+    public long ChannelId { get; } = channelId;
+    public int HistoryMinId { get; } = historyMinId;
 }

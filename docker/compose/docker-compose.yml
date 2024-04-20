@@ -241,6 +241,8 @@ services:
        App__DcOptions__1__Port: ${DcOptions1Port}
        App__DcOptions__1__Ipv6: ${DcOptions1Ipv6}
        App__FixedVerifyCode: ${FixedVerifyCode}
+       App__VerificationCodeLength: ${VerificationCodeLength}
+       App__VerificationCodeExpirationSeconds: ${VerificationCodeExpirationSeconds}
        App__DatabaseName: ${DatabaseName}
        App__QueryServerEventStoreDatabaseName: ${QueryServerEventStoreDatabaseName}
        App__QueryServerReadModelDatabaseName: ${QueryServerReadModelDatabaseName}
@@ -280,6 +282,8 @@ services:
        App__DcOptions__1__Port: ${DcOptions1Port}
        App__DcOptions__1__Ipv6: ${DcOptions1Ipv6}
        App__FixedVerifyCode: ${FixedVerifyCode}
+       App__VerificationCodeLength: ${VerificationCodeLength}
+       App__VerificationCodeExpirationSeconds: ${VerificationCodeExpirationSeconds}
        App__DatabaseName: ${DatabaseName}
        App__QueryServerEventStoreDatabaseName: ${QueryServerEventStoreDatabaseName}
        App__QueryServerReadModelDatabaseName: ${QueryServerReadModelDatabaseName}
@@ -311,7 +315,11 @@ services:
       TwilioSms__AccountSId: ${TwilioSmsAccountSId}
       TwilioSms__AuthToken: ${TwilioSmsAuthToken}
       TwilioSms__FromNumber: ${TwilioSmsFromNumber}
-      
+      VonageSms__Enabled: ${VonageSmsEnabled}
+      VonageSms__BrandName: ${VonageSmsBrandName}
+      VonageSms__ApiKey: ${VonageSmsApiKey}
+      VonageSms__ApiSecret: ${VonageSmsApiSecret}
+
     volumes:
       - ./data/mytelegram/sms-sender/logs:/data/Logs
     depends_on:

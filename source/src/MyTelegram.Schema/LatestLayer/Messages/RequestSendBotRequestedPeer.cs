@@ -4,7 +4,7 @@
 namespace MyTelegram.Schema.Messages;
 
 ///<summary>
-/// Send a chosen peer, as requested by a <a href="https://corefork.telegram.org/constructor/keyboardButtonRequestPeer">keyboardButtonRequestPeer</a> button.
+/// Send one or more chosen peers, as requested by a <a href="https://corefork.telegram.org/constructor/keyboardButtonRequestPeer">keyboardButtonRequestPeer</a> button.
 /// See <a href="https://corefork.telegram.org/method/messages.sendBotRequestedPeer" />
 ///</summary>
 [TlObject(0x91b2d060)]
@@ -26,6 +26,10 @@ public sealed class RequestSendBotRequestedPeer : IRequest<MyTelegram.Schema.IUp
     /// The <code>button_id</code> field from the <a href="https://corefork.telegram.org/constructor/keyboardButtonRequestPeer">keyboardButtonRequestPeer</a> constructor.
     ///</summary>
     public int ButtonId { get; set; }
+
+    ///<summary>
+    /// The chosen peers.
+    ///</summary>
     public TVector<MyTelegram.Schema.IInputPeer> RequestedPeers { get; set; }
 
     public void ComputeFlag()

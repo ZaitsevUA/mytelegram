@@ -1,18 +1,12 @@
 ﻿namespace MyTelegram.Domain.Events.Contact;
 
-public class ContactsImportedEvent : RequestAggregateEvent2<ImportedContactAggregate, ImportedContactId>
+public class ContactsImportedEvent(
+    RequestInfo requestInfo,
+    long selfUserId,
+    IReadOnlyCollection<PhoneContact> phoneContacts)
+    : RequestAggregateEvent2<ImportedContactAggregate, ImportedContactId>(requestInfo)
 {
-    public ContactsImportedEvent(RequestInfo requestInfo,
-        long selfUserId,
-        IReadOnlyCollection<PhoneContact> phoneContacts) : base(requestInfo)
-    {
-        SelfUserId = selfUserId;
-        PhoneContacts = phoneContacts;
+    public IReadOnlyCollection<PhoneContact> PhoneContacts { get; } = phoneContacts;
 
-    }
-
-    public IReadOnlyCollection<PhoneContact> PhoneContacts { get; }
-
-    public long SelfUserId { get; }
-
+    public long SelfUserId { get; } = selfUserId;
 }

@@ -1,12 +1,8 @@
 ﻿namespace MyTelegram.Domain.Aggregates.PushUpdates;
 
 [JsonConverter(typeof(SystemTextJsonSingleValueObjectConverter<PushUpdatesId>))]
-public class PushUpdatesId : MyIdentity<PushUpdatesId>
+public class PushUpdatesId(string value) : Identity<PushUpdatesId>(value)
 {
-    public PushUpdatesId(string value) : base(value)
-    {
-    }
-
     public static PushUpdatesId Create(long peerId,
         long excludeAuthKeyId,
         long excludeUid,

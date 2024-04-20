@@ -1,12 +1,8 @@
 ﻿namespace MyTelegram.Domain.Aggregates.Dialog;
 
-public class DialogFilterDeletedEvent : RequestAggregateEvent2<DialogFilterAggregate, DialogFilterId>
+public class DialogFilterDeletedEvent(
+    RequestInfo requestInfo,
+    int filterId) : RequestAggregateEvent2<DialogFilterAggregate, DialogFilterId>(requestInfo)
 {
-    public DialogFilterDeletedEvent(RequestInfo requestInfo,
-        int filterId) : base(requestInfo)
-    {
-        FilterId = filterId;
-    }
-
-    public int FilterId { get; }
+    public int FilterId { get; } = filterId;
 }

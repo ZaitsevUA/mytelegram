@@ -1,21 +1,15 @@
 ﻿namespace MyTelegram.Domain.Commands.Poll;
 
-public class CreateVoteAnswerCommand : Command<PollAggregate, PollId, IExecutionResult>
+public class CreateVoteAnswerCommand(
+    PollId aggregateId,
+    long pollId,
+    long voterPeerId,
+    string option,
+    bool correct)
+    : Command<PollAggregate, PollId, IExecutionResult>(aggregateId)
 {
-    public CreateVoteAnswerCommand(PollId aggregateId,
-        long pollId,
-        long voterPeerId,
-        string option,
-        bool correct) : base(aggregateId)
-    {
-        PollId = pollId;
-        VoterPeerId = voterPeerId;
-        Option = option;
-        Correct = correct;
-    }
-
-    public long PollId { get; }
-    public long VoterPeerId { get; }
-    public string Option { get; }
-    public bool Correct { get; }
+    public long PollId { get; } = pollId;
+    public long VoterPeerId { get; } = voterPeerId;
+    public string Option { get; } = option;
+    public bool Correct { get; } = correct;
 }

@@ -9,6 +9,12 @@ public class MessageAggregate : SnapshotAggregateRoot<MessageAggregate, MessageI
         Register(_state);
     }
 
+    public void AddInboxItemsToOutboxMessage(List<InboxItem> inboxItems)
+    {
+        Specs.AggregateIsCreated.ThrowDomainErrorIfNotSatisfied(this);
+        Emit(new InboxItemsAddedToOutboxMessageEvent(inboxItems));
+    }
+
     /// <summary>
     ///     Sender's message id and receiver's message id are independent,add receiver's message id to sender,delete messages
     ///     and pin messages need this
@@ -31,12 +37,6 @@ public class MessageAggregate : SnapshotAggregateRoot<MessageAggregate, MessageI
         Emit(new InboxMessageCreatedEvent(requestInfo, inboxMessageItem, senderMessageId));
     }
 
-    public void AddInboxItemsToOutboxMessage(List<InboxItem> inboxItems)
-    {
-        Specs.AggregateIsCreated.ThrowDomainErrorIfNotSatisfied(this);
-        Emit(new InboxItemsAddedToOutboxMessageEvent(inboxItems));
-    }
-
     public void CreateOutboxMessage(RequestInfo requestInfo,
         MessageItem outboxMessageItem,
         List<long>? mentionedUserIds,
@@ -47,6 +47,16 @@ public class MessageAggregate : SnapshotAggregateRoot<MessageAggregate, MessageI
         List<long>? chatMembers)
     {
         Specs.AggregateIsNew.ThrowDomainErrorIfNotSatisfied(this);
+        if (outboxMessageItem.Post)
+        {
+            var reply = new MessageReply(linkedChannelId, 0, 0, null, null);
+            outboxMessageItem = outboxMessageItem with { Views = 1, Reply = reply };
+        }
+        if (!outboxMessageItem.BatchId.HasValue)
+        {
+            outboxMessageItem = outboxMessageItem with { BatchId = SequentialGuid.Create() };
+        }
+
         Emit(new OutboxMessageCreatedEvent(requestInfo,
             outboxMessageItem,
             mentionedUserIds,
@@ -58,24 +68,26 @@ public class MessageAggregate : SnapshotAggregateRoot<MessageAggregate, MessageI
         ));
     }
 
-    protected override Task<MessageSnapshot> CreateSnapshotAsync(CancellationToken cancellationToken)
-    {
-        return Task.FromResult(new MessageSnapshot(_state.MessageItem,
-            _state.InboxItems,
-            _state.SenderMessageId,
-            _state.Pinned,
-            _state.EditDate,
-            _state.Edited,
-            _state.Pts,
-            _state.RecentRepliers.ToList()));
-    }
-
-    public void DeleteInboxMessage(Guid correlationId)
+    public void DeleteChannelMessage(RequestInfo requestInfo)
     {
         Specs.AggregateIsCreated.ThrowDomainErrorIfNotSatisfied(this);
-        Emit(new InboxMessageDeletedEvent(_state.MessageItem.OwnerPeer.PeerId,
+        Emit(new ChannelMessageDeletedEvent(requestInfo,
+            _state.MessageItem.OwnerPeer.PeerId,
             _state.MessageItem.MessageId,
-            correlationId));
+            _state.MessageItem.IsForwardFromChannelPost,
+            _state.MessageItem.FwdHeader?.SavedFromPeer?.PeerId,
+            _state.MessageItem.FwdHeader?.SavedFromMsgId));
+    }
+
+    public void DeleteInboxMessage(RequestInfo requestInfo)
+    {
+        Specs.AggregateIsCreated.ThrowDomainErrorIfNotSatisfied(this);
+        Emit(new InboxMessageDeletedEvent(
+            requestInfo,
+            _state.MessageItem.OwnerPeer.PeerId,
+            _state.MessageItem.MessageId,
+            _state.SenderMessageId
+        ));
     }
 
     public void DeleteMessage(RequestInfo requestInfo, int messageId)
@@ -83,6 +95,7 @@ public class MessageAggregate : SnapshotAggregateRoot<MessageAggregate, MessageI
         Specs.AggregateIsCreated.ThrowDomainErrorIfNotSatisfied(this);
         Emit(new MessageDeletedEvent(
             requestInfo,
+            _state.MessageItem.ToPeer,
             _state.MessageItem.OwnerPeer.PeerId,
             messageId,
             _state.MessageItem.IsOut,
@@ -95,8 +108,9 @@ public class MessageAggregate : SnapshotAggregateRoot<MessageAggregate, MessageI
     public void DeleteMessage(RequestInfo requestInfo)
     {
         Specs.AggregateIsCreated.ThrowDomainErrorIfNotSatisfied(this);
-        Emit(new MessageDeletedEvent(
+        Emit(new MessageDeleted4Event(
             requestInfo,
+            _state.MessageItem.ToPeer,
             _state.MessageItem.OwnerPeer.PeerId,
             _state.MessageItem.MessageId,
             _state.MessageItem.IsOut,
@@ -104,7 +118,24 @@ public class MessageAggregate : SnapshotAggregateRoot<MessageAggregate, MessageI
             _state.SenderMessageId,
             _state.InboxItems));
     }
-
+    public void DeleteMessage4(RequestInfo requestInfo)
+    {
+        Specs.AggregateIsCreated.ThrowDomainErrorIfNotSatisfied(this);
+        Emit(new MessageDeleted4Event(
+            requestInfo,
+            _state.MessageItem.ToPeer,
+            _state.MessageItem.OwnerPeer.PeerId,
+            _state.MessageItem.MessageId,
+            _state.MessageItem.IsOut,
+            _state.MessageItem.SenderPeer.PeerId,
+            _state.SenderMessageId,
+            _state.InboxItems
+        ));
+    }
+    public void DeleteOtherParticipantMessage(RequestInfo requestInfo)
+    {
+        Specs.AggregateIsCreated.ThrowDomainErrorIfNotSatisfied(this);
+    }
 
     public void DeleteOtherPartyMessage(RequestInfo requestInfo)
     {
@@ -115,13 +146,14 @@ public class MessageAggregate : SnapshotAggregateRoot<MessageAggregate, MessageI
             _state.MessageItem.MessageId));
     }
 
-    public void DeleteOutboxMessage(Guid correlationId)
+    public void DeleteOutboxMessage(RequestInfo requestInfo)
     {
         Specs.AggregateIsCreated.ThrowDomainErrorIfNotSatisfied(this);
-        Emit(new OutboxMessageDeletedEvent(_state.MessageItem.OwnerPeer.PeerId,
+        Emit(new OutboxMessageDeletedEvent(
+            requestInfo,
+            _state.MessageItem.OwnerPeer.PeerId,
             _state.MessageItem.MessageId,
-            _state.InboxItems,
-            correlationId));
+            _state.InboxItems));
     }
 
     public void DeleteSelfMessage(RequestInfo requestInfo, int messageId)
@@ -200,7 +232,6 @@ public class MessageAggregate : SnapshotAggregateRoot<MessageAggregate, MessageI
         Emit(new MessageForwardedEvent(requestInfo, randomId, _state.MessageItem));
     }
 
-
     public void IncrementViews()
     {
         //Specs.AggregateIsCreated.ThrowDomainErrorIfNotSatisfied(this);
@@ -210,14 +241,12 @@ public class MessageAggregate : SnapshotAggregateRoot<MessageAggregate, MessageI
         }
     }
 
-    protected override Task LoadSnapshotAsync(MessageSnapshot snapshot,
-        ISnapshotMetadata metadata,
-        CancellationToken cancellationToken)
+    public void PinChannelMessage(RequestInfo requestInfo)
     {
-        _state.LoadSnapshot(snapshot);
-        return Task.CompletedTask;
+        Specs.AggregateIsCreated.ThrowDomainErrorIfNotSatisfied(this);
+        Emit(new ChannelMessagePinnedEvent(requestInfo, _state.MessageItem.ToPeer.PeerId,
+            _state.MessageItem.MessageId));
     }
-
     public void ReadInboxHistory(RequestInfo requestInfo,
         long readerUid)
     {
@@ -232,88 +261,69 @@ public class MessageAggregate : SnapshotAggregateRoot<MessageAggregate, MessageI
         ));
     }
 
-    public void ReplyToMessage( /*int messageId*/ RequestInfo requestInfo)
+    public void ReplyToMessage(RequestInfo requestInfo, Peer replierPeer, int repliesPts, int messageId)
     {
         Specs.AggregateIsCreated.ThrowDomainErrorIfNotSatisfied(this);
-        Emit(new ReplyToMessageEvent(requestInfo, _state.SenderMessageId, _state.InboxItems));
-    }
+        var reply = _state.Reply ?? new MessageReply(null, 0, repliesPts, messageId, new List<Peer>());
+        reply.Replies++;
+        var recentRepliers = reply.RecentRepliers ?? new List<Peer>();
+        var peer = recentRepliers.FirstOrDefault(p => p.PeerId == replierPeer.PeerId);
+        if (peer != null)
+        {
+            recentRepliers.Remove(peer);
+        }
 
-    public void StartDeleteMessages(RequestInfo requestInfo,
-        bool revoke,
-        IReadOnlyList<int> idList,
-        long? chatCreatorId)
-    {
-        Specs.AggregateIsCreated.ThrowDomainErrorIfNotSatisfied(this);
-        Emit(new DeleteMessagesStartedEvent(requestInfo,
-            _state.MessageItem.OwnerPeer.PeerId,
-            _state.MessageItem.IsOut,
-            _state.MessageItem.SenderPeer.PeerId,
-            _state.SenderMessageId,
-            _state.MessageItem.ToPeer,
-            idList,
-            revoke,
-            _state.InboxItems,
-            chatCreatorId));
-    }
-
-    public void StartForwardMessage(RequestInfo requestInfo,
-        Peer fromPeer,
-        Peer toPeer,
-        IReadOnlyList<int> idList,
-        IReadOnlyList<long> randomIdList,
-        bool forwardFromLinkedChannel)
-    {
-        Specs.AggregateIsCreated.ThrowDomainErrorIfNotSatisfied(this);
-        Emit(new ForwardMessageStartedEvent(requestInfo,
-            fromPeer,
-            toPeer,
-            idList,
-            randomIdList,
-            forwardFromLinkedChannel));
-    }
-
-    public void StartReplyToMessage(RequestInfo requestInfo, Peer replierPeer, IInputReplyTo inputReplyTo)
-    {
-        Specs.AggregateIsCreated.ThrowDomainErrorIfNotSatisfied(this);
-        var recentRepliers = _state.RecentRepliers.ToList();
-        recentRepliers.RemoveAll(p => p.PeerId == replierPeer.PeerId);
-
-        if (recentRepliers.Count >= MyTelegramServerDomainConsts.MaxRecentRepliersCount)
+        if (recentRepliers.Count > MyTelegramServerDomainConsts.MaxRecentRepliersCount)
         {
             recentRepliers.RemoveAt(MyTelegramServerDomainConsts.MaxRecentRepliersCount - 1);
         }
 
         recentRepliers.Insert(0, replierPeer);
-        Emit(new ReplyToMessageStartedEvent(
-            requestInfo,
-            inputReplyTo,
-            _state.MessageItem.IsOut,
-            _state.InboxItems,
-            _state.MessageItem.OwnerPeer,
-            _state.MessageItem.SenderPeer,
-            _state.MessageItem.ToPeer,
-            _state.SenderMessageId,
-            _state.MessageItem.FwdHeader?.SavedFromPeer?.PeerId,
-            _state.MessageItem.FwdHeader?.SavedFromMsgId,
-            recentRepliers));
+
+        long? postChannelId = null;
+        int? postMessageId = null;
+        if (_state.MessageItem.FwdHeader?.ForwardFromLinkedChannel ?? false)
+        {
+            postChannelId = _state.MessageItem.PostChannelId;
+            postMessageId = _state.MessageItem.PostMessageId;
+        }
+
+        Emit(new ReplyChannelMessageCompletedEvent(requestInfo, _state.MessageItem.ToPeer.PeerId,
+            _state.MessageItem.MessageId, reply, postChannelId, postMessageId));
     }
 
+    //public void StartForwardMessage(RequestInfo requestInfo,
+    //    Peer fromPeer,
+    //    Peer toPeer,
+    //    IReadOnlyList<int> idList,
+    //    IReadOnlyList<long> randomIdList,
+    //    bool forwardFromLinkedChannel)
+    //{
+    //    Specs.AggregateIsCreated.ThrowDomainErrorIfNotSatisfied(this);
+    //    Emit(new ForwardMessageStartedEvent(requestInfo,
+    //        fromPeer,
+    //        toPeer,
+    //        idList,
+    //        randomIdList,
+    //        forwardFromLinkedChannel));
+    //}
 
-    public void StartSendMessage(RequestInfo requestInfo,
-        MessageItem outMessageItem,
-        List<long>? mentionedUserIds,
-        bool clearDraft,
-        int groupItemCount,
-        bool forwardFromLinkedChannel)
-    {
-        Specs.AggregateIsNew.ThrowDomainErrorIfNotSatisfied(this);
-        Emit(new SendMessageStartedEvent(requestInfo,
-            outMessageItem,
-            mentionedUserIds,
-            clearDraft,
-            groupItemCount,
-            forwardFromLinkedChannel));
-    }
+
+    //public void StartSendMessage(RequestInfo requestInfo,
+    //    MessageItem outMessageItem,
+    //    List<long>? mentionedUserIds,
+    //    bool clearDraft,
+    //    int groupItemCount,
+    //    bool forwardFromLinkedChannel)
+    //{
+    //    Specs.AggregateIsNew.ThrowDomainErrorIfNotSatisfied(this);
+    //    Emit(new SendMessageStartedEvent(requestInfo,
+    //        outMessageItem,
+    //        mentionedUserIds,
+    //        clearDraft,
+    //        groupItemCount,
+    //        forwardFromLinkedChannel));
+    //}
 
     public void StartUpdatePinnedMessage(RequestInfo requestInfo,
         bool pinned,
@@ -369,6 +379,12 @@ public class MessageAggregate : SnapshotAggregateRoot<MessageAggregate, MessageI
             _state.Pts));
     }
 
+    public void UpdateMessageRely(int pts)
+    {
+        Specs.AggregateIsCreated.ThrowDomainErrorIfNotSatisfied(this);
+        Emit(new MessageReplyUpdatedEvent(_state.MessageItem.OwnerPeer.PeerId,
+            MyTelegramServerDomainConsts.DeletedChannelIdForChannelPost, _state.MessageItem.MessageId, pts));
+    }
     public void UpdateOutboxMessagePinned(
         RequestInfo requestInfo,
         bool pinned,
@@ -392,5 +408,26 @@ public class MessageAggregate : SnapshotAggregateRoot<MessageAggregate, MessageI
             item.ToPeer,
             _state.Pts
         ));
+    }
+
+    protected override Task<MessageSnapshot> CreateSnapshotAsync(CancellationToken cancellationToken)
+    {
+        return Task.FromResult(new MessageSnapshot(_state.MessageItem,
+            _state.InboxItems,
+            _state.SenderMessageId,
+            _state.Pinned,
+            _state.EditDate,
+            _state.Edited,
+            _state.Pts,
+            _state.Reply
+        ));
+    }
+
+    protected override Task LoadSnapshotAsync(MessageSnapshot snapshot,
+        ISnapshotMetadata metadata,
+        CancellationToken cancellationToken)
+    {
+        _state.LoadSnapshot(snapshot);
+        return Task.CompletedTask;
     }
 }

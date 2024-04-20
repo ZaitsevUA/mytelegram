@@ -4,7 +4,7 @@
 namespace MyTelegram.Schema.Account;
 
 ///<summary>
-/// Get all available chat themes
+/// Get all available chat <a href="https://corefork.telegram.org/api/themes">themes »</a>.
 /// See <a href="https://corefork.telegram.org/method/account.getChatThemes" />
 ///</summary>
 [TlObject(0xd638de89)]

@@ -1,8 +1,4 @@
 ﻿namespace MyTelegram.Domain.Commands.User;
 
-public class CheckUserStatusCommand : RequestCommand2<UserAggregate, UserId, IExecutionResult>
-{
-    public CheckUserStatusCommand(UserId aggregateId, RequestInfo requestInfo) : base(aggregateId, requestInfo)
-    {
-    }
-}
+public class CheckUserStatusCommand(UserId aggregateId, RequestInfo requestInfo)
+    : RequestCommand2<UserAggregate, UserId, IExecutionResult>(aggregateId, requestInfo);

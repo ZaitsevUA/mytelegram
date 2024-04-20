@@ -76,7 +76,7 @@ internal sealed class GetDifferenceHandler : RpcResultObjectHandler<MyTelegram.S
         }
 
         var joinedChannelIdList = await _queryProcessor
-            .ProcessAsync(new GetChannelIdListByMemberUidQuery(input.UserId), default);
+            .ProcessAsync(new GetChannelIdListByMemberUserIdQuery(input.UserId), default);
 
         if (joinedChannelIdList.Count == 0)
         {

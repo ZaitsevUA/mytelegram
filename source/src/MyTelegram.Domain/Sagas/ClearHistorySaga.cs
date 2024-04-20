@@ -138,15 +138,16 @@ public class ClearHistorySaga : MyInMemoryAggregateSaga<ClearHistorySaga, ClearH
                     new Peer(PeerType.User, ownerPeerId),
                     _state.ToPeer,
                     new Peer(PeerType.User, _state.RequestInfo.UserId),
+                    _state.RequestInfo.UserId,
                     outMessageId,
                     string.Empty,
                     DateTime.UtcNow.ToTimestamp(),
                     _state.RandomId,
                     true,
                     SendMessageType.MessageService,
-                    messageSubType: MessageSubType.ClearHistory,
-                    messageActionData: _state.MessageActionData,
-                    messageActionType: MessageActionType.HistoryClear);
+                    MessageSubType: MessageSubType.ClearHistory,
+                    MessageActionData: _state.MessageActionData,
+                    MessageActionType: MessageActionType.HistoryClear);
                 var command = new CreateOutboxMessageCommand(aggregateId, _state.RequestInfo with { RequestId = Guid.NewGuid() }, messageItem);
                 Publish(command);
 

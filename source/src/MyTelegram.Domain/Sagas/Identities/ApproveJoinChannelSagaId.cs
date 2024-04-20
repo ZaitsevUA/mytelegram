@@ -1,9 +1,4 @@
 namespace MyTelegram.Domain.Sagas.Identities;
 
 [JsonConverter(typeof(SystemTextJsonSingleValueObjectConverter<ApproveJoinChannelSagaId>))]
-public class ApproveJoinChannelSagaId : SingleValueObject<string>, ISagaId
-{
-    public ApproveJoinChannelSagaId(string value) : base(value)
-    {
-    }
-}
+public class ApproveJoinChannelSagaId(string value) : SingleValueObject<string>(value), ISagaId;

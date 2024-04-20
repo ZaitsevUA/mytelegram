@@ -2,28 +2,24 @@
 
 namespace MyTelegram.Messenger.QueryServer.DomainEventHandlers;
 
-public class DialogDomainEventHandler : DomainEventHandlerBase,
-    ISubscribeSynchronousTo<DialogAggregate, DialogId, ChannelHistoryClearedEvent>,
-    ISubscribeSynchronousTo<DialogAggregate, DialogId, DialogPinChangedEvent>,
-    ISubscribeSynchronousTo<DialogFilterAggregate, DialogFilterId, DialogFilterUpdatedEvent>,
-    ISubscribeSynchronousTo<DialogFilterAggregate, DialogFilterId, DialogFilterDeletedEvent>
+public class DialogDomainEventHandler(
+    IObjectMessageSender objectMessageSender,
+    ICommandBus commandBus,
+    IIdGenerator idGenerator,
+    IAckCacheService ackCacheService,
+    IResponseCacheAppService responseCacheAppService,
+    IObjectMapper objectMapper)
+    : DomainEventHandlerBase(objectMessageSender,
+            commandBus,
+            idGenerator,
+            ackCacheService,
+            responseCacheAppService),
+        ISubscribeSynchronousTo<DialogAggregate, DialogId, ChannelHistoryClearedEvent>,
+        ISubscribeSynchronousTo<DialogAggregate, DialogId, DialogPinChangedEvent>,
+        ISubscribeSynchronousTo<DialogFilterAggregate, DialogFilterId, DialogFilterUpdatedEvent>,
+        ISubscribeSynchronousTo<DialogFilterAggregate, DialogFilterId, DialogFilterDeletedEvent>
 
 {
-    private readonly IObjectMapper _objectMapper;
-    public DialogDomainEventHandler(IObjectMessageSender objectMessageSender,
-        ICommandBus commandBus,
-        IIdGenerator idGenerator,
-        IAckCacheService ackCacheService,
-        IResponseCacheAppService responseCacheAppService,
-        IObjectMapper objectMapper) : base(objectMessageSender,
-        commandBus,
-        idGenerator,
-        ackCacheService,
-        responseCacheAppService)
-    {
-        _objectMapper = objectMapper;
-    }
-
     public async Task HandleAsync(IDomainEvent<DialogAggregate, DialogId, ChannelHistoryClearedEvent> domainEvent,
         CancellationToken cancellationToken)
     {
@@ -64,7 +60,7 @@ public class DialogDomainEventHandler : DomainEventHandlerBase,
         IDialogFilter? filter = null;
         if (dialogFilter != null)
         {
-            filter = _objectMapper.Map<DialogFilter, TDialogFilter>(dialogFilter);
+            filter = objectMapper.Map<DialogFilter, TDialogFilter>(dialogFilter);
         }
 
         var updates = new TUpdateShort

@@ -62,11 +62,13 @@ internal sealed class SetDiscussionGroupHandler : RpcResultObjectHandler<MyTeleg
                 throw new ArgumentOutOfRangeException();
         }
 
-        var command = new SetDiscussionGroupCommand(ChannelId.Create(broadcastChannel.ChannelId),
-            input.ToRequestInfo(),
-            input.UserId,
-            broadcastChannel.ChannelId,
-            groupId);
+        //var command = new SetDiscussionGroupCommand(ChannelId.Create(broadcastChannel.ChannelId),
+        //    input.ToRequestInfo(),
+        //    input.UserId,
+        //    broadcastChannel.ChannelId,
+        //    groupId);
+        var command =
+            new StartSetDiscussionGroupCommand(TempId.New, input.ToRequestInfo(), broadcastChannel.ChannelId, groupId);
         await _commandBus.PublishAsync(command, CancellationToken.None);
         return null!;
     }

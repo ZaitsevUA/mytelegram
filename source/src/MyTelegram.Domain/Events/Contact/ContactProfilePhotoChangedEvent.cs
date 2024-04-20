@@ -1,27 +1,17 @@
 ﻿namespace MyTelegram.Domain.Events.Contact;
 
-public class ContactProfilePhotoChangedEvent : RequestAggregateEvent2<ContactAggregate, ContactId>
+public class ContactProfilePhotoChangedEvent(
+    RequestInfo requestInfo,
+    long selfUserId,
+    long targetUserId,
+    long photoId,
+    bool suggest,
+    string? messageActionData)
+    : RequestAggregateEvent2<ContactAggregate, ContactId>(requestInfo)
 {
-    public long SelfUserId { get; }
-    public long TargetUserId { get; }
-    public long PhotoId { get; }
-    public bool Suggest { get; }
-    public string? MessageActionData { get; }
-
-    public ContactProfilePhotoChangedEvent(RequestInfo requestInfo,
-        long selfUserId,
-        long targetUserId,
-        long photoId,
-        bool suggest,
-        string? messageActionData) : base(requestInfo)
-    {
-        SelfUserId = selfUserId;
-        TargetUserId = targetUserId;
-        PhotoId = photoId;
-        Suggest = suggest;
-        MessageActionData = messageActionData;
-        
-    }
-
-    
+    public long SelfUserId { get; } = selfUserId;
+    public long TargetUserId { get; } = targetUserId;
+    public long PhotoId { get; } = photoId;
+    public bool Suggest { get; } = suggest;
+    public string? MessageActionData { get; } = messageActionData;
 }

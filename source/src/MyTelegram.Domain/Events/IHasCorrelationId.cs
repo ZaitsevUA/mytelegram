@@ -1,6 +1,6 @@
-﻿namespace MyTelegram.Domain.Events;
+﻿//namespace MyTelegram.Domain.Events;
 
-public interface IHasCorrelationId
-{
-    Guid CorrelationId { get; }
-}
+//public interface IHasCorrelationId
+//{
+//    Guid CorrelationId { get; }
+//}

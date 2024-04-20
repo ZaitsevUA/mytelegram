@@ -1,29 +1,31 @@
 ﻿namespace MyTelegram.Domain.Commands.Channel;
 
-public class CreateChannelMemberCommand : /*Request*/RequestCommand2<ChannelMemberAggregate, ChannelMemberId, IExecutionResult>
+public class CreateChannelMemberCommand(
+    ChannelMemberId aggregateId,
+    RequestInfo requestInfo,
+    long channelId,
+    long userId,
+    long inviterId,
+    int date,
+    bool isBot,
+    long? chatInviteId,
+    ChatJoinType chatJoinType = ChatJoinType.InvitedByAdmin)
+    : /*Request*/RequestCommand2<ChannelMemberAggregate, ChannelMemberId, IExecutionResult>(aggregateId, requestInfo)
 {
-    public CreateChannelMemberCommand(ChannelMemberId aggregateId,
-        //long reqMsgId,
-        RequestInfo requestInfo,
-        long channelId,
-        long userId,
-        long inviterId,
-        int date,
-        bool isBot,
-        long? chatInviteId) : base(aggregateId, requestInfo)
-    {
-        ChannelId = channelId;
-        UserId = userId;
-        InviterId = inviterId;
-        Date = date;
-        IsBot = isBot;
-        ChatInviteId = chatInviteId;
-    }
+    //long reqMsgId,
 
-    public long ChannelId { get; }
-    public int Date { get; }
-    public long InviterId { get; }
-    public bool IsBot { get; }
-    public long? ChatInviteId { get; }
-    public long UserId { get; }
+    public long ChannelId { get; } = channelId;
+    public int Date { get; } = date;
+    public long InviterId { get; } = inviterId;
+    public bool IsBot { get; } = isBot;
+    public long? ChatInviteId { get; } = chatInviteId;
+    public ChatJoinType ChatJoinType { get; } = chatJoinType;
+    public long UserId { get; } = userId;
+
+    protected override IEnumerable<byte[]> GetSourceIdComponents()
+    {
+        yield return BitConverter.GetBytes(RequestInfo.ReqMsgId);
+        yield return BitConverter.GetBytes(ChannelId);
+        yield return BitConverter.GetBytes(UserId);
+    }
 }

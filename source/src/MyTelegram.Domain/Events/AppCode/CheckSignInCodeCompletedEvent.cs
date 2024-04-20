@@ -1,29 +1,26 @@
 ﻿namespace MyTelegram.Domain.Events.AppCode;
 
-public class CheckSignInCodeCompletedEvent : RequestAggregateEvent2<AppCodeAggregate, AppCodeId>
+public class CheckSignInCodeCompletedEvent(
+    RequestInfo requestInfo,
+    bool isCodeValid,
+    long userId)
+    : RequestAggregateEvent2<AppCodeAggregate, AppCodeId>(requestInfo)
 {
-    public CheckSignInCodeCompletedEvent(RequestInfo requestInfo,
-        bool isCodeValid,
-        long userId//,
-        //long accessHash,
-        //string phoneNumber,
-        //string firstName,
-        //string lastName,
-        //Guid correlationId
-    ) : base(requestInfo)
-    {
-        IsCodeValid = isCodeValid;
-        UserId = userId;
-        //AccessHash = accessHash;
-        //PhoneNumber = phoneNumber;
-        //FirstName = firstName;
-        //LastName = lastName;
-        //
-    }
+    //,
+    //long accessHash,
+    //string phoneNumber,
+    //string firstName,
+    //string lastName,
+    //Guid correlationId
+    //AccessHash = accessHash;
+    //PhoneNumber = phoneNumber;
+    //FirstName = firstName;
+    //LastName = lastName;
+    //
 
-    public bool IsCodeValid { get; }
+    public bool IsCodeValid { get; } = isCodeValid;
 
-    public long UserId { get; }
+    public long UserId { get; } = userId;
 
     //public long AccessHash { get; }
     //public string PhoneNumber { get; }

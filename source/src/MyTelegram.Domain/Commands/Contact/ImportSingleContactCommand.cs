@@ -1,18 +1,13 @@
 ﻿namespace MyTelegram.Domain.Commands.Contact;
 
-public class ImportSingleContactCommand : Command<ImportedContactAggregate, ImportedContactId, IExecutionResult>
+public class ImportSingleContactCommand(
+    ImportedContactId aggregateId,
+    RequestInfo requestInfo,
+    long selfUserId,
+    PhoneContact phoneContact)
+    : Command<ImportedContactAggregate, ImportedContactId, IExecutionResult>(aggregateId)
 {
-    public ImportSingleContactCommand(ImportedContactId aggregateId,
-        RequestInfo requestInfo,
-        long selfUserId,
-        PhoneContact phoneContact) : base(aggregateId)
-    {
-        RequestInfo = requestInfo;
-        SelfUserId = selfUserId;
-        PhoneContact = phoneContact;
-    }
-
-    public PhoneContact PhoneContact { get; }
-    public RequestInfo RequestInfo { get; }
-    public long SelfUserId { get; }
+    public PhoneContact PhoneContact { get; } = phoneContact;
+    public RequestInfo RequestInfo { get; } = requestInfo;
+    public long SelfUserId { get; } = selfUserId;
 }

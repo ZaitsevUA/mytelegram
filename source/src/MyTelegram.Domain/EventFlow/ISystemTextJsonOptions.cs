@@ -1,8 +1,8 @@
-﻿using System.Text.Json;
+﻿//using System.Text.Json;
 
-namespace MyTelegram.Domain.EventFlow;
+//namespace MyTelegram.Domain.EventFlow;
 
-public interface ISystemTextJsonOptions
-{
-    void Apply(JsonSerializerOptions settings);
-}
+//public interface ISystemTextJsonOptions
+//{
+//    void Apply(JsonSerializerOptions settings);
+//}

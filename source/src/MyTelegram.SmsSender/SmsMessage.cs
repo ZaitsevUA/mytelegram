@@ -1,17 +1,10 @@
 ﻿namespace MyTelegram.SmsSender;
 
-public class SmsMessage
+public class SmsMessage(string phoneNumber, string text)
 {
-    public string PhoneNumber { get; }
+    public string PhoneNumber { get; } = phoneNumber;
 
-    public string Text { get; }
+    public string Text { get; } = text;
 
-    public IDictionary<string, object> Properties { get; }
-
-    public SmsMessage(string phoneNumber, string text)
-    {
-        PhoneNumber = phoneNumber;
-        Text = text;
-        Properties = new Dictionary<string, object>();
-    }
+    public IDictionary<string, object> Properties { get; } = new Dictionary<string, object>();
 }

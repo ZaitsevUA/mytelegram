@@ -1,159 +1,157 @@
-﻿namespace MyTelegram.Domain.EventFlow;
+﻿//namespace MyTelegram.Domain.EventFlow;
 
-public abstract class MyInMemorySnapshotAggregateRoot<TAggregate, TIdentity, TSnapshot> :
-    AggregateRoot<TAggregate, TIdentity>,
-    ISnapshotAggregateRoot<TIdentity, TSnapshot>
-    where TAggregate : MyInMemorySnapshotAggregateRoot<TAggregate, TIdentity, TSnapshot>
-    where TIdentity : IIdentity
-    where TSnapshot : ISnapshot
-{
-    private readonly ISourceId _emptySourceId = new SourceId("EmptySourceId");
+//public abstract class MyInMemorySnapshotAggregateRoot<TAggregate, TIdentity, TSnapshot> :
+//    AggregateRoot<TAggregate, TIdentity>,
+//    ISnapshotAggregateRoot<TIdentity, TSnapshot>
+//    where TAggregate : MyInMemorySnapshotAggregateRoot<TAggregate, TIdentity, TSnapshot>
+//    where TIdentity : IIdentity
+//    where TSnapshot : ISnapshot
+//{
+//    private readonly ISourceId _emptySourceId = new SourceId("EmptySourceId");
 
-    protected MyInMemorySnapshotAggregateRoot(
-        TIdentity id,
-        ISnapshotStrategy snapshotStrategy)
-        : base(id)
-    {
-        SnapshotStrategy = snapshotStrategy;
-    }
+//    protected MyInMemorySnapshotAggregateRoot(
+//        TIdentity id,
+//        ISnapshotStrategy snapshotStrategy)
+//        : base(id)
+//    {
+//        SnapshotStrategy = snapshotStrategy;
+//    }
 
-    protected ISnapshotStrategy SnapshotStrategy { get; }
+//    public int? SnapshotVersion { get; private set; }
+//    protected ISnapshotStrategy SnapshotStrategy { get; }
+//    public override async Task<IReadOnlyCollection<IDomainEvent>> CommitAsync(
+//        IEventStore eventStore,
+//        ISnapshotStore snapshotStore,
+//        ISourceId sourceId,
+//        CancellationToken cancellationToken)
+//    {
+//        var domainEvents = await base.CommitAsync(eventStore, snapshotStore, sourceId, cancellationToken)
+//            ;
 
-    public int? SnapshotVersion { get; private set; }
+//        await SaveInMemorySnapshotContainerAsync(snapshotStore, sourceId, cancellationToken);
+//        if (!await SnapshotStrategy.ShouldCreateSnapshotAsync(this, cancellationToken).ConfigureAwait(false))
+//        {
+//            return domainEvents;
+//        }
 
-    public override async Task<IReadOnlyCollection<IDomainEvent>> CommitAsync(
-        IEventStore eventStore,
-        ISnapshotStore snapshotStore,
-        ISourceId sourceId,
-        CancellationToken cancellationToken)
-    {
-        var domainEvents = await base.CommitAsync(eventStore, snapshotStore, sourceId, cancellationToken)
-            ;
+//        var snapshotContainer = await CreateSnapshotContainerAsync(sourceId, cancellationToken);
+//        await snapshotStore.StoreSnapshotAsync<TAggregate, TIdentity, TSnapshot>(
+//                Id,
+//                snapshotContainer,
+//                cancellationToken)
+//            ;
 
-        await SaveInMemorySnapshotContainerAsync(snapshotStore, sourceId, cancellationToken);
-        if (!await SnapshotStrategy.ShouldCreateSnapshotAsync(this, cancellationToken).ConfigureAwait(false))
-        {
-            return domainEvents;
-        }
+//        return domainEvents;
+//    }
 
-        var snapshotContainer = await CreateSnapshotContainerAsync(sourceId, cancellationToken);
-        await snapshotStore.StoreSnapshotAsync<TAggregate, TIdentity, TSnapshot>(
-                Id,
-                snapshotContainer,
-                cancellationToken)
-            ;
+//    public override async Task LoadAsync(
+//        IEventStore eventStore,
+//        ISnapshotStore snapshotStore,
+//        CancellationToken cancellationToken)
+//    {
+//        var snapshot = await snapshotStore.LoadSnapshotAsync<TAggregate, TIdentity, TSnapshot>(Id, cancellationToken);
+//        if (snapshot == null)
+//        {
+//            await base.LoadAsync(eventStore, snapshotStore, cancellationToken);
+//            await SaveInMemorySnapshotContainerAsync(snapshotStore, _emptySourceId, cancellationToken);
+//            return;
+//        }
 
-        return domainEvents;
-    }
+//        await LoadSnapshotContainerAsync(snapshot, cancellationToken);
 
-    public override async Task LoadAsync(
-        IEventStore eventStore,
-        ISnapshotStore snapshotStore,
-        CancellationToken cancellationToken)
-    {
-        var snapshot = await snapshotStore.LoadSnapshotAsync<TAggregate, TIdentity, TSnapshot>(Id, cancellationToken);
-        if (snapshot == null)
-        {
-            await base.LoadAsync(eventStore, snapshotStore, cancellationToken);
-            await SaveInMemorySnapshotContainerAsync(snapshotStore, _emptySourceId, cancellationToken);
-            return;
-        }
+//        Version = snapshot.Metadata.AggregateSequenceNumber;
+//        AddPreviousSourceIds(snapshot.Metadata.PreviousSourceIds);
 
-        await LoadSnapshotContainerAsync(snapshot, cancellationToken);
+//        var domainEvents = await eventStore.LoadEventsAsync<TAggregate, TIdentity>(
+//                Id,
+//                Version + 1,
+//                cancellationToken)
+//            ;
 
-        Version = snapshot.Metadata.AggregateSequenceNumber;
-        AddPreviousSourceIds(snapshot.Metadata.PreviousSourceIds);
+//        ApplyEvents(domainEvents);
+//    }
 
-        var domainEvents = await eventStore.LoadEventsAsync<TAggregate, TIdentity>(
-                Id,
-                Version + 1,
-                cancellationToken)
-            ;
+//    protected abstract Task<TSnapshot> CreateSnapshotAsync(CancellationToken cancellationToken);
 
-        ApplyEvents(domainEvents);
-    }
+//    protected virtual Task<ISnapshotMetadata> CreateSnapshotMetadataAsync(ISourceId sourceId,
+//        CancellationToken cancellationToken)
+//    {
+//        var sourceIds = PreviousSourceIds.ToList();
+//        if (sourceId != _emptySourceId)
+//        {
+//            sourceIds.Add(sourceId);
+//        }
 
-    protected abstract Task<TSnapshot> CreateSnapshotAsync(CancellationToken cancellationToken);
+//        var snapshotMetadata = new SnapshotMetadata
+//        {
+//            AggregateId = Id.Value,
+//            AggregateName = Name.Value,
+//            AggregateSequenceNumber = Version,
+//            PreviousSourceIds = sourceIds
+//        };
+//        return Task.FromResult<ISnapshotMetadata>(snapshotMetadata);
+//    }
 
-    protected virtual Task<ISnapshotMetadata> CreateSnapshotMetadataAsync(ISourceId sourceId,
-        CancellationToken cancellationToken)
-    {
-        var sourceIds = PreviousSourceIds.ToList();
-        if (sourceId != _emptySourceId)
-        {
-            sourceIds.Add(sourceId);
-        }
+//    protected abstract Task LoadSnapshotAsync(TSnapshot snapshot,
+//        ISnapshotMetadata metadata,
+//        CancellationToken cancellationToken);
 
-        var snapshotMetadata = new SnapshotMetadata
-        {
-            AggregateId = Id.Value,
-            AggregateName = Name.Value,
-            AggregateSequenceNumber = Version,
-            PreviousSourceIds = sourceIds
-        };
-        return Task.FromResult<ISnapshotMetadata>(snapshotMetadata);
-    }
+//    private async Task<SnapshotContainer> CreateSnapshotContainerAsync(ISourceId sourceId,
+//        CancellationToken cancellationToken)
+//    {
+//        var snapshotTask = CreateSnapshotAsync(cancellationToken);
+//        var snapshotMetadataTask = CreateSnapshotMetadataAsync(sourceId, cancellationToken);
 
-    protected abstract Task LoadSnapshotAsync(TSnapshot snapshot,
-        ISnapshotMetadata metadata,
-        CancellationToken cancellationToken);
+//        await Task.WhenAll(snapshotTask, snapshotMetadataTask);
 
-    private async Task<SnapshotContainer> CreateSnapshotContainerAsync(ISourceId sourceId,
-        CancellationToken cancellationToken)
-    {
-        var snapshotTask = CreateSnapshotAsync(cancellationToken);
-        var snapshotMetadataTask = CreateSnapshotMetadataAsync(sourceId, cancellationToken);
+//        var snapshotContainer = new SnapshotContainer(
+//            snapshotTask.Result,
+//            snapshotMetadataTask.Result);
 
-        await Task.WhenAll(snapshotTask, snapshotMetadataTask);
+//        return snapshotContainer;
+//    }
 
-        var snapshotContainer = new SnapshotContainer(
-            snapshotTask.Result,
-            snapshotMetadataTask.Result);
+//    private Task LoadSnapshotContainerAsync(SnapshotContainer snapshotContainer,
+//        CancellationToken cancellationToken)
+//    {
+//        if (SnapshotVersion.HasValue)
+//        {
+//            throw new InvalidOperationException(
+//                $"Aggregate '{Id}' of type '{GetType().PrettyPrint()}' already has snapshot loaded");
+//        }
 
-        return snapshotContainer;
-    }
+//        if (Version > 0)
+//        {
+//            throw new InvalidOperationException(
+//                $"Aggregate '{Id}' of type '{GetType().PrettyPrint()}' already has events loaded");
+//        }
 
-    private Task LoadSnapshotContainerAsync(SnapshotContainer snapshotContainer,
-        CancellationToken cancellationToken)
-    {
-        if (SnapshotVersion.HasValue)
-        {
-            throw new InvalidOperationException(
-                $"Aggregate '{Id}' of type '{GetType().PrettyPrint()}' already has snapshot loaded");
-        }
+//        if (snapshotContainer.Snapshot is not TSnapshot snapshot)
+//        {
+//            throw new ArgumentException(
+//                $"Snapshot '{snapshotContainer.Snapshot.GetType().PrettyPrint()}' for aggregate '{GetType().PrettyPrint()}' is not of type '{typeof(TSnapshot).PrettyPrint()}'. Did you forget to implement a snapshot upgrader?");
+//        }
 
-        if (Version > 0)
-        {
-            throw new InvalidOperationException(
-                $"Aggregate '{Id}' of type '{GetType().PrettyPrint()}' already has events loaded");
-        }
+//        SnapshotVersion = snapshotContainer.Metadata.AggregateSequenceNumber;
 
-        if (snapshotContainer.Snapshot is not TSnapshot snapshot)
-        {
-            throw new ArgumentException(
-                $"Snapshot '{snapshotContainer.Snapshot.GetType().PrettyPrint()}' for aggregate '{GetType().PrettyPrint()}' is not of type '{typeof(TSnapshot).PrettyPrint()}'. Did you forget to implement a snapshot upgrader?");
-        }
+//        return LoadSnapshotAsync(
+//            snapshot,
+//            snapshotContainer.Metadata,
+//            cancellationToken);
+//    }
 
-        SnapshotVersion = snapshotContainer.Metadata.AggregateSequenceNumber;
+//    private async Task SaveInMemorySnapshotContainerAsync(ISnapshotStore snapshotStore,
+//        ISourceId sourceId,
+//        CancellationToken cancellationToken)
+//    {
+//        if (snapshotStore is ISnapshotWithInMemoryCacheStore snapshotWithInMemoryCacheStore)
+//        {
+//            var snapshotContainer = await CreateSnapshotContainerAsync(sourceId, cancellationToken);
 
-        return LoadSnapshotAsync(
-            snapshot,
-            snapshotContainer.Metadata,
-            cancellationToken);
-    }
-
-    private async Task SaveInMemorySnapshotContainerAsync(ISnapshotStore snapshotStore,
-        ISourceId sourceId,
-        CancellationToken cancellationToken)
-    {
-        if (snapshotStore is ISnapshotWithInMemoryCacheStore snapshotWithInMemoryCacheStore)
-        {
-            var snapshotContainer = await CreateSnapshotContainerAsync(sourceId, cancellationToken);
-
-            await snapshotWithInMemoryCacheStore
-                    .StoreInMemorySnapshotAsync<TAggregate, TIdentity, TSnapshot>(Id, snapshotContainer,
-                        cancellationToken)
-                ;
-        }
-    }
-}
+//            await snapshotWithInMemoryCacheStore
+//                    .StoreInMemorySnapshotAsync<TAggregate, TIdentity, TSnapshot>(Id, snapshotContainer,
+//                        cancellationToken)
+//                ;
+//        }
+//    }
+//}

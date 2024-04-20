@@ -1,19 +1,10 @@
 ﻿namespace MyTelegram.QueryHandlers.MongoDB.Channel;
 
-public class GetChannelByIdQueryHandler : IQueryHandler<GetChannelByIdQuery, IChannelReadModel>
+public class GetChannelByIdQueryHandler(IQueryOnlyReadModelStore<ChannelReadModel> store) : IQueryHandler<GetChannelByIdQuery, IChannelReadModel?>
 {
-    private readonly IMongoDbReadModelStore<ChannelReadModel> _store;
-
-    public GetChannelByIdQueryHandler(IMongoDbReadModelStore<ChannelReadModel> store)
-    {
-        _store = store;
-    }
-
-    public async Task<IChannelReadModel> ExecuteQueryAsync(GetChannelByIdQuery query,
+    public async Task<IChannelReadModel?> ExecuteQueryAsync(GetChannelByIdQuery query,
         CancellationToken cancellationToken)
     {
-        var readMode = await _store.GetAsync(ChannelId.Create(query.ChannelId).Value, cancellationToken)
-            ;
-        return readMode.ReadModel;
+        return await store.FirstOrDefaultAsync(p => p.ChannelId == query.ChannelId, cancellationToken);
     }
 }

@@ -23,7 +23,7 @@ internal sealed class GetAuthorizationsHandler : RpcResultObjectHandler<MyTelegr
         MyTelegram.Schema.Account.RequestGetAuthorizations obj)
     {
         var deviceReadModelList = await _queryProcessor
-            .ProcessAsync(new GetDeviceByUidQuery(input.UserId), CancellationToken.None);
+            .ProcessAsync(new GetDeviceByUserIdQuery(input.UserId), CancellationToken.None);
         var r = _layeredService.GetConverter(input.Layer).ToAuthorizations(deviceReadModelList, input.PermAuthKeyId);
         return new TAuthorizations { Authorizations = new TVector<Schema.IAuthorization>(r) };
     }

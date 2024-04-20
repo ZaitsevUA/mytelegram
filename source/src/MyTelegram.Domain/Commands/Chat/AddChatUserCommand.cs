@@ -1,23 +1,16 @@
 ﻿namespace MyTelegram.Domain.Commands.Chat;
 
-public class AddChatUserCommand : RequestCommand2<ChatAggregate, ChatId, IExecutionResult>//, IHasCorrelationId
+public class AddChatUserCommand(
+    ChatId aggregateId,
+    RequestInfo requestInfo,
+    long userId,
+    int date,
+    string messageActionData,
+    long randomId)
+    : RequestCommand2<ChatAggregate, ChatId, IExecutionResult>(aggregateId, requestInfo) //, IHasCorrelationId
 {
-    public AddChatUserCommand(ChatId aggregateId,
-        RequestInfo requestInfo,
-        long userId,
-        int date,
-        string messageActionData,
-        long randomId) : base(aggregateId, requestInfo)
-    {
-        UserId = userId;
-        Date = date;
-        MessageActionData = messageActionData;
-        RandomId = randomId;
-    }
-
-    public int Date { get; }
-    public string MessageActionData { get; }
-    public long RandomId { get; }
-    public long UserId { get; }
-
+    public int Date { get; } = date;
+    public string MessageActionData { get; } = messageActionData;
+    public long RandomId { get; } = randomId;
+    public long UserId { get; } = userId;
 }

@@ -25,7 +25,7 @@ Log.Information("{Description} {Url}",
     "For more information, please visit",
     MyTelegramServerDomainConsts.RepositoryUrl);
 
-Log.Information("MyTelegram messenger command server(supported layer={Layer}) starting...",
+Log.Information("MyTelegram messenger command server(API layer={Layer}) starting...",
     MyTelegramServerDomainConsts.Layer);
 
 AppDomain.CurrentDomain.UnhandledException += (s,
@@ -52,11 +52,19 @@ builder.ConfigureHostOptions(options =>
     options.ServicesStopConcurrently = true;
 });
 
-builder.ConfigureAppConfiguration(options => { options.AddEnvironmentVariables(); });
+builder.ConfigureAppConfiguration(options =>
+{
+    options.AddEnvironmentVariables();
+    options.AddCommandLine(args);
+});
 builder.ConfigureServices((ctx,
     services) =>
 {
-    services.Configure<MyTelegramMessengerServerOptions>(ctx.Configuration.GetRequiredSection("App"));
+    services.AddOptions<MyTelegramMessengerServerOptions>()
+        .Bind(ctx.Configuration.GetRequiredSection("App"))
+        .ValidateDataAnnotations()
+        .ValidateOnStart()
+        ;
     services.Configure<EventBusRabbitMqOptions>(ctx.Configuration.GetRequiredSection("RabbitMQ:EventBus"));
     services.Configure<RabbitMqOptions>(ctx.Configuration.GetRequiredSection("RabbitMQ:Connections:Default"));
 
@@ -67,10 +75,18 @@ builder.ConfigureServices((ctx,
 
     services.AddRebusEventBus(options =>
     {
-        options.Transport(t => t.UseRabbitMq($"amqp://{rabbitMqOptions.UserName}:{rabbitMqOptions.Password}@{rabbitMqOptions.HostName}:{rabbitMqOptions.Port}", eventBusOptions.ClientName));
+        options.Transport(t =>
+        {
+            t.UseRabbitMq(
+                    $"amqp://{rabbitMqOptions.UserName}:{rabbitMqOptions.Password}@{rabbitMqOptions.HostName}:{rabbitMqOptions.Port}",
+                    eventBusOptions.ClientName)
+                .ExchangeNames(eventBusOptions.ExchangeName, eventBusOptions.TopicExchangeName ?? "RebusTopics")
+                ;
+        });
         options.AddSystemTextJson(jsonOptions =>
         {
             jsonOptions.TypeInfoResolverChain.Add(MyJsonSerializeContext.Default);
+            jsonOptions.TypeInfoResolverChain.Add(MyMessengerJsonContext.Default);
         });
     });
 
@@ -94,9 +110,13 @@ builder.ConfigureServices((ctx,
     services.AddMyTelegramMessengerCommandServer();
 
     services.AddHostedService<MyTelegramMessengerServerInitBackgroundService>();
-    services.AddHostedService<DataProcessorBackgroundService>();
-    services.AddHostedService<ObjectMessageSenderBackgroundService>();
+    //services.AddHostedService<DataProcessorBackgroundService>();
+    //services.AddHostedService<ObjectMessageSenderBackgroundService>();
     services.AddHostedService<MyTelegramInvokeAfterMsgProcessorBackgroundService>();
+
+    services.AddHostedService<MessageQueueDataProcessorBackgroundService<MessengerCommandDataReceivedEvent>>();
+    services.AddHostedService<MessageQueueDataProcessorBackgroundService<NewDeviceCreatedEvent>>();
+    services.AddHostedService<MessageQueueDataProcessorBackgroundService<ISessionMessage>>();
 
     services.Configure<HostOptions>(options =>
     {

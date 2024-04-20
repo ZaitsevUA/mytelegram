@@ -2,7 +2,7 @@
 
 public class ChannelFullReadModel : IChannelFullReadModel,
     IAmReadModelFor<ChannelAggregate, ChannelId, ChannelCreatedEvent>,
-    IAmReadModelFor<ChannelAggregate, ChannelId, SetDiscussionGroupEvent>,
+    IAmReadModelFor<ChannelAggregate, ChannelId, DiscussionGroupUpdatedEvent>,
     IAmReadModelFor<ChannelAggregate, ChannelId, ChannelAboutEditedEvent>,
     IAmReadModelFor<ChannelAggregate, ChannelId, SlowModeChangedEvent>,
     IAmReadModelFor<ChannelAggregate, ChannelId, PreHistoryHiddenChangedEvent>,
@@ -12,7 +12,8 @@ public class ChannelFullReadModel : IChannelFullReadModel,
     IAmReadModelFor<ChannelMemberAggregate, ChannelMemberId, ChannelMemberCreatedEvent>,
     IAmReadModelFor<ChannelAggregate, ChannelId, ChannelAdminRightsEditedEvent>,
     IAmReadModelFor<ChannelAggregate, ChannelId, ChatJoinRequestHiddenEvent>,
-    IAmReadModelFor<ChannelAggregate, ChannelId, ChatInviteRequestPendingUpdatedEvent>
+    IAmReadModelFor<ChannelAggregate,ChannelId,ChatInviteRequestPendingUpdatedEvent>,
+    IAmReadModelFor<ChannelAggregate,ChannelId, LinkedChannelChangedEvent>
 {
     public virtual string? About { get; private set; }
     public virtual int AdminsCount { get; private set; }
@@ -111,7 +112,7 @@ public class ChannelFullReadModel : IChannelFullReadModel,
     }
 
     public Task ApplyAsync(IReadModelContext context,
-        IDomainEvent<ChannelAggregate, ChannelId, SetDiscussionGroupEvent> domainEvent,
+        IDomainEvent<ChannelAggregate, ChannelId, DiscussionGroupUpdatedEvent> domainEvent,
         CancellationToken cancellationToken)
     {
         LinkedChatId = domainEvent.AggregateEvent.GroupChannelId;
@@ -201,6 +202,11 @@ public class ChannelFullReadModel : IChannelFullReadModel,
         RequestsPending = domainEvent.AggregateEvent.RequestsPending;
         RecentRequesters = domainEvent.AggregateEvent.RecentRequesters;
 
+        return Task.CompletedTask;
+    }
+    public Task ApplyAsync(IReadModelContext context, IDomainEvent<ChannelAggregate, ChannelId, LinkedChannelChangedEvent> domainEvent, CancellationToken cancellationToken)
+    {
+        LinkedChatId = domainEvent.AggregateEvent.LinkedChannelId;
         return Task.CompletedTask;
     }
 }

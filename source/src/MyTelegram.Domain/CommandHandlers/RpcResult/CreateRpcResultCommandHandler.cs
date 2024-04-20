@@ -6,7 +6,7 @@ public class CreateRpcResultCommandHandler : CommandHandler<RpcResultAggregate, 
         CreateRpcResultCommand command,
         CancellationToken cancellationToken)
     {
-        aggregate.Create(command.ReqMsgId, command.PeerId, command.SourceId, command.RpcData);
+        aggregate.Create(command.RequestInfo, command.RpcData);
         return Task.CompletedTask;
     }
 }

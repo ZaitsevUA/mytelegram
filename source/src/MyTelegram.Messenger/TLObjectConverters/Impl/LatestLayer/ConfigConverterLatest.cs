@@ -1,15 +1,10 @@
 ﻿namespace MyTelegram.Messenger.TLObjectConverters.Impl.LatestLayer;
 
-public class ConfigConverterLatest : IConfigConverterLatest
+public class ConfigConverterLatest(IObjectMapper objectMapper) : IConfigConverterLatest
 {
-    public ConfigConverterLatest(IObjectMapper objectMapper)
-    {
-        ObjectMapper = objectMapper;
-    }
-
     public virtual int Layer => Layers.LayerLatest;
     public int RequestLayer { get; set; }
-    protected IObjectMapper ObjectMapper { get; }
+    protected IObjectMapper ObjectMapper { get; } = objectMapper;
 
     public virtual IConfig ToConfig(List<DcOption> dcOptions,
         int thisDcId,
@@ -67,7 +62,7 @@ public class ConfigConverterLatest : IConfigConverterLatest
             CallRingTimeoutMs = 90000,
             CallConnectTimeoutMs = 30000,
             CallPacketTimeoutMs = 10000,
-            MeUrlPrefix = "https://t.mytelegram.top/",
+            MeUrlPrefix = "https://t.me/",
             //AutoupdateUrlPrefix = "",
             GifSearchUsername = "gif",
             VenueSearchUsername = "foursquare",

@@ -15,6 +15,9 @@ namespace MyTelegram.Schema.Messages;
 public sealed class RequestGetSearchResultsCalendar : IRequest<MyTelegram.Schema.Messages.ISearchResultsCalendar>
 {
     public uint ConstructorId => 0x6aa3f6bd;
+    ///<summary>
+    /// Flags, see <a href="https://corefork.telegram.org/mtproto/TL-combinators#conditional-fields">TL conditional fields</a>
+    ///</summary>
     public BitArray Flags { get; set; } = new BitArray(32);
 
     ///<summary>
@@ -22,6 +25,11 @@ public sealed class RequestGetSearchResultsCalendar : IRequest<MyTelegram.Schema
     /// See <a href="https://corefork.telegram.org/type/InputPeer" />
     ///</summary>
     public MyTelegram.Schema.IInputPeer Peer { get; set; }
+
+    ///<summary>
+    /// Search within the <a href="https://corefork.telegram.org/api/saved-messages">saved message dialog »</a> with this ID.
+    /// See <a href="https://corefork.telegram.org/type/InputPeer" />
+    ///</summary>
     public MyTelegram.Schema.IInputPeer? SavedPeerId { get; set; }
 
     ///<summary>

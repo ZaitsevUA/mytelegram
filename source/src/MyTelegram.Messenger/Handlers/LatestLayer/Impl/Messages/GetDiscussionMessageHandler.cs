@@ -42,10 +42,15 @@ internal sealed class GetDiscussionMessageHandler : RpcResultObjectHandler<MyTel
         await _accessHashHelper.CheckAccessHashAsync(obj.Peer);
         // peer is the channel peer
         var peer = _peerHelper.GetPeer(obj.Peer);
-        var query = new GetDiscussionMessageQuery(peer.PeerId, obj.MsgId);
+        var channelReadModel = await _queryProcessor.ProcessAsync(new GetChannelByIdQuery(peer.PeerId));
+        if (channelReadModel == null)
+        {
+            RpcErrors.RpcErrors400.ChatIdInvalid.ThrowRpcError();
+        }
+        var query = new GetDiscussionMessageQuery(channelReadModel!.Broadcast, peer.PeerId, obj.MsgId);
+
         var messageReadModel = await _queryProcessor
-            .ProcessAsync(query, default)
-     ;
+            .ProcessAsync(query);
 
         if (messageReadModel == null)
         {
@@ -57,8 +62,7 @@ internal sealed class GetDiscussionMessageHandler : RpcResultObjectHandler<MyTel
             };
         }
 
-        var reply = await _queryProcessor.ProcessAsync(new GetReplyQuery(peer.PeerId, obj.MsgId), default)
-     ;
+        //var reply = await _queryProcessor.ProcessAsync(new GetReplyQuery(peer.PeerId, obj.MsgId));
 
         //var messages = _messageConverter.ToMessages(new[] { messageReadModel }, input.UserId);
 
@@ -74,17 +78,12 @@ internal sealed class GetDiscussionMessageHandler : RpcResultObjectHandler<MyTel
             readMaxId = Math.Max(dialogReadModel.ReadInboxMaxId, dialogReadModel.ReadOutboxMaxId);
         }
 
-        if (reply?.MaxId > 0 && readMaxId > reply.MaxId)
-        {
-            readMaxId = reply.MaxId;
-        }
+        //if (reply?.MaxId > 0 && readMaxId > reply.MaxId)
+        //{
+        //    readMaxId = reply.MaxId;
+        //}
 
-        var message = _layeredMessageService.GetConverter(input.Layer).ToDiscussionMessage(messageReadModel,
-            reply?.MaxId ?? 0,
-            readMaxId,
-            dialogReadModel?.ReadInboxMaxId ?? 0,
-            dialogReadModel?.ReadOutboxMaxId ?? 0,
-            input.UserId);
+        var message = _layeredMessageService.GetConverter(input.Layer).ToDiscussionMessage(input.UserId, messageReadModel);
 
         var photoReadModels = await _photoAppService.GetPhotosAsync(channelReadModels);
 
@@ -101,7 +100,7 @@ internal sealed class GetDiscussionMessageHandler : RpcResultObjectHandler<MyTel
             Chats = new TVector<IChat>(chats),
             Messages = new TVector<IMessage>(message),
             Users = new TVector<IUser>(),
-            MaxId = reply?.MaxId ?? 0,
+            MaxId = readMaxId,
             ReadInboxMaxId = dialogReadModel?.ReadInboxMaxId,
             ReadOutboxMaxId = dialogReadModel?.ReadOutboxMaxId
         };

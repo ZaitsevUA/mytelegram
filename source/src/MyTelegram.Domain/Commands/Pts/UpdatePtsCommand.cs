@@ -1,25 +1,17 @@
 ﻿namespace MyTelegram.Domain.Commands.Pts;
 
-public class UpdatePtsCommand : Command<PtsAggregate, PtsId, IExecutionResult>
+public class UpdatePtsCommand(
+    PtsId aggregateId,
+    long peerId,
+    long permAuthKeyId,
+    int newPts,
+    long globalSeqNo,
+    int changedUnreadCount)
+    : Command<PtsAggregate, PtsId, IExecutionResult>(aggregateId)
 {
-    public UpdatePtsCommand(PtsId aggregateId,
-        long peerId,
-        long permAuthKeyId,
-        int newPts,
-        long globalSeqNo,
-        int changedUnreadCount
-    ) : base(aggregateId)
-    {
-        NewPts = newPts;
-        GlobalSeqNo = globalSeqNo;
-        ChangedUnreadCount = changedUnreadCount;
-        PeerId = peerId;
-        PermAuthKeyId = permAuthKeyId;
-    }
-
-    public int NewPts { get; }
-    public long GlobalSeqNo { get; }
-    public int ChangedUnreadCount { get; }
-    public long PeerId { get; }
-    public long PermAuthKeyId { get; }
+    public int NewPts { get; } = newPts;
+    public long GlobalSeqNo { get; } = globalSeqNo;
+    public int ChangedUnreadCount { get; } = changedUnreadCount;
+    public long PeerId { get; } = peerId;
+    public long PermAuthKeyId { get; } = permAuthKeyId;
 }

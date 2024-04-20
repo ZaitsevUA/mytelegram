@@ -46,6 +46,11 @@ public sealed class RequestSearch : IRequest<MyTelegram.Schema.Messages.IMessage
     /// See <a href="https://corefork.telegram.org/type/InputPeer" />
     ///</summary>
     public MyTelegram.Schema.IInputPeer? FromId { get; set; }
+
+    ///<summary>
+    /// Search within the <a href="https://corefork.telegram.org/api/saved-messages">saved message dialog »</a> with this ID.
+    /// See <a href="https://corefork.telegram.org/type/InputPeer" />
+    ///</summary>
     public MyTelegram.Schema.IInputPeer? SavedPeerId { get; set; }
     public TVector<MyTelegram.Schema.IReaction>? SavedReaction { get; set; }
 

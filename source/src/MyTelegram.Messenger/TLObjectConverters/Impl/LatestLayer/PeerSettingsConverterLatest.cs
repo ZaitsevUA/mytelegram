@@ -3,15 +3,8 @@ using TPeerSettings = MyTelegram.Schema.TPeerSettings;
 
 namespace MyTelegram.Messenger.TLObjectConverters.Impl.LatestLayer;
 
-public class PeerSettingsConverterLatest : IPeerSettingsConverterLatest
+public class PeerSettingsConverterLatest(IObjectMapper objectMapper) : IPeerSettingsConverterLatest
 {
-    private readonly IObjectMapper _objectMapper;
-
-    public PeerSettingsConverterLatest(IObjectMapper objectMapper)
-    {
-        _objectMapper = objectMapper;
-    }
-
     public int Layer => Layers.LayerLatest;
     public int RequestLayer { get; set; }
     public virtual IPeerSettings ToPeerSettings(long targetUserId, IPeerSettingsReadModel? readModel, ContactType? contactType)
@@ -37,7 +30,7 @@ public class PeerSettingsConverterLatest : IPeerSettingsConverterLatest
 
         if (readModel.PeerSettings != null)
         {
-            settings = _objectMapper.Map<PeerSettings, TPeerSettings>(readModel.PeerSettings);
+            settings = objectMapper.Map<PeerSettings, TPeerSettings>(readModel.PeerSettings);
 
             if (!readModel.HiddenPeerSettingsBar)
             {

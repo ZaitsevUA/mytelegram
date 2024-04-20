@@ -1,40 +1,16 @@
 ﻿namespace MyTelegram.QueryHandlers.MongoDB.Channel;
 
-public class GetChannelMembersByChannelIdQueryHandler : IQueryHandler<GetChannelMembersByChannelIdQuery,
+public class GetChannelMembersByChannelIdQueryHandler(IQueryOnlyReadModelStore<ChannelMemberReadModel> store) :
+    IQueryHandler<GetChannelMembersByChannelIdQuery,
     IReadOnlyCollection<IChannelMemberReadModel>>
 {
-    private readonly IMongoDbReadModelStore<ChannelMemberReadModel> _store;
-
-    public GetChannelMembersByChannelIdQueryHandler(IMongoDbReadModelStore<ChannelMemberReadModel> store)
-    {
-        _store = store;
-    }
-
     public async Task<IReadOnlyCollection<IChannelMemberReadModel>> ExecuteQueryAsync(
         GetChannelMembersByChannelIdQuery query,
         CancellationToken cancellationToken)
     {
-        var options = new FindOptions<ChannelMemberReadModel, ChannelMemberReadModel>
-        {
-            Limit = query.Limit,
-            Skip = query.Offset
-        };
+        Expression<Func<ChannelMemberReadModel, bool>> filter = p => !p.Left && p.ChannelId == query.ChannelId;
+        filter = filter.WhereIf(query.MemberUserIdList.Count > 0, p => query.MemberUserIdList.Contains(p.UserId));
 
-        if (query.MemberUidList.Count > 0)
-        {
-            var cursor = await _store
-                    .FindAsync(p => !p.Left && p.ChannelId == query.ChannelId && query.MemberUidList.Contains(p.UserId),
-                        options,
-                        cancellationToken)
-                ;
-            return await cursor.ToListAsync(cancellationToken);
-        }
-        else
-        {
-            var cursor = await _store
-                    .FindAsync(p => !p.Left && p.ChannelId == query.ChannelId, options, cancellationToken)
-                ;
-            return await cursor.ToListAsync(cancellationToken);
-        }
+        return await store.FindAsync(filter, cancellationToken: cancellationToken);
     }
 }

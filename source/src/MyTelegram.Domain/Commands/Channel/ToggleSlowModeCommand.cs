@@ -1,17 +1,12 @@
 ﻿namespace MyTelegram.Domain.Commands.Channel;
 
-public class ToggleSlowModeCommand : RequestCommand2<ChannelAggregate, ChannelId, IExecutionResult>
+public class ToggleSlowModeCommand(
+    ChannelId aggregateId,
+    RequestInfo requestInfo,
+    int seconds,
+    long selfUserId)
+    : RequestCommand2<ChannelAggregate, ChannelId, IExecutionResult>(aggregateId, requestInfo)
 {
-    public ToggleSlowModeCommand(ChannelId aggregateId,
-        RequestInfo requestInfo,
-        int seconds,
-        long selfUserId
-    ) : base(aggregateId, requestInfo)
-    {
-        Seconds = seconds;
-        SelfUserId = selfUserId;
-    }
-
-    public int Seconds { get; }
-    public long SelfUserId { get; }
+    public int Seconds { get; } = seconds;
+    public long SelfUserId { get; } = selfUserId;
 }

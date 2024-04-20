@@ -12,7 +12,9 @@ public class UserReadModel : IUserReadModel,
     IAmReadModelFor<UserAggregate,UserId, UserProfilePhotoUploadedEvent>,
     IAmReadModelFor<UserAggregate,UserId,UserColorUpdatedEvent>,
     IAmReadModelFor<UserAggregate,UserId,UserGlobalPrivacySettingsChangedEvent>,
-    IAmReadModelFor<UserAggregate,UserId,UserPremiumStatusChangedEvent>
+    IAmReadModelFor<UserAggregate, UserId, UserPremiumStatusChangedEvent>,
+    IAmReadModelFor<UserAggregate, UserId, PersonalChannelUpdatedEvent>,
+    IAmReadModelFor<UserAggregate, UserId, BirthdayUpdatedEvent>
 {
     public virtual string? About { get; private set; }
     public virtual long AccessHash { get; private set; }
@@ -50,6 +52,8 @@ public class UserReadModel : IUserReadModel,
     public PeerColor? Color { get; private set; }
     public PeerColor? ProfileColor { get; private set; }
     public GlobalPrivacySettings? GlobalPrivacySettings { get; private set; }
+    public long? PersonalChannelId { get; private set; }
+    public Birthday? Birthday { get; private set; }
     //public int? Color { get; private set; }
     //public long? BackgroundEmojiId { get; private set; }
     public virtual long? Version { get; set; }
@@ -211,6 +215,19 @@ public class UserReadModel : IUserReadModel,
     public Task ApplyAsync(IReadModelContext context, IDomainEvent<UserAggregate, UserId, UserPremiumStatusChangedEvent> domainEvent, CancellationToken cancellationToken)
     {
         Premium=domainEvent.AggregateEvent.Premium;
+        return Task.CompletedTask;
+    }
+    public Task ApplyAsync(IReadModelContext context, IDomainEvent<UserAggregate, UserId, PersonalChannelUpdatedEvent> domainEvent, CancellationToken cancellationToken)
+    {
+        PersonalChannelId = domainEvent.AggregateEvent.PersonalChannelId;
+
+        return Task.CompletedTask;
+    }
+
+    public Task ApplyAsync(IReadModelContext context, IDomainEvent<UserAggregate, UserId, BirthdayUpdatedEvent> domainEvent, CancellationToken cancellationToken)
+    {
+        Birthday = domainEvent.AggregateEvent.Birthday;
+
         return Task.CompletedTask;
     }
 }

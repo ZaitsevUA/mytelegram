@@ -11,6 +11,9 @@ namespace MyTelegram.Schema.Messages;
 public sealed class RequestGetSearchResultsPositions : IRequest<MyTelegram.Schema.Messages.ISearchResultsPositions>
 {
     public uint ConstructorId => 0x9c7f2f10;
+    ///<summary>
+    /// Flags, see <a href="https://corefork.telegram.org/mtproto/TL-combinators#conditional-fields">TL conditional fields</a>
+    ///</summary>
     public BitArray Flags { get; set; } = new BitArray(32);
 
     ///<summary>
@@ -18,6 +21,11 @@ public sealed class RequestGetSearchResultsPositions : IRequest<MyTelegram.Schem
     /// See <a href="https://corefork.telegram.org/type/InputPeer" />
     ///</summary>
     public MyTelegram.Schema.IInputPeer Peer { get; set; }
+
+    ///<summary>
+    /// Search within the <a href="https://corefork.telegram.org/api/saved-messages">saved message dialog »</a> with this ID.
+    /// See <a href="https://corefork.telegram.org/type/InputPeer" />
+    ///</summary>
     public MyTelegram.Schema.IInputPeer? SavedPeerId { get; set; }
 
     ///<summary>

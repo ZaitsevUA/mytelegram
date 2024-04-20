@@ -2,7 +2,8 @@
 
 public class UserNameState : AggregateState<UserNameAggregate, UserNameId, UserNameState>,
     IApply<SetUserNameSuccessEvent>,
-    IApply<UserNameDeletedEvent>
+    IApply<UserNameDeletedEvent>,
+    IApply<UserNameCreatedEvent>
 {
     public bool IsDeleted { get; private set; }
     public string UserName { get; private set; } = default!;
@@ -22,5 +23,11 @@ public class UserNameState : AggregateState<UserNameAggregate, UserNameId, UserN
     {
         UserName = snapshot.UserName;
         IsDeleted = snapshot.IsDeleted;
+    }
+
+    public void Apply(UserNameCreatedEvent aggregateEvent)
+    {
+        UserName=aggregateEvent.UserName;
+        IsDeleted = false;
     }
 }

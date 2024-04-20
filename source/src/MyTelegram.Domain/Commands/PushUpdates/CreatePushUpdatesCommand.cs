@@ -1,44 +1,35 @@
 ﻿namespace MyTelegram.Domain.Commands.PushUpdates;
 
-public class CreatePushUpdatesCommand : Command<PushUpdatesAggregate, PushUpdatesId, IExecutionResult>
+public class CreatePushUpdatesCommand(
+    PushUpdatesId aggregateId,
+    long ownerPeerId,
+    long? excludeAuthKeyId,
+    long? excludeUserId,
+    long? onlySendToThisAuthKeyId,
+    int pts,
+    int? messageId,
+    int date,
+    long seqNo,
+    byte[] updates,
+    List<long>? users,
+    List<long>? chats)
+    : Command<PushUpdatesAggregate, PushUpdatesId, IExecutionResult>(aggregateId)
 {
-    public CreatePushUpdatesCommand(PushUpdatesId aggregateId,
-        //long selfPermAuthKeyId,
-        //PeerType peerType,
-        //long peerId,
-        //PeerType toPeerType,
-        Peer toPeer,
-        long excludeAuthKeyId,
-        long excludeUid,
-        long onlySendToThisAuthKeyId,
-        byte[] data,
-        int pts,
-        PtsType ptsType,
-        long seqNo) : base(aggregateId)
-    {
-        //SelfPermAuthKeyId = selfPermAuthKeyId;
-        //ToPeerType = toPeerType;
-        //MessageReceiverPeer = messageReceiverPeer;
-        ToPeer = toPeer;
-        OnlySendToThisAuthKeyId = onlySendToThisAuthKeyId;
-        ExcludeAuthKeyId = excludeAuthKeyId;
-        ExcludeUid = excludeUid;
-        Data = data;
-        Pts = pts;
-        PtsType = ptsType;
-        SeqNo = seqNo;
-    }
+    public long OwnerPeerId { get; } = ownerPeerId;
+    public long? ExcludeAuthKeyId { get; } = excludeAuthKeyId;
+    public long? ExcludeUserId { get; } = excludeUserId;
 
-    public byte[] Data { get; }
-    public long ExcludeAuthKeyId { get; }
-    public long ExcludeUid { get; }
-    public long OnlySendToThisAuthKeyId { get; }
-    public int Pts { get; }
-    public PtsType PtsType { get; }
-    public long SeqNo { get; }
+    public long? OnlySendToThisAuthKeyId { get; } = onlySendToThisAuthKeyId;
 
-    //public long SelfPermAuthKeyId { get; }
-    //public PeerType ToPeerType { get; }
-    //public Peer MessageReceiverPeer { get; }
-    public Peer ToPeer { get; }
+    //public PtsType PtsType { get; }
+    public int Pts { get; } = pts;
+    public int? MessageId { get; } = messageId;
+    public int Date { get; } = date;
+    public long SeqNo { get; } = seqNo;
+    public byte[] Updates { get; } = updates;
+    public List<long>? Users { get; } = users;
+    public List<long>? Chats { get; } = chats;
+
+    /*PtsType ptsType,*/
+    //PtsType = ptsType;
 }

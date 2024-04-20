@@ -1,23 +1,16 @@
 ﻿namespace MyTelegram.Domain.Events.PushUpdates;
 
-public class EncryptedPushUpdatesCreatedEvent : AggregateEvent<PushUpdatesAggregate, PushUpdatesId>
+public class EncryptedPushUpdatesCreatedEvent(
+    long inboxOwnerPeerId,
+    byte[] data,
+    int qts,
+    long inboxOwnerPermAuthKeyId,
+    int date)
+    : AggregateEvent<PushUpdatesAggregate, PushUpdatesId>
 {
-    public EncryptedPushUpdatesCreatedEvent(long inboxOwnerPeerId,
-        byte[] data,
-        int qts,
-        long inboxOwnerPermAuthKeyId,
-        int date)
-    {
-        InboxOwnerPeerId = inboxOwnerPeerId;
-        Data = data;
-        Qts = qts;
-        InboxOwnerPermAuthKeyId = inboxOwnerPermAuthKeyId;
-        Date = date;
-    }
-
-    public byte[] Data { get; }
-    public int Date { get; }
-    public long InboxOwnerPermAuthKeyId { get; }
-    public long InboxOwnerPeerId { get; }
-    public int Qts { get; }
+    public byte[] Data { get; } = data;
+    public int Date { get; } = date;
+    public long InboxOwnerPermAuthKeyId { get; } = inboxOwnerPermAuthKeyId;
+    public long InboxOwnerPeerId { get; } = inboxOwnerPeerId;
+    public int Qts { get; } = qts;
 }

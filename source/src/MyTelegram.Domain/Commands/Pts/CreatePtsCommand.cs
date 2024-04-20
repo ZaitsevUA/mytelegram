@@ -1,27 +1,20 @@
 ﻿namespace MyTelegram.Domain.Commands.Pts;
 
-public class CreatePtsCommand : RequestCommand2<PtsAggregate, PtsId, IExecutionResult>
+public class CreatePtsCommand(
+    PtsId aggregateId,
+    RequestInfo requestInfo,
+    long peerId,
+    int pts,
+    int qts,
+    int unreadCount,
+    int date)
+    : RequestCommand2<PtsAggregate, PtsId, IExecutionResult>(aggregateId, requestInfo)
 {
-    public CreatePtsCommand(PtsId aggregateId,
-        RequestInfo requestInfo,
-        long peerId,
-        int pts,
-        int qts,
-        int unreadCount,
-        int date) : base(aggregateId, requestInfo)
-    {
-        PeerId = peerId;
-        Pts = pts;
-        Qts = qts;
-        UnreadCount = unreadCount;
-        Date = date;
-    }
-
-    public int Date { get; }
-    public long PeerId { get; }
-    public int Pts { get; }
-    public int Qts { get; }
-    public int UnreadCount { get; }
+    public int Date { get; } = date;
+    public long PeerId { get; } = peerId;
+    public int Pts { get; } = pts;
+    public int Qts { get; } = qts;
+    public int UnreadCount { get; } = unreadCount;
 
     protected override IEnumerable<byte[]> GetSourceIdComponents()
     {

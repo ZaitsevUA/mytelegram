@@ -2,17 +2,11 @@
 
 namespace MyTelegram.Messenger.CommandServer.BackgroundServices;
 
-public class MyTelegramInvokeAfterMsgProcessorBackgroundService : BackgroundService
+public class MyTelegramInvokeAfterMsgProcessorBackgroundService(IInvokeAfterMsgProcessor invokeAfterMsgProcessor)
+    : BackgroundService
 {
-    private readonly IInvokeAfterMsgProcessor _invokeAfterMsgProcessor;
-
-    public MyTelegramInvokeAfterMsgProcessorBackgroundService(IInvokeAfterMsgProcessor invokeAfterMsgProcessor)
-    {
-        _invokeAfterMsgProcessor = invokeAfterMsgProcessor;
-    }
-
     protected override Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        return _invokeAfterMsgProcessor.ProcessAsync();
+        return invokeAfterMsgProcessor.ProcessAsync();
     }
 }

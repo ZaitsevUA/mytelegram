@@ -8,6 +8,7 @@ namespace MyTelegram.Schema.Chatlists;
 /// <para>Possible errors</para>
 /// Code Type Description
 /// 400 FILTER_ID_INVALID The specified filter ID is invalid.
+/// 400 FILTER_NOT_SUPPORTED The specified filter cannot be used in this context.
 /// 400 INPUT_CHATLIST_INVALID The specified folder is invalid.
 /// See <a href="https://corefork.telegram.org/method/chatlists.getChatlistUpdates" />
 ///</summary>

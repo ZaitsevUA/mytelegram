@@ -1,19 +1,18 @@
 ﻿namespace MyTelegram.Domain.Commands.Channel;
 
-public class CheckChannelStateCommand : RequestCommand2<ChannelAggregate, ChannelId, IExecutionResult>
+public class CheckChannelStateCommand(
+    ChannelId aggregateId,
+    RequestInfo requestInfo,
+    long senderPeerId,
+    int messageId,
+    int date,
+    MessageSubType messageSubType)
+    : RequestCommand2<ChannelAggregate, ChannelId, IExecutionResult>(aggregateId, requestInfo)
 {
-    public long SenderPeerId { get; }
-    public int MessageId { get; }
-    public int Date { get; }
-    public MessageSubType MessageSubType { get; }
-
-    public CheckChannelStateCommand(ChannelId aggregateId, RequestInfo requestInfo, long senderPeerId, int messageId, int date, MessageSubType messageSubType) : base(aggregateId, requestInfo)
-    {
-        SenderPeerId = senderPeerId;
-        MessageId = messageId;
-        Date = date;
-        MessageSubType = messageSubType;
-    }
+    public long SenderPeerId { get; } = senderPeerId;
+    public int MessageId { get; } = messageId;
+    public int Date { get; } = date;
+    public MessageSubType MessageSubType { get; } = messageSubType;
 
     protected override IEnumerable<byte[]> GetSourceIdComponents()
     {

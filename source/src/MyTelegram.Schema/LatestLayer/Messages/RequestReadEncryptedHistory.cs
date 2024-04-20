@@ -7,6 +7,7 @@ namespace MyTelegram.Schema.Messages;
 /// Marks message history within a secret chat as read.
 /// <para>Possible errors</para>
 /// Code Type Description
+/// 400 MAX_DATE_INVALID The specified maximum date is invalid.
 /// 400 MSG_WAIT_FAILED A waiting call returned an error.
 /// See <a href="https://corefork.telegram.org/method/messages.readEncryptedHistory" />
 ///</summary>

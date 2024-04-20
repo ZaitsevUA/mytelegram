@@ -32,7 +32,7 @@ public static class MyTelegramReadModelInMemoryExtensions
             .UseMyInMemoryReadStoreFor<ChatInviteReadModel>()
             .UseMyInMemoryReadStoreFor<RpcResultReadModel>()
             .UseMyInMemoryReadStoreFor<UserNameReadModel>()
-            .UseMyInMemoryReadStoreFor<PushUpdatesReadModel>()
+            //.UseMyInMemoryReadStoreFor<PushUpdatesReadModel>()
             .UseMyInMemoryReadStoreFor<PtsForAuthKeyIdReadModel>()
             ;
 

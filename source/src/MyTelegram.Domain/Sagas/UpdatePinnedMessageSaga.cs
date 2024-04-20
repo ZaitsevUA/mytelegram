@@ -146,6 +146,7 @@ public class UpdatePinnedMessageSaga : MyInMemoryAggregateSaga<UpdatePinnedMessa
                     new MessageItem(new Peer(PeerType.User, ownerPeerId),
                         _state.ToPeer,
                         new Peer(PeerType.User, ownerPeerId),
+                        ownerPeerId,
                         outMessageId,
                         string.Empty,
                         DateTime.UtcNow.ToTimestamp(),
@@ -154,13 +155,13 @@ public class UpdatePinnedMessageSaga : MyInMemoryAggregateSaga<UpdatePinnedMessa
                         SendMessageType.MessageService,
                         MessageType.Text,
                         MessageSubType.UpdatePinnedMessage,
-                        messageActionData: _state.MessageActionData,
+                        MessageActionData: _state.MessageActionData,
                         //replyToMsgId: _state.ReplyToMsgId,
-                        inputReplyTo: new TInputReplyToMessage
+                        InputReplyTo: new TInputReplyToMessage
                         {
                             ReplyToMsgId = _state.ReplyToMsgId
                         },
-                        messageActionType: MessageActionType.PinMessage
+                        MessageActionType: MessageActionType.PinMessage
                         ));
 
                 Publish(command);

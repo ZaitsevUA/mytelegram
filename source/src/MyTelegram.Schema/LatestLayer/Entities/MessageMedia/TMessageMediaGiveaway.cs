@@ -21,6 +21,11 @@ public sealed class TMessageMediaGiveaway : IMessageMedia
     /// See <a href="https://corefork.telegram.org/type/true" />
     ///</summary>
     public bool OnlyNewSubscribers { get; set; }
+
+    ///<summary>
+    /// If set, giveaway winners are public and will be listed in a <a href="https://corefork.telegram.org/constructor/messageMediaGiveawayResults">messageMediaGiveawayResults</a> message that will be automatically sent to the channel once the giveaway ends.
+    /// See <a href="https://corefork.telegram.org/type/true" />
+    ///</summary>
     public bool WinnersAreVisible { get; set; }
 
     ///<summary>
@@ -32,6 +37,10 @@ public sealed class TMessageMediaGiveaway : IMessageMedia
     /// If set, only users residing in these countries can participate in the giveaway, (specified as a list of two-letter ISO 3166-1 alpha-2 country codes); otherwise there are no country-based limitations.
     ///</summary>
     public TVector<string>? CountriesIso2 { get; set; }
+
+    ///<summary>
+    /// Can contain a textual description of additional giveaway prizes.
+    ///</summary>
     public string? PrizeDescription { get; set; }
 
     ///<summary>

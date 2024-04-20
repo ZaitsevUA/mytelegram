@@ -1,16 +1,11 @@
 ﻿namespace MyTelegram.GatewayServer.BackgroundServices;
 
-public class ClientDisconnectedDataProcessorBackgroundService : BackgroundService
+public class ClientDisconnectedDataProcessorBackgroundService(
+    IMessageQueueProcessor<ClientDisconnectedEvent> messageQueueProcessor)
+    : BackgroundService
 {
-    private readonly IMessageQueueProcessor<ClientDisconnectedEvent> _messageQueueProcessor;
-
-    public ClientDisconnectedDataProcessorBackgroundService(IMessageQueueProcessor<ClientDisconnectedEvent> messageQueueProcessor)
-    {
-        _messageQueueProcessor = messageQueueProcessor;
-    }
-
     protected override Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        return _messageQueueProcessor.ProcessAsync();
+        return messageQueueProcessor.ProcessAsync();
     }
 }

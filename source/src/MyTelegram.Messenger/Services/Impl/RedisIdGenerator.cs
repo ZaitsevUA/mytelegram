@@ -9,15 +9,8 @@ public interface IMongoDbIdGenerator : IIdGenerator
 
 }
 
-public class MongoDbIdGenerator : IMongoDbIdGenerator
+public class MongoDbIdGenerator(IMongoDbEventSequenceStore eventSequenceStore) : IMongoDbIdGenerator
 {
-    private readonly IMongoDbEventSequenceStore _eventSequenceStore;
-
-    public MongoDbIdGenerator(IMongoDbEventSequenceStore eventSequenceStore)
-    {
-        _eventSequenceStore = eventSequenceStore;
-    }
-
     public async Task<int> NextIdAsync(IdType idType, long id, int step = 1, CancellationToken cancellationToken = default)
     {
         return (int)(await NextLongIdAsync(idType, id, step, cancellationToken));
@@ -25,7 +18,7 @@ public class MongoDbIdGenerator : IMongoDbIdGenerator
 
     public Task<long> NextLongIdAsync(IdType idType, long id = 0, int step = 1, CancellationToken cancellationToken = default)
     {
-        var nextId = _eventSequenceStore.GetNextSequence($"{idType}-{id}");
+        var nextId = eventSequenceStore.GetNextSequence($"{idType}-{id}");
         return Task.FromResult(nextId);
     }
 }
@@ -35,16 +28,10 @@ public interface IRedisIdGenerator : IIdGenerator
 
 }
 
-public class RedisIdGenerator : IRedisIdGenerator
+public class RedisIdGenerator(IConfiguration configuration) : IRedisIdGenerator
 {
-    private readonly IConfiguration _configuration;
     private ConnectionMultiplexer? _connection;
     private IDatabaseAsync? _database;
-
-    public RedisIdGenerator(IConfiguration configuration)
-    {
-        _configuration = configuration;
-    }
 
     public async Task<int> NextIdAsync(IdType idType, long id, int step = 1, CancellationToken cancellationToken = default)
     {
@@ -78,7 +65,7 @@ public class RedisIdGenerator : IRedisIdGenerator
     {
         if (_connection == null || !_connection.IsConnected)
         {
-            var connectionString = _configuration.GetValue<string>("Redis:Configuration");
+            var connectionString = configuration.GetValue<string>("Redis:Configuration");
             if (string.IsNullOrEmpty(connectionString))
             {
                 throw new ArgumentException("Redis configuration is null,section name is 'Redis:Configuration'");

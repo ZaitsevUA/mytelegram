@@ -1,43 +1,31 @@
 ﻿namespace MyTelegram.Domain.Events.Messaging;
 
-public class ReplyToMessageStartedEvent : RequestAggregateEvent2<MessageAggregate, MessageId>
+public class ReplyToMessageStartedEvent(
+    RequestInfo requestInfo,
+    IInputReplyTo replyTo,
+    bool isOut,
+    IReadOnlyList<InboxItem> inboxItems,
+    Peer ownerPeer,
+    Peer senderPeer,
+    Peer toPeer,
+    int senderMessageId,
+    long? savedFromPeerId,
+    int? savedFromMsgId,
+    IReadOnlyCollection<Peer> recentRepliers)
+    : RequestAggregateEvent2<MessageAggregate, MessageId>(requestInfo)
 {
-    public ReplyToMessageStartedEvent(
-        RequestInfo requestInfo,
-        //int replyToMsgId, 
-        IInputReplyTo replyTo,
-        bool isOut, IReadOnlyList<InboxItem> inboxItems,
-        Peer ownerPeer,
-        Peer senderPeer,
-        Peer toPeer,
-        int senderMessageId,
-        long? savedFromPeerId,
-        int? savedFromMsgId,
-        IReadOnlyCollection<Peer> recentRepliers) : base(requestInfo)
-    {
-        //ReplyToMsgId = replyToMsgId;
-        ReplyTo = replyTo;
-        IsOut = isOut;
-        InboxItems = inboxItems;
-        OwnerPeer = ownerPeer;
-        SenderPeer = senderPeer;
-        ToPeer = toPeer;
-        SenderMessageId = senderMessageId;
-        SavedFromPeerId = savedFromPeerId;
-
-        SavedFromMsgId = savedFromMsgId;
-        RecentRepliers = recentRepliers;
-    }
+    //int replyToMsgId, 
+    //ReplyToMsgId = replyToMsgId;
 
     //public int ReplyToMsgId { get; }
-    public IInputReplyTo ReplyTo { get; }
-    public bool IsOut { get; }
-    public IReadOnlyList<InboxItem> InboxItems { get; }
-    public Peer OwnerPeer { get; }
-    public Peer SenderPeer { get; }
-    public Peer ToPeer { get; }
-    public int SenderMessageId { get; }
-    public long? SavedFromPeerId { get; }
-    public int? SavedFromMsgId { get; }
-    public IReadOnlyCollection<Peer> RecentRepliers { get; }
+    public IInputReplyTo ReplyTo { get; } = replyTo;
+    public bool IsOut { get; } = isOut;
+    public IReadOnlyList<InboxItem> InboxItems { get; } = inboxItems;
+    public Peer OwnerPeer { get; } = ownerPeer;
+    public Peer SenderPeer { get; } = senderPeer;
+    public Peer ToPeer { get; } = toPeer;
+    public int SenderMessageId { get; } = senderMessageId;
+    public long? SavedFromPeerId { get; } = savedFromPeerId;
+    public int? SavedFromMsgId { get; } = savedFromMsgId;
+    public IReadOnlyCollection<Peer> RecentRepliers { get; } = recentRepliers;
 }

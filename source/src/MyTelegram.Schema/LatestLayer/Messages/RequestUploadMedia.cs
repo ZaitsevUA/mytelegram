@@ -27,10 +27,13 @@ namespace MyTelegram.Schema.Messages;
 /// 400 WEBPAGE_CURL_FAILED Failure while fetching the webpage with cURL.
 /// See <a href="https://corefork.telegram.org/method/messages.uploadMedia" />
 ///</summary>
-[TlObject(0x519bc2b1)]
+[TlObject(0x14967978)]
 public sealed class RequestUploadMedia : IRequest<MyTelegram.Schema.IMessageMedia>
 {
-    public uint ConstructorId => 0x519bc2b1;
+    public uint ConstructorId => 0x14967978;
+    public BitArray Flags { get; set; } = new BitArray(32);
+    public string? BusinessConnectionId { get; set; }
+
     ///<summary>
     /// The chat, can be <a href="https://corefork.telegram.org/constructor/inputPeerEmpty">inputPeerEmpty</a> for bots and <a href="https://corefork.telegram.org/constructor/inputPeerSelf">inputPeerSelf</a> for users.
     /// See <a href="https://corefork.telegram.org/type/InputPeer" />
@@ -45,6 +48,7 @@ public sealed class RequestUploadMedia : IRequest<MyTelegram.Schema.IMessageMedi
 
     public void ComputeFlag()
     {
+        if (BusinessConnectionId != null) { Flags[0] = true; }
 
     }
 
@@ -52,12 +56,16 @@ public sealed class RequestUploadMedia : IRequest<MyTelegram.Schema.IMessageMedi
     {
         ComputeFlag();
         writer.Write(ConstructorId);
+        writer.Write(Flags);
+        if (Flags[0]) { writer.Write(BusinessConnectionId); }
         writer.Write(Peer);
         writer.Write(Media);
     }
 
     public void Deserialize(ref SequenceReader<byte> reader)
     {
+        Flags = reader.ReadBitArray();
+        if (Flags[0]) { BusinessConnectionId = reader.ReadString(); }
         Peer = reader.Read<MyTelegram.Schema.IInputPeer>();
         Media = reader.Read<MyTelegram.Schema.IInputMedia>();
     }

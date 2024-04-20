@@ -1,24 +1,14 @@
 ﻿namespace MyTelegram.Messenger.Services.Impl;
 
-public class IdGenerator : IIdGenerator
+public class IdGenerator(
+    IHiLoValueGeneratorCache cache,
+    IHiLoValueGeneratorFactory factory,
+    IPeerHelper peerHelper,
+    IQueryProcessor queryProcessor,
+    IHiLoStateBlockSizeHelper stateBlockSizeHelper,
+    ILogger<IdGenerator> logger)
+    : IIdGenerator
 {
-    private readonly IHiLoValueGeneratorCache _cache;
-    private readonly IHiLoValueGeneratorFactory _factory;
-    private readonly IPeerHelper _peerHelper;
-    private readonly IQueryProcessor _queryProcessor;
-    private readonly IHiLoStateBlockSizeHelper _stateBlockSizeHelper;
-    private readonly ILogger<IdGenerator> _logger;
-    public IdGenerator(IHiLoValueGeneratorCache cache,
-        IHiLoValueGeneratorFactory factory, IPeerHelper peerHelper, IQueryProcessor queryProcessor, IHiLoStateBlockSizeHelper stateBlockSizeHelper, ILogger<IdGenerator> logger)
-    {
-        _cache = cache;
-        _factory = factory;
-        _peerHelper = peerHelper;
-        _queryProcessor = queryProcessor;
-        _stateBlockSizeHelper = stateBlockSizeHelper;
-        _logger = logger;
-    }
-
     public async Task<int> NextIdAsync(IdType idType,
         long id,
         int step = 1,
@@ -35,14 +25,14 @@ public class IdGenerator : IIdGenerator
         //var state = _cache.GetOrAdd(idType, id);
         var sw = Stopwatch.StartNew();
         HiLoValueGeneratorState state;
-        if (_peerHelper.IsChannelPeer(id) && idType == IdType.MessageId)
+        if (peerHelper.IsChannelPeer(id) && idType == IdType.MessageId)
         //if (idType == IdType.ChannelId)
         {
-            state = await _cache.GetOrAddAsync(idType, id, async () =>
+            state = await cache.GetOrAddAsync(idType, id, async () =>
             {
-                var blockSize = _stateBlockSizeHelper.GetBlockSize(idType);
+                var blockSize = stateBlockSizeHelper.GetBlockSize(idType);
 
-                var channelReadModel = await _queryProcessor.ProcessAsync(new GetChannelByIdQuery(id), cancellationToken);
+                var channelReadModel = await queryProcessor.ProcessAsync(new GetChannelByIdQuery(id), cancellationToken);
                 var channelMaxMessageId = channelReadModel!.TopMessageId;
                 var high = channelMaxMessageId / blockSize;
                 var low = channelMaxMessageId % blockSize;
@@ -57,16 +47,16 @@ public class IdGenerator : IIdGenerator
         }
         else
         {
-            state = _cache.GetOrAdd(idType, id);
+            state = cache.GetOrAdd(idType, id);
         }
 
-        var generator = _factory.Create(state);
+        var generator = factory.Create(state);
         var nextId = await generator.NextAsync(idType, id, cancellationToken);
         sw.Stop();
 
         if (sw.Elapsed.TotalMilliseconds > 100)
         {
-            _logger.LogWarning("[{Timespan}]Generate id to slow,idType={IdType},id={Id}", sw.Elapsed, idType, id);
+            logger.LogWarning("[{Timespan}]Generate id too slow,idType={IdType},id={Id}", sw.Elapsed, idType, id);
         }
 
         return nextId + GetInitId(idType);
@@ -80,6 +70,7 @@ public class IdGenerator : IIdGenerator
             IdType.UserId => MyTelegramServerDomainConsts.UserIdInitId + 10000, // Reserve the first 10,000 users for testing
             IdType.BotUserId => MyTelegramServerDomainConsts.BotUserInitId,
             IdType.ChatId => MyTelegramServerDomainConsts.ChatIdInitId,
+            IdType.Pts => MyTelegramServerDomainConsts.PtsInitId,
             _ => 0
         };
     }

@@ -1,6 +1,6 @@
-﻿namespace MyTelegram.Domain.EventFlow;
+﻿//namespace MyTelegram.Domain.EventFlow;
 
-public interface INotSaveAggregateEvents
-{
+//public interface INotSaveAggregateEvents
+//{
 
-}
+//}

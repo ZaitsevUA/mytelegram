@@ -1,17 +1,10 @@
 ﻿namespace MyTelegram.Domain.Aggregates.Pts;
 
-public class TempPtsIncrementedEvent : AggregateEvent<TempPtsAggregate, TempPtsId>
+public class TempPtsIncrementedEvent(long ownerPeerId, int newPts, long permAuthKeyId, int date)
+    : AggregateEvent<TempPtsAggregate, TempPtsId>
 {
-    public long OwnerPeerId { get; }
-    public int NewPts { get; }
-    public long PermAuthKeyId { get; }
-    public int Date { get; }
-
-    public TempPtsIncrementedEvent(long ownerPeerId, int newPts, long permAuthKeyId, int date)
-    {
-        OwnerPeerId = ownerPeerId;
-        NewPts = newPts;
-        PermAuthKeyId = permAuthKeyId;
-        Date = date;
-    }
+    public long OwnerPeerId { get; } = ownerPeerId;
+    public int NewPts { get; } = newPts;
+    public long PermAuthKeyId { get; } = permAuthKeyId;
+    public int Date { get; } = date;
 }

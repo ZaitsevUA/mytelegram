@@ -1,17 +1,11 @@
 ﻿namespace MyTelegram.Domain.Events.Messaging;
 
-public class InboxMessageCreatedEvent : RequestAggregateEvent2<MessageAggregate, MessageId>
+public class InboxMessageCreatedEvent(
+    RequestInfo requestInfo,
+    MessageItem inboxMessageItem,
+    int senderMessageId)
+    : RequestAggregateEvent2<MessageAggregate, MessageId>(requestInfo)
 {
-    public MessageItem InboxMessageItem { get; }
-    public int SenderMessageId { get; }
-
-
-    public InboxMessageCreatedEvent(
-        RequestInfo requestInfo,
-        MessageItem inboxMessageItem, int senderMessageId) : base(requestInfo)
-    {
-        InboxMessageItem = inboxMessageItem;
-        SenderMessageId = senderMessageId;
-
-    }
+    public MessageItem InboxMessageItem { get; } = inboxMessageItem;
+    public int SenderMessageId { get; } = senderMessageId;
 }

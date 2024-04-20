@@ -1,15 +1,10 @@
 ﻿namespace MyTelegram.Messenger.Services;
 
-public class ReorderPinnedDialogsInput
+public class ReorderPinnedDialogsInput(
+    long selfUserId,
+    List<Peer> orderedPeerList)
 {
-    public ReorderPinnedDialogsInput(long selfUserId,
-        List<Peer> orderedPeerList)
-    {
-        SelfUserId = selfUserId;
-        OrderedPeerList = orderedPeerList;
-    }
+    public List<Peer> OrderedPeerList { get; } = orderedPeerList;
 
-    public List<Peer> OrderedPeerList { get; }
-
-    public long SelfUserId { get; }
+    public long SelfUserId { get; } = selfUserId;
 }

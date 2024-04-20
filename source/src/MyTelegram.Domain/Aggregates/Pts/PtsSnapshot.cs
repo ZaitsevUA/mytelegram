@@ -1,31 +1,21 @@
 ﻿namespace MyTelegram.Domain.Aggregates.Pts;
 
-public class PtsSnapshot : ISnapshot
+public class PtsSnapshot(
+    long peerId,
+    int pts,
+    int qts,
+    int unreadCount,
+    int date,
+    long globalSeqNo,
+    long permAuthKeyId)
+    : ISnapshot
 {
-    public PtsSnapshot(long peerId,
-        int pts,
-        int qts,
-        int unreadCount,
-        int date,
-        long globalSeqNo,
-        long permAuthKeyId
-    )
-    {
-        PeerId = peerId;
-        Pts = pts;
-        Qts = qts;
-        UnreadCount = unreadCount;
-        Date = date;
-        GlobalSeqNo = globalSeqNo;
-        PermAuthKeyId = permAuthKeyId;
-    }
+    public int Date { get; } = date;
+    public long GlobalSeqNo { get; } = globalSeqNo;
+    public long PermAuthKeyId { get; } = permAuthKeyId;
 
-    public int Date { get; }
-    public long GlobalSeqNo { get; }
-    public long PermAuthKeyId { get; }
-
-    public long PeerId { get; }
-    public int Pts { get; }
-    public int Qts { get; }
-    public int UnreadCount { get; }
+    public long PeerId { get; } = peerId;
+    public int Pts { get; } = pts;
+    public int Qts { get; } = qts;
+    public int UnreadCount { get; } = unreadCount;
 }

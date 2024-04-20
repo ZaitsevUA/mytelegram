@@ -1,34 +1,23 @@
 ﻿namespace MyTelegram.Messenger.CommandServer.DomainEventHandlers;
 
-public class UserDomainEventHandler :
-    ISubscribeSynchronousTo<UserAggregate, UserId, UserCreatedEvent>
+public class UserDomainEventHandler(
+    IMessageAppService messageAppService,
+    IRandomHelper randomHelper,
+    IOptionsMonitor<MyTelegramMessengerServerOptions> options,
+    ICommandBus commandBus)
+    :
+        ISubscribeSynchronousTo<UserAggregate, UserId, UserCreatedEvent>
 {
-    private readonly ICommandBus _commandBus;
-    private readonly IMessageAppService _messageAppService;
-    private readonly IOptionsMonitor<MyTelegramMessengerServerOptions> _options;
-    private readonly IRandomHelper _randomHelper;
-
-    public UserDomainEventHandler(IMessageAppService messageAppService,
-        IRandomHelper randomHelper,
-        IOptionsMonitor<MyTelegramMessengerServerOptions> options,
-        ICommandBus commandBus)
-    {
-        _messageAppService = messageAppService;
-        _randomHelper = randomHelper;
-        _options = options;
-        _commandBus = commandBus;
-    }
-
     public async Task HandleAsync(IDomainEvent<UserAggregate, UserId, UserCreatedEvent> domainEvent,
         CancellationToken cancellationToken)
     {
-        if (_options.CurrentValue.SetPremiumToTrueAfterUserCreated)
+        if (options.CurrentValue.SetPremiumToTrueAfterUserCreated)
         {
             var command = new UpdateUserPremiumStatusCommand(domainEvent.AggregateIdentity, true);
-            await _commandBus.PublishAsync(command, default);
+            await commandBus.PublishAsync(command, default);
         }
 
-        if (!_options.CurrentValue.SendWelcomeMessageAfterUserSignIn)
+        if (!options.CurrentValue.SendWelcomeMessageAfterUserSignIn)
         {
             return;
         }
@@ -42,11 +31,11 @@ public class UserDomainEventHandler :
                     domainEvent.AggregateEvent.RequestInfo.PermAuthKeyId,
                     Guid.NewGuid(), 0, DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()),
                 MyTelegramServerDomainConsts.OfficialUserId,
-                new Peer(PeerType.User, domainEvent.AggregateEvent.UserId, domainEvent.AggregateEvent.AccessHash),
+                new Peer(PeerType.User, domainEvent.AggregateEvent.UserId/*, domainEvent.AggregateEvent.AccessHash*/),
                 welcomeMessage,
-                _randomHelper.NextLong());
+                randomHelper.NextLong());
 
-            await _messageAppService.SendMessageAsync(sendMessageInput);
+            await messageAppService.SendMessageAsync(sendMessageInput);
         }
     }
 }

@@ -1,16 +1,12 @@
 ﻿namespace MyTelegram.Domain.Sagas;
 
-public class AddChatUserSaga : MyInMemoryAggregateSaga<AddChatUserSaga, AddChatUserSagaId, AddChatUserSagaLocator>,
-    ISagaIsStartedBy<ChatAggregate, ChatId, ChatMemberAddedEvent>
+public class AddChatUserSaga(
+    AddChatUserSagaId id,
+    IEventStore eventStore,
+    IIdGenerator idGenerator)
+    : MyInMemoryAggregateSaga<AddChatUserSaga, AddChatUserSagaId, AddChatUserSagaLocator>(id, eventStore),
+        ISagaIsStartedBy<ChatAggregate, ChatId, ChatMemberAddedEvent>
 {
-    private readonly IIdGenerator _idGenerator;
-
-    public AddChatUserSaga(AddChatUserSagaId id,
-        IEventStore eventStore, IIdGenerator idGenerator) : base(id, eventStore)
-    {
-        _idGenerator = idGenerator;
-    }
-
     public async Task HandleAsync(IDomainEvent<ChatAggregate, ChatId, ChatMemberAddedEvent> domainEvent,
         ISagaContext sagaContext,
         CancellationToken cancellationToken)
@@ -18,13 +14,14 @@ public class AddChatUserSaga : MyInMemoryAggregateSaga<AddChatUserSaga, AddChatU
         var ownerPeerId = domainEvent.AggregateEvent.ChatMember.InviterId;
         var ownerPeer = new Peer(PeerType.User, ownerPeerId);
         //var aggregateId = MessageId.Create(ownerPeerId, outMessageId);
-        var outMessageId = await _idGenerator.NextIdAsync(IdType.MessageId, ownerPeerId, cancellationToken: cancellationToken);
+        var outMessageId = await idGenerator.NextIdAsync(IdType.MessageId, ownerPeerId, cancellationToken: cancellationToken);
         var aggregateId = MessageId.Create(ownerPeerId, outMessageId);
 
         var item = new MessageItem(
             ownerPeer,
             new Peer(PeerType.Chat, domainEvent.AggregateEvent.ChatId),
             ownerPeer,
+            ownerPeerId,
             outMessageId,
             string.Empty,
             domainEvent.AggregateEvent.ChatMember.Date,

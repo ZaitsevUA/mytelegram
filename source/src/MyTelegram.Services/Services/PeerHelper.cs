@@ -1,5 +1,7 @@
-﻿using MyTelegram.Schema;
+﻿using System.Diagnostics.CodeAnalysis;
+using MyTelegram.Schema;
 using MyTelegram.Services.Exceptions;
+using MyTelegram.Services.Extensions;
 
 namespace MyTelegram.Services.Services;
 
@@ -22,10 +24,11 @@ public class PeerHelper : IPeerHelper //, ISingletonDependency
         //ThrowHelper.ThrowUserFriendlyException("CHANNEL_INVALID");
     }
 
-    public Peer GetPeer(IInputPeer peer,
+    [return: NotNullIfNotNull(nameof(peer))]
+    public Peer? GetPeer(IInputPeer? peer,
         long selfUserId = 0)
     {
-        return peer.ToPeer(selfUserId);
+        return peer?.ToPeer(selfUserId);
         //PeerType peerType;
         //long peerId;
         //long accessHash = 0;

@@ -6,27 +6,19 @@ using TChatFull = MyTelegram.Schema.Messages.TChatFull;
 
 namespace MyTelegram.Messenger.TLObjectConverters.Impl.LatestLayer;
 
-public class ChatConverterLatest : ChatConverterBase, IChatConverterLatest
+public class ChatConverterLatest(
+    IObjectMapper objectMapper,
+    IOptions<MyTelegramMessengerServerOptions> options,
+    ILayeredService<IPhotoConverter> layeredPhotoService,
+    ILayeredService<IPeerNotifySettingsConverter> layeredPeerNotifySettingsService,
+    IChatInviteLinkHelper chatInviteLinkHelper)
+    : ChatConverterBase, IChatConverterLatest
 {
-    private readonly ILayeredService<IPeerNotifySettingsConverter> _layeredPeerNotifySettingsService;
-    private readonly ILayeredService<IPhotoConverter> _layeredPhotoService;
-    private readonly IOptions<MyTelegramMessengerServerOptions> _options;
     private IPhotoConverter? _photoConverter;
-    private readonly IChatInviteLinkHelper _chatInviteLinkHelper;
-    public ChatConverterLatest(IObjectMapper objectMapper,
-        IOptions<MyTelegramMessengerServerOptions> options,
-        ILayeredService<IPhotoConverter> layeredPhotoService,
-        ILayeredService<IPeerNotifySettingsConverter> layeredPeerNotifySettingsService, IChatInviteLinkHelper chatInviteLinkHelper)
-    {
-        ObjectMapper = objectMapper;
-        _options = options;
-        _layeredPhotoService = layeredPhotoService;
-        _layeredPeerNotifySettingsService = layeredPeerNotifySettingsService;
-        _chatInviteLinkHelper = chatInviteLinkHelper;
-    }
 
     public override int Layer => Layers.LayerLatest;
-    protected IObjectMapper ObjectMapper { get; }
+    protected IObjectMapper ObjectMapper { get; } = objectMapper;
+
     public IChat ToChannel(
         long selfUserId,
         IChannelReadModel channelReadModel,
@@ -518,7 +510,7 @@ public class ChatConverterLatest : ChatConverterBase, IChatConverterLatest
     {
         var item = ObjectMapper.Map<ChatInviteCreatedEvent, TChatInviteExported>(eventData);
 
-        item.Link = $"{_options.Value.JoinChatDomain}/+{item.Link}";
+        item.Link = $"{options.Value.JoinChatDomain}/+{item.Link}";
 
         return item;
     }
@@ -528,7 +520,7 @@ public class ChatConverterLatest : ChatConverterBase, IChatConverterLatest
         var oldExportedChatInvite = new TChatInviteExported
         {
             RequestNeeded = aggregateEvent.RequestNeeded,
-            Link = _chatInviteLinkHelper.GetFullLink(_options.Value.JoinChatDomain, aggregateEvent.Hash),
+            Link = chatInviteLinkHelper.GetFullLink(options.Value.JoinChatDomain, aggregateEvent.Hash),
             AdminId = aggregateEvent.AdminId,
             Date = DateTime.UtcNow.ToTimestamp(),
             StartDate = aggregateEvent.StartDate,
@@ -546,7 +538,7 @@ public class ChatConverterLatest : ChatConverterBase, IChatConverterLatest
             var newExportedChatInvite = new TChatInviteExported
             {
                 RequestNeeded = aggregateEvent.RequestNeeded,
-                Link = _chatInviteLinkHelper.GetFullLink(_options.Value.JoinChatDomain, aggregateEvent.NewHash),
+                Link = chatInviteLinkHelper.GetFullLink(options.Value.JoinChatDomain, aggregateEvent.NewHash),
                 AdminId = aggregateEvent.AdminId,
                 Date = DateTime.UtcNow.ToTimestamp(),
                 StartDate = aggregateEvent.StartDate,
@@ -600,12 +592,12 @@ public class ChatConverterLatest : ChatConverterBase, IChatConverterLatest
     }
     protected virtual IPeerNotifySettings GetPeerNotifySettings(PeerNotifySettings? peerNotifySettings)
     {
-        return _layeredPeerNotifySettingsService.GetConverter(GetLayer()).ToPeerNotifySettings(peerNotifySettings);
+        return layeredPeerNotifySettingsService.GetConverter(GetLayer()).ToPeerNotifySettings(peerNotifySettings);
     }
 
     protected IPhotoConverter GetPhotoConverter()
     {
-        return _photoConverter ??= _layeredPhotoService.GetConverter(Layer);
+        return _photoConverter ??= layeredPhotoService.GetConverter(Layer);
     }
 
     protected virtual IChatAdminRights ToChatAdminRights(ChatAdminRights? rights)

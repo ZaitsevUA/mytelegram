@@ -1,22 +1,16 @@
 ﻿namespace MyTelegram.Messenger.Services.IdGenerator;
 
-public class HiLoValueGeneratorCache : IHiLoValueGeneratorCache
+public class HiLoValueGeneratorCache(IHiLoStateBlockSizeHelper stateBlockSizeHelper) : IHiLoValueGeneratorCache
 {
     private readonly ConcurrentDictionary<IdType, ConcurrentDictionary<long, HiLoValueGeneratorState>> _states = new();
     //private readonly int DefaultBlockSize = 10000;
-    private readonly IHiLoStateBlockSizeHelper _stateBlockSizeHelper;
-
-    public HiLoValueGeneratorCache(IHiLoStateBlockSizeHelper stateBlockSizeHelper)
-    {
-        _stateBlockSizeHelper = stateBlockSizeHelper;
-    }
 
     public HiLoValueGeneratorState GetOrAdd(IdType idType,
         long key)
     {
         if (!_states.TryGetValue(idType, out var stateList))
         {
-            var state = new HiLoValueGeneratorState(_stateBlockSizeHelper.GetBlockSize(idType));
+            var state = new HiLoValueGeneratorState(stateBlockSizeHelper.GetBlockSize(idType));
             stateList = new ConcurrentDictionary<long, HiLoValueGeneratorState>();
             stateList.TryAdd(key, state);
             _states.TryAdd(idType, stateList);
@@ -29,7 +23,7 @@ public class HiLoValueGeneratorCache : IHiLoValueGeneratorCache
                 return state;
             }
 
-            state = new HiLoValueGeneratorState(_stateBlockSizeHelper.GetBlockSize(idType));
+            state = new HiLoValueGeneratorState(stateBlockSizeHelper.GetBlockSize(idType));
             stateList.TryAdd(key, state);
             return state;
         }

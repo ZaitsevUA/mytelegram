@@ -1,11 +1,12 @@
-﻿using SendOutboxMessageCompletedEvent = MyTelegram.Domain.Sagas.Events.SendOutboxMessageCompletedEvent;
-
-namespace MyTelegram.Domain.Sagas.States;
+﻿namespace MyTelegram.Domain.Sagas.States;
 
 public class SendMessageSagaState : AggregateState<SendMessageSaga, SendMessageSagaId, SendMessageSagaState>,
     IApply<SendMessageSagaStartedEvent>,
     IApply<SendOutboxMessageCompletedEvent>,
-    IApply<ReceiveInboxMessageCompletedEvent>
+    IApply<ReceiveInboxMessageCompletedEvent>,
+    IApply<ReplyChannelMessageCompletedEvent>,
+    IApply<ReplyBroadcastChannelCompletedSagaEvent>,
+    IApply<PostChannelIdUpdatedEvent>
 {
     public RequestInfo RequestInfo { get; set; } = default!;
     public MessageItem MessageItem { get; set; } = default!;
@@ -62,5 +63,20 @@ public class SendMessageSagaState : AggregateState<SendMessageSaga, SendMessageS
         }
 
         return false;
+    }
+
+    public void Apply(ReplyChannelMessageCompletedEvent aggregateEvent)
+    {
+        //throw new NotImplementedException();
+    }
+
+    public void Apply(ReplyBroadcastChannelCompletedSagaEvent aggregateEvent)
+    {
+        //throw new NotImplementedException();
+    }
+
+    public void Apply(PostChannelIdUpdatedEvent aggregateEvent)
+    {
+        //throw new NotImplementedException();
     }
 }

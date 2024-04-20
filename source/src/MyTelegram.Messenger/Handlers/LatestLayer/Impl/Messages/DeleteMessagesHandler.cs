@@ -30,72 +30,40 @@ internal sealed class DeleteMessagesHandler : RpcResultObjectHandler<MyTelegram.
     protected override async Task<IAffectedMessages> HandleCoreAsync(IRequestInput input,
         MyTelegram.Schema.Messages.RequestDeleteMessages obj)
     {
-        // todo:set top message id after delete messages
         if (obj.Id.Count > 0)
         {
-            var id = obj.Id.First();
-            long? chatCreatorId = null;
+            var messageIds = obj.Id.ToList();
+            var messageItemsToBeDeletedList =
+                await _queryProcessor.ProcessAsync(new GetMessageItemListToBeDeletedQuery(input.UserId, messageIds));
+            int? newTopMessageId = null;
+            int? newTopMessageIdForOtherParticipant = null;
 
-            if (obj.Revoke)
+            // Not set top message id for group chat
+            if (messageItemsToBeDeletedList.Any(p => p.ToPeerType == PeerType.User))
             {
-                var messageReadModel = await _queryProcessor
-                    .ProcessAsync(new GetMessageByIdQuery(MessageId.Create(input.UserId, id).Value), default)
-             ;
-
-                if (messageReadModel == null)
+                newTopMessageId =
+                  await _queryProcessor.ProcessAsync(new GetTopMessageIdQuery(input.UserId, messageIds));
+                if (obj.Revoke)
                 {
-                    RpcErrors.RpcErrors400.MessageIdInvalid.ThrowRpcError();
-                }
+                    var toPeerMessageItem = messageItemsToBeDeletedList.FirstOrDefault(p => p.OwnerUserId != input.UserId);
 
-                switch (messageReadModel!.ToPeerType)
-                {
-                    case PeerType.Chat:
-                        {
-                            var chatReadModel = await _queryProcessor
-                                .ProcessAsync(new GetChatByChatIdQuery(messageReadModel.ToPeerId), default)
-                         ;
-                            if (chatReadModel == null)
-                            {
-                                RpcErrors.RpcErrors400.PeerIdInvalid.ThrowRpcError();
-                            }
+                    if (toPeerMessageItem != null)
+                    {
+                        var toPeerMessageIds = messageItemsToBeDeletedList.Where(p => p.OwnerUserId != input.UserId)
+                            .Select(p => p.MessageId).ToList();
 
-                            var command = new StartDeleteChatMessagesCommand(ChatId.Create(messageReadModel.ToPeerId),
-                                input.ToRequestInfo(),
-                                obj.Id.ToList(),
-                                obj.Revoke,
-                                false,
-                                Guid.NewGuid());
-                            await _commandBus.PublishAsync(command, default);
-                        }
-                        break;
-
-                    case PeerType.User:
-                        {
-                            var command = new StartDeleteUserMessagesCommand(
-                                DialogId.Create(input.UserId, messageReadModel.ToPeerType, messageReadModel.ToPeerId),
-                                input.ToRequestInfo(),
-                                obj.Revoke,
-                                obj.Id.ToList(),
-                                false,
-                                Guid.NewGuid());
-                            await _commandBus.PublishAsync(command, default);
-                        }
-                        break;
+                        newTopMessageIdForOtherParticipant =
+                          await _queryProcessor.ProcessAsync(new GetTopMessageIdQuery(toPeerMessageItem.OwnerUserId, toPeerMessageIds));
+                    }
                 }
             }
-            else
-            {
-                var command = new StartDeleteMessagesCommand(MessageId.Create(input.UserId, id),
-                    input.ToRequestInfo(),
-                    obj.Revoke,
-                    obj.Id.ToList(),
-                    chatCreatorId,
-                    //0,
-                    //0,
-                    //null,
-                    Guid.NewGuid());
-                await _commandBus.PublishAsync(command, CancellationToken.None);
-            }
+
+            var command = new StartDeleteMessagesCommand(TempId.New, input.ToRequestInfo(), messageItemsToBeDeletedList, obj.Revoke,
+                obj.Revoke,
+                newTopMessageId,
+                newTopMessageIdForOtherParticipant
+                );
+            await _commandBus.PublishAsync(command);
 
             return null!;
         }

@@ -8,7 +8,7 @@ public class
         CheckMessageViewLogCommand command,
         CancellationToken cancellationToken)
     {
-        aggregate.CheckMessageViewLog(command.MessageId, command.CorrelationId);
+        aggregate.CheckMessageViewLog(command.RequestInfo, command.MessageId);
         return Task.CompletedTask;
     }
 }

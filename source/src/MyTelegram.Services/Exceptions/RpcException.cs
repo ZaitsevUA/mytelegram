@@ -2,18 +2,14 @@
 
 namespace MyTelegram.Services.Exceptions;
 
-public class RpcException : Exception
+public class RpcException(int errorCode, string errorMessage) : Exception(errorMessage)
 {
-    public TRpcError Error { get; set; }
+    public TRpcError Error { get; set; } = new()
+    {
+        ErrorCode = errorCode,
+        ErrorMessage = errorMessage
+    };
     //public long RequestMessageId { get; }
 
-    public RpcException(int errorCode, string errorMessage) : base(errorMessage)
-    {
-        //RequestMessageId = requestMessageId;
-        Error = new TRpcError
-        {
-            ErrorCode = errorCode,
-            ErrorMessage = errorMessage
-        };
-    }
+    //RequestMessageId = requestMessageId;
 }

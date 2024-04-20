@@ -1,20 +1,15 @@
 ﻿namespace MyTelegram.Domain.Commands.Channel;
 
-public class SetPinnedMsgIdCommand : DistinctCommand<ChannelAggregate, ChannelId, IExecutionResult>
+public class SetPinnedMsgIdCommand(
+    ChannelId aggregateId,
+    long reqMsgId,
+    int pinnedMsgId,
+    bool pinned)
+    : DistinctCommand<ChannelAggregate, ChannelId, IExecutionResult>(aggregateId)
 {
-    public SetPinnedMsgIdCommand(ChannelId aggregateId,
-        long reqMsgId,
-        int pinnedMsgId,
-        bool pinned) : base(aggregateId)
-    {
-        ReqMsgId = reqMsgId;
-        PinnedMsgId = pinnedMsgId;
-        Pinned = pinned;
-    }
-
-    public bool Pinned { get; }
-    public int PinnedMsgId { get; }
-    public long ReqMsgId { get; }
+    public bool Pinned { get; } = pinned;
+    public int PinnedMsgId { get; } = pinnedMsgId;
+    public long ReqMsgId { get; } = reqMsgId;
 
     protected override IEnumerable<byte[]> GetSourceIdComponents()
     {

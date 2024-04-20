@@ -1,869 +1,310 @@
 ﻿namespace MyTelegram.Queries;
 
-//public class GetUserByPhoneNumberQuery : IQuery<IUserReadModel?>
-//{
-//    public string PhoneNumber { get; }
+public record GetPagedListQuery(int Skip, int Limit);
 
-//    public GetUserByPhoneNumberQuery(string phoneNumber)
-//    {
-//        PhoneNumber = phoneNumber;
-//    }
-//}
+//public record GetAllBlockedQuery(int Skip, int Limit) : IQuery<IReadOnlyCollection<IBlockedReadModel>>;
 
-public class GetAllDraftQuery : IQuery<IReadOnlyCollection<IDraftReadModel>>
-{
-    public GetAllDraftQuery(long ownerPeerId)
-    {
-        OwnerPeerId = ownerPeerId;
-    }
+public record GetAllDraftQuery(long OwnerPeerId) : IQuery<IReadOnlyCollection<IDraftReadModel>>;
 
-    public long OwnerPeerId { get; }
-}
+public record GetAllUserNameQuery(
+    int Skip,
+    int Limit) : IQuery<IReadOnlyCollection<string>>;
 
-public class GetAllUserNameQuery : IQuery<IReadOnlyCollection<string>>
-{
-    public GetAllUserNameQuery(int skip,
-        int limit)
-    {
-        Skip = skip;
-        Limit = limit;
-    }
+public record GetAuthKeyByAuthKeyIdQuery(long AuthKeyId) : IQuery<IAuthKeyReadModel?>;
 
-    public int Limit { get; }
+//public record GetBlockedListQuery(
+//    long UserId,
+//    int Skip,
+//    int Limit) : IQuery<IReadOnlyCollection<IBlockedReadModel>>;
 
-    public int Skip { get; }
-}
+//public record GetBlockedQuery(
+//    long UserId,
+//    long TargetPeerId) : IQuery<IBlockedReadModel?>;
 
-public class GetAuthKeyByAuthKeyIdQuery : IQuery<IAuthKeyReadModel?>
-{
-    public GetAuthKeyByAuthKeyIdQuery(long authKeyId)
-    {
-        AuthKeyId = authKeyId;
-    }
+public record GetBotByBotUserIdQuery(long BotUserId) : IQuery<IBotReadModel?>;
 
-    public long AuthKeyId { get; }
-}
+public record GetChannelByChannelIdListQuery(IList<long> ChannelIdList)
+    : IQuery<IReadOnlyCollection<IChannelReadModel>>;
 
-public class GetAuthKeyByTempAuthKeyIdQuery : IQuery<IAuthKeyReadModel?>
-{
-    public GetAuthKeyByTempAuthKeyIdQuery(long tempAuthKeyId)
-    {
-        TempAuthKeyId = tempAuthKeyId;
-    }
+public record GetChannelByIdQuery(long ChannelId) : IQuery<IChannelReadModel?>;
 
-    public long TempAuthKeyId { get; }
-}
+public record GetChannelFullByIdQuery(long ChannelId) : IQuery<IChannelFullReadModel?>;
 
-public class GetChannelByChannelIdListQuery : IQuery<IReadOnlyCollection<IChannelReadModel>>
-{
-    public GetChannelByChannelIdListQuery(IList<long> channelIdList)
-    {
-        ChannelIdList = channelIdList;
-    }
+public record GetChannelIdListByMemberUserIdQuery(long MemberUserId) : IQuery<IReadOnlyCollection<long>>;
 
-    public IList<long> ChannelIdList { get; }
-}
+public record GetChannelIdListByUserIdQuery(long UserId) : IQuery<IReadOnlyCollection<long>>;
 
-public class GetChannelByIdQuery : IQuery<IChannelReadModel?>
-{
-    public GetChannelByIdQuery(long channelId)
-    {
-        ChannelId = channelId;
-    }
+public record GetChannelMemberByUserIdQuery(
+    long ChannelId,
+    long UserId) : IQuery<IChannelMemberReadModel?>;
 
-    public long ChannelId { get; }
-}
+public record GetChannelMemberListByChannelIdListQuery(
+    long MemberUserId,
+    List<long> ChannelIdList) : IQuery<IReadOnlyCollection<IChannelMemberReadModel>>;
 
-public class GetChannelFullByIdQuery : IQuery<IChannelFullReadModel?>
-{
-    public GetChannelFullByIdQuery(long channelId)
-    {
-        ChannelId = channelId;
-    }
+public record GetChannelMembersByChannelIdQuery(
+    long ChannelId,
+    List<long> MemberUserIdList,
+    bool Kicked,
+    int Offset,
+    int Limit)
+    : IQuery<IReadOnlyCollection<IChannelMemberReadModel>>;
 
-    public long ChannelId { get; }
-}
+public record GetChannelPushUpdatesBySeqNoQuery(
+    List<long> ChannelIdList,
+    long SeqNo,
+    int Limit) : IQuery<IReadOnlyCollection<IPushUpdatesReadModel>>;
 
-public class GetChannelIdListByMemberUidQuery : IQuery<IReadOnlyCollection<long>>
-{
-    public GetChannelIdListByMemberUidQuery(long memberUid)
-    {
-        MemberUid = memberUid;
-    }
+public record GetChatByChatIdListQuery(IList<long> ChatIdList) : IQuery<IReadOnlyCollection<IChatReadModel>>;
 
-    public long MemberUid { get; }
-}
+public record GetChatByChatIdQuery(long ChatId) : IQuery<IChatReadModel?>;
 
-public class GetChannelIdListByUidQuery : IQuery<IReadOnlyCollection<long>>
-{
-    public GetChannelIdListByUidQuery(long userId)
-    {
-        UserId = userId;
-    }
+public record GetChatInvitesQuery(
+    bool Revoked,
+    long PeerId,
+    long AdminId,
+    int? OffsetDate,
+    string OffsetLink,
+    int Limit)
+    : IQuery<IReadOnlyCollection<IChatInviteReadModel>>;
 
-    public long UserId { get; }
-}
+public record GetChosenVoteAnswersQuery(List<long> PollIds, long VoterPeerId)
+    : IQuery<IReadOnlyCollection<IPollAnswerVoterReadModel>>;
 
-public class GetChannelMemberByUserIdQuery : IQuery<IChannelMemberReadModel?>
-{
-    public GetChannelMemberByUserIdQuery(long channelId,
-        long userId)
-    {
-        ChannelId = channelId;
-        UserId = userId;
-    }
+public record GetContactListQuery(long SelfUserId, List<long> TargetUserIdList)
+    : IQuery<IReadOnlyCollection<IContactReadModel>>;
 
-    public long ChannelId { get; }
-    public long UserId { get; }
-}
+public record GetContactListBySelfIdAndTargetUserIdQuery(long SelfUserId, long TargetUserId)
+    : IQuery<IReadOnlyCollection<IContactReadModel>>;
 
-public class GetChannelMemberListByChannelIdListQuery : IQuery<IReadOnlyCollection<IChannelMemberReadModel>>
-{
-    public GetChannelMemberListByChannelIdListQuery(long memberUserId,
-        List<long> channelIdList)
-    {
-        MemberUserId = memberUserId;
-        ChannelIdList = channelIdList;
-    }
+public record GetContactQuery(
+    long SelfUserId,
+    long TargetUserId) : IQuery<IContactReadModel?>;
 
-    public List<long> ChannelIdList { get; }
+public record GetContactsByUserIdQuery(long UserId) : IQuery<IReadOnlyCollection<IContactReadModel>>;
 
-    public long MemberUserId { get; }
-}
-
-public class GetChannelMembersByChannelIdQuery : IQuery<IReadOnlyCollection<IChannelMemberReadModel>>
-{
-    public GetChannelMembersByChannelIdQuery(long channelId,
-        List<long> memberUidList,
-        bool kicked,
-        int offset,
-        int limit)
-    {
-        ChannelId = channelId;
-        MemberUidList = memberUidList;
-        Kicked = kicked;
-        Offset = offset;
-        Limit = limit;
-    }
-
-    public long ChannelId { get; }
-    public bool Kicked { get; }
-    public int Limit { get; }
-    public List<long> MemberUidList { get; }
-    public int Offset { get; }
-}
-
-public class GetChannelPushUpdatesBySeqNoQuery : IQuery<IReadOnlyCollection<IPushUpdatesReadModel>>
-{
-    public GetChannelPushUpdatesBySeqNoQuery(List<long> channelIdList,
-        long seqNo,
-        int limit)
-    {
-        ChannelIdList = channelIdList;
-        SeqNo = seqNo;
-        Limit = limit;
-    }
-
-    public List<long> ChannelIdList { get; }
-    public int Limit { get; }
-
-    public long SeqNo { get; }
-}
-
-public class GetChatByChatIdListQuery : IQuery<IReadOnlyList<IChatReadModel>>
-{
-    public GetChatByChatIdListQuery(IList<long> chatIdList)
-    {
-        ChatIdList = chatIdList;
-    }
-
-    public IList<long> ChatIdList { get; }
-}
-
-public class GetChatByChatIdQuery : IQuery<IChatReadModel?>
-{
-    public GetChatByChatIdQuery(long chatId)
-    {
-        ChatId = chatId;
-    }
-
-    public long ChatId { get; }
-}
-
-public class GetChatInvitesQuery : IQuery<IReadOnlyCollection<IChatInviteReadModel>>
-{
-    public GetChatInvitesQuery(bool revoked,
-        long peerId,
-        long adminId,
-        int? offsetDate,
-        string offsetLink,
-        int limit)
-    {
-        Revoked = revoked;
-        PeerId = peerId;
-        AdminId = adminId;
-        OffsetDate = offsetDate;
-        OffsetLink = offsetLink;
-        Limit = limit;
-    }
-
-    public long AdminId { get; }
-    public int Limit { get; }
-    public int? OffsetDate { get; }
-    public string OffsetLink { get; }
-
-    public bool Revoked { get; }
-    public long PeerId { get; }
-}
-public record GetContactListQuery(long SelfUserId, List<long> TargetUserIdList) : IQuery<IReadOnlyCollection<IContactReadModel>>;
-public record GetContactListBySelfIdAndTargetUserIdQuery(long SelfUserId, long TargetUserId) : IQuery<IReadOnlyCollection<IContactReadModel>>;
-public class GetContactQuery : IQuery<IContactReadModel?>
-{
-    public GetContactQuery(long selfUserId,
-        long targetUid)
-    {
-        SelfUserId = selfUserId;
-        TargetUid = targetUid;
-    }
-    public long SelfUserId { get; }
-    public long TargetUid { get; }
-}
-public class GetContactsByUserIdQuery : IQuery<IReadOnlyCollection<IContactReadModel>>
-{
-    public GetContactsByUserIdQuery(long userId)
-    {
-        UserId = userId;
-    }
-    public long UserId { get; }
-}
 public record GetContactUserIdListQuery(long SelfUserId) : IQuery<IReadOnlyCollection<long>>;
-public record GetContactsByPhonesQuery(long SelfUserId, List<string> Phones) : IQuery<IReadOnlyCollection<IContactReadModel>>;
 
-public class GetDeviceByAuthKeyIdQuery : IQuery<IDeviceReadModel?>
+public record GetContactsByPhonesQuery(long SelfUserId, List<string> Phones)
+    : IQuery<IReadOnlyCollection<IContactReadModel>>;
+
+public record GetDeviceByAuthKeyIdQuery(long AuthKeyId) : IQuery<IDeviceReadModel?>;
+
+public record GetDeviceByHashQuery(long UserId, long Hash) : IQuery<IDeviceReadModel?>;
+
+public record GetDeviceByUserIdQuery(long UserId) : IQuery<IReadOnlyCollection<IDeviceReadModel>>;
+
+public record GetDialogByIdQuery(DialogId Id) : IQuery<IDialogReadModel?>;
+
+public record GetDialogFiltersQuery(long OwnerUserId) : IQuery<IReadOnlyCollection<IDialogFilterReadModel>>;
+
+public record GetDialogsQuery(
+    long OwnerId,
+    bool? Pinned,
+    DateTime? OffsetDate,
+    OffsetInfo Offset,
+    int Limit,
+    List<long>? PeerIdList)
+    : IQuery<IReadOnlyCollection<IDialogReadModel>>;
+
+public record GetDiscussionMessageQuery(
+    bool GetDiscussionMessageFromPostChannel,
+    long SavedFromPeerId,
+    int SavedFromMessageId) : IQuery<IMessageReadModel?>;
+
+//public record GetEncryptedChatByIdQuery(long ChatId) : IQuery<IEncryptedChatReadModel?>;
+
+//public record GetEncryptedPushUpdatesByQtsQuery(
+//    long PeerId,
+//    long PermAuthKeyId,
+//    int Qts,
+//    int Limit)
+//    : IQuery<IReadOnlyCollection<IEncryptedPushUpdatesReadModel>>;
+
+public record GetFileQuery(
+    long FileId,
+    Guid FileReference) : IQuery<IFileReadModel?>;
+
+public record GetJoinedChannelIdListQuery(
+    long MemberUserId,
+    List<long> ChannelIdList) : IQuery<IReadOnlyCollection<long>>;
+
+public record GetKickedChannelMembersQuery(
+    long ChannelId,
+    int Offset,
+    int Limit) : IQuery<IReadOnlyCollection<IChannelMemberReadModel>>;
+
+public record GetLatestAppCodeQuery(
+    string PhoneNumber,
+    string PhoneCodeHash) : IQuery<IAppCodeReadModel?>;
+
+public record GetLinkedChannelIdQuery(long ChannelId) : IQuery<long?>;
+
+public record GetSendAsQuery(long LinkedChannelId) : IQuery<IReadOnlyCollection<IChannelReadModel>>;
+
+public record GetSendAsPeerIdQuery(long CreatorUserId, long LinkedChannelId) : IQuery<long?>;
+
+//public record GetLoginLogQuery(long UserId) : IQuery<ILoginLogReadModel?>;
+
+public record GetMegaGroupByUserIdQuery(long UserId) : IQuery<IReadOnlyCollection<IChannelReadModel>>;
+
+public record GetMessageByIdQuery(string Id) : IQuery<IMessageReadModel?>;
+
+public record GetMessageByPeerIdAndMessageIdQuery(long OwnerPeerId, int MessageId) : IQuery<IMessageReadModel?>;
+
+public record GetMessageIdListQuery(
+    long OwnerPeerId,
+    long ToPeerId,
+    int MaxMessageId,
+    int Limit)
+    : IQuery<List<int>>;
+
+//public record GetMessageReactionListQuery(
+//    long SelfUserId,
+//    long ToPeerId,
+//    int MessageId,
+//    long? ReactionId,
+//    int? Offset,
+//    int Limit)
+//    : IQuery<IReadOnlyCollection<IUserReactionReadModel>>;
+
+public record GetMessagesByIdListQuery(IList<string> MessageIdList) : IQuery<IReadOnlyCollection<IMessageReadModel>>;
+
+public record GetMessagesByMessageIdListQuery(List<int> MessageIdList) : IQuery<IReadOnlyCollection<IMessageReadModel>>;
+
+public record GetMessagesByUserIdQuery(
+    long OwnerPeerId,
+    long ToPeerId) : IQuery<IReadOnlyCollection<IMessageReadModel>>;
+
+public record GetMessagesQuery(
+    long OwnerPeerId,
+    MessageType MessageType,
+    string? Q,
+    List<int>? MessageIdList,
+    int ChannelHistoryMinId,
+    int Limit,
+    OffsetInfo? Offset,
+    Peer? Peer,
+    long SelfUserId,
+    int Pts,
+    int ReplyToMsgId = 0)
+    : IQuery<IReadOnlyCollection<IMessageReadModel>>
 {
-    public GetDeviceByAuthKeyIdQuery(long authKeyId)
-    {
-        AuthKeyId = authKeyId;
-    }
-
-    public long AuthKeyId { get; }
-}
-
-public class GetDeviceByHashQuery : IQuery<IDeviceReadModel?>
-{
-    public GetDeviceByHashQuery(long userId,
-        long hash)
-    {
-        UserId = userId;
-        Hash = hash;
-    }
-
-    public long Hash { get; }
-    public long UserId { get; }
-}
-
-public class GetDeviceByUidQuery : IQuery<IReadOnlyCollection<IDeviceReadModel>>
-{
-    public GetDeviceByUidQuery(long userId)
-    {
-        UserId = userId;
-    }
-
-    public long UserId { get; }
-}
-
-public class GetDialogByIdQuery : IQuery<IDialogReadModel?>
-{
-    public GetDialogByIdQuery(DialogId id)
-    {
-        Id = id;
-    }
-
-    public DialogId Id { get; }
-}
-
-public class GetDialogFiltersQuery : IQuery<IReadOnlyCollection<IDialogFilterReadModel>>
-{
-    public GetDialogFiltersQuery(long ownerUserId)
-    {
-        OwnerUserId = ownerUserId;
-    }
-
-    public long OwnerUserId { get; }
-}
-
-public class GetDialogsQuery : IQuery<IReadOnlyList<IDialogReadModel>>
-{
-    public GetDialogsQuery(long ownerId,
-        bool? pinned,
-        DateTime? offsetDate,
-        OffsetInfo offset,
-        int limit,
-        List<long>? peerIdList)
-    {
-        OwnerId = ownerId;
-        Pinned = pinned;
-        OffsetDate = offsetDate;
-        Offset = offset;
-        Limit = limit;
-        PeerIdList = peerIdList;
-    }
-
-    public int Limit { get; }
-
-    public OffsetInfo Offset { get; }
-    public DateTime? OffsetDate { get; }
-    public long OwnerId { get; }
-    public List<long>? PeerIdList { get; }
-    public bool? Pinned { get; }
-}
-
-public class GetDiscussionMessageQuery : IQuery<IMessageReadModel?>
-{
-    public GetDiscussionMessageQuery(long savedFromPeerId,
-        int savedFromMessageId)
-    {
-        SavedFromPeerId = savedFromPeerId;
-        SavedFromMessageId = savedFromMessageId;
-    }
-
-    public int SavedFromMessageId { get; }
-    public long SavedFromPeerId { get; }
-}
-
-public class GetFileQuery : IQuery<IFileReadModel?>
-{
-    public GetFileQuery(long fileId,
-        Guid fileReference)
-    {
-        FileId = fileId;
-        FileReference = fileReference;
-    }
-
-    public long FileId { get; }
-    public Guid FileReference { get; }
-}
-
-public class GetJoinedChannelIdListQuery : IQuery<IReadOnlyCollection<long>>
-{
-    public GetJoinedChannelIdListQuery(long memberUid,
-        List<long> channelIdList)
-    {
-        MemberUid = memberUid;
-        ChannelIdList = channelIdList;
-    }
-
-    public List<long> ChannelIdList { get; }
-
-    public long MemberUid { get; }
-}
-
-public class GetKickedChannelMembersQuery : IQuery<IReadOnlyCollection<IChannelMemberReadModel>>
-{
-    public GetKickedChannelMembersQuery(long channelId,
-        int offset,
-        int limit)
-    {
-        ChannelId = channelId;
-        Offset = offset;
-        Limit = limit;
-    }
-
-    public long ChannelId { get; }
-    public int Limit { get; }
-    public int Offset { get; }
-}
-
-public class GetLinkedChannelIdQuery : IQuery<long?>
-{
-    public GetLinkedChannelIdQuery(long channelId)
-    {
-        ChannelId = channelId;
-    }
-
-    public long ChannelId { get; }
-}
-
-public class GetMegaGroupByUidQuery : IQuery<IReadOnlyCollection<IChannelReadModel>>
-{
-    public GetMegaGroupByUidQuery(long userId)
-    {
-        UserId = userId;
-    }
-
-    public long UserId { get; }
-}
-
-public class GetMessageByIdQuery : IQuery<IMessageReadModel?>
-{
-    public GetMessageByIdQuery(string id)
-    {
-        Id = id;
-    }
-
-    public string Id { get; }
-}
-
-public class GetMessageIdListQuery : IQuery<List<int>>
-{
-    public GetMessageIdListQuery(long ownerPeerId,
-        long toPeerId,
-        int maxMessageId,
-        int limit)
-    {
-        OwnerPeerId = ownerPeerId;
-        ToPeerId = toPeerId;
-        MaxMessageId = maxMessageId;
-        Limit = limit;
-    }
-
-    public int Limit { get; }
-    public int MaxMessageId { get; }
-
-    public long OwnerPeerId { get; }
-    public long ToPeerId { get; }
-}
-
-public class GetMessagesByIdListQuery : IQuery<IReadOnlyList<IMessageReadModel>>
-{
-    public GetMessagesByIdListQuery(IList<string> messageIdList)
-    {
-        MessageIdList = messageIdList;
-    }
-
-    public IList<string> MessageIdList { get; }
-}
-
-public class GetMessagesByMessageIdListQuery : IQuery<IReadOnlyCollection<IMessageReadModel>>
-{
-    public GetMessagesByMessageIdListQuery(List<int> messageIdList)
-    {
-        MessageIdList = messageIdList;
-    }
-
-    public List<int> MessageIdList { get; }
-}
-
-public class GetMessagesByUserIdQuery : IQuery<IReadOnlyCollection<IMessageReadModel>>
-{
-    public GetMessagesByUserIdQuery(long ownerPeerId,
-        long toPeerId)
-    {
-        OwnerPeerId = ownerPeerId;
-        ToPeerId = toPeerId;
-    }
-
-    //public UserId OwnerId { get; }
-    public long OwnerPeerId { get; }
-    public long ToPeerId { get; }
-}
-
-//public class GetDialogByIdQuery : IQuery<IDialogReadModel>
-//{
-//    public string Id { get; }
-//}
-public class GetMessagesQuery : IQuery<IReadOnlyCollection<IMessageReadModel>>
-{
-    public GetMessagesQuery(long ownerPeerId,
-        MessageType messageType,
-        string? q,
-        List<int>? messageIdList,
-        int channelHistoryMinId,
-        int limit,
-        OffsetInfo? offset,
-        Peer? peer,
-        long selfUserId,
-        int pts,
-        int replyToMsgId = 0
-    )
-    {
-        OwnerPeerId = ownerPeerId;
-        MessageType = messageType;
-        Q = q;
-        MessageIdList = messageIdList;
-        ChannelHistoryMinId = channelHistoryMinId;
-        Limit = limit;
-        Offset = offset;
-        Peer = peer;
-        SelfUserId = selfUserId;
-        Pts = pts;
-        ReplyToMsgId = replyToMsgId;
-    }
-
-    public int ChannelHistoryMinId { get; }
     public bool IsSearchGlobal { get; set; }
-
-    public int Limit { get; }
-
-    public List<int>? MessageIdList { get; }
-
-    //public UserId OwnerId { get; }
-    //public int OwnerPeerId { get; private set;}
-    public MessageType MessageType { get; }
-    public OffsetInfo? Offset { get; set; }
-
-    public long OwnerPeerId { get; }
-    public Peer? Peer { get; }
-    public int Pts { get; }
-    public string? Q { get; }
-
-    public int ReplyToMsgId { get; }
-    // use private setter for auto mapper
-
-    public long SelfUserId { get; }
+    public OffsetInfo? Offset { get; set; } = Offset;
 }
 
-public class GetMessageViewsQuery : IQuery<IReadOnlyCollection<MessageView>>
-{
-    public GetMessageViewsQuery(long channelId,
-        List<int> messageIdList)
-    {
-        ChannelId = channelId;
-        MessageIdList = messageIdList;
-    }
+public record GetMessagesReactionsQuery(long OwnerPeerId, List<int> MessageIds)
+    : IQuery<IReadOnlyCollection<IHasReactions>>;
 
-    public long ChannelId { get; }
-    public List<int> MessageIdList { get; }
-}
+public record GetMessageViewsQuery(
+    long ChannelId,
+    List<int> MessageIdList) : IQuery<IReadOnlyCollection<MessageView>>;
 
-public class GetPeerNotifySettingsByIdQuery : IQuery<IPeerNotifySettingsReadModel>
-{
-    public GetPeerNotifySettingsByIdQuery(PeerNotifySettingsId id)
-    {
-        Id = id;
-    }
+public record GetPeerNotifySettingsByIdQuery(PeerNotifySettingsId Id) : IQuery<IPeerNotifySettingsReadModel>;
 
-    public PeerNotifySettingsId Id { get; }
-}
+public record GetPeerNotifySettingsListQuery(IReadOnlyList<PeerNotifySettingsId> PeerNotifySettingsIdList)
+    : IQuery<IReadOnlyCollection<IPeerNotifySettingsReadModel>>;
 
-public class GetPeerNotifySettingsListQuery : IQuery<IReadOnlyCollection<IPeerNotifySettingsReadModel>>
-{
-    public GetPeerNotifySettingsListQuery(IReadOnlyList<PeerNotifySettingsId> peerNotifySettingsIdList)
-    {
-        PeerNotifySettingsIdList = peerNotifySettingsIdList;
-    }
+//public record GetPhoneCallConfigQuery(long UserId) : IQuery<IPhoneCallConfigReadModel?>;
 
-    public IReadOnlyList<PeerNotifySettingsId> PeerNotifySettingsIdList { get; }
-}
+public record GetPollAnswerVotersQuery(long PollId, long VoterPeerId)
+    : IQuery<IReadOnlyCollection<IPollAnswerVoterReadModel>>;
 
-public class GetPtsByPeerIdQuery : IQuery<IPtsReadModel?>
-{
-    public GetPtsByPeerIdQuery(long peerId)
-    {
-        PeerId = peerId;
-    }
+public record GetPollIdByMessageIdQuery(long PeerId, int MessageId) : IQuery<long?>;
 
-    public long PeerId { get; }
-}
+public record GetPollQuery(long ToPeerId, long PollId) : IQuery<IPollReadModel?>;
 
-public class GetPtsByPermAuthKeyIdQuery : IQuery<IPtsForAuthKeyIdReadModel?>
-{
-    public GetPtsByPermAuthKeyIdQuery(long peerId,
-        long permAuthKeyId)
-    {
-        PeerId = peerId;
-        PermAuthKeyId = permAuthKeyId;
-    }
+public record GetPollsQuery(List<long> PollIds) : IQuery<IReadOnlyCollection<IPollReadModel>>;
 
-    public long PeerId { get; }
-    public long PermAuthKeyId { get; }
-}
+public record GetPrivacyListQuery(
+    IReadOnlyList<long> UidList,
+    IReadOnlyList<PrivacyType> PrivacyTypes)
+    : IQuery<IReadOnlyCollection<IPrivacyReadModel>>;
 
-public class GetPushUpdatesByPtsQuery : IQuery<IReadOnlyCollection<IPushUpdatesReadModel>>
-{
-    public GetPushUpdatesByPtsQuery(long peerId,
-        int pts,
-        int limit)
-    {
-        PeerId = peerId;
-        Pts = pts;
-        Limit = limit;
-    }
+public record GetPrivacyQuery(
+    long UserId,
+    PrivacyType PrivacyType) : IQuery<IPrivacyReadModel?>;
 
-    public int Limit { get; }
-    public long PeerId { get; }
-    public int Pts { get; }
-}
+public record GetPtsByPeerIdQuery(long PeerId) : IQuery<IPtsReadModel?>;
 
-public class GetPushUpdatesQuery : IQuery<IReadOnlyCollection<IPushUpdatesReadModel>>
-{
-    public GetPushUpdatesQuery(long peerId,
-        int minPts,
-        int limit)
-    {
-        PeerId = peerId;
-        MinPts = minPts;
-        Limit = limit;
-    }
+public record GetPtsByPermAuthKeyIdQuery(
+    long PeerId,
+    long PermAuthKeyId) : IQuery<IPtsForAuthKeyIdReadModel?>;
 
-    public int Limit { get; }
-    public int MinPts { get; }
+public record GetReadHistoryMessageQuery(
+    long OwnerPeerId,
+    int MessageId,
+    long ToPeerId) : IQuery<IMessageReadModel?>;
 
-    public long PeerId { get; }
-}
+public record GetReadingHistoryQuery(
+    long TargetPeerId,
+    long MessageId) : IQuery<IReadOnlyCollection<long>>;
 
-public class GetReadHistoryMessageQuery : IQuery<IMessageReadModel?>
-{
-    public GetReadHistoryMessageQuery(long ownerPeerId,
-        int messageId,
-        long toPeerId)
-    {
-        OwnerPeerId = ownerPeerId;
-        MessageId = messageId;
-        ToPeerId = toPeerId;
-    }
+public record GetRepliesQuery(
+    long ChannelId,
+    IList<int> MessageIds) : IQuery<IReadOnlyCollection<IReplyReadModel>>;
 
-    public int MessageId { get; }
+public record GetReplyQuery(
+    long ChannelId,
+    int SavedFromMsgId) : IQuery<IReplyReadModel?>;
 
-    public long OwnerPeerId { get; }
-    public long ToPeerId { get; }
-}
+public record GetRpcResultByIdQuery(string Id) : IQuery<IRpcResultReadModel?>;
 
-public class GetReadingHistoryQuery : IQuery<IReadOnlyCollection<long>>
-{
-    public GetReadingHistoryQuery(long targetPeerId,
-        long messageId)
-    {
-        TargetPeerId = targetPeerId;
-        MessageId = messageId;
-    }
+public record GetUserByIdQuery(long UserId) : IQuery<IUserReadModel?>;
 
-    public long MessageId { get; }
-    public long TargetPeerId { get; }
-}
+public record GetUserByPhoneNumberQuery(string PhoneNumber) : IQuery<IUserReadModel?>;
 
-public class GetRepliesQuery : IQuery<IReadOnlyCollection<IReplyReadModel>>
-{
-    public GetRepliesQuery(long channelId,
-        IList<int> messageIds)
-    {
-        ChannelId = channelId;
-        MessageIds = messageIds;
-    }
+public record GetUserNameByIdQuery(string UserName) : IQuery<IUserNameReadModel?>;
 
-    public long ChannelId { get; }
-    public IList<int> MessageIds { get; }
-}
+public record GetUserNameByNameQuery(string Name) : IQuery<IUserNameReadModel?>;
 
-public class GetReplyQuery : IQuery<IReplyReadModel?>
-{
-    public GetReplyQuery(long channelId,
-        int savedFromMsgId)
-    {
-        ChannelId = channelId;
-        SavedFromMsgId = savedFromMsgId;
-    }
+//public record GetUserPasswordQuery(long UserId) : IQuery<IUserPasswordReadModel?>;
 
-    public long ChannelId { get; }
-    public int SavedFromMsgId { get; }
-}
+public record GetUsersByUidListQuery(List<long> UserIdList) : IQuery<IReadOnlyCollection<IUserReadModel>>;
 
-public class GetRpcResultByIdQuery : IQuery<IRpcResultReadModel?>
-{
-    public GetRpcResultByIdQuery(string id)
-    {
-        Id = id;
-    }
-
-    public string Id { get; }
-}
-
-public class GetUserByIdQuery : IQuery<IUserReadModel?>
-{
-    public GetUserByIdQuery(long userId)
-    {
-        UserId = userId;
-    }
-
-    public long UserId { get; }
-
-    //public GetUserByIdQuery(UserId userId)
-    //{
-    //    UserId = userId;
-    //}
-
-    //public UserId UserId { get; }
-}
-
-public class GetUserByPhoneNumberQuery : IQuery<IUserReadModel?>
-{
-    public GetUserByPhoneNumberQuery(string phoneNumber)
-    {
-        PhoneNumber = phoneNumber;
-    }
-
-    public string PhoneNumber { get; }
-}
-
-public class GetUserNameByIdQuery : IQuery<IUserNameReadModel?>
-{
-    public GetUserNameByIdQuery(
-        //PeerType peerType,
-        //int peerId,
-        string userName)
-    {
-        //PeerType = peerType;
-        //PeerId = peerId;
-        UserName = userName;
-    }
-    //public GetUserNameByIdQuery(string userNameId)
-    //{
-    //    UserNameId = userNameId;
-    //}
-
-    //public string UserNameId { get; }
-    //public PeerType PeerType { get; }
-    //public int PeerId { get; }
-    public string UserName { get; }
-}
-
-public class GetUserNameByNameQuery : IQuery<IUserNameReadModel?>
-{
-    public GetUserNameByNameQuery(string name)
-    {
-        Name = name;
-    }
-
-    public string Name { get; }
-}
-
-public class GetUsersByUidListQuery : IQuery<IReadOnlyList<IUserReadModel>>
-{
-    public GetUsersByUidListQuery(List<long> uidList)
-    {
-        UidList = uidList;
-    }
-
-    public List<long> UidList { get; }
-}
-
-public class MessageView
+public record MessageView
 {
     public int MessageId { get; set; }
     public int Views { get; set; }
 }
-public class SearchContactQuery : IQuery<IReadOnlyCollection<IContactReadModel>>
-{
-    public SearchContactQuery(long selfUserId,
-        string keyword)
-    {
-        SelfUserId = selfUserId;
-        Keyword = keyword;
-    }
-    public string Keyword { get; }
-    public long SelfUserId { get; }
-}
 
-public class SearchUserByKeywordQuery : IQuery<IReadOnlyCollection<IUserReadModel>>
-{
-    public SearchUserByKeywordQuery(string keyword,
-        int limit)
-    {
-        Keyword = keyword;
-        Limit = limit;
-    }
+public record SearchContactQuery(
+    long SelfUserId,
+    string Keyword) : IQuery<IReadOnlyCollection<IContactReadModel>>;
 
-    public string Keyword { get; }
-    public int Limit { get; }
-}
+public record SearchUserByKeywordQuery(
+    string Keyword,
+    int Limit) : IQuery<IReadOnlyCollection<IUserReadModel>>;
 
-public class SearchUserNameQuery : IQuery<IReadOnlyCollection<IUserNameReadModel>>
-{
-    public SearchUserNameQuery(string keyword)
-    {
-        Keyword = keyword;
-    }
+public record SearchUserNameQuery(string Keyword) : IQuery<IReadOnlyCollection<IUserNameReadModel>>;
 
-    public string Keyword { get; }
-}
+public record GetMessageIdListByUserIdQuery(long ChannelId, long SenderUserId, int Limit)
+    : IQuery<IReadOnlyCollection<int>>;
 
-public class GetLatestAppCodeQuery : IQuery<IAppCodeReadModel>
-{
-    public GetLatestAppCodeQuery(string phoneNumber,
-        string phoneCodeHash)
-    {
-        PhoneNumber = phoneNumber;
-        PhoneCodeHash = phoneCodeHash;
-    }
+public record GetMessageIdListByChannelIdQuery(long ChannelId, int Limit) : IQuery<IReadOnlyCollection<int>>;
 
-    public string PhoneCodeHash { get; }
+//public record GetForumTopicsQuery(
+//    long ChannelId,
+//    int OffsetDate,
+//    int OffsetId,
+//    int OffsetTopic,
+//    string? Q,
+//    int Limit) : IQuery<IReadOnlyCollection<IForumTopicReadModel>>;
 
-    public string PhoneNumber { get; }
-}
+public record GetForumMessagesQuery(long ChannelId, List<int> MessageIds)
+    : IQuery<IReadOnlyCollection<IMessageReadModel>>;
 
-public class GetPollIdByMessageIdQuery : IQuery<long?>
-{
-    public GetPollIdByMessageIdQuery(long peerId,
-        int messageId)
-    {
-        PeerId = peerId;
-        MessageId = messageId;
-    }
+//public record GetForumTopicsByIdsQuery(
+//    long ChannelId,
+//    List<int> TopicIds) : IQuery<IReadOnlyCollection<IForumTopicReadModel>>;
 
-    public long PeerId { get; }
-    public int MessageId { get; }
-}
-
-public class GetPollQuery : IQuery<IPollReadModel?>
-{
-    public GetPollQuery(long toPeerId,
-        long pollId)
-    {
-        ToPeerId = toPeerId;
-        PollId = pollId;
-    }
-
-    public long ToPeerId { get; }
-    public long PollId { get; }
-}
-
-public class GetChosenVoteAnswersQuery : IQuery<IReadOnlyCollection<IPollAnswerVoterReadModel>>
-{
-    public GetChosenVoteAnswersQuery(List<long> pollIds,
-        long voterPeerId)
-    {
-        PollIds = pollIds;
-        VoterPeerId = voterPeerId;
-    }
-
-    public List<long> PollIds { get; }
-    public long VoterPeerId { get; }
-}
-
-public class GetPollAnswerVotersQuery : IQuery<IReadOnlyCollection<IPollAnswerVoterReadModel>>
-{
-    public GetPollAnswerVotersQuery(long pollId,
-        long voterPeerId)
-    {
-        PollId = pollId;
-        VoterPeerId = voterPeerId;
-    }
-
-    public long PollId { get; }
-    public long VoterPeerId { get; }
-}
-
-public class GetPollsQuery : IQuery<IReadOnlyCollection<IPollReadModel>>
-{
-    public GetPollsQuery(List<long> pollIds)
-    {
-        PollIds = pollIds;
-    }
-
-    public List<long> PollIds { get; }
-}
-
-public record GetMessageIdListByUserIdQuery(long ChannelId,
-    long SenderUserId,
-    int Limit) : IQuery<IReadOnlyCollection<int>>;
-
-public record GetMessageIdListByChannelIdQuery(long ChannelId,
-    int Limit) : IQuery<IReadOnlyCollection<int>>;
-
-public record GetMessageReadParticipantsQuery(long TargetPeerId,
-    long MessageId) : IQuery<IReadOnlyCollection<IReadingHistoryReadModel>>;
+//public record GetForumTopicByIdQuery(long ChannelId, int TopicId) : IQuery<IForumTopicReadModel?>;
 
 public record GetAccessHashQueryByIdQuery(long Id) : IQuery<IAccessHashReadModel?>;
+
+public record GetMessageReadParticipantsQuery(long TargetPeerId, long MessageId)
+    : IQuery<IReadOnlyCollection<IReadingHistoryReadModel>>;
 
 public record GetPeerSettingsQuery(long SelfUserId, long PeerId) : IQuery<IPeerSettingsReadModel?>;
 
@@ -873,21 +314,16 @@ public record GetPhotosByPhotoIdLisQuery(IList<long> PhotoIds) : IQuery<IReadOnl
 
 public record GetPhotoByIdQuery(long PhotoId) : IQuery<IPhotoReadModel?>;
 
-public record GetUpdatesQuery(
-    long SelfUserId,
-    long PeerId,
-    int MinPts,
-    int Date,
-    int Limit) : IQuery<IReadOnlyCollection<IUpdatesReadModel>>;
+public record GetUsersByPhoneNumberListQuery(List<string> PhoneNumbers) : IQuery<IReadOnlyCollection<IUserReadModel>>;
 
-public record GetChannelUpdatesByGlobalSeqNoQuery(List<long> ChannelIdList, long MinGlobalSeqNo, int Limit) : IQuery<IReadOnlyCollection<IUpdatesReadModel>>;
+public record GetMaxMessageByChatIdQuery(long SelfUserId, long ChatId) : IQuery<int>;
 
-public record GetReplyToMsgIdListQuery(Peer ToPeer, long SelfUserId, int? ReplyToMsgId) : IQuery<IReadOnlyCollection<ReplyToMsgItem>?>;
-public record GetUserNameListByNamesQuery(List<string> UserNames, PeerType? PeerType = null) : IQuery<IReadOnlyCollection<IUserNameReadModel>>;
-public record GetPermanentChatInviteQuery(long PeerId) : IQuery<IChatInviteReadModel?>;
-public record GetChatAdminListByChannelIdQuery(long PeerId, int Skip, int Limit) : IQuery<IReadOnlyCollection<IChatAdminReadModel>>;
+public record GetChatAdminListByChannelIdQuery(long PeerId, int Skip, int Limit)
+    : IQuery<IReadOnlyCollection<IChatAdminReadModel>>;
 
-public record GetUnreadCountQuery(long OwnerUserId, long ToPeerId, int MaxMessageId) : IQuery<int>;
+//public record GetAdminLogListQuery(long ChannelId, List<AdminLogEventAction> ActionTypes, int Skip, int Limit) : IQuery<
+//    IReadOnlyCollection<IChannelAdminLogEventReadModel>>;
+
 public record AdminWithInvites(long AdminId, int InvitesCount, int RevokedInvitesCount);
 
 public record GetAdminInvitesQuery(long ChannelId) : IQuery<IReadOnlyCollection<AdminWithInvites>>;
@@ -896,18 +332,90 @@ public record GetChatInviteQuery(long PeerId, string Link) : IQuery<IChatInviteR
 
 public record GetChatInviteByLinkQuery(string Link) : IQuery<IChatInviteReadModel?>;
 
-//public record GetChatInviteByLinkQuery(string Link) : IQuery<IChatInviteReadModel>;
 public record GetRevokedChatInvitesQuery(long PeerId, long AdminId) : IQuery<IReadOnlyCollection<IChatInviteReadModel>>;
 
-public record GetChatInviteImportersQuery(long PeerId, ChatInviteRequestState? ChatInviteRequestState, int? InviteId,
-    int OffsetDate, long OffsetUserId, string? Q,
+public record GetChatInviteImportersQuery(
+    long PeerId,
+    ChatInviteRequestState? ChatInviteRequestState,
+    int? InviteId,
+    int OffsetDate,
+    long OffsetUserId,
+    string? Q,
     int Limit) : IQuery<IReadOnlyCollection<IChatInviteImporterReadModel>>;
+
+public record GetUserNameListByNamesQuery(List<string> UserNames, PeerType? PeerType = null)
+    : IQuery<IReadOnlyCollection<IUserNameReadModel>>;
+
+public record GetUnreadMentionedMessageIdListQuery(
+    long OwnerUserId,
+    long ToPeerId,
+    OffsetInfo? Offset,
+    int Skip,
+    int Limit) : GetPagedListQuery(Skip, Limit), IQuery<IReadOnlyCollection<int>>;
+
 public record GetRpcResultQuery(long UserId, long ReqMsgId) : IQuery<IRpcResultReadModel?>;
+
+public record GetUpdatesQuery(
+    long SelfUserId,
+    long PeerId,
+    int MinPts,
+    int Date,
+    int Limit) : IQuery<IReadOnlyCollection<IUpdatesReadModel>>;
+
+public record GetChannelUpdatesByGlobalSeqNoQuery(List<long> ChannelIdList, long MinGlobalSeqNo, int Limit)
+    : IQuery<IReadOnlyCollection<IUpdatesReadModel>>;
+
+public record GetReplyToMsgIdListQuery(Peer ToPeer, long SelfUserId, int? ReplyToMsgId)
+    : IQuery<IReadOnlyCollection<ReplyToMsgItem>?>;
+
+public record GetPermanentChatInviteQuery(long PeerId) : IQuery<IChatInviteReadModel?>;
+
+public record GetEncryptedMessagesQuery(long UserId, long PermAuthKeyId, int Qts)
+    : IQuery<IReadOnlyCollection<IEncryptedMessageReadModel>>;
+
+public record GetChannelMaxMessageIdQuery(long ChannelId) : IQuery<int>;
+
+public record GetMaxUserIdQuery : IQuery<long>;
+
+public record GetUnreadCountQuery(long OwnerUserId, long ToPeerId, int MaxMessageId) : IQuery<int>;
+
+//public record GetDocumentByIdQuery(long Id) : IQuery<IDocumentReadModel?>;
+
+//public record GetWallPapersQuery(long UserId) : IQuery<IReadOnlyCollection<IWallPaperReadModel>>;
+
+//public record GetWallPaperQuery(long WallPaperId) : IQuery<IWallPaperReadModel?>;
+
+//public record GetWallPaperBySlugQuery(string Slug) : IQuery<IWallPaperReadModel?>;
+
+//public record GetDocumentsByIdsQuery(IList<long> Ids) : IQuery<IReadOnlyCollection<IDocumentReadModel>>;
+
 public record GetGlobalPrivacySettingsQuery(long UserId) : IQuery<GlobalPrivacySettings?>;
-public record GetGlobalPrivacySettingsListQuery(List<long> UserIds) : IQuery<IReadOnlyDictionary<long, GlobalPrivacySettings?>>;
+
+public record GetGlobalPrivacySettingsListQuery(List<long> UserIds)
+    : IQuery<IReadOnlyDictionary<long, GlobalPrivacySettings?>>;
 
 public record GetOutboxReadDateQuery(long UserId, int MessageId, Peer ToPeer) : IQuery<int>;
+
 public record GetChatAdminQuery(long PeerId, long AdminId) : IQuery<IChatAdminReadModel?>;
+
 public record GetChatInviteImporterQuery(long PeerId, long UserId) : IQuery<IChatInviteImporterReadModel?>;
-public record GetChatInviteImporterListForApprovalQuery(long PeerId,long InviteId) : IQuery<IReadOnlyCollection<IChatInviteImporterReadModel>>;
-public record GetAdminedChannelIdsQuery(long UserId):IQuery<IReadOnlyCollection<long>>;
+
+public record GetChatInviteImporterListForApprovalQuery(long PeerId, long InviteId)
+    : IQuery<IReadOnlyCollection<IChatInviteImporterReadModel>>;
+
+public record GetAdminedChannelIdsQuery(long UserId) : IQuery<IReadOnlyCollection<long>>;
+
+public record GetFirstInboxMessageIdByMessageIdListQuery(long ChannelId, List<int> MessageIds) : IQuery<int?>;
+
+public record GetCommentsMessageIdListQuery(long ChannelId, List<int> MessageIds) : IQuery<IReadOnlyCollection<int>>;
+
+public record GetTopMessageIdQuery(long OwnerPeerId, List<int> MessageIds) : IQuery<int>;
+
+public record GetTopMessageQuery(long OwnerPeerId, List<int> MessageIds) : IQuery<IMessageReadModel?>;
+
+//public record GetSenderTopMessageIdQuery(long SenderUserId,)
+public record GetMessageItemListToBeDeletedQuery(long OwnerPeerId, List<int> MessageIds)
+    : IQuery<IReadOnlyCollection<MessageItemToBeDeleted>>;
+
+public record GetMessageItemListToBeDeletedQuery2(long OwnerPeerId, long ToPeerId, int MaxId, int Limit)
+    : IQuery<IReadOnlyCollection<MessageItemToBeDeleted>>;

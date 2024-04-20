@@ -1,11 +1,7 @@
 ﻿namespace MyTelegram.Domain.Sagas.Events;
 
-public class ReadHistoryReadLatestNoneBotOutboxMessageEvent : AggregateEvent<ReadHistorySaga, ReadHistorySagaId>
+public class ReadHistoryReadLatestNoneBotOutboxMessageEvent(long senderPeerId)
+    : AggregateEvent<ReadHistorySaga, ReadHistorySagaId>
 {
-    public ReadHistoryReadLatestNoneBotOutboxMessageEvent(long senderPeerId)
-    {
-        SenderPeerId = senderPeerId;
-    }
-
-    public long SenderPeerId { get; }
+    public long SenderPeerId { get; } = senderPeerId;
 }

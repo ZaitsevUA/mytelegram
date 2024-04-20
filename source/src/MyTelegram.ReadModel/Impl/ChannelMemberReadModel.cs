@@ -21,6 +21,7 @@ public class ChannelMemberReadModel : IChannelMemberReadModel,
     public int UntilDate { get; private set; }
     public long UserId { get; private set; }
     public long? ChatInviteId { get; private set; }
+    public ChatJoinType ChatJoinType { get; private set; }
     public virtual long? Version { get; set; }
 
     public Task ApplyAsync(IReadModelContext context,
@@ -32,6 +33,7 @@ public class ChannelMemberReadModel : IChannelMemberReadModel,
         UserId = domainEvent.AggregateEvent.UserId;
         InviterId = domainEvent.AggregateEvent.InviterId;
         Date = domainEvent.AggregateEvent.Date;
+        ChatJoinType = ChatJoinType.InvitedByAdmin;
 
         return Task.CompletedTask;
     }
@@ -67,6 +69,7 @@ public class ChannelMemberReadModel : IChannelMemberReadModel,
         UntilDate = 0;
 
         ChatInviteId = domainEvent.AggregateEvent.ChatInviteId;
+        ChatJoinType = domainEvent.AggregateEvent.ChatJoinType;
 
         return Task.CompletedTask;
     }

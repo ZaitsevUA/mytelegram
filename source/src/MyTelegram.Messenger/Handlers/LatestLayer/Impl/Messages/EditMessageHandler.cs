@@ -72,7 +72,7 @@ internal sealed class EditMessageHandler : RpcResultObjectHandler<MyTelegram.Sch
                 await _accessHashHelper.CheckAccessHashAsync(inputPeerChannel.ChannelId, inputPeerChannel.AccessHash);
                 break;
             case TInputPeerChat inputPeerChat:
-                chatReadModel = await _queryProcessor.ProcessAsync(new GetChatByChatIdQuery(inputPeerChat.ChatId),default);
+                chatReadModel = await _queryProcessor.ProcessAsync(new GetChatByChatIdQuery(inputPeerChat.ChatId), default);
                 break;
             case TInputPeerUser inputPeerUser:
                 await _accessHashHelper.CheckAccessHashAsync(inputPeerUser.UserId, inputPeerUser.AccessHash);
@@ -90,8 +90,15 @@ internal sealed class EditMessageHandler : RpcResultObjectHandler<MyTelegram.Sch
         byte[]? mediaBytes = null;
         if (obj.Media != null)
         {
-            var media = await _mediaHelper.SaveMediaAsync(obj.Media);
-            mediaBytes = media.ToBytes();
+            if (obj.Media is TInputMediaEmpty)
+            {
+                mediaBytes = new TMessageMediaEmpty().ToBytes();
+            }
+            else
+            {
+                var media = await _mediaHelper.SaveMediaAsync(obj.Media);
+                mediaBytes = media.ToBytes();
+            }
         }
 
         var command = new EditOutboxMessageCommand(MessageId.Create(ownerPeerId, obj.Id),

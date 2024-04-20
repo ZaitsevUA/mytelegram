@@ -1,18 +1,12 @@
 ﻿namespace MyTelegram.Domain.Events.Dialog;
 
-public class ParticipantHistoryClearedEvent : AggregateEvent<DialogAggregate, DialogId>, IHasCorrelationId
+public class ParticipantHistoryClearedEvent(
+    RequestInfo requestInfo,
+    long ownerPeerId,
+    int historyMinId)
+    : RequestAggregateEvent2<DialogAggregate, DialogId>(requestInfo)
 {
-    public ParticipantHistoryClearedEvent(long ownerPeerId,
-        int historyMinId,
-        Guid correlationId)
-    {
-        OwnerPeerId = ownerPeerId;
-        HistoryMinId = historyMinId;
-        CorrelationId = correlationId;
-    }
+    public int HistoryMinId { get; } = historyMinId;
 
-    public int HistoryMinId { get; }
-
-    public long OwnerPeerId { get; }
-    public Guid CorrelationId { get; }
+    public long OwnerPeerId { get; } = ownerPeerId;
 }

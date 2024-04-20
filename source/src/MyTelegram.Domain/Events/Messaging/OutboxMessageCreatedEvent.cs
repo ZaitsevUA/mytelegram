@@ -1,28 +1,21 @@
 ﻿namespace MyTelegram.Domain.Events.Messaging;
 
-public class OutboxMessageCreatedEvent : RequestAggregateEvent2<MessageAggregate, MessageId>
+public class OutboxMessageCreatedEvent(
+    RequestInfo requestInfo,
+    MessageItem outboxMessageItem,
+    List<long>? mentionedUserIds,
+    List<ReplyToMsgItem>? replyToMsgItems,
+    bool clearDraft,
+    int groupItemCount,
+    long? linkedChannelId,
+    List<long>? chatMembers)
+    : RequestAggregateEvent2<MessageAggregate, MessageId>(requestInfo)
 {
-    public OutboxMessageCreatedEvent(RequestInfo requestInfo, MessageItem outboxMessageItem,
-        List<long>? mentionedUserIds,
-        List<ReplyToMsgItem>? replyToMsgItems,
-        bool clearDraft, int groupItemCount, long? linkedChannelId,
-        List<long>? chatMembers) : base(requestInfo)
-    {
-        OutboxMessageItem = outboxMessageItem;
-        MentionedUserIds = mentionedUserIds;
-        ReplyToMsgItems = replyToMsgItems;
-        ClearDraft = clearDraft;
-        GroupItemCount = groupItemCount;
-
-        LinkedChannelId = linkedChannelId;
-        ChatMembers = chatMembers;
-    }
-
-    public MessageItem OutboxMessageItem { get; }
-    public List<long>? MentionedUserIds { get; }
-    public List<ReplyToMsgItem>? ReplyToMsgItems { get; }
-    public bool ClearDraft { get; }
-    public int GroupItemCount { get; }
-    public long? LinkedChannelId { get; }
-    public List<long>? ChatMembers { get; }
+    public MessageItem OutboxMessageItem { get; } = outboxMessageItem;
+    public List<long>? MentionedUserIds { get; } = mentionedUserIds;
+    public List<ReplyToMsgItem>? ReplyToMsgItems { get; } = replyToMsgItems;
+    public bool ClearDraft { get; } = clearDraft;
+    public int GroupItemCount { get; } = groupItemCount;
+    public long? LinkedChannelId { get; } = linkedChannelId;
+    public List<long>? ChatMembers { get; } = chatMembers;
 }

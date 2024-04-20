@@ -22,6 +22,7 @@
     <PackageVersion Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
     <PackageVersion Include="Microsoft.Extensions.Logging" Version="8.0.0" />
     <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.0" />
+    <PackageVersion Include="Microsoft.Extensions.Options.DataAnnotations" Version="8.0.0" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.8.0-preview-23424-02" />
     <PackageVersion Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="[1.19.6-Preview.1, 1.19.6]" />
     <PackageVersion Include="Polly" Version="8.2.0" />
@@ -44,6 +45,7 @@
     <PackageVersion Include="Volo.Abp.Autofac" Version="7.4.0-rc.4" />
     <PackageVersion Include="Volo.Abp.EventBus.RabbitMQ" Version="7.4.0-rc.4" />
     <PackageVersion Include="Volo.Abp.Sms" Version="7.4.0-rc.4" />
+    <PackageVersion Include="Vonage" Version="7.2.0" />
     <PackageVersion Include="xunit" Version="2.6.2" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="2.5.1" />
   </ItemGroup>

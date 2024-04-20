@@ -43,18 +43,6 @@ public sealed class RequestCreateStickerSet : IRequest<MyTelegram.Schema.Message
     public bool Masks { get; set; }
 
     ///<summary>
-    /// Whether this is an animated stickerset
-    /// See <a href="https://corefork.telegram.org/type/true" />
-    ///</summary>
-    public bool Animated { get; set; }
-
-    ///<summary>
-    /// Whether this is a video stickerset
-    /// See <a href="https://corefork.telegram.org/type/true" />
-    ///</summary>
-    public bool Videos { get; set; }
-
-    ///<summary>
     /// Whether this is a <a href="https://corefork.telegram.org/api/custom-emoji">custom emoji</a> stickerset.
     /// See <a href="https://corefork.telegram.org/type/true" />
     ///</summary>
@@ -101,8 +89,6 @@ public sealed class RequestCreateStickerSet : IRequest<MyTelegram.Schema.Message
     public void ComputeFlag()
     {
         if (Masks) { Flags[0] = true; }
-        if (Animated) { Flags[1] = true; }
-        if (Videos) { Flags[4] = true; }
         if (Emojis) { Flags[5] = true; }
         if (TextColor) { Flags[6] = true; }
         if (Thumb != null) { Flags[2] = true; }
@@ -126,8 +112,6 @@ public sealed class RequestCreateStickerSet : IRequest<MyTelegram.Schema.Message
     {
         Flags = reader.ReadBitArray();
         if (Flags[0]) { Masks = true; }
-        if (Flags[1]) { Animated = true; }
-        if (Flags[4]) { Videos = true; }
         if (Flags[5]) { Emojis = true; }
         if (Flags[6]) { TextColor = true; }
         UserId = reader.Read<MyTelegram.Schema.IInputUser>();

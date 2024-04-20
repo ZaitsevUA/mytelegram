@@ -1,16 +1,12 @@
 ﻿namespace MyTelegram.Domain.Sagas.Events;
 
-public class UserSignUpSuccessEvent : RequestAggregateEvent2<UserSignUpSaga, UserSignUpSagaId>
+public class UserSignUpSuccessEvent(
+    RequestInfo requestInfo,
+    long userId,
+    string phoneNumber)
+    : RequestAggregateEvent2<UserSignUpSaga, UserSignUpSagaId>(requestInfo)
 {
-    public UserSignUpSuccessEvent(RequestInfo requestInfo,
-        long userId,
-        string phoneNumber) : base(requestInfo)
-    {
-        UserId = userId;
-        PhoneNumber = phoneNumber;
-    }
+    public string PhoneNumber { get; } = phoneNumber;
 
-    public string PhoneNumber { get; }
-
-    public long UserId { get; }
+    public long UserId { get; } = userId;
 }

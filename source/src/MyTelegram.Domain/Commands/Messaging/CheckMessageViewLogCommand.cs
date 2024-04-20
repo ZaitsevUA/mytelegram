@@ -1,17 +1,10 @@
 ﻿namespace MyTelegram.Domain.Commands.Messaging;
 
-public class CheckMessageViewLogCommand : Command<MessageViewLogAggregate, MessageViewLogId, IExecutionResult>,
-    IHasCorrelationId
+public class CheckMessageViewLogCommand(
+    MessageViewLogId aggregateId,
+    RequestInfo requestInfo,
+    int messageId)
+    : RequestCommand2<MessageViewLogAggregate, MessageViewLogId, IExecutionResult>(aggregateId, requestInfo)
 {
-    public CheckMessageViewLogCommand(MessageViewLogId aggregateId,
-        int messageId,
-        Guid correlationId) : base(aggregateId)
-    {
-        MessageId = messageId;
-        CorrelationId = correlationId;
-    }
-
-    public int MessageId { get; }
-
-    public Guid CorrelationId { get; }
+    public int MessageId { get; } = messageId;
 }

@@ -1,12 +1,9 @@
 ﻿namespace MyTelegram.Domain.Sagas;
 
-public class JoinChannelSaga : AggregateSaga<JoinChannelSaga, JoinChannelSagaId, JoinChannelSagaLocator>,
-    ISagaIsStartedBy<ChannelMemberAggregate, ChannelMemberId, ChannelMemberJoinedEvent>
+public class JoinChannelSaga(JoinChannelSagaId id)
+    : AggregateSaga<JoinChannelSaga, JoinChannelSagaId, JoinChannelSagaLocator>(id),
+        ISagaIsStartedBy<ChannelMemberAggregate, ChannelMemberId, ChannelMemberJoinedEvent>
 {
-    public JoinChannelSaga(JoinChannelSagaId id) : base(id)
-    {
-    }
-
     public Task HandleAsync(IDomainEvent<ChannelMemberAggregate, ChannelMemberId, ChannelMemberJoinedEvent> domainEvent,
         ISagaContext sagaContext,
         CancellationToken cancellationToken)

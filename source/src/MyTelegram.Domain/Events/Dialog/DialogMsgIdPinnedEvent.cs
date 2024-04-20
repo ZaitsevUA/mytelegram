@@ -1,11 +1,6 @@
 ﻿namespace MyTelegram.Domain.Events.Dialog;
 
-public class DialogMsgIdPinnedEvent : AggregateEvent<DialogAggregate, DialogId>
+public class DialogMsgIdPinnedEvent(int pinnedMsgId) : AggregateEvent<DialogAggregate, DialogId>
 {
-    public DialogMsgIdPinnedEvent(int pinnedMsgId)
-    {
-        PinnedMsgId = pinnedMsgId;
-    }
-
-    public int PinnedMsgId { get; }
+    public int PinnedMsgId { get; } = pinnedMsgId;
 }

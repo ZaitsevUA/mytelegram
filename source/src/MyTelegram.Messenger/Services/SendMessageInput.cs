@@ -3,13 +3,14 @@
 public record SendMessageInput
 {
     public SendMessageInput(RequestInfo requestInfo,
-        long senderPeerId,
+        long senderUserId,
         Peer toPeer,
         string message,
         long randomId,
         //byte[]? entities = null,
         IList<IMessageEntity>? entities = null,
         //int? replyToMsgId = null,
+        //IReplyTo? replyTo = null,
         IInputReplyTo? inputReplyTo = null,
         bool clearDraft = false,
         byte[]? media = null,
@@ -22,14 +23,16 @@ public record SendMessageInput
         int groupItemCount = 1,
         long? pollId = null,
         byte[]? replyMarkup = null,
-        int? topMsgId = null
+        int? topMsgId = null,
+        Peer? sendAs = null,
+        string? quickReplyShortcut = null
         )
     {
         RequestInfo = requestInfo;
         SendMessageType = sendMessageType;
         MessageType = messageType;
         //MessageActionType = messageActionType;
-        SenderPeerId = senderPeerId;
+        SenderUserId = senderUserId;
         //Peer = peer;
         ToPeer = toPeer;
         Message = message;
@@ -45,16 +48,21 @@ public record SendMessageInput
         PollId = pollId;
         ReplyMarkup = replyMarkup;
         TopMsgId = topMsgId;
+        SendAs = sendAs;
+        QuickReplyShortcut = quickReplyShortcut;
     }
 
     public bool ClearDraft { get; }
     public IList<IMessageEntity>? Entities { get; }
     public IInputReplyTo? InputReplyTo { get; }
+    //public IReplyTo? ReplyTo { get; }
     public long GroupId { get; }
     public int GroupItemCount { get; } = 1;
     public long? PollId { get; }
     public byte[]? ReplyMarkup { get; }
     public int? TopMsgId { get; }
+    public Peer? SendAs { get; }
+    public string? QuickReplyShortcut { get; }
     public byte[]? Media { get; }
     public string Message { get; }
     public string? MessageActionData { get; }
@@ -63,7 +71,7 @@ public record SendMessageInput
     //public Peer? Peer { get; }
     public long RandomId { get; }
     //public int? ReplyToMsgId { get; }
-    public long SenderPeerId { get; }
+    public long SenderUserId { get; }
     public RequestInfo RequestInfo { get; }
     public SendMessageType SendMessageType { get; }
     public Peer ToPeer { get; }

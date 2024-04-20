@@ -1,14 +1,7 @@
 ﻿namespace MyTelegram.Messenger.Services.Impl;
 
-public class ChannelAdminRightsChecker : IChannelAdminRightsChecker
+public class ChannelAdminRightsChecker(IQueryProcessor queryProcessor) : IChannelAdminRightsChecker
 {
-    private readonly IQueryProcessor _queryProcessor;
-
-    public ChannelAdminRightsChecker(IQueryProcessor queryProcessor)
-    {
-        _queryProcessor = queryProcessor;
-    }
-
     public async Task CheckAdminRightAsync(long channelId, long userId, Func<IChatAdminReadModel, bool> checkAdminRightsFunc, RpcError rpcError)
     {
         if (!await HasChatAdminRightAsync(channelId, userId, checkAdminRightsFunc))
@@ -19,7 +12,7 @@ public class ChannelAdminRightsChecker : IChannelAdminRightsChecker
 
     public async Task<bool> HasChatAdminRightAsync(long channelId, long userId, Func<IChatAdminReadModel, bool> checkAdminRightsFunc)
     {
-        var chatAdmin = await _queryProcessor.ProcessAsync(new GetChatAdminQuery(channelId, userId));
+        var chatAdmin = await queryProcessor.ProcessAsync(new GetChatAdminQuery(channelId, userId));
         if(chatAdmin==null)
         {
             return false;

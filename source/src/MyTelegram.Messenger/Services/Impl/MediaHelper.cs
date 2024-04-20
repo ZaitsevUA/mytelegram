@@ -2,22 +2,15 @@
 
 namespace MyTelegram.Messenger.Services.Impl;
 
-public class MediaHelper : IMediaHelper
+public class MediaHelper(
+    IOptions<MyTelegramMessengerServerOptions> options,
+    ILogger<MediaHelper> logger)
+    : IMediaHelper
 {
-    private readonly ILogger<MediaHelper> _logger;
-    private readonly IOptions<MyTelegramMessengerServerOptions> _options;
-
-    public MediaHelper(IOptions<MyTelegramMessengerServerOptions> options,
-        ILogger<MediaHelper> logger)
-    {
-        _options = options;
-        _logger = logger;
-    }
-
     public async Task<IEncryptedFile> SaveEncryptedFileAsync(long reqMsgId,
         IInputEncryptedFile encryptedFile)
     {
-        var client = GrpcClientFactory.CreateMediaServiceClient(_options.Value.FileServerGrpcServiceUrl);
+        var client = GrpcClientFactory.CreateMediaServiceClient(options.Value.FileServerGrpcServiceUrl);
         var r = await client
             .SaveEncryptedFileAsync(new SaveEncryptedFileRequest
             {
@@ -43,7 +36,7 @@ public class MediaHelper : IMediaHelper
         string name,
         string md5)
     {
-        var client = GrpcClientFactory.CreateMediaServiceClient(_options.Value.FileServerGrpcServiceUrl);
+        var client = GrpcClientFactory.CreateMediaServiceClient(options.Value.FileServerGrpcServiceUrl);
         var r = await client.SavePhotoAsync(new SavePhotoRequest
         {
             FileId = fileId,
@@ -62,7 +55,7 @@ public class MediaHelper : IMediaHelper
     {
         try
         {
-            var client = GrpcClientFactory.CreateMediaServiceClient(_options.Value.FileServerGrpcServiceUrl);
+            var client = GrpcClientFactory.CreateMediaServiceClient(options.Value.FileServerGrpcServiceUrl);
             var r = await client.SaveMediaAsync(new SaveMediaRequest
             {
                 Media = ByteString.CopyFrom(media.ToBytes())
@@ -73,7 +66,7 @@ public class MediaHelper : IMediaHelper
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Save media failed,serviceUrl={FileServerGrpcServiceUrl}",_options.Value.FileServerGrpcServiceUrl);
+            logger.LogError(ex, "Save media failed,serviceUrl={FileServerGrpcServiceUrl}",options.Value.FileServerGrpcServiceUrl);
             RpcErrors.RpcErrors400.FileIdInvalid.ThrowRpcError();
         }
 

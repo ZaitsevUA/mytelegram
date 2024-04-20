@@ -30,13 +30,10 @@ public static class MyQueryHandlerExtensions
     }
 }
 
-public class GetAllDraftQueryHandler : MyQueryHandler<DraftReadModel>,
-    IQueryHandler<GetAllDraftQuery, IReadOnlyCollection<IDraftReadModel>>
+public class GetAllDraftQueryHandler(IMyInMemoryReadStore<DraftReadModel> store)
+    : MyQueryHandler<DraftReadModel>(store),
+        IQueryHandler<GetAllDraftQuery, IReadOnlyCollection<IDraftReadModel>>
 {
-    public GetAllDraftQueryHandler(IMyInMemoryReadStore<DraftReadModel> store) : base(store)
-    {
-    }
-
     public async Task<IReadOnlyCollection<IDraftReadModel>> ExecuteQueryAsync(GetAllDraftQuery query,
         CancellationToken cancellationToken)
     {
@@ -47,13 +44,10 @@ public class GetAllDraftQueryHandler : MyQueryHandler<DraftReadModel>,
     }
 }
 
-public class GetAllUserNameQueryHandler : MyQueryHandler<UserNameReadModel>,
-    IQueryHandler<GetAllUserNameQuery, IReadOnlyCollection<string>>
+public class GetAllUserNameQueryHandler(IMyInMemoryReadStore<UserNameReadModel> store)
+    : MyQueryHandler<UserNameReadModel>(store),
+        IQueryHandler<GetAllUserNameQuery, IReadOnlyCollection<string>>
 {
-    public GetAllUserNameQueryHandler(IMyInMemoryReadStore<UserNameReadModel> store) : base(store)
-    {
-    }
-
     public async Task<IReadOnlyCollection<string>> ExecuteQueryAsync(GetAllUserNameQuery query,
         CancellationToken cancellationToken)
     {
@@ -67,14 +61,11 @@ public class GetAllUserNameQueryHandler : MyQueryHandler<UserNameReadModel>,
 }
 
 public class
-    GetChannelByChannelIdListQueryHandler : MyQueryHandler<ChannelReadModel>,
+    GetChannelByChannelIdListQueryHandler(IMyInMemoryReadStore<ChannelReadModel> store)
+    : MyQueryHandler<ChannelReadModel>(store),
         IQueryHandler<GetChannelByChannelIdListQuery,
             IReadOnlyCollection<IChannelReadModel>>
 {
-    public GetChannelByChannelIdListQueryHandler(IMyInMemoryReadStore<ChannelReadModel> store) : base(store)
-    {
-    }
-
     public async Task<IReadOnlyCollection<IChannelReadModel>> ExecuteQueryAsync(GetChannelByChannelIdListQuery query,
         CancellationToken cancellationToken)
     {
@@ -91,13 +82,10 @@ public class
     }
 }
 
-public class GetChannelByIdQueryHandler : MyQueryHandler<ChannelReadModel>,
-    IQueryHandler<GetChannelByIdQuery, IChannelReadModel>
+public class GetChannelByIdQueryHandler(IMyInMemoryReadStore<ChannelReadModel> store)
+    : MyQueryHandler<ChannelReadModel>(store),
+        IQueryHandler<GetChannelByIdQuery, IChannelReadModel>
 {
-    public GetChannelByIdQueryHandler(IMyInMemoryReadStore<ChannelReadModel> store) : base(store)
-    {
-    }
-
     public async Task<IChannelReadModel> ExecuteQueryAsync(GetChannelByIdQuery query,
         CancellationToken cancellationToken)
     {
@@ -107,13 +95,10 @@ public class GetChannelByIdQueryHandler : MyQueryHandler<ChannelReadModel>,
     }
 }
 
-public class GetChannelFullByIdQueryHandler : MyQueryHandler<ChannelFullReadModel>,
-    IQueryHandler<GetChannelFullByIdQuery, IChannelFullReadModel?>
+public class GetChannelFullByIdQueryHandler(IMyInMemoryReadStore<ChannelFullReadModel> store)
+    : MyQueryHandler<ChannelFullReadModel>(store),
+        IQueryHandler<GetChannelFullByIdQuery, IChannelFullReadModel?>
 {
-    public GetChannelFullByIdQueryHandler(IMyInMemoryReadStore<ChannelFullReadModel> store) : base(store)
-    {
-    }
-
     public async Task<IChannelFullReadModel?> ExecuteQueryAsync(GetChannelFullByIdQuery query,
         CancellationToken cancellationToken)
     {
@@ -125,14 +110,11 @@ public class GetChannelFullByIdQueryHandler : MyQueryHandler<ChannelFullReadMode
 }
 
 public class
-    GetChannelIdListByMemberUidQueryHandler : MyQueryHandler<ChannelMemberReadModel>,
+    GetChannelIdListByMemberUidQueryHandler(IMyInMemoryReadStore<ChannelMemberReadModel> store)
+    : MyQueryHandler<ChannelMemberReadModel>(store),
         IQueryHandler<GetChannelIdListByMemberUidQuery,
             IReadOnlyCollection<long>>
 {
-    public GetChannelIdListByMemberUidQueryHandler(IMyInMemoryReadStore<ChannelMemberReadModel> store) : base(store)
-    {
-    }
-
     public async Task<IReadOnlyCollection<long>> ExecuteQueryAsync(GetChannelIdListByMemberUidQuery query,
         CancellationToken cancellationToken)
     {
@@ -147,13 +129,10 @@ public class
     }
 }
 
-public class GetChannelIdListByUidQueryHandler : MyQueryHandler<ChannelMemberReadModel>,
-    IQueryHandler<GetChannelIdListByUidQuery, IReadOnlyCollection<long>>
+public class GetChannelIdListByUidQueryHandler(IMyInMemoryReadStore<ChannelMemberReadModel> store)
+    : MyQueryHandler<ChannelMemberReadModel>(store),
+        IQueryHandler<GetChannelIdListByUidQuery, IReadOnlyCollection<long>>
 {
-    public GetChannelIdListByUidQueryHandler(IMyInMemoryReadStore<ChannelMemberReadModel> store) : base(store)
-    {
-    }
-
     public async Task<IReadOnlyCollection<long>> ExecuteQueryAsync(GetChannelIdListByUidQuery query,
         CancellationToken cancellationToken)
     {
@@ -165,13 +144,10 @@ public class GetChannelIdListByUidQueryHandler : MyQueryHandler<ChannelMemberRea
     }
 }
 
-public class GetChannelMemberByUidQueryHandler : MyQueryHandler<ChannelMemberReadModel>,
-    IQueryHandler<GetChannelMemberByUserIdQuery, IChannelMemberReadModel?>
+public class GetChannelMemberByUidQueryHandler(IMyInMemoryReadStore<ChannelMemberReadModel> store)
+    : MyQueryHandler<ChannelMemberReadModel>(store),
+        IQueryHandler<GetChannelMemberByUserIdQuery, IChannelMemberReadModel?>
 {
-    public GetChannelMemberByUidQueryHandler(IMyInMemoryReadStore<ChannelMemberReadModel> store) : base(store)
-    {
-    }
-
     public async Task<IChannelMemberReadModel?> ExecuteQueryAsync(GetChannelMemberByUserIdQuery query,
         CancellationToken cancellationToken)
     {
@@ -182,14 +158,10 @@ public class GetChannelMemberByUidQueryHandler : MyQueryHandler<ChannelMemberRea
     }
 }
 
-public class GetChannelMemberListByChannelIdListQueryHandler : MyQueryHandler<ChannelMemberReadModel>, IQueryHandler<
-    GetChannelMemberListByChannelIdListQuery, IReadOnlyCollection<IChannelMemberReadModel>>
+public class GetChannelMemberListByChannelIdListQueryHandler(IMyInMemoryReadStore<ChannelMemberReadModel> store)
+    : MyQueryHandler<ChannelMemberReadModel>(store), IQueryHandler<
+        GetChannelMemberListByChannelIdListQuery, IReadOnlyCollection<IChannelMemberReadModel>>
 {
-    public GetChannelMemberListByChannelIdListQueryHandler(IMyInMemoryReadStore<ChannelMemberReadModel> store) :
-        base(store)
-    {
-    }
-
     public async Task<IReadOnlyCollection<IChannelMemberReadModel>> ExecuteQueryAsync(
         GetChannelMemberListByChannelIdListQuery query,
         CancellationToken cancellationToken)
@@ -201,14 +173,11 @@ public class GetChannelMemberListByChannelIdListQueryHandler : MyQueryHandler<Ch
     }
 }
 
-public class GetChannelMembersByChannelIdQueryHandler : MyQueryHandler<ChannelMemberReadModel>,
-    IQueryHandler<GetChannelMembersByChannelIdQuery,
-        IReadOnlyCollection<IChannelMemberReadModel>>
+public class GetChannelMembersByChannelIdQueryHandler(IMyInMemoryReadStore<ChannelMemberReadModel> store)
+    : MyQueryHandler<ChannelMemberReadModel>(store),
+        IQueryHandler<GetChannelMembersByChannelIdQuery,
+            IReadOnlyCollection<IChannelMemberReadModel>>
 {
-    public GetChannelMembersByChannelIdQueryHandler(IMyInMemoryReadStore<ChannelMemberReadModel> store) : base(store)
-    {
-    }
-
     public async Task<IReadOnlyCollection<IChannelMemberReadModel>> ExecuteQueryAsync(
         GetChannelMembersByChannelIdQuery query,
         CancellationToken cancellationToken)
@@ -225,14 +194,11 @@ public class GetChannelMembersByChannelIdQueryHandler : MyQueryHandler<ChannelMe
     }
 }
 
-public class GetChannelPushUpdatesBySeqNoQueryHandler : MyQueryHandler<PushUpdatesReadModel>,
-    IQueryHandler<GetChannelPushUpdatesBySeqNoQuery,
-        IReadOnlyCollection<IPushUpdatesReadModel>>
+public class GetChannelPushUpdatesBySeqNoQueryHandler(IMyInMemoryReadStore<PushUpdatesReadModel> store)
+    : MyQueryHandler<PushUpdatesReadModel>(store),
+        IQueryHandler<GetChannelPushUpdatesBySeqNoQuery,
+            IReadOnlyCollection<IPushUpdatesReadModel>>
 {
-    public GetChannelPushUpdatesBySeqNoQueryHandler(IMyInMemoryReadStore<PushUpdatesReadModel> store) : base(store)
-    {
-    }
-
     public async Task<IReadOnlyCollection<IPushUpdatesReadModel>> ExecuteQueryAsync(
         GetChannelPushUpdatesBySeqNoQuery query,
         CancellationToken cancellationToken)
@@ -245,13 +211,10 @@ public class GetChannelPushUpdatesBySeqNoQueryHandler : MyQueryHandler<PushUpdat
     }
 }
 
-public class GetChatByChatIdListQueryHandler : MyQueryHandler<ChatReadModel>,
-    IQueryHandler<GetChatByChatIdListQuery, IReadOnlyList<IChatReadModel>>
+public class GetChatByChatIdListQueryHandler(IMyInMemoryReadStore<ChatReadModel> store)
+    : MyQueryHandler<ChatReadModel>(store),
+        IQueryHandler<GetChatByChatIdListQuery, IReadOnlyList<IChatReadModel>>
 {
-    public GetChatByChatIdListQueryHandler(IMyInMemoryReadStore<ChatReadModel> store) : base(store)
-    {
-    }
-
     public async Task<IReadOnlyList<IChatReadModel>> ExecuteQueryAsync(GetChatByChatIdListQuery query,
         CancellationToken cancellationToken)
     {
@@ -262,13 +225,10 @@ public class GetChatByChatIdListQueryHandler : MyQueryHandler<ChatReadModel>,
     }
 }
 
-public class GetChatByChatIdQueryHandler : MyQueryHandler<ChatReadModel>,
-    IQueryHandler<GetChatByChatIdQuery, IChatReadModel?>
+public class GetChatByChatIdQueryHandler(IMyInMemoryReadStore<ChatReadModel> store)
+    : MyQueryHandler<ChatReadModel>(store),
+        IQueryHandler<GetChatByChatIdQuery, IChatReadModel?>
 {
-    public GetChatByChatIdQueryHandler(IMyInMemoryReadStore<ChatReadModel> store) : base(store)
-    {
-    }
-
     public async Task<IChatReadModel?> ExecuteQueryAsync(GetChatByChatIdQuery query,
         CancellationToken cancellationToken)
     {
@@ -280,13 +240,10 @@ public class GetChatByChatIdQueryHandler : MyQueryHandler<ChatReadModel>,
 }
 
 public class
-    GetChatInvitesQueryHandler : MyQueryHandler<ChatInviteReadModel>,
+    GetChatInvitesQueryHandler(IMyInMemoryReadStore<ChatInviteReadModel> store)
+    : MyQueryHandler<ChatInviteReadModel>(store),
         IQueryHandler<GetChatInvitesQuery, IReadOnlyCollection<IChatInviteReadModel>>
 {
-    public GetChatInvitesQueryHandler(IMyInMemoryReadStore<ChatInviteReadModel> store) : base(store)
-    {
-    }
-
     public async Task<IReadOnlyCollection<IChatInviteReadModel>> ExecuteQueryAsync(GetChatInvitesQuery query,
         CancellationToken cancellationToken)
     {
@@ -298,13 +255,10 @@ public class
     }
 }
 
-public class GetDeviceByAuthKeyIdQueryHandler : MyQueryHandler<DeviceReadModel>,
-    IQueryHandler<GetDeviceByAuthKeyIdQuery, IDeviceReadModel?>
+public class GetDeviceByAuthKeyIdQueryHandler(IMyInMemoryReadStore<DeviceReadModel> store)
+    : MyQueryHandler<DeviceReadModel>(store),
+        IQueryHandler<GetDeviceByAuthKeyIdQuery, IDeviceReadModel?>
 {
-    public GetDeviceByAuthKeyIdQueryHandler(IMyInMemoryReadStore<DeviceReadModel> store) : base(store)
-    {
-    }
-
     public async Task<IDeviceReadModel?> ExecuteQueryAsync(GetDeviceByAuthKeyIdQuery query,
         CancellationToken cancellationToken)
     {
@@ -316,13 +270,10 @@ public class GetDeviceByAuthKeyIdQueryHandler : MyQueryHandler<DeviceReadModel>,
     }
 }
 
-public class GetDeviceByHashQueryHandler : MyQueryHandler<DeviceReadModel>,
-    IQueryHandler<GetDeviceByHashQuery, IDeviceReadModel?>
+public class GetDeviceByHashQueryHandler(IMyInMemoryReadStore<DeviceReadModel> store)
+    : MyQueryHandler<DeviceReadModel>(store),
+        IQueryHandler<GetDeviceByHashQuery, IDeviceReadModel?>
 {
-    public GetDeviceByHashQueryHandler(IMyInMemoryReadStore<DeviceReadModel> store) : base(store)
-    {
-    }
-
     public async Task<IDeviceReadModel?> ExecuteQueryAsync(GetDeviceByHashQuery query,
         CancellationToken cancellationToken)
     {
@@ -332,13 +283,10 @@ public class GetDeviceByHashQueryHandler : MyQueryHandler<DeviceReadModel>,
     }
 }
 
-public class GetDeviceByUidQueryHandler : MyQueryHandler<DeviceReadModel>,
-    IQueryHandler<GetDeviceByUidQuery, IReadOnlyCollection<IDeviceReadModel>>
+public class GetDeviceByUidQueryHandler(IMyInMemoryReadStore<DeviceReadModel> store)
+    : MyQueryHandler<DeviceReadModel>(store),
+        IQueryHandler<GetDeviceByUidQuery, IReadOnlyCollection<IDeviceReadModel>>
 {
-    public GetDeviceByUidQueryHandler(IMyInMemoryReadStore<DeviceReadModel> store) : base(store)
-    {
-    }
-
     public async Task<IReadOnlyCollection<IDeviceReadModel>> ExecuteQueryAsync(GetDeviceByUidQuery query,
         CancellationToken cancellationToken)
     {
@@ -349,13 +297,10 @@ public class GetDeviceByUidQueryHandler : MyQueryHandler<DeviceReadModel>,
     }
 }
 
-public class GetDialogByIdQueryHandler : MyQueryHandler<DialogReadModel>,
-    IQueryHandler<GetDialogByIdQuery, IDialogReadModel?>
+public class GetDialogByIdQueryHandler(IMyInMemoryReadStore<DialogReadModel> store)
+    : MyQueryHandler<DialogReadModel>(store),
+        IQueryHandler<GetDialogByIdQuery, IDialogReadModel?>
 {
-    public GetDialogByIdQueryHandler(IMyInMemoryReadStore<DialogReadModel> store) : base(store)
-    {
-    }
-
     public async Task<IDialogReadModel?> ExecuteQueryAsync(GetDialogByIdQuery query,
         CancellationToken cancellationToken)
     {
@@ -365,13 +310,10 @@ public class GetDialogByIdQueryHandler : MyQueryHandler<DialogReadModel>,
     }
 }
 
-public class GetDialogsQueryHandler : MyQueryHandler<DialogReadModel>,
-    IQueryHandler<GetDialogsQuery, IReadOnlyList<IDialogReadModel>>
+public class GetDialogsQueryHandler(IMyInMemoryReadStore<DialogReadModel> store)
+    : MyQueryHandler<DialogReadModel>(store),
+        IQueryHandler<GetDialogsQuery, IReadOnlyList<IDialogReadModel>>
 {
-    public GetDialogsQueryHandler(IMyInMemoryReadStore<DialogReadModel> store) : base(store)
-    {
-    }
-
     public async Task<IReadOnlyList<IDialogReadModel>> ExecuteQueryAsync(GetDialogsQuery query,
         CancellationToken cancellationToken)
     {
@@ -399,13 +341,10 @@ public class GetDialogsQueryHandler : MyQueryHandler<DialogReadModel>,
 }
 
 public class
-    GetJoinedChannelIdListQueryHandler : MyQueryHandler<ChannelMemberReadModel>,
+    GetJoinedChannelIdListQueryHandler(IMyInMemoryReadStore<ChannelMemberReadModel> store)
+    : MyQueryHandler<ChannelMemberReadModel>(store),
         IQueryHandler<GetJoinedChannelIdListQuery, IReadOnlyCollection<long>>
 {
-    public GetJoinedChannelIdListQueryHandler(IMyInMemoryReadStore<ChannelMemberReadModel> store) : base(store)
-    {
-    }
-
     public async Task<IReadOnlyCollection<long>> ExecuteQueryAsync(GetJoinedChannelIdListQuery query,
         CancellationToken cancellationToken)
     {
@@ -417,14 +356,11 @@ public class
     }
 }
 
-public class GetKickedChannelMembersQueryHandler : MyQueryHandler<ChannelMemberReadModel>,
-    IQueryHandler<GetKickedChannelMembersQuery,
-        IReadOnlyCollection<IChannelMemberReadModel>>
+public class GetKickedChannelMembersQueryHandler(IMyInMemoryReadStore<ChannelMemberReadModel> store)
+    : MyQueryHandler<ChannelMemberReadModel>(store),
+        IQueryHandler<GetKickedChannelMembersQuery,
+            IReadOnlyCollection<IChannelMemberReadModel>>
 {
-    public GetKickedChannelMembersQueryHandler(IMyInMemoryReadStore<ChannelMemberReadModel> store) : base(store)
-    {
-    }
-
     public async Task<IReadOnlyCollection<IChannelMemberReadModel>> ExecuteQueryAsync(
         GetKickedChannelMembersQuery query,
         CancellationToken cancellationToken)
@@ -440,13 +376,10 @@ public class GetKickedChannelMembersQueryHandler : MyQueryHandler<ChannelMemberR
 }
 
 public class
-    GetMegaGroupByUidQueryHandler : MyQueryHandler<ChannelReadModel>,
+    GetMegaGroupByUidQueryHandler(IMyInMemoryReadStore<ChannelReadModel> store)
+    : MyQueryHandler<ChannelReadModel>(store),
         IQueryHandler<GetMegaGroupByUidQuery, IReadOnlyCollection<IChannelReadModel>>
 {
-    public GetMegaGroupByUidQueryHandler(IMyInMemoryReadStore<ChannelReadModel> store) : base(store)
-    {
-    }
-
     public async Task<IReadOnlyCollection<IChannelReadModel>> ExecuteQueryAsync(GetMegaGroupByUidQuery query,
         CancellationToken cancellationToken)
     {
@@ -457,13 +390,10 @@ public class
     }
 }
 
-public class GetMessageByIdQueryHandler : MyQueryHandler<MessageReadModel>,
-    IQueryHandler<GetMessageByIdQuery, IMessageReadModel?>
+public class GetMessageByIdQueryHandler(IMyInMemoryReadStore<MessageReadModel> store)
+    : MyQueryHandler<MessageReadModel>(store),
+        IQueryHandler<GetMessageByIdQuery, IMessageReadModel?>
 {
-    public GetMessageByIdQueryHandler(IMyInMemoryReadStore<MessageReadModel> store) : base(store)
-    {
-    }
-
     public async Task<IMessageReadModel?> ExecuteQueryAsync(GetMessageByIdQuery query,
         CancellationToken cancellationToken)
     {
@@ -472,13 +402,10 @@ public class GetMessageByIdQueryHandler : MyQueryHandler<MessageReadModel>,
     }
 }
 
-public class GetMessageIdListQueryHandler : MyQueryHandler<MessageReadModel>,
-    IQueryHandler<GetMessageIdListQuery, List<int>>
+public class GetMessageIdListQueryHandler(IMyInMemoryReadStore<MessageReadModel> store)
+    : MyQueryHandler<MessageReadModel>(store),
+        IQueryHandler<GetMessageIdListQuery, List<int>>
 {
-    public GetMessageIdListQueryHandler(IMyInMemoryReadStore<MessageReadModel> store) : base(store)
-    {
-    }
-
     public async Task<List<int>> ExecuteQueryAsync(GetMessageIdListQuery query,
         CancellationToken cancellationToken)
     {
@@ -499,13 +426,10 @@ public class GetMessageIdListQueryHandler : MyQueryHandler<MessageReadModel>,
 }
 
 public class
-    GetMessageReadHistoryQueryHandler : MyQueryHandler<ReadingHistoryReadModel>,
+    GetMessageReadHistoryQueryHandler(IMyInMemoryReadStore<ReadingHistoryReadModel> store)
+    : MyQueryHandler<ReadingHistoryReadModel>(store),
         IQueryHandler<GetReadingHistoryQuery, IReadOnlyCollection<long>>
 {
-    public GetMessageReadHistoryQueryHandler(IMyInMemoryReadStore<ReadingHistoryReadModel> store) : base(store)
-    {
-    }
-
     public async Task<IReadOnlyCollection<long>> ExecuteQueryAsync(GetReadingHistoryQuery query,
         CancellationToken cancellationToken)
     {
@@ -520,14 +444,11 @@ public class
     }
 }
 
-public class GetMessagesByMessageIdListQueryHandler : MyQueryHandler<MessageReadModel>,
-    IQueryHandler<GetMessagesByMessageIdListQuery,
-        IReadOnlyCollection<IMessageReadModel>>
+public class GetMessagesByMessageIdListQueryHandler(IMyInMemoryReadStore<MessageReadModel> store)
+    : MyQueryHandler<MessageReadModel>(store),
+        IQueryHandler<GetMessagesByMessageIdListQuery,
+            IReadOnlyCollection<IMessageReadModel>>
 {
-    public GetMessagesByMessageIdListQueryHandler(IMyInMemoryReadStore<MessageReadModel> store) : base(store)
-    {
-    }
-
     public async Task<IReadOnlyCollection<IMessageReadModel>> ExecuteQueryAsync(
         GetMessagesByMessageIdListQuery query,
         CancellationToken cancellationToken)
@@ -540,13 +461,10 @@ public class GetMessagesByMessageIdListQueryHandler : MyQueryHandler<MessageRead
 }
 
 public class
-    GetMessagesByUserQueryHandler : MyQueryHandler<MessageReadModel>, IQueryHandler<GetMessagesByUserIdQuery,
+    GetMessagesByUserQueryHandler(IMyInMemoryReadStore<MessageReadModel> store)
+    : MyQueryHandler<MessageReadModel>(store), IQueryHandler<GetMessagesByUserIdQuery,
         IReadOnlyCollection<IMessageReadModel>>
 {
-    public GetMessagesByUserQueryHandler(IMyInMemoryReadStore<MessageReadModel> store) : base(store)
-    {
-    }
-
     public async Task<IReadOnlyCollection<IMessageReadModel>> ExecuteQueryAsync(GetMessagesByUserIdQuery query,
         CancellationToken cancellationToken)
     {
@@ -559,13 +477,9 @@ public class
 }
 
 public class
-    GetMessagesQueryHandler : MyQueryHandler<MessageReadModel>,
-        IQueryHandler<GetMessagesQuery, IReadOnlyCollection<IMessageReadModel>>
+    GetMessagesQueryHandler(IMyInMemoryReadStore<MessageReadModel> store) : MyQueryHandler<MessageReadModel>(store),
+    IQueryHandler<GetMessagesQuery, IReadOnlyCollection<IMessageReadModel>>
 {
-    public GetMessagesQueryHandler(IMyInMemoryReadStore<MessageReadModel> store) : base(store)
-    {
-    }
-
     public async Task<IReadOnlyCollection<IMessageReadModel>> ExecuteQueryAsync(GetMessagesQuery query,
         CancellationToken cancellationToken)
     {
@@ -590,13 +504,10 @@ public class
     }
 }
 
-public class GetMessageViewsQueryHandler : MyQueryHandler<MessageReadModel>,
-    IQueryHandler<GetMessageViewsQuery, IReadOnlyCollection<MessageView>>
+public class GetMessageViewsQueryHandler(IMyInMemoryReadStore<MessageReadModel> store)
+    : MyQueryHandler<MessageReadModel>(store),
+        IQueryHandler<GetMessageViewsQuery, IReadOnlyCollection<MessageView>>
 {
-    public GetMessageViewsQueryHandler(IMyInMemoryReadStore<MessageReadModel> store) : base(store)
-    {
-    }
-
     public async Task<IReadOnlyCollection<MessageView>> ExecuteQueryAsync(GetMessageViewsQuery query,
         CancellationToken cancellationToken)
     {
@@ -609,14 +520,11 @@ public class GetMessageViewsQueryHandler : MyQueryHandler<MessageReadModel>,
 }
 
 public class
-    GetPeerNotifySettingsByIdQueryHandler : MyQueryHandler<PeerNotifySettingsReadModel>,
+    GetPeerNotifySettingsByIdQueryHandler(IMyInMemoryReadStore<PeerNotifySettingsReadModel> store)
+    : MyQueryHandler<PeerNotifySettingsReadModel>(store),
         IQueryHandler<GetPeerNotifySettingsByIdQuery,
             IPeerNotifySettingsReadModel>
 {
-    public GetPeerNotifySettingsByIdQueryHandler(IMyInMemoryReadStore<PeerNotifySettingsReadModel> store) : base(store)
-    {
-    }
-
     public async Task<IPeerNotifySettingsReadModel> ExecuteQueryAsync(GetPeerNotifySettingsByIdQuery query,
         CancellationToken cancellationToken)
     {
@@ -626,14 +534,11 @@ public class
     }
 }
 
-public class GetPeerNotifySettingsListQueryHandler : MyQueryHandler<PeerNotifySettingsReadModel>,
-    IQueryHandler<GetPeerNotifySettingsListQuery,
-        IReadOnlyCollection<IPeerNotifySettingsReadModel>>
+public class GetPeerNotifySettingsListQueryHandler(IMyInMemoryReadStore<PeerNotifySettingsReadModel> store)
+    : MyQueryHandler<PeerNotifySettingsReadModel>(store),
+        IQueryHandler<GetPeerNotifySettingsListQuery,
+            IReadOnlyCollection<IPeerNotifySettingsReadModel>>
 {
-    public GetPeerNotifySettingsListQueryHandler(IMyInMemoryReadStore<PeerNotifySettingsReadModel> store) : base(store)
-    {
-    }
-
     public async Task<IReadOnlyCollection<IPeerNotifySettingsReadModel>> ExecuteQueryAsync(
         GetPeerNotifySettingsListQuery query,
         CancellationToken cancellationToken)
@@ -647,13 +552,9 @@ public class GetPeerNotifySettingsListQueryHandler : MyQueryHandler<PeerNotifySe
     }
 }
 
-public class GetPtsByPeerIdQueryHandler : MyQueryHandler<PtsReadModel>,
+public class GetPtsByPeerIdQueryHandler(IMyInMemoryReadStore<PtsReadModel> store) : MyQueryHandler<PtsReadModel>(store),
     IQueryHandler<GetPtsByPeerIdQuery, IPtsReadModel?>
 {
-    public GetPtsByPeerIdQueryHandler(IMyInMemoryReadStore<PtsReadModel> store) : base(store)
-    {
-    }
-
     public async Task<IPtsReadModel?> ExecuteQueryAsync(GetPtsByPeerIdQuery query,
         CancellationToken cancellationToken)
     {
@@ -663,13 +564,10 @@ public class GetPtsByPeerIdQueryHandler : MyQueryHandler<PtsReadModel>,
     }
 }
 
-public class GetPtsByPermAuthKeyIdQueryHandler : MyQueryHandler<PtsForAuthKeyIdReadModel>,
-    IQueryHandler<GetPtsByPermAuthKeyIdQuery, IPtsForAuthKeyIdReadModel?>
+public class GetPtsByPermAuthKeyIdQueryHandler(IMyInMemoryReadStore<PtsForAuthKeyIdReadModel> store)
+    : MyQueryHandler<PtsForAuthKeyIdReadModel>(store),
+        IQueryHandler<GetPtsByPermAuthKeyIdQuery, IPtsForAuthKeyIdReadModel?>
 {
-    public GetPtsByPermAuthKeyIdQueryHandler(IMyInMemoryReadStore<PtsForAuthKeyIdReadModel> store) : base(store)
-    {
-    }
-
     public async Task<IPtsForAuthKeyIdReadModel?> ExecuteQueryAsync(GetPtsByPermAuthKeyIdQuery query,
         CancellationToken cancellationToken)
     {
@@ -681,13 +579,10 @@ public class GetPtsByPermAuthKeyIdQueryHandler : MyQueryHandler<PtsForAuthKeyIdR
 }
 
 public class
-    GetPushUpdatesByPtsQueryHandler : MyQueryHandler<PushUpdatesReadModel>, IQueryHandler<GetPushUpdatesByPtsQuery,
+    GetPushUpdatesByPtsQueryHandler(IMyInMemoryReadStore<PushUpdatesReadModel> store)
+    : MyQueryHandler<PushUpdatesReadModel>(store), IQueryHandler<GetPushUpdatesByPtsQuery,
         IReadOnlyCollection<IPushUpdatesReadModel>>
 {
-    public GetPushUpdatesByPtsQueryHandler(IMyInMemoryReadStore<PushUpdatesReadModel> store) : base(store)
-    {
-    }
-
     public async Task<IReadOnlyCollection<IPushUpdatesReadModel>> ExecuteQueryAsync(GetPushUpdatesByPtsQuery query,
         CancellationToken cancellationToken)
     {
@@ -699,13 +594,10 @@ public class
     }
 }
 
-public class GetPushUpdatesQueryHandler : MyQueryHandler<PushUpdatesReadModel>,
-    IQueryHandler<GetPushUpdatesQuery, IReadOnlyCollection<IPushUpdatesReadModel>>
+public class GetPushUpdatesQueryHandler(IMyInMemoryReadStore<PushUpdatesReadModel> store)
+    : MyQueryHandler<PushUpdatesReadModel>(store),
+        IQueryHandler<GetPushUpdatesQuery, IReadOnlyCollection<IPushUpdatesReadModel>>
 {
-    public GetPushUpdatesQueryHandler(IMyInMemoryReadStore<PushUpdatesReadModel> store) : base(store)
-    {
-    }
-
     public async Task<IReadOnlyCollection<IPushUpdatesReadModel>> ExecuteQueryAsync(GetPushUpdatesQuery query,
         CancellationToken cancellationToken)
     {
@@ -717,13 +609,10 @@ public class GetPushUpdatesQueryHandler : MyQueryHandler<PushUpdatesReadModel>,
 }
 
 public class
-    GetReadHistoryMessageQueryHandler : MyQueryHandler<MessageReadModel>,
+    GetReadHistoryMessageQueryHandler(IMyInMemoryReadStore<MessageReadModel> store)
+    : MyQueryHandler<MessageReadModel>(store),
         IQueryHandler<GetReadHistoryMessageQuery, IMessageReadModel?>
 {
-    public GetReadHistoryMessageQueryHandler(IMyInMemoryReadStore<MessageReadModel> store) : base(store)
-    {
-    }
-
     public async Task<IMessageReadModel?> ExecuteQueryAsync(GetReadHistoryMessageQuery query,
         CancellationToken cancellationToken)
     {
@@ -736,13 +625,10 @@ public class
     }
 }
 
-public class GetRpcResultByIdQueryHandler : MyQueryHandler<RpcResultReadModel>,
-    IQueryHandler<GetRpcResultByIdQuery, IRpcResultReadModel?>
+public class GetRpcResultByIdQueryHandler(IMyInMemoryReadStore<RpcResultReadModel> store)
+    : MyQueryHandler<RpcResultReadModel>(store),
+        IQueryHandler<GetRpcResultByIdQuery, IRpcResultReadModel?>
 {
-    public GetRpcResultByIdQueryHandler(IMyInMemoryReadStore<RpcResultReadModel> store) : base(store)
-    {
-    }
-
     public async Task<IRpcResultReadModel?> ExecuteQueryAsync(GetRpcResultByIdQuery query,
         CancellationToken cancellationToken)
     {
@@ -751,12 +637,9 @@ public class GetRpcResultByIdQueryHandler : MyQueryHandler<RpcResultReadModel>,
     }
 }
 
-public class GetUserByIdQueryHandler : MyQueryHandler<UserReadModel>, IQueryHandler<GetUserByIdQuery, IUserReadModel?>
+public class GetUserByIdQueryHandler(IMyInMemoryReadStore<UserReadModel> store) : MyQueryHandler<UserReadModel>(store),
+    IQueryHandler<GetUserByIdQuery, IUserReadModel?>
 {
-    public GetUserByIdQueryHandler(IMyInMemoryReadStore<UserReadModel> store) : base(store)
-    {
-    }
-
     public async Task<IUserReadModel?> ExecuteQueryAsync(GetUserByIdQuery query,
         CancellationToken cancellationToken)
     {
@@ -766,13 +649,10 @@ public class GetUserByIdQueryHandler : MyQueryHandler<UserReadModel>, IQueryHand
     }
 }
 
-public class GetUserByPhoneNumberQueryHandler : MyQueryHandler<UserReadModel>,
-    IQueryHandler<GetUserByPhoneNumberQuery, IUserReadModel?>
+public class GetUserByPhoneNumberQueryHandler(IMyInMemoryReadStore<UserReadModel> store)
+    : MyQueryHandler<UserReadModel>(store),
+        IQueryHandler<GetUserByPhoneNumberQuery, IUserReadModel?>
 {
-    public GetUserByPhoneNumberQueryHandler(IMyInMemoryReadStore<UserReadModel> store) : base(store)
-    {
-    }
-
     public async Task<IUserReadModel?> ExecuteQueryAsync(GetUserByPhoneNumberQuery query,
         CancellationToken cancellationToken)
     {
@@ -782,13 +662,10 @@ public class GetUserByPhoneNumberQueryHandler : MyQueryHandler<UserReadModel>,
     }
 }
 
-public class GetUserNameByIdQueryHandler : MyQueryHandler<UserNameReadModel>,
-    IQueryHandler<GetUserNameByIdQuery, IUserNameReadModel?>
+public class GetUserNameByIdQueryHandler(IMyInMemoryReadStore<UserNameReadModel> store)
+    : MyQueryHandler<UserNameReadModel>(store),
+        IQueryHandler<GetUserNameByIdQuery, IUserNameReadModel?>
 {
-    public GetUserNameByIdQueryHandler(IMyInMemoryReadStore<UserNameReadModel> store) : base(store)
-    {
-    }
-
     public async Task<IUserNameReadModel?> ExecuteQueryAsync(GetUserNameByIdQuery query,
         CancellationToken cancellationToken)
     {
@@ -799,14 +676,10 @@ public class GetUserNameByIdQueryHandler : MyQueryHandler<UserNameReadModel>,
 }
 
 public class
-    GetUserNameByNameQueryHandler : IQueryHandler<GetUserNameByNameQuery, IUserNameReadModel?>
+    GetUserNameByNameQueryHandler(IMyInMemoryReadStore<UserNameReadModel> store)
+    : IQueryHandler<GetUserNameByNameQuery, IUserNameReadModel?>
 {
-    private readonly IMyInMemoryReadStore<UserNameReadModel> _store;
-
-    public GetUserNameByNameQueryHandler(IMyInMemoryReadStore<UserNameReadModel> store)
-    {
-        _store = store;
-    }
+    private readonly IMyInMemoryReadStore<UserNameReadModel> _store = store;
 
     public async Task<IUserNameReadModel?> ExecuteQueryAsync(GetUserNameByNameQuery query,
         CancellationToken cancellationToken)
@@ -819,13 +692,9 @@ public class
 }
 
 public class
-    GetUsersByUidListQueryHandler : MyQueryHandler<UserReadModel>,
-        IQueryHandler<GetUsersByUidListQuery, IReadOnlyList<IUserReadModel>>
+    GetUsersByUidListQueryHandler(IMyInMemoryReadStore<UserReadModel> store) : MyQueryHandler<UserReadModel>(store),
+    IQueryHandler<GetUsersByUidListQuery, IReadOnlyList<IUserReadModel>>
 {
-    public GetUsersByUidListQueryHandler(IMyInMemoryReadStore<UserReadModel> store) : base(store)
-    {
-    }
-
     public async Task<IReadOnlyList<IUserReadModel>> ExecuteQueryAsync(GetUsersByUidListQuery query,
         CancellationToken cancellationToken)
     {
@@ -840,14 +709,10 @@ public class
     }
 }
 
-public class MyQueryHandler<TReadModel> where TReadModel : class, IReadModel
+public class MyQueryHandler<TReadModel>(IMyInMemoryReadStore<TReadModel> store)
+    where TReadModel : class, IReadModel
 {
-    private readonly IMyInMemoryReadStore<TReadModel> _store;
-
-    public MyQueryHandler(IMyInMemoryReadStore<TReadModel> store)
-    {
-        _store = store;
-    }
+    private readonly IMyInMemoryReadStore<TReadModel> _store = store;
 
     public Task<IQueryable<TReadModel>> CreateQueryAsync()
     {
@@ -856,13 +721,9 @@ public class MyQueryHandler<TReadModel> where TReadModel : class, IReadModel
 }
 
 public class
-    SearchUserByKeywordQueryHandler : MyQueryHandler<UserReadModel>,
-        IQueryHandler<SearchUserByKeywordQuery, IReadOnlyCollection<IUserReadModel>>
+    SearchUserByKeywordQueryHandler(IMyInMemoryReadStore<UserReadModel> store) : MyQueryHandler<UserReadModel>(store),
+    IQueryHandler<SearchUserByKeywordQuery, IReadOnlyCollection<IUserReadModel>>
 {
-    public SearchUserByKeywordQueryHandler(IMyInMemoryReadStore<UserReadModel> store) : base(store)
-    {
-    }
-
     public async Task<IReadOnlyCollection<IUserReadModel>> ExecuteQueryAsync(SearchUserByKeywordQuery query,
         CancellationToken cancellationToken)
     {
@@ -881,14 +742,10 @@ public class
     }
 }
 
-public class SearchUserNameQueryHandler : IQueryHandler<SearchUserNameQuery, IReadOnlyCollection<IUserNameReadModel>>
+public class SearchUserNameQueryHandler(IMyInMemoryReadStore<UserNameReadModel> store)
+    : IQueryHandler<SearchUserNameQuery, IReadOnlyCollection<IUserNameReadModel>>
 {
-    private readonly IMyInMemoryReadStore<UserNameReadModel> _store;
-
-    public SearchUserNameQueryHandler(IMyInMemoryReadStore<UserNameReadModel> store)
-    {
-        _store = store;
-    }
+    private readonly IMyInMemoryReadStore<UserNameReadModel> _store = store;
 
     public async Task<IReadOnlyCollection<IUserNameReadModel>> ExecuteQueryAsync(SearchUserNameQuery query,
         CancellationToken cancellationToken)
@@ -903,13 +760,10 @@ public class SearchUserNameQueryHandler : IQueryHandler<SearchUserNameQuery, IRe
     }
 }
 
-public class GetLatestAppCodeQueryHandler : MyQueryHandler<AppCodeReadModel>,
-    IQueryHandler<GetLatestAppCodeQuery, IAppCodeReadModel>
+public class GetLatestAppCodeQueryHandler(IMyInMemoryReadStore<AppCodeReadModel> store)
+    : MyQueryHandler<AppCodeReadModel>(store),
+        IQueryHandler<GetLatestAppCodeQuery, IAppCodeReadModel>
 {
-    public GetLatestAppCodeQueryHandler(IMyInMemoryReadStore<AppCodeReadModel> store) : base(store)
-    {
-    }
-
     public async Task<IAppCodeReadModel> ExecuteQueryAsync(GetLatestAppCodeQuery query,
         CancellationToken cancellationToken)
     {

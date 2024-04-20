@@ -4,23 +4,73 @@
 namespace MyTelegram.Schema;
 
 ///<summary>
+/// A <a href="https://corefork.telegram.org/api/giveaways">giveaway</a> with public winners has finished, this constructor contains info about the winners.
 /// See <a href="https://corefork.telegram.org/constructor/messageMediaGiveawayResults" />
 ///</summary>
 [TlObject(0xc6991068)]
 public sealed class TMessageMediaGiveawayResults : IMessageMedia
 {
     public uint ConstructorId => 0xc6991068;
+    ///<summary>
+    /// Flags, see <a href="https://corefork.telegram.org/mtproto/TL-combinators#conditional-fields">TL conditional fields</a>
+    ///</summary>
     public BitArray Flags { get; set; } = new BitArray(32);
+
+    ///<summary>
+    /// If set, only new subscribers starting from the giveaway creation date participated in the giveaway.
+    /// See <a href="https://corefork.telegram.org/type/true" />
+    ///</summary>
     public bool OnlyNewSubscribers { get; set; }
+
+    ///<summary>
+    /// If set, the giveaway was canceled and was fully refunded.
+    /// See <a href="https://corefork.telegram.org/type/true" />
+    ///</summary>
     public bool Refunded { get; set; }
+
+    ///<summary>
+    /// ID of the channel that was automatically <a href="https://corefork.telegram.org/api/boost">boosted</a> by the winners of the giveaway for duration of the Premium subscription.
+    ///</summary>
     public long ChannelId { get; set; }
+
+    ///<summary>
+    /// Number of other channels that participated in the giveaway.
+    ///</summary>
     public int? AdditionalPeersCount { get; set; }
+
+    ///<summary>
+    /// Identifier of the message with the giveaway in <code>channel_id</code>.
+    ///</summary>
     public int LaunchMsgId { get; set; }
+
+    ///<summary>
+    /// Total number of winners in the giveaway.
+    ///</summary>
     public int WinnersCount { get; set; }
+
+    ///<summary>
+    /// Number of not-yet-claimed prizes.
+    ///</summary>
     public int UnclaimedCount { get; set; }
+
+    ///<summary>
+    /// Up to 100 user identifiers of the winners of the giveaway.
+    ///</summary>
     public TVector<long> Winners { get; set; }
+
+    ///<summary>
+    /// Duration in months of each <a href="https://corefork.telegram.org/api/premium">Telegram Premium</a> subscription in the giveaway.
+    ///</summary>
     public int Months { get; set; }
+
+    ///<summary>
+    /// Can contain a textual description of additional giveaway prizes.
+    ///</summary>
     public string? PrizeDescription { get; set; }
+
+    ///<summary>
+    /// Point in time (Unix timestamp) when the winners were selected. May be bigger than winners selection date specified in initial parameters of the giveaway.
+    ///</summary>
     public int UntilDate { get; set; }
 
     public void ComputeFlag()

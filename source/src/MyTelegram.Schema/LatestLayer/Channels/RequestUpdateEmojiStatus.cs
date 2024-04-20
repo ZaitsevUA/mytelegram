@@ -4,13 +4,26 @@
 namespace MyTelegram.Schema.Channels;
 
 ///<summary>
+/// Set an <a href="https://corefork.telegram.org/api/emoji-status">emoji status</a> for a channel.
+/// <para>Possible errors</para>
+/// Code Type Description
+/// 400 CHANNEL_INVALID The provided channel is invalid.
 /// See <a href="https://corefork.telegram.org/method/channels.updateEmojiStatus" />
 ///</summary>
 [TlObject(0xf0d3e6a8)]
 public sealed class RequestUpdateEmojiStatus : IRequest<MyTelegram.Schema.IUpdates>
 {
     public uint ConstructorId => 0xf0d3e6a8;
+    ///<summary>
+    /// The channel, must have at least <a href="https://corefork.telegram.org/api/config#channel-emoji-status-level-min"><code>channel_emoji_status_level_min</code> boosts</a>.
+    /// See <a href="https://corefork.telegram.org/type/InputChannel" />
+    ///</summary>
     public MyTelegram.Schema.IInputChannel Channel { get; set; }
+
+    ///<summary>
+    /// <a href="https://corefork.telegram.org/api/emoji-status">Emoji status</a> to set
+    /// See <a href="https://corefork.telegram.org/type/EmojiStatus" />
+    ///</summary>
     public MyTelegram.Schema.IEmojiStatus EmojiStatus { get; set; }
 
     public void ComputeFlag()

@@ -1,16 +1,9 @@
 ﻿namespace MyTelegram.Domain.Sagas.Identities;
 
-public class ImportContactsSagaLocator : ISagaLocator
+public class ImportContactsSagaLocator : DefaultSagaLocator<ImportContactsSaga, ImportContactsSagaId>
 {
-    public Task<ISagaId> LocateSagaAsync(IDomainEvent domainEvent,
-        CancellationToken cancellationToken)
+    protected override ImportContactsSagaId CreateSagaId(string requestId)
     {
-        if (domainEvent.GetAggregateEvent() is not IHasCorrelationId id)
-        {
-            throw new NotSupportedException(
-                $"Domain event:{domainEvent.GetAggregateEvent().GetType().FullName} should impl IHasCorrelationId ");
-        }
-
-        return Task.FromResult<ISagaId>(new ImportContactsSagaId($"importcontactssagaid-{id.CorrelationId}"));
+        return new ImportContactsSagaId(requestId);
     }
 }

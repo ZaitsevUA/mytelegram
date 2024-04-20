@@ -25,7 +25,11 @@ Log.Information("{Description} {Url}", "For more information, please visit", "ht
 Log.Information("MyTelegram SMS sender starting...");
 
 var builder = Host.CreateDefaultBuilder(args);
-builder.ConfigureAppConfiguration(options => { options.AddEnvironmentVariables(); });
+builder.ConfigureAppConfiguration(options =>
+{
+    options.AddEnvironmentVariables();
+    options.AddCommandLine(args);
+});
 
 builder.UseSerilog((context,
     configuration) =>
@@ -37,6 +41,7 @@ builder.ConfigureServices((context,
     services) =>
 {
     services.Configure<TwilioSmsOptions>(context.Configuration.GetRequiredSection("TwilioSms"));
+    services.Configure<VonageSmsOptions>(context.Configuration.GetRequiredSection("VonageSms"));
     services.Configure<EventBusRabbitMqOptions>(context.Configuration.GetRequiredSection("RabbitMQ:EventBus"));
     services.Configure<RabbitMqOptions>(context.Configuration.GetRequiredSection("RabbitMQ:Connections:Default"));
 
@@ -47,7 +52,14 @@ builder.ConfigureServices((context,
         var eventBusOptions = context.Configuration.GetRequiredSection("RabbitMQ:EventBus").Get<EventBusRabbitMqOptions>();
         var rabbitMqOptions = context.Configuration.GetRequiredSection("RabbitMQ:Connections:Default").Get<RabbitMqOptions>();
 
-        options.Transport(t => t.UseRabbitMq($"amqp://{rabbitMqOptions.UserName}:{rabbitMqOptions.Password}@{rabbitMqOptions.HostName}:{rabbitMqOptions.Port}", eventBusOptions.ClientName));
+        options.Transport(t =>
+        {
+            t.UseRabbitMq(
+                    $"amqp://{rabbitMqOptions.UserName}:{rabbitMqOptions.Password}@{rabbitMqOptions.HostName}:{rabbitMqOptions.Port}",
+                    eventBusOptions.ClientName)
+                .ExchangeNames(eventBusOptions.ExchangeName, eventBusOptions.TopicExchangeName ?? "RebusTopics")
+                ;
+        });
         options.AddSystemTextJson(jsonOptions =>
         {
             jsonOptions.TypeInfoResolverChain.Add(MyJsonSerializeContext.Default);

@@ -1,29 +1,24 @@
 ﻿namespace MyTelegram.Domain.Commands.Dialog;
 
-public class ReceiveInboxMessageCommand : /*Request*/Command<DialogAggregate, DialogId, IExecutionResult>, IHasRequestInfo
+public class ReceiveInboxMessageCommand(
+    DialogId aggregateId,
+    RequestInfo requestInfo,
+    int messageId,
+    long ownerPeerId,
+    Peer toPeer)
+    : /*Request*/Command<DialogAggregate, DialogId, IExecutionResult>(aggregateId), IHasRequestInfo
 {
-    public ReceiveInboxMessageCommand(DialogId aggregateId,
-        //long reqMsgId,
-        //MessageBoxId messageBoxId,
-        RequestInfo requestInfo,
-        int messageId,
-        long ownerPeerId,
-        //int pts,
-        Peer toPeer) : base(aggregateId)
-    {
-        //MessageBoxId = messageBoxId;
-        RequestInfo = requestInfo;
-        MessageId = messageId;
-        OwnerPeerId = ownerPeerId;
-        //Pts = pts;
-        ToPeer = toPeer;
-    }
+    //long reqMsgId,
+    //MessageBoxId messageBoxId,
+    //int pts,
+    //MessageBoxId = messageBoxId;
+    //Pts = pts;
 
     //public MessageBoxId MessageBoxId { get; }
-    public int MessageId { get; }
-    public long OwnerPeerId { get; }
+    public int MessageId { get; } = messageId;
+    public long OwnerPeerId { get; } = ownerPeerId;
 
     //public int Pts { get; }
-    public Peer ToPeer { get; }
-    public RequestInfo RequestInfo { get; }
+    public Peer ToPeer { get; } = toPeer;
+    public RequestInfo RequestInfo { get; } = requestInfo;
 }

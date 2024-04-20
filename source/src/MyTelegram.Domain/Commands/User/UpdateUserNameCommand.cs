@@ -1,13 +1,10 @@
 ﻿namespace MyTelegram.Domain.Commands.User;
 
-public class UpdateUserNameCommand : RequestCommand2<UserAggregate, UserId, IExecutionResult>
+public class UpdateUserNameCommand(
+    UserId aggregateId,
+    RequestInfo requestInfo,
+    string userName)
+    : RequestCommand2<UserAggregate, UserId, IExecutionResult>(aggregateId, requestInfo)
 {
-    public UpdateUserNameCommand(UserId aggregateId,
-        RequestInfo requestInfo,
-        string userName) : base(aggregateId, requestInfo)
-    {
-        UserName = userName;
-    }
-
-    public string UserName { get; }
+    public string UserName { get; } = userName;
 }

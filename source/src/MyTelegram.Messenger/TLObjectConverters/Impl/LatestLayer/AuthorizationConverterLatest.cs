@@ -3,15 +3,8 @@ using TAuthorization = MyTelegram.Schema.Auth.TAuthorization;
 
 namespace MyTelegram.Messenger.TLObjectConverters.Impl.LatestLayer;
 
-public class AuthorizationConverterLatest : IAuthorizationConverterLatest
+public class AuthorizationConverterLatest(IObjectMapper objectMapper) : IAuthorizationConverterLatest
 {
-    private readonly IObjectMapper _objectMapper;
-
-    public AuthorizationConverterLatest(IObjectMapper objectMapper)
-    {
-        _objectMapper = objectMapper;
-    }
-
     public virtual int Layer => Layers.LayerLatest;
 
     public int RequestLayer { get; set; }
@@ -94,7 +87,7 @@ public class AuthorizationConverterLatest : IAuthorizationConverterLatest
     private Schema.IAuthorization ToAuthorization(IDeviceReadModel deviceReadModel,
         long selfPermAuthKeyId)
     {
-        var auth = _objectMapper.Map<IDeviceReadModel, Schema.TAuthorization>(deviceReadModel);
+        var auth = objectMapper.Map<IDeviceReadModel, Schema.TAuthorization>(deviceReadModel);
         auth.AppName = deviceReadModel.LangPack;
         auth.Country = "TestCountry";
         auth.Region = string.Empty;
@@ -108,7 +101,7 @@ public class AuthorizationConverterLatest : IAuthorizationConverterLatest
     private IWebAuthorization ToWebAuthorization(IDeviceReadModel deviceReadModel,
         long selfPermAuthKeyId)
     {
-        var auth = _objectMapper.Map<IDeviceReadModel, TWebAuthorization>(deviceReadModel);
+        var auth = objectMapper.Map<IDeviceReadModel, TWebAuthorization>(deviceReadModel);
         //auth.AppName = deviceReadModel.LangPack;
         //auth.Country = "TestCountry";
         auth.Region = "test region";

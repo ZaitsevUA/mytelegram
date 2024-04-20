@@ -1,15 +1,9 @@
 ﻿namespace MyTelegram.Domain.Aggregates.Pts;
 
-public class IncrementTempPtsCommand : Command<TempPtsAggregate, TempPtsId, IExecutionResult>
+public class IncrementTempPtsCommand(TempPtsId aggregateId, long ownerPeerId, int newPts, long permAuthKeyId = 0)
+    : Command<TempPtsAggregate, TempPtsId, IExecutionResult>(aggregateId)
 {
-    public long OwnerPeerId { get; }
-    public int NewPts { get; }
-    public long PermAuthKeyId { get; }
-
-    public IncrementTempPtsCommand(TempPtsId aggregateId, long ownerPeerId, int newPts, long permAuthKeyId = 0) : base(aggregateId)
-    {
-        OwnerPeerId = ownerPeerId;
-        NewPts = newPts;
-        PermAuthKeyId = permAuthKeyId;
-    }
+    public long OwnerPeerId { get; } = ownerPeerId;
+    public int NewPts { get; } = newPts;
+    public long PermAuthKeyId { get; } = permAuthKeyId;
 }

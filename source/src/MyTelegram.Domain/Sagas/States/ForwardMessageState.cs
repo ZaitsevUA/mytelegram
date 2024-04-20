@@ -2,7 +2,8 @@
 
 public class ForwardMessageState : AggregateState<ForwardMessageSaga, ForwardMessageSagaId, ForwardMessageState>,
     IApply<ForwardMessageSagaStartedEvent>,
-    IApply<ForwardSingleMessageSuccessEvent>
+    IApply<ForwardSingleMessageSuccessEvent>,
+    IApply<MessageReplyCreatedEvent>
 {
     public Guid CorrelationId { get; private set; }
 
@@ -29,5 +30,10 @@ public class ForwardMessageState : AggregateState<ForwardMessageSaga, ForwardMes
     public void Apply(ForwardSingleMessageSuccessEvent aggregateEvent)
     {
         ForwardCount++;
+    }
+
+    public void Apply(MessageReplyCreatedEvent aggregateEvent)
+    {
+        //throw new NotImplementedException();
     }
 }

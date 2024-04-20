@@ -5,17 +5,17 @@ public static class MyEventFlowExtensions
 {
     public static IServiceCollection AddMyEventFlow(this IServiceCollection services)
     {
-        services.AddTransient<IDomainEventFactory, MyDomainEventFactory>();
-        services.AddTransient(typeof(IReadModelFactory<>), typeof(MyReadModelFactory<>));
-        services.AddTransient<IAggregateFactory, MyAggregateFactory>();
+        //services.AddTransient<IDomainEventFactory, MyDomainEventFactory>();
+        //services.AddTransient(typeof(IReadModelFactory<>), typeof(MyReadModelFactory<>));
+        //services.AddTransient<IAggregateFactory, MyAggregateFactory>();
         //services.AddTransient<IJsonSerializer, SystemTextJsonSerializer>();
-        services.AddSingleton<IInMemoryEventPersistence, MyInMemoryEventPersistence>();
-        services.AddSingleton<INullEventPersistence, NullEventPersistence>();
+        //services.AddSingleton<IInMemoryEventPersistence, MyInMemoryEventPersistence>();
+        //services.AddSingleton<INullEventPersistence, NullEventPersistence>();
 
-        services.AddTransient<IEventStore, MyEventStoreBase>();
+        //services.AddTransient<IEventStore, MyEventStoreBase>();
 
-        services.AddTransient<ISnapshotStore, SnapshotWithInMemoryCacheStore>();
-        services.AddSingleton<IMyInMemorySnapshotPersistence, MyInMemorySnapshotPersistence>();
+        //services.AddTransient<ISnapshotStore, SnapshotWithInMemoryCacheStore>();
+        //services.AddSingleton<IMyInMemorySnapshotPersistence, MyInMemorySnapshotPersistence>();
         services.AddTransient<IChatInviteLinkHelper, ChatInviteLinkHelper>();
         
         return services;

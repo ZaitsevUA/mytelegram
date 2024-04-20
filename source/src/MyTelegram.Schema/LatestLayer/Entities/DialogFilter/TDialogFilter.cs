@@ -7,10 +7,10 @@ namespace MyTelegram.Schema;
 /// Dialog filter AKA <a href="https://corefork.telegram.org/api/folders">folder</a>
 /// See <a href="https://corefork.telegram.org/constructor/dialogFilter" />
 ///</summary>
-[TlObject(0x7438f7e8)]
+[TlObject(0x5fb5523b)]
 public sealed class TDialogFilter : IDialogFilter
 {
-    public uint ConstructorId => 0x7438f7e8;
+    public uint ConstructorId => 0x5fb5523b;
     ///<summary>
     /// Flags, see <a href="https://corefork.telegram.org/mtproto/TL-combinators#conditional-fields">TL conditional fields</a>
     ///</summary>
@@ -78,6 +78,7 @@ public sealed class TDialogFilter : IDialogFilter
     /// Emoji to use as icon for the folder.
     ///</summary>
     public string? Emoticon { get; set; }
+    public int? Color { get; set; }
 
     ///<summary>
     /// Pinned chats, <a href="https://corefork.telegram.org/api/folders">folders</a> can have unlimited pinned chats
@@ -105,6 +106,7 @@ public sealed class TDialogFilter : IDialogFilter
         if (ExcludeRead) { Flags[12] = true; }
         if (ExcludeArchived) { Flags[13] = true; }
         if (Emoticon != null) { Flags[25] = true; }
+        if (/*Color != 0 && */Color.HasValue) { Flags[27] = true; }
 
     }
 
@@ -116,6 +118,7 @@ public sealed class TDialogFilter : IDialogFilter
         writer.Write(Id);
         writer.Write(Title);
         if (Flags[25]) { writer.Write(Emoticon); }
+        if (Flags[27]) { writer.Write(Color.Value); }
         writer.Write(PinnedPeers);
         writer.Write(IncludePeers);
         writer.Write(ExcludePeers);
@@ -135,6 +138,7 @@ public sealed class TDialogFilter : IDialogFilter
         Id = reader.ReadInt32();
         Title = reader.ReadString();
         if (Flags[25]) { Emoticon = reader.ReadString(); }
+        if (Flags[27]) { Color = reader.ReadInt32(); }
         PinnedPeers = reader.Read<TVector<MyTelegram.Schema.IInputPeer>>();
         IncludePeers = reader.Read<TVector<MyTelegram.Schema.IInputPeer>>();
         ExcludePeers = reader.Read<TVector<MyTelegram.Schema.IInputPeer>>();

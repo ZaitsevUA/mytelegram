@@ -29,6 +29,7 @@ public class CreateChannelSaga :
             new Peer(PeerType.Channel, ownerPeerId),
             new Peer(PeerType.Channel, ownerPeerId),
             new Peer(PeerType.User, creatorId),
+            creatorId,
             outMessageId,
             string.Empty,
             domainEvent.AggregateEvent.Date,

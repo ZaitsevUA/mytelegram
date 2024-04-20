@@ -22,17 +22,19 @@ internal sealed class DeleteParticipantHistoryHandler : RpcResultObjectHandler<M
     private readonly IPeerHelper _peerHelper;
     private readonly IPtsHelper _ptsHelper;
     private readonly IAccessHashHelper _accessHashHelper;
+    private readonly IChannelAdminRightsChecker _channelAdminRightsChecker;
     public DeleteParticipantHistoryHandler(IQueryProcessor queryProcessor,
         ICommandBus commandBus,
         IPeerHelper peerHelper,
         IPtsHelper ptsHelper,
-        IAccessHashHelper accessHashHelper)
+        IAccessHashHelper accessHashHelper, IChannelAdminRightsChecker channelAdminRightsChecker)
     {
         _queryProcessor = queryProcessor;
         _commandBus = commandBus;
         _peerHelper = peerHelper;
         _ptsHelper = ptsHelper;
         _accessHashHelper = accessHashHelper;
+        _channelAdminRightsChecker = channelAdminRightsChecker;
     }
 
     protected override async Task<MyTelegram.Schema.Messages.IAffectedHistory> HandleCoreAsync(IRequestInput input,
@@ -41,21 +43,28 @@ internal sealed class DeleteParticipantHistoryHandler : RpcResultObjectHandler<M
         if (obj.Channel is TInputChannel inputChannel)
         {
             await _accessHashHelper.CheckAccessHashAsync(inputChannel.ChannelId, inputChannel.AccessHash);
+            await _channelAdminRightsChecker.CheckAdminRightAsync(inputChannel.ChannelId, input.UserId,
+                rights => rights.AdminRights.DeleteMessages, RpcErrors.RpcErrors403.ChatAdminRequired);
 
             var peer = _peerHelper.GetPeer(obj.Participant);
-            var messageIds = await _queryProcessor
+            var messageIds = (await _queryProcessor
                 .ProcessAsync(new GetMessageIdListByUserIdQuery(inputChannel.ChannelId,
-                        peer.PeerId,
-                        MyTelegramServerDomainConsts.ClearHistoryDefaultPageSize),
-                    default);
+                    peer.PeerId,
+                    MyTelegramServerDomainConsts.ClearHistoryDefaultPageSize))).ToList();
 
             if (messageIds.Count > 0)
             {
-                var command = new StartDeleteParticipantHistoryCommand(ChannelId.Create(inputChannel.ChannelId),
+                var newTopMessageId =
+                    await _queryProcessor.ProcessAsync(new GetTopMessageIdQuery(inputChannel.ChannelId,
+                        messageIds));
+
+                var command = new StartDeleteParticipantHistoryCommand(TempId.New,
                     input.ToRequestInfo(),
-                    messageIds.ToList()
+                    inputChannel.ChannelId,
+                    messageIds,
+                    newTopMessageId
                 );
-                await _commandBus.PublishAsync(command, default);
+                await _commandBus.PublishAsync(command);
 
                 return null!;
             }

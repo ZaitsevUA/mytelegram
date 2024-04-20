@@ -1,11 +1,6 @@
 ﻿namespace MyTelegram.Messenger.Services;
 
-public class SetPrivacyOutput
+public class SetPrivacyOutput(IReadOnlyList<IPrivacyRule> rules)
 {
-    public SetPrivacyOutput(IReadOnlyList<IPrivacyRule> rules)
-    {
-        Rules = rules;
-    }
-
-    public IReadOnlyList<IPrivacyRule> Rules { get; }
+    public IReadOnlyList<IPrivacyRule> Rules { get; } = rules;
 }

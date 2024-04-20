@@ -4,57 +4,46 @@ using MyTelegram.Services.TLObjectConverters;
 
 namespace MyTelegram.Messenger.QueryServer.DomainEventHandlers;
 
-public class QrCodeLoginDomainEventHandler : DomainEventHandlerBase,
-    ISubscribeSynchronousTo<QrCodeAggregate, QrCodeId, QrCodeLoginTokenExportedEvent>,
-    ISubscribeSynchronousTo<QrCodeAggregate, QrCodeId, LoginTokenAcceptedEvent>
+public class QrCodeLoginDomainEventHandler(
+    IObjectMessageSender objectMessageSender,
+    ICommandBus commandBus,
+    IIdGenerator idGenerator,
+    IAckCacheService ackCacheService,
+    IResponseCacheAppService responseCacheAppService,
+    IQueryProcessor queryProcessor,
+    ILogger<QrCodeLoginDomainEventHandler> logger,
+    ILoginTokenCacheAppService loginTokenCacheAppService,
+    ILayeredService<IAuthorizationConverter> layeredAuthorizationService)
+    : DomainEventHandlerBase(objectMessageSender,
+            commandBus,
+            idGenerator,
+            ackCacheService,
+            responseCacheAppService),
+        ISubscribeSynchronousTo<QrCodeAggregate, QrCodeId, QrCodeLoginTokenExportedEvent>,
+        ISubscribeSynchronousTo<QrCodeAggregate, QrCodeId, LoginTokenAcceptedEvent>
 {
     //private readonly ITlAuthorizationConverter _authorizationConverter;
-    private readonly ILogger<QrCodeLoginDomainEventHandler> _logger;
-    private readonly ILoginTokenCacheAppService _loginTokenCacheAppService;
-    private readonly IObjectMessageSender _objectMessageSender;
-    private readonly IQueryProcessor _queryProcessor;
-    private readonly ILayeredService<IAuthorizationConverter> _layeredAuthorizationService;
-
-    public QrCodeLoginDomainEventHandler(IObjectMessageSender objectMessageSender,
-        ICommandBus commandBus,
-        IIdGenerator idGenerator,
-        IAckCacheService ackCacheService,
-        IResponseCacheAppService responseCacheAppService,
-        IQueryProcessor queryProcessor,
-        ILogger<QrCodeLoginDomainEventHandler> logger,
-        ILoginTokenCacheAppService loginTokenCacheAppService,
-        ILayeredService<IAuthorizationConverter> layeredAuthorizationService) : base(objectMessageSender,
-        commandBus,
-        idGenerator,
-        ackCacheService,
-        responseCacheAppService)
-    {
-        _objectMessageSender = objectMessageSender;
-        _queryProcessor = queryProcessor;
-        _logger = logger;
-        _loginTokenCacheAppService = loginTokenCacheAppService;
-        _layeredAuthorizationService = layeredAuthorizationService;
-    }
+    private readonly IObjectMessageSender _objectMessageSender = objectMessageSender;
 
     public async Task HandleAsync(IDomainEvent<QrCodeAggregate, QrCodeId, LoginTokenAcceptedEvent> domainEvent,
         CancellationToken cancellationToken)
     {
-        var deviceReadModel = await _queryProcessor
+        var deviceReadModel = await queryProcessor
             .ProcessAsync(new GetDeviceByAuthKeyIdQuery(domainEvent.AggregateEvent.QrCodeLoginRequestPermAuthKeyId),
                 default);
 
         if (deviceReadModel == null)
         {
-            _logger.LogWarning(
+            logger.LogWarning(
                 "Get device info failed.perm authKeyId={PermAuthKeyId:x2}",
                 domainEvent.AggregateEvent.QrCodeLoginRequestPermAuthKeyId);
             return;
         }
 
-        _loginTokenCacheAppService.AddLoginSuccessAuthKeyIdToCache(
+        loginTokenCacheAppService.AddLoginSuccessAuthKeyIdToCache(
             domainEvent.AggregateEvent.QrCodeLoginRequestTempAuthKeyId,
             domainEvent.AggregateEvent.UserId);
-        var authorization = _layeredAuthorizationService.GetConverter(domainEvent.AggregateEvent.RequestInfo.Layer).ToAuthorization(deviceReadModel);
+        var authorization = layeredAuthorizationService.GetConverter(domainEvent.AggregateEvent.RequestInfo.Layer).ToAuthorization(deviceReadModel);
         await SendRpcMessageToClientAsync(domainEvent.AggregateEvent.RequestInfo, authorization)
      ;
 
@@ -69,7 +58,7 @@ public class QrCodeLoginDomainEventHandler : DomainEventHandlerBase,
         //    updateShortForLoginWithTokenRequestOwner,
         //    excludeUid:-1,
         //    onlySendToThisAuthKeyId: domainEvent.AggregateEvent.QrCodeLoginRequestTempAuthKeyId);
-        _logger.LogDebug("Accept qr code login token,userId={UserId},qr code client authKeyId={AuthKeyId}",
+        logger.LogDebug("Accept qr code login token,userId={UserId},qr code client authKeyId={AuthKeyId}",
             domainEvent.AggregateEvent.UserId,
             domainEvent.AggregateEvent.QrCodeLoginRequestTempAuthKeyId);
         //await SendMessageToAuthKeyIdAsync(domainEvent.AggregateEvent.QrCodeLoginRequestTempAuthKeyId,

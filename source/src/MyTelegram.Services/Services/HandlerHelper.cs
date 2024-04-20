@@ -7,7 +7,10 @@ using MyTelegram.Schema;
 
 namespace MyTelegram.Services.Services;
 
-public class HandlerHelper : IHandlerHelper
+public class HandlerHelper(
+    IServiceProvider serviceProvider,
+    ILogger<HandlerHelper> logger)
+    : IHandlerHelper
 {
     private static readonly ConcurrentDictionary<uint, IObjectHandler> Handlers = new();
 
@@ -16,19 +19,10 @@ public class HandlerHelper : IHandlerHelper
     public static readonly ConcurrentDictionary<uint, string> HandlerShortNames = new();
 
     private static readonly ConcurrentDictionary<uint, Type> HandlerTypes = new();
-    private readonly ILogger<HandlerHelper> _logger;
     private readonly SemaphoreSlim _semaphoreSlim = new(1, 1);
-    private readonly IServiceProvider _serviceProvider;
 
     private bool _isInitOk;
     private bool _isLoadingHandlers;
-
-    public HandlerHelper(IServiceProvider serviceProvider,
-        ILogger<HandlerHelper> logger)
-    {
-        _serviceProvider = serviceProvider;
-        _logger = logger;
-    }
 
     public bool TryGetHandlerShortName(uint objectId,
         [NotNullWhen(true)] out string? handlerShortName)
@@ -91,7 +85,7 @@ public class HandlerHelper : IHandlerHelper
         }
 
         AllHandlers.TryGetValue(objectId, out var typeName);
-        _logger.LogWarning("****************** Unsupported request,objectId={ObjectId:x2},handler={Handler}",
+        logger.LogWarning("****************** Unsupported request,objectId={ObjectId:x2},handler={Handler}",
             objectId,
             typeName
         );
@@ -160,7 +154,7 @@ public class HandlerHelper : IHandlerHelper
         //#endif
 
         //Console.WriteLine(sb);
-        _logger.LogInformation("All handlers count:{AllHandlersCount}", AllHandlers.Count);
+        logger.LogInformation("All handlers count:{AllHandlersCount}", AllHandlers.Count);
 
         foreach (var typeInfo in types)
         {
@@ -172,7 +166,7 @@ public class HandlerHelper : IHandlerHelper
                 {
                     if (baseInterface.IsAssignableFrom(typeInfo))
                     {
-                        var handler = _serviceProvider.GetService(typeInfo);
+                        var handler = serviceProvider.GetService(typeInfo);
 
                         if (handler != null)
                         {
@@ -180,10 +174,10 @@ public class HandlerHelper : IHandlerHelper
                         }
                         else
                         {
-                            _logger.LogWarning("Can not find service for Handler {Name}", typeInfo.FullName);
+                            logger.LogWarning("Can not find service for Handler {Name}", typeInfo.FullName);
                         }
 
-                        _logger.LogInformation("Create handler:{Name}", typeInfo.FullName);
+                        logger.LogInformation("Create handler:{Name}", typeInfo.FullName);
                         HandlerTypes.TryAdd(attr.ConstructorId, typeInfo);
                     }
                 }
@@ -192,7 +186,7 @@ public class HandlerHelper : IHandlerHelper
 
         sw.Stop();
 
-        _logger.LogInformation(
+        logger.LogInformation(
             "Init handlers ok.Elapsed={Elapsed} count={TotalHandlerCount}/{totalCount} ({Percentage})%",
             sw.Elapsed,
             Handlers.Count,

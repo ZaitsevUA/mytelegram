@@ -20,10 +20,14 @@ public interface IMessageConverter : ILayeredConverter
     IMessageReplyHeader? ToMessageReplyHeader(int? replyToMessageId, int? topMsgId);
     IMessageReplyHeader? ToMessageReplyHeader(IInputReplyTo? inputReplyTo);
 
+    IMessage ToMessage(IMessageReadModel readModel,
+        IPollReadModel? pollReadModel,
+        List<string>? chosenOptions,
+        long selfUserId);
     IList<IMessage> ToMessages(IReadOnlyCollection<IMessageReadModel> readModels,
         IReadOnlyCollection<IPollReadModel>? pollReadModels,
         IReadOnlyCollection<IPollAnswerVoterReadModel>? pollAnswerVoterReadModels,
         long selfUserId);
 
-    IMessage ToDiscussionMessage(IMessageReadModel messageReadModel, int maxId, int readMaxId, int readInboxMaxId, int readOutboxMaxId, long selfUserId);
+    IMessage ToDiscussionMessage(long selfUserId, IMessageReadModel messageReadModel/*, IReplyReadModel? replyReadModel*/);
 }

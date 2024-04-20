@@ -1,12 +1,8 @@
 ﻿namespace MyTelegram.Domain.Commands.Dialog;
 
-public class SetPinnedOrderCommand : Command<DialogAggregate, DialogId, IExecutionResult>
+public class SetPinnedOrderCommand(
+    DialogId aggregateId,
+    int order) : Command<DialogAggregate, DialogId, IExecutionResult>(aggregateId)
 {
-    public SetPinnedOrderCommand(DialogId aggregateId,
-        int order) : base(aggregateId)
-    {
-        Order = order;
-    }
-
-    public int Order { get; }
+    public int Order { get; } = order;
 }

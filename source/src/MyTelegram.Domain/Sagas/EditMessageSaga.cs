@@ -87,7 +87,9 @@ ISagaIsStartedBy<MessageAggregate, MessageId, OutboxMessageEditedEvent>,
             pts,
             toPeer,
             _state.Entities,
-            _state.Media));
+            _state.Media,
+            _state.OldMessageItem.FwdHeader
+            ));
     }
     private async Task HandleEditOutboxCompletedAsync(long outboxOwnerPeerId)
     {
@@ -104,6 +106,9 @@ ISagaIsStartedBy<MessageAggregate, MessageId, OutboxMessageEditedEvent>,
             _state.EditDate,
             item.ToPeer,
             _state.Entities,
-            _state.Media));
+            _state.Media,
+            _state.OldMessageItem.FwdHeader,
+            _state.OldMessageItem.Reply
+            ));
     }
 }

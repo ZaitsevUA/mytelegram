@@ -3,27 +3,21 @@ using MyTelegram.Core;
 
 namespace MyTelegram.Caching.Redis;
 
-public class CacheManager<TCacheItem> : ICacheManager<TCacheItem> where TCacheItem : class
+public class CacheManager<TCacheItem>(
+    IDistributedCache distributedCache,
+    ICacheSerializer cacheSerializer)
+    : ICacheManager<TCacheItem>
+    where TCacheItem : class
 {
-    private readonly ICacheSerializer _cacheSerializer;
-    private readonly IDistributedCache _distributedCache;
-
-    public CacheManager(IDistributedCache distributedCache,
-        ICacheSerializer cacheSerializer)
-    {
-        _distributedCache = distributedCache;
-        _cacheSerializer = cacheSerializer;
-    }
-
     public async Task<TCacheItem?> GetAsync(string key)
     {
-        var cachedBytes = await _distributedCache.GetAsync(key);
+        var cachedBytes = await distributedCache.GetAsync(key);
         if (cachedBytes == null)
         {
             return default;
         }
 
-        return _cacheSerializer.Deserialize<TCacheItem?>(cachedBytes);
+        return cacheSerializer.Deserialize<TCacheItem?>(cachedBytes);
         //return JsonSerializer.Deserialize<TCacheItem>(Encoding.UTF8.GetString(cachedBytes), _jsonSerializerOptions);
     }
 
@@ -46,7 +40,7 @@ public class CacheManager<TCacheItem> : ICacheManager<TCacheItem> where TCacheIt
 
     public Task RemoveAsync(string key)
     {
-        return _distributedCache.RemoveAsync(key);
+        return distributedCache.RemoveAsync(key);
     }
 
     public Task SetAsync(string key,
@@ -70,7 +64,7 @@ public class CacheManager<TCacheItem> : ICacheManager<TCacheItem> where TCacheIt
         }
 
         //var bytes = JsonSerializer.SerializeToUtf8Bytes(value, _jsonSerializerOptions);
-        var bytes = _cacheSerializer.Serialize(value);
-        return _distributedCache.SetAsync(key, bytes, cacheOptions);
+        var bytes = cacheSerializer.Serialize(value);
+        return distributedCache.SetAsync(key, bytes, cacheOptions);
     }
 }

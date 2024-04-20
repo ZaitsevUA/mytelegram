@@ -1,11 +1,10 @@
 ﻿namespace MyTelegram.Domain.Commands.User;
 
-public class UpdateUserGlobalPrivacySettingsCommand : RequestCommand2<UserAggregate, UserId, IExecutionResult>
+public class UpdateUserGlobalPrivacySettingsCommand(
+    UserId aggregateId,
+    RequestInfo requestInfo,
+    GlobalPrivacySettings globalPrivacySettings)
+    : RequestCommand2<UserAggregate, UserId, IExecutionResult>(aggregateId, requestInfo)
 {
-    public GlobalPrivacySettings GlobalPrivacySettings { get; }
-
-    public UpdateUserGlobalPrivacySettingsCommand(UserId aggregateId, RequestInfo requestInfo, GlobalPrivacySettings globalPrivacySettings) : base(aggregateId, requestInfo)
-    {
-        GlobalPrivacySettings = globalPrivacySettings;
-    }
+    public GlobalPrivacySettings GlobalPrivacySettings { get; } = globalPrivacySettings;
 }

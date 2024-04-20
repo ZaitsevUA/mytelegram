@@ -5,7 +5,6 @@ namespace MyTelegram.Domain;
 public class SimpleInMemoryIdGenerator : IIdGenerator
 {
     private readonly ConcurrentDictionary<string, long> _ids = new();
-
     public async Task<int> NextIdAsync(IdType idType,
         long id,
         int step = 1,
@@ -39,11 +38,11 @@ public class SimpleInMemoryIdGenerator : IIdGenerator
         return idType switch
         {
             IdType.ChannelId => MyTelegramServerDomainConsts.ChannelInitId,
-            IdType.UserId => MyTelegramServerDomainConsts.UserIdInitId +
-                             10000, // The first 10000 users is reserved for test
+            IdType.UserId => MyTelegramServerDomainConsts.UserIdInitId + 10000,// The first 10000 users is reserved for testing
             IdType.BotUserId => MyTelegramServerDomainConsts.BotUserInitId,
             IdType.ChatId => MyTelegramServerDomainConsts.ChatIdInitId,
-            _ => 0
+            IdType.Pts => MyTelegramServerDomainConsts.PtsInitId,
+            _ => 0,
         };
     }
 }

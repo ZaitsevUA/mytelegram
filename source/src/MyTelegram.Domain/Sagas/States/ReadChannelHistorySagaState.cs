@@ -2,21 +2,20 @@
 
 public class ReadChannelHistorySagaState : AggregateState<ReadChannelHistorySaga, ReadChannelHistorySagaId,
         ReadChannelHistorySagaState>,
-    IApply<ReadChannelHistoryStartedEvent>
+    IApply<ReadChannelHistoryStartedEvent>,
+    IApply<ReadChannelHistoryCompletedEvent>
 {
-    public RequestInfo RequestInfo { get; set; }
+    public RequestInfo RequestInfo { get; set; } = null!;
     public long ChannelId { get; private set; }
-    public long ReaderUserId { get; private set; }
+    //public long ReaderUserId { get; private set; }
 
     //public bool NeedWa
-    public int? TopMsgId { get; private set; }
+    //public int? TopMsgId { get; private set; }
 
     public void Apply(ReadChannelHistoryStartedEvent aggregateEvent)
     {
         RequestInfo = aggregateEvent.RequestInfo;
-        ReaderUserId = aggregateEvent.ReaderUserId;
         ChannelId = aggregateEvent.ChannelId;
-        TopMsgId = aggregateEvent.TopMsgId;
     }
 
     //public void LoadSnapshot(ReadChannelHistorySagaSnapshot snapshot)
@@ -26,4 +25,8 @@ public class ReadChannelHistorySagaState : AggregateState<ReadChannelHistorySaga
     //    ChannelId = snapshot.ChannelId;
     //    CorrelationId = snapshot.CorrelationId;
     //}
+    public void Apply(ReadChannelHistoryCompletedEvent aggregateEvent)
+    {
+        //throw new NotImplementedException();
+    }
 }

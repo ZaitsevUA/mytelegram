@@ -1,16 +1,12 @@
 ﻿namespace MyTelegram.Domain.Events.AppCode;
 
-public class AppCodeCanceledEvent : RequestAggregateEvent2<AppCodeAggregate, AppCodeId>
+public class AppCodeCanceledEvent(
+    RequestInfo requestInfo,
+    string phoneNumber,
+    string phoneCodeHash)
+    : RequestAggregateEvent2<AppCodeAggregate, AppCodeId>(requestInfo)
 {
-    public AppCodeCanceledEvent(RequestInfo requestInfo,
-        string phoneNumber,
-        string phoneCodeHash) : base(requestInfo)
-    {
-        PhoneNumber = phoneNumber;
-        PhoneCodeHash = phoneCodeHash;
-    }
+    public string PhoneCodeHash { get; } = phoneCodeHash;
 
-    public string PhoneCodeHash { get; }
-
-    public string PhoneNumber { get; }
+    public string PhoneNumber { get; } = phoneNumber;
 }

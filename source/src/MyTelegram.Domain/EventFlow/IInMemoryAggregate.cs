@@ -1,5 +1,5 @@
-﻿namespace MyTelegram.Domain.EventFlow;
+﻿//namespace MyTelegram.Domain.EventFlow;
 
-public interface IInMemoryAggregate
-{
-}
+//public interface IInMemoryAggregate
+//{
+//}

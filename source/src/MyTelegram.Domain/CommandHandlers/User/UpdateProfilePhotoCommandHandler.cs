@@ -11,7 +11,7 @@ public class UpdateProfilePhotoCommandHandler : CommandHandler<UserAggregate, Us
             command.Fallback//,
             //command.Photo,
             //command.VideoEmojiMarkup
-        );
+            );
         return Task.CompletedTask;
     }
 }

@@ -10,6 +10,16 @@ public class UserAggregate : MyInMemorySnapshotAggregateRoot<UserAggregate, User
         Register(_state);
     }
 
+    public void UpdateBirthday(Birthday? birthday)
+    {
+        Specs.AggregateIsCreated.ThrowDomainErrorIfNotSatisfied(this);
+        Emit(new BirthdayUpdatedEvent(birthday));
+    }
+    public void UpdatePersonalChannel(RequestInfo requestInfo, long? personalChannelId)
+    {
+        Specs.AggregateIsCreated.ThrowDomainErrorIfNotSatisfied(this);
+        Emit(new PersonalChannelUpdatedEvent(_state.UserId, personalChannelId));
+    }
     public void CheckUserStatus(RequestInfo requestInfo)
     {
         Specs.AggregateIsCreated.ThrowDomainErrorIfNotSatisfied(this);
@@ -164,7 +174,9 @@ public class UserAggregate : MyInMemorySnapshotAggregateRoot<UserAggregate, User
             _state.Color,
             _state.ProfileColor,
             _state.GlobalPrivacySettings,
-            _state.Premium
+            _state.Premium,
+            _state.PersonalChannelId,
+            _state.Birthday
         ));
     }
 

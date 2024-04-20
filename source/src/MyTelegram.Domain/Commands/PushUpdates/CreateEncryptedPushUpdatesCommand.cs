@@ -1,21 +1,15 @@
 ﻿namespace MyTelegram.Domain.Commands.PushUpdates;
 
-public class CreateEncryptedPushUpdatesCommand : Command<PushUpdatesAggregate, PushUpdatesId, IExecutionResult>
+public class CreateEncryptedPushUpdatesCommand(
+    PushUpdatesId aggregateId,
+    long inboxOwnerPeerId,
+    byte[] data,
+    int qts,
+    long inboxOwnerPermAuthKeyId)
+    : Command<PushUpdatesAggregate, PushUpdatesId, IExecutionResult>(aggregateId)
 {
-    public CreateEncryptedPushUpdatesCommand(PushUpdatesId aggregateId,
-        long inboxOwnerPeerId,
-        byte[] data,
-        int qts,
-        long inboxOwnerPermAuthKeyId) : base(aggregateId)
-    {
-        InboxOwnerPeerId = inboxOwnerPeerId;
-        Data = data;
-        Qts = qts;
-        InboxOwnerPermAuthKeyId = inboxOwnerPermAuthKeyId;
-    }
-
-    public byte[] Data { get; }
-    public long InboxOwnerPermAuthKeyId { get; }
-    public long InboxOwnerPeerId { get; }
-    public int Qts { get; }
+    public byte[] Data { get; } = data;
+    public long InboxOwnerPermAuthKeyId { get; } = inboxOwnerPermAuthKeyId;
+    public long InboxOwnerPeerId { get; } = inboxOwnerPeerId;
+    public int Qts { get; } = qts;
 }

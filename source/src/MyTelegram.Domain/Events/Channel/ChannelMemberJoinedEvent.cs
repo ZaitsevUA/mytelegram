@@ -1,21 +1,15 @@
 ﻿namespace MyTelegram.Domain.Events.Channel;
 
-public class ChannelMemberJoinedEvent : RequestAggregateEvent2<ChannelMemberAggregate, ChannelMemberId>
+public class ChannelMemberJoinedEvent(
+    RequestInfo requestInfo,
+    long channelId,
+    long memberUserId,
+    int date,
+    bool isRejoin)
+    : RequestAggregateEvent2<ChannelMemberAggregate, ChannelMemberId>(requestInfo)
 {
-    public ChannelMemberJoinedEvent(RequestInfo requestInfo,
-        long channelId,
-        long memberUserId,
-        int date,
-        bool isRejoin) : base(requestInfo)
-    {
-        ChannelId = channelId;
-        MemberUserId = memberUserId;
-        Date = date;
-        IsRejoin = isRejoin;
-    }
-
-    public long ChannelId { get; }
-    public int Date { get; }
-    public bool IsRejoin { get; }
-    public long MemberUserId { get; }
+    public long ChannelId { get; } = channelId;
+    public int Date { get; } = date;
+    public bool IsRejoin { get; } = isRejoin;
+    public long MemberUserId { get; } = memberUserId;
 }

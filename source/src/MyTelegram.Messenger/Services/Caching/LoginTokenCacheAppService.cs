@@ -1,24 +1,18 @@
 ﻿namespace MyTelegram.Messenger.Services.Caching;
 
-public class LoginTokenCacheAppService : ILoginTokenCacheAppService //, ISingletonDependency
+public class LoginTokenCacheAppService(IInMemoryRepository<CacheLoginToken, long> inMemoryRepository)
+    : ILoginTokenCacheAppService //, ISingletonDependency
 {
-    private readonly IInMemoryRepository<CacheLoginToken, long> _inMemoryRepository;
-
-    public LoginTokenCacheAppService(IInMemoryRepository<CacheLoginToken, long> inMemoryRepository)
-    {
-        _inMemoryRepository = inMemoryRepository;
-    }
-
     public void AddLoginSuccessAuthKeyIdToCache(long authKeyId,
         long userId)
     {
-        _inMemoryRepository.Insert(authKeyId, new CacheLoginToken(authKeyId, userId));
+        inMemoryRepository.Insert(authKeyId, new CacheLoginToken(authKeyId, userId));
     }
 
     public bool TryGetCachedLoginInfo(long authKeyId,
         [NotNullWhen(true)] out CacheLoginToken? loginTokenCache)
     {
-        loginTokenCache = _inMemoryRepository.Find(authKeyId);
+        loginTokenCache = inMemoryRepository.Find(authKeyId);
 
         return loginTokenCache != null;
     }
@@ -26,6 +20,6 @@ public class LoginTokenCacheAppService : ILoginTokenCacheAppService //, ISinglet
     public bool TryRemoveLoginInfo(long authKeyId,
         [NotNullWhen(true)] out CacheLoginToken? loginTokenCache)
     {
-        return _inMemoryRepository.TryDelete(authKeyId, out loginTokenCache);
+        return inMemoryRepository.TryDelete(authKeyId, out loginTokenCache);
     }
 }

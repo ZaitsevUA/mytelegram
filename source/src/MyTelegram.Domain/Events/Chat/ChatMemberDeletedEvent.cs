@@ -1,27 +1,20 @@
 ﻿namespace MyTelegram.Domain.Events.Chat;
 
-public class ChatMemberDeletedEvent : RequestAggregateEvent2<ChatAggregate, ChatId>
+public class ChatMemberDeletedEvent(
+    RequestInfo requestInfo,
+    long chatId,
+    long userId,
+    string messageActionData,
+    long randomId)
+    : RequestAggregateEvent2<ChatAggregate, ChatId>(requestInfo)
 {
-    public ChatMemberDeletedEvent(
-        RequestInfo requestInfo,
-        long chatId,
-        long userId,
-        string messageActionData,
-        long randomId
-    ) : base(requestInfo)
-    {
-        ChatId = chatId;
-        UserId = userId;
-        MessageActionData = messageActionData;
-        RandomId = randomId;
-        //Date = date; 
-    }
+    //Date = date; 
 
-    public long ChatId { get; }
+    public long ChatId { get; } = chatId;
+
     //public int Date { get; }
-    public string MessageActionData { get; }
-    public long RandomId { get; }
+    public string MessageActionData { get; } = messageActionData;
+    public long RandomId { get; } = randomId;
 
-    public long UserId { get; }
-
+    public long UserId { get; } = userId;
 }

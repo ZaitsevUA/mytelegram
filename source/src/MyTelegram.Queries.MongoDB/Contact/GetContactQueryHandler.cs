@@ -1,21 +1,10 @@
 ﻿namespace MyTelegram.QueryHandlers.MongoDB.Contact;
 
-public class GetContactQueryHandler : IQueryHandler<GetContactQuery, IContactReadModel?>
+public class GetContactQueryHandler(IQueryOnlyReadModelStore<ContactReadModel> store) : IQueryHandler<GetContactQuery, IContactReadModel?>
 {
-    private readonly IMongoDbReadModelStore<ContactReadModel> _store;
-
-    public GetContactQueryHandler(IMongoDbReadModelStore<ContactReadModel> store)
-    {
-        _store = store;
-    }
-
     public async Task<IContactReadModel?> ExecuteQueryAsync(GetContactQuery query,
         CancellationToken cancellationToken)
     {
-        var item = await _store
-            .GetAsync(ContactId.Create(query.SelfUserId, query.TargetUid).Value, CancellationToken.None)
-     ;
-
-        return item.ReadModel;
+        return await store.FirstOrDefaultAsync(p => p.SelfUserId == query.SelfUserId && p.TargetUserId == query.TargetUserId, cancellationToken);
     }
 }

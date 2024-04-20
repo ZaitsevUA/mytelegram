@@ -104,6 +104,8 @@ public sealed class TChannelFull : MyTelegram.Schema.IChatFull, ILayeredChannelF
     /// See <a href="https://corefork.telegram.org/type/true" />
     ///</summary>
     public bool ViewForumAsMessages { get; set; }
+    public bool RestrictedSponsored { get; set; }
+    public bool CanViewRevenue { get; set; }
 
     ///<summary>
     /// ID of the channel
@@ -294,6 +296,11 @@ public sealed class TChannelFull : MyTelegram.Schema.IChatFull, ILayeredChannelF
     /// See <a href="https://corefork.telegram.org/type/PeerStories" />
     ///</summary>
     public MyTelegram.Schema.IPeerStories? Stories { get; set; }
+
+    ///<summary>
+    /// <a href="https://corefork.telegram.org/api/wallpapers">Wallpaper</a>
+    /// See <a href="https://corefork.telegram.org/type/WallPaper" />
+    ///</summary>
     public MyTelegram.Schema.IWallPaper? Wallpaper { get; set; }
     public int? BoostsApplied { get; set; }
     public int? BoostsUnrestrict { get; set; }
@@ -315,6 +322,8 @@ public sealed class TChannelFull : MyTelegram.Schema.IChatFull, ILayeredChannelF
         if (TranslationsDisabled) { Flags2[3] = true; }
         if (StoriesPinnedAvailable) { Flags2[5] = true; }
         if (ViewForumAsMessages) { Flags2[6] = true; }
+        if (RestrictedSponsored) { Flags2[11] = true; }
+        if (CanViewRevenue) { Flags2[12] = true; }
         if (/*ParticipantsCount != 0 && */ParticipantsCount.HasValue) { Flags[0] = true; }
         if (/*AdminsCount != 0 && */AdminsCount.HasValue) { Flags[1] = true; }
         if (/*KickedCount != 0 && */KickedCount.HasValue) { Flags[2] = true; }
@@ -414,6 +423,8 @@ public sealed class TChannelFull : MyTelegram.Schema.IChatFull, ILayeredChannelF
         if (Flags2[3]) { TranslationsDisabled = true; }
         if (Flags2[5]) { StoriesPinnedAvailable = true; }
         if (Flags2[6]) { ViewForumAsMessages = true; }
+        if (Flags2[11]) { RestrictedSponsored = true; }
+        if (Flags2[12]) { CanViewRevenue = true; }
         Id = reader.ReadInt64();
         About = reader.ReadString();
         if (Flags[0]) { ParticipantsCount = reader.ReadInt32(); }

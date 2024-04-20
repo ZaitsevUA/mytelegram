@@ -3,15 +3,18 @@ namespace MyTelegram;
 
 public class MyTelegramServerDomainConsts
 {
-    public const int Layer = 174;
+    public const int Layer = 177;
 
     public const string RepositoryUrl = "https://github.com/loyldg/mytelegram";
     public const long UserIdInitId = 2000000;
     public const long ChatIdInitId = 50000000000;
     public const long ChannelInitId = 800000000000;
     public const long BotUserInitId = 90000000000000;
+    public const int PtsInitId = 1;
 
     public const long OfficialUserId = 777000;
+
+    public const long DeletedChannelIdForChannelPost = 777;
 
     public const string VideoMimeType = "video";
     public const int MediaDcId = 1;

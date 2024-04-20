@@ -1,29 +1,20 @@
 ﻿namespace MyTelegram.Domain.Commands.Contact;
 
-public class AddContactCommand : RequestCommand2<ContactAggregate, ContactId, IExecutionResult>
+public class AddContactCommand(
+    ContactId aggregateId,
+    RequestInfo requestInfo,
+    long selfUserId,
+    long targetUserId,
+    string phone,
+    string firstName,
+    string? lastName,
+    bool addPhonePrivacyException)
+    : RequestCommand2<ContactAggregate, ContactId, IExecutionResult>(aggregateId, requestInfo)
 {
-    public AddContactCommand(ContactId aggregateId,
-        RequestInfo requestInfo,
-        long selfUserId,
-        long targetUserId,
-        string phone,
-        string firstName,
-        string? lastName,
-        bool addPhonePrivacyException
-    ) : base(aggregateId, requestInfo)
-    {
-        SelfUserId = selfUserId;
-        TargetUserId = targetUserId;
-        Phone = phone;
-        FirstName = firstName;
-        LastName = lastName;
-        AddPhonePrivacyException = addPhonePrivacyException;
-    }
-
-    public bool AddPhonePrivacyException { get; }
-    public string FirstName { get; }
-    public string? LastName { get; }
-    public string Phone { get; }
-    public long SelfUserId { get; }
-    public long TargetUserId { get; }
+    public bool AddPhonePrivacyException { get; } = addPhonePrivacyException;
+    public string FirstName { get; } = firstName;
+    public string? LastName { get; } = lastName;
+    public string Phone { get; } = phone;
+    public long SelfUserId { get; } = selfUserId;
+    public long TargetUserId { get; } = targetUserId;
 }

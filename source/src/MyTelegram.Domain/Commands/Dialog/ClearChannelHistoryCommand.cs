@@ -1,12 +1,11 @@
 ﻿namespace MyTelegram.Domain.Commands.Dialog;
 
 public class
-    ClearChannelHistoryCommand : RequestCommand2<DialogAggregate, DialogId, IExecutionResult> //, IHasCorrelationId
+    ClearChannelHistoryCommand(DialogId aggregateId,
+        RequestInfo requestInfo, int availableMinId)
+    : RequestCommand2<DialogAggregate, DialogId, IExecutionResult>(aggregateId, requestInfo) //, IHasCorrelationId
 {
-    public ClearChannelHistoryCommand(DialogId aggregateId,
-        RequestInfo requestInfo) : base(aggregateId, requestInfo)
-    {
-    }
+    public int AvailableMinId { get; } = availableMinId;
 
     //public Guid CorrelationId { get; }
 }

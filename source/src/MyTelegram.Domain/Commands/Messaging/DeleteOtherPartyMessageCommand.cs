@@ -1,9 +1,7 @@
 ﻿namespace MyTelegram.Domain.Commands.Messaging;
 
-public class DeleteOtherPartyMessageCommand : RequestCommand2<MessageAggregate, MessageId, IExecutionResult>
+public class DeleteOtherPartyMessageCommand(MessageId aggregateId, RequestInfo requestInfo)
+    : RequestCommand2<MessageAggregate, MessageId, IExecutionResult>(aggregateId, requestInfo)
 {
-    public DeleteOtherPartyMessageCommand(MessageId aggregateId, RequestInfo requestInfo) : base(aggregateId, requestInfo)
-    {
-        //Revoke = revoke;
-    }
+    //Revoke = revoke;
 }

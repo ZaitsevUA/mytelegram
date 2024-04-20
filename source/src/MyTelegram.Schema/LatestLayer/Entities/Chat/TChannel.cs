@@ -233,8 +233,22 @@ public sealed class TChannel : MyTelegram.Schema.IChat, ILayeredChannel
     /// See <a href="https://corefork.telegram.org/type/PeerColor" />
     ///</summary>
     public MyTelegram.Schema.IPeerColor? Color { get; set; }
+
+    ///<summary>
+    /// The channel's <a href="https://corefork.telegram.org/api/colors">profile color</a>.
+    /// See <a href="https://corefork.telegram.org/type/PeerColor" />
+    ///</summary>
     public MyTelegram.Schema.IPeerColor? ProfileColor { get; set; }
+
+    ///<summary>
+    /// <a href="https://corefork.telegram.org/api/emoji-status">Emoji status</a>
+    /// See <a href="https://corefork.telegram.org/type/EmojiStatus" />
+    ///</summary>
     public MyTelegram.Schema.IEmojiStatus? EmojiStatus { get; set; }
+
+    ///<summary>
+    /// <a href="https://corefork.telegram.org/api/boost">Boost level</a>
+    ///</summary>
     public int? Level { get; set; }
 
     public void ComputeFlag()

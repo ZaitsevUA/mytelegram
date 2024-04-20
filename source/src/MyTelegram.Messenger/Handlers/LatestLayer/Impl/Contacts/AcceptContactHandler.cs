@@ -31,7 +31,7 @@ internal sealed class AcceptContactHandler : RpcResultObjectHandler<MyTelegram.S
         MyTelegram.Schema.Contacts.RequestAcceptContact obj)
     {
         var peer = _peerHelper.GetPeer(obj.Id);
-        await _accessHashHelper.CheckAccessHashAsync(peer);
+        await _accessHashHelper.CheckAccessHashAsync(obj.Id);
         var userReadModel = await _queryProcessor.ProcessAsync(new GetUserByIdQuery(peer.PeerId));
         if (userReadModel == null)
         {

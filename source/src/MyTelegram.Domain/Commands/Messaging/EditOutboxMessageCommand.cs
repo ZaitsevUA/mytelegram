@@ -1,23 +1,25 @@
 ﻿namespace MyTelegram.Domain.Commands.Messaging;
 
-public class EditOutboxMessageCommand : RequestCommand2<MessageAggregate, MessageId, IExecutionResult>
+public class EditOutboxMessageCommand(
+    MessageId aggregateId,
+    RequestInfo requestInfo,
+    int messageId,
+    string newMessage,
+    byte[]? entities,
+    int editDate,
+    byte[]? media,
+    List<long>? chatMembers)
+    : RequestCommand2<MessageAggregate, MessageId, IExecutionResult>(aggregateId, requestInfo)
 {
-    public int MessageId { get; }
-    public string NewMessage { get; }
-    public byte[]? Entities { get; }
-    public int EditDate { get; }
-    public byte[]? Media { get; }
-    public List<long>? ChatMembers { get; }
+    public int MessageId { get; } = messageId;
+    public string NewMessage { get; } = newMessage;
+    public byte[]? Entities { get; } = entities;
+    public int EditDate { get; } = editDate;
+    public byte[]? Media { get; } = media;
+    public List<long>? ChatMembers { get; } = chatMembers;
 
-    public EditOutboxMessageCommand(MessageId aggregateId,
-        RequestInfo requestInfo,
-        int messageId, string newMessage, byte[]? entities, int editDate, byte[]? media, List<long>? chatMembers) : base(aggregateId, requestInfo)
+    protected override IEnumerable<byte[]> GetSourceIdComponents()
     {
-        MessageId = messageId;
-        NewMessage = newMessage;
-        Entities = entities;
-        EditDate = editDate;
-        Media = media;
-        ChatMembers = chatMembers;
+        yield return RequestInfo.RequestId.ToByteArray();
     }
 }

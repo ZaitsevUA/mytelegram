@@ -1,65 +1,45 @@
 ﻿namespace MyTelegram.Domain.Sagas.States;
 
-public class ReadHistorySagaSnapshot : ISnapshot
+public class ReadHistorySagaSnapshot(
+    RequestInfo requestInfo,
+    long readerUid,
+    int readerMessageId,
+    int readerPts,
+    bool senderIsBot,
+    long senderPeerId,
+    int senderPts,
+    int senderMessageId,
+    Peer readerToPeer,
+    bool isOut,
+    bool readHistoryCompleted,
+    bool outboxPtsIncremented,
+    bool inboxPtsIncremented,
+    bool latestNoneBotOutboxHasRead,
+    bool needReadLatestNoneBotOutboxMessage,
+    string sourceCommandId,
+    Guid correlationId)
+    : ISnapshot
 {
-    public ReadHistorySagaSnapshot(RequestInfo requestInfo,
-        long readerUid,
-        int readerMessageId,
-        int readerPts,
-        bool senderIsBot,
-        long senderPeerId,
-        int senderPts,
-        int senderMessageId,
-        Peer readerToPeer,
-        bool isOut,
-        bool readHistoryCompleted,
-        bool outboxPtsIncremented,
-        bool inboxPtsIncremented,
-        bool latestNoneBotOutboxHasRead,
-        bool needReadLatestNoneBotOutboxMessage,
-        string sourceCommandId,
-        Guid correlationId
-    )
-    {
-        RequestInfo = requestInfo;
-        ReaderUid = readerUid;
-        ReaderMessageId = readerMessageId;
-        ReaderPts = readerPts;
-        SenderIsBot = senderIsBot;
-        SenderPeerId = senderPeerId;
-        SenderPts = senderPts;
-        SenderMessageId = senderMessageId;
-        ReaderToPeer = readerToPeer;
-        IsOut = isOut;
-        ReadHistoryCompleted = readHistoryCompleted;
-        OutboxPtsIncremented = outboxPtsIncremented;
-        InboxPtsIncremented = inboxPtsIncremented;
-        LatestNoneBotOutboxHasRead = latestNoneBotOutboxHasRead;
-        NeedReadLatestNoneBotOutboxMessage = needReadLatestNoneBotOutboxMessage;
-        SourceCommandId = sourceCommandId;
-        CorrelationId = correlationId;
-    }
+    public Guid CorrelationId { get; } = correlationId;
+    public bool InboxPtsIncremented { get; } = inboxPtsIncremented;
+    public bool IsOut { get; } = isOut;
+    public bool LatestNoneBotOutboxHasRead { get; } = latestNoneBotOutboxHasRead;
+    public bool NeedReadLatestNoneBotOutboxMessage { get; } = needReadLatestNoneBotOutboxMessage;
+    public bool OutboxPtsIncremented { get; } = outboxPtsIncremented;
+    public int ReaderMessageId { get; } = readerMessageId;
+    public int ReaderPts { get; } = readerPts;
 
-    public Guid CorrelationId { get; }
-    public bool InboxPtsIncremented { get; }
-    public bool IsOut { get; }
-    public bool LatestNoneBotOutboxHasRead { get; }
-    public bool NeedReadLatestNoneBotOutboxMessage { get; }
-    public bool OutboxPtsIncremented { get; }
-    public int ReaderMessageId { get; }
-    public int ReaderPts { get; }
+    public Peer ReaderToPeer { get; } = readerToPeer;
 
-    public Peer ReaderToPeer { get; }
+    public RequestInfo RequestInfo { get; } = requestInfo;
+    public long ReaderUid { get; } = readerUid;
+    public bool ReadHistoryCompleted { get; } = readHistoryCompleted;
 
-    public RequestInfo RequestInfo { get; }
-    public long ReaderUid { get; }
-    public bool ReadHistoryCompleted { get; }
+    public bool SenderIsBot { get; } = senderIsBot;
 
-    public bool SenderIsBot { get; }
+    public int SenderMessageId { get; } = senderMessageId;
+    public int SenderPts { get; } = senderPts;
 
-    public int SenderMessageId { get; }
-    public int SenderPts { get; }
-
-    public long SenderPeerId { get; }
-    public string SourceCommandId { get; }
+    public long SenderPeerId { get; } = senderPeerId;
+    public string SourceCommandId { get; } = sourceCommandId;
 }

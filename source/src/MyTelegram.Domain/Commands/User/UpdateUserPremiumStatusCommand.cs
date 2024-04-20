@@ -1,11 +1,7 @@
 ﻿namespace MyTelegram.Domain.Commands.User;
 
-public class UpdateUserPremiumStatusCommand : Command<UserAggregate, UserId, IExecutionResult>
+public class UpdateUserPremiumStatusCommand(UserId aggregateId, bool premium)
+    : Command<UserAggregate, UserId, IExecutionResult>(aggregateId)
 {
-    public bool Premium { get; }
-
-    public UpdateUserPremiumStatusCommand(UserId aggregateId,bool premium) : base(aggregateId)
-    {
-        Premium = premium;
-    }
+    public bool Premium { get; } = premium;
 }

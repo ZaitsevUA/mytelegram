@@ -74,5 +74,3 @@
 
 //    public int? Views { get; }
 //}
-
-

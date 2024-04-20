@@ -1,32 +1,20 @@
 ﻿namespace MyTelegram.GatewayServer.Services;
 
-public class MtpConnectionHandler : ConnectionHandler
+public class MtpConnectionHandler(
+    IClientManager clientManager,
+    IMtpMessageParser messageParser,
+    IMtpMessageDispatcher messageDispatcher,
+    ILogger<MtpConnectionHandler> logger,
+    IMessageQueueProcessor<ClientDisconnectedEvent> messageQueueProcessor)
+    : ConnectionHandler
 {
-    private readonly IClientManager _clientManager;
-    private readonly ILogger<MtpConnectionHandler> _logger;
-    private readonly IMtpMessageDispatcher _messageDispatcher;
-    private readonly IMtpMessageParser _messageParser;
-    private readonly IMessageQueueProcessor<ClientDisconnectedEvent> _messageQueueProcessor;
-
-    public MtpConnectionHandler(IClientManager clientManager,
-        IMtpMessageParser messageParser,
-        IMtpMessageDispatcher messageDispatcher,
-        ILogger<MtpConnectionHandler> logger, IMessageQueueProcessor<ClientDisconnectedEvent> messageQueueProcessor)
-    {
-        _clientManager = clientManager;
-        _messageParser = messageParser;
-        _messageDispatcher = messageDispatcher;
-        _logger = logger;
-        _messageQueueProcessor = messageQueueProcessor;
-    }
-
     public override async Task OnConnectedAsync(ConnectionContext connection)
     {
-        _logger.LogInformation(
+        logger.LogInformation(
             "[ConnectionId={ConnectionId}] New client connected,RemoteEndPoint:{RemoteEndPoint},online count:{OnlineCount}",
             connection.ConnectionId,
-            connection.RemoteEndPoint, _clientManager.GetOnlineCount());
-        _clientManager.AddClient(connection.ConnectionId,
+            connection.RemoteEndPoint, clientManager.GetOnlineCount());
+        clientManager.AddClient(connection.ConnectionId,
             new ClientData
             {
                 ConnectionContext = connection,
@@ -35,15 +23,15 @@ public class MtpConnectionHandler : ConnectionHandler
             });
         connection.ConnectionClosed.Register(() =>
         {
-            if (_clientManager.TryRemoveClient(connection.ConnectionId, out var clientData))
+            if (clientManager.TryRemoveClient(connection.ConnectionId, out var clientData))
             {
                 //_eventBus.PublishAsync(new ClientDisconnectedEvent(connection.ConnectionId, clientData.AuthKeyId, 0));
-                _messageQueueProcessor.Enqueue(
+                messageQueueProcessor.Enqueue(
                     new ClientDisconnectedEvent(clientData.ConnectionId, clientData.AuthKeyId, 0),
                     clientData.AuthKeyId);
             }
 
-            _logger.LogInformation("[ConnectionId={ConnectionId}] Client disconnected,RemoteEndPoint:{RemoteEndPoint}",
+            logger.LogInformation("[ConnectionId={ConnectionId}] Client disconnected,RemoteEndPoint:{RemoteEndPoint}",
                 connection.ConnectionId,
                 connection.RemoteEndPoint);
         });
@@ -59,15 +47,15 @@ public class MtpConnectionHandler : ConnectionHandler
 
             var buffer = result.Buffer;
             
-            if (!_clientManager.TryGetClientData(connection.ConnectionId, out var clientData))
+            if (!clientManager.TryGetClientData(connection.ConnectionId, out var clientData))
             {
-                _logger.LogWarning("Can not find client data,connectionId={ConnectionId}", connection.ConnectionId);
+                logger.LogWarning("Can not find client data,connectionId={ConnectionId}", connection.ConnectionId);
                 break;
             }
 
             if (!clientData.IsFirstPacketParsed)
             {
-                _messageParser.ProcessFirstUnencryptedPacket(ref buffer, clientData);
+                messageParser.ProcessFirstUnencryptedPacket(ref buffer, clientData);
             }
 
             while (TryParseMessage(ref buffer, clientData, out var mtpMessage))
@@ -91,7 +79,7 @@ public class MtpConnectionHandler : ConnectionHandler
             mtpMessage.ConnectionId = clientData.ConnectionId;
             mtpMessage.ClientIp = (clientData.ConnectionContext!.RemoteEndPoint as IPEndPoint)?.Address.ToString() ??
                                   string.Empty;
-            return _messageDispatcher.DispatchAsync(mtpMessage);
+            return messageDispatcher.DispatchAsync(mtpMessage);
         }
 
         return Task.CompletedTask;
@@ -116,6 +104,6 @@ public class MtpConnectionHandler : ConnectionHandler
             return false;
         }
 
-        return _messageParser.TryParse(ref buffer, clientData, out mtpMessage);
+        return messageParser.TryParse(ref buffer, clientData, out mtpMessage);
     }
 }

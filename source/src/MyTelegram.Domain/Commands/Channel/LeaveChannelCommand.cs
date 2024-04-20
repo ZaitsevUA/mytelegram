@@ -1,16 +1,12 @@
 ﻿namespace MyTelegram.Domain.Commands.Channel;
 
-public class LeaveChannelCommand : RequestCommand2<ChannelMemberAggregate, ChannelMemberId, IExecutionResult>
+public class LeaveChannelCommand(
+    ChannelMemberId aggregateId,
+    RequestInfo requestInfo,
+    long channelId,
+    long memberUid)
+    : RequestCommand2<ChannelMemberAggregate, ChannelMemberId, IExecutionResult>(aggregateId, requestInfo)
 {
-    public LeaveChannelCommand(ChannelMemberId aggregateId,
-        RequestInfo requestInfo,
-        long channelId,
-        long memberUid) : base(aggregateId, requestInfo)
-    {
-        ChannelId = channelId;
-        MemberUid = memberUid;
-    }
-
-    public long ChannelId { get; }
-    public long MemberUid { get; }
+    public long ChannelId { get; } = channelId;
+    public long MemberUid { get; } = memberUid;
 }

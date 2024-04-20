@@ -1,45 +1,33 @@
 ﻿namespace MyTelegram.Domain.Events.Channel;
 
-public class StartInviteToChannelEvent : RequestAggregateEvent2<ChannelAggregate, ChannelId>
+public class StartInviteToChannelEvent(
+    RequestInfo requestInfo,
+    long channelId,
+    long inviterId,
+    IReadOnlyList<long> memberUidList,
+    IReadOnlyList<long>? privacyRestrictedUserId,
+    IReadOnlyList<long> botUidList,
+    int date,
+    int maxMessageId,
+    int channelHistoryMinId,
+    long randomId,
+    string messageActionData,
+    bool broadcast)
+    : RequestAggregateEvent2<ChannelAggregate, ChannelId>(requestInfo)
 {
-    public StartInviteToChannelEvent(RequestInfo requestInfo,
-        long channelId,
-        long inviterId,
-        IReadOnlyList<long> memberUidList,
-        IReadOnlyList<long>? privacyRestrictedUserId,
-        IReadOnlyList<long> botUidList,
-        int date,
-        int maxMessageId,
-        int channelHistoryMinId,
-        long randomId,
-        string messageActionData,
-        //bool isBot,
-        bool broadcast) : base(requestInfo)
-    {
-        ChannelId = channelId;
-        InviterId = inviterId;
-        MemberUidList = memberUidList;
-        PrivacyRestrictedUserId = privacyRestrictedUserId;
-        BotUidList = botUidList;
-        Date = date;
-        MaxMessageId = maxMessageId;
-        ChannelHistoryMinId = channelHistoryMinId;
-        RandomId = randomId;
-        MessageActionData = messageActionData;
-        Broadcast = broadcast;
-    }
+    //bool isBot,
 
-    public IReadOnlyList<long> BotUidList { get; }
-    public int ChannelHistoryMinId { get; }
-    public long ChannelId { get; }
-    public int Date { get; }
-    public long InviterId { get; }
-    public int MaxMessageId { get; }
-    public IReadOnlyList<long> MemberUidList { get; }
-    public IReadOnlyList<long>? PrivacyRestrictedUserId { get; }
-    public string MessageActionData { get; }
-    public bool Broadcast { get; }
-    public long RandomId { get; }
+    public IReadOnlyList<long> BotUidList { get; } = botUidList;
+    public int ChannelHistoryMinId { get; } = channelHistoryMinId;
+    public long ChannelId { get; } = channelId;
+    public int Date { get; } = date;
+    public long InviterId { get; } = inviterId;
+    public int MaxMessageId { get; } = maxMessageId;
+    public IReadOnlyList<long> MemberUidList { get; } = memberUidList;
+    public IReadOnlyList<long>? PrivacyRestrictedUserId { get; } = privacyRestrictedUserId;
+    public string MessageActionData { get; } = messageActionData;
+    public bool Broadcast { get; } = broadcast;
+    public long RandomId { get; } = randomId;
 
     //public bool IsBot { get; } 
 }

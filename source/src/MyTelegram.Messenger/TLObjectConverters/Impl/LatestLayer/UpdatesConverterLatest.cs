@@ -1,22 +1,13 @@
 ﻿namespace MyTelegram.Messenger.TLObjectConverters.Impl.LatestLayer;
 
-public class UpdatesConverterLatest : LayeredConverterBase, IUpdatesConverterLatest
+public class UpdatesConverterLatest(
+    IObjectMapper objectMapper,
+    ILayeredService<IChatConverter> layeredChatService,
+    ILayeredService<IMessageConverter> layeredMessageService)
+    : LayeredConverterBase, IUpdatesConverterLatest
 {
-    private readonly ILayeredService<IChatConverter> _layeredChatService;
-    private readonly ILayeredService<IMessageConverter> _layeredMessageService;
-    private readonly IObjectMapper _objectMapper;
     private IChatConverter? _chatConverter;
     private IMessageConverter? _messageConverter;
-
-    public UpdatesConverterLatest(
-        IObjectMapper objectMapper,
-        ILayeredService<IChatConverter> layeredChatService,
-        ILayeredService<IMessageConverter> layeredMessageService)
-    {
-        _objectMapper = objectMapper;
-        _layeredChatService = layeredChatService;
-        _layeredMessageService = layeredMessageService;
-    }
 
     public override int Layer => Layers.LayerLatest;
 
@@ -280,14 +271,14 @@ public class UpdatesConverterLatest : LayeredConverterBase, IUpdatesConverterLat
             createUpdatesForSelf
         );
         // privacy restricted updates
-        if (startInviteToChannelEvent.PrivacyRestrictedUserId?.Count > 0)
-        {
-            updateList.AddRange(startInviteToChannelEvent.PrivacyRestrictedUserId.Select(p =>
-                new TUpdateGroupInvitePrivacyForbidden
-                {
-                    UserId = p
-                }));
-        }
+        //if (startInviteToChannelEvent.PrivacyRestrictedUserId?.Count > 0)
+        //{
+        //    updateList.AddRange(startInviteToChannelEvent.PrivacyRestrictedUserId.Select(p =>
+        //        new TUpdateGroupInvitePrivacyForbidden
+        //        {
+        //            UserId = p
+        //        }));
+        //}
 
 #warning Set channel photo
         var channel = GetChatConverter().ToChannel(
@@ -442,6 +433,25 @@ public class UpdatesConverterLatest : LayeredConverterBase, IUpdatesConverterLat
             PtsCount = 1,
             Peer = peer
         };
+        var updates = new TUpdates
+        {
+            Chats = new TVector<IChat>(),
+            Date = DateTime.UtcNow.ToTimestamp(),
+            Updates = new TVector<IUpdate>(updateReadHistoryOutbox),
+            Users = new TVector<IUser>(),
+            Seq = 0
+        };
+        return updates;
+    }
+    public IUpdates ToReadHistoryUpdates(UpdateOutboxMaxIdCompletedSagaEvent eventData)
+    {
+        var updateReadHistoryOutbox = new TUpdateReadHistoryOutbox
+        {
+            Pts = eventData.Pts,
+            MaxId = eventData.MaxId,
+            PtsCount = 1,
+            Peer = eventData.ToPeerId.ToUserPeer().ToPeer()
+        };
 
         var updates = new TUpdates
         {
@@ -480,7 +490,7 @@ public class UpdatesConverterLatest : LayeredConverterBase, IUpdatesConverterLat
                         FwdFrom =
                             item.FwdHeader == null
                                 ? null
-                                : _objectMapper.Map<MessageFwdHeader, TMessageFwdHeader>(item.FwdHeader),
+                                : objectMapper.Map<MessageFwdHeader, TMessageFwdHeader>(item.FwdHeader),
                         ReplyTo = GetMessageConverter().ToMessageReplyHeader(item.InputReplyTo),
                         Entities = item.Entities.ToTObject<TVector<IMessageEntity>>()
                     };
@@ -504,7 +514,7 @@ public class UpdatesConverterLatest : LayeredConverterBase, IUpdatesConverterLat
                         FwdFrom =
                             item.FwdHeader == null
                                 ? null
-                                : _objectMapper.Map<MessageFwdHeader, TMessageFwdHeader>(item.FwdHeader),
+                                : objectMapper.Map<MessageFwdHeader, TMessageFwdHeader>(item.FwdHeader),
                         ReplyTo = item.InputReplyTo.ToMessageReplyHeader(),
                         Entities = item.Entities.ToTObject<TVector<IMessageEntity>>()
                     };
@@ -762,7 +772,7 @@ public class UpdatesConverterLatest : LayeredConverterBase, IUpdatesConverterLat
                 PtsCount = 1
             };
 
-            return new TUpdates
+            var updates = new TUpdates
             {
                 Chats = new TVector<IChat>(),
                 Date = DateTime.UtcNow.ToTimestamp(),
@@ -770,6 +780,7 @@ public class UpdatesConverterLatest : LayeredConverterBase, IUpdatesConverterLat
                 Updates = new TVector<IUpdate>(update),
                 Users = new TVector<IUser>()
             };
+            return updates;
         }
 
         switch (item.ToPeer.PeerType)
@@ -818,12 +829,12 @@ public class UpdatesConverterLatest : LayeredConverterBase, IUpdatesConverterLat
 
     protected virtual IChatConverter GetChatConverter()
     {
-        return _chatConverter ??= _layeredChatService.GetConverter(GetLayer());
+        return _chatConverter ??= layeredChatService.GetConverter(GetLayer());
     }
 
     protected virtual IMessageConverter GetMessageConverter()
     {
-        return _messageConverter ??= _layeredMessageService.GetConverter(GetLayer());
+        return _messageConverter ??= layeredMessageService.GetConverter(GetLayer());
     }
 
     private static TChatParticipants ToChatParticipants(long chatId,
