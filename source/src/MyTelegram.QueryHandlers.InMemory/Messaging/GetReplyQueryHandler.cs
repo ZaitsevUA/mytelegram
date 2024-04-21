@@ -6,7 +6,7 @@ public class GetReplyQueryHandler(IQueryOnlyReadModelStore<ReplyReadModel> store
         CancellationToken cancellationToken)
     {
         return await store.FirstOrDefaultAsync(p =>
-                p.ChannelId == query.ChannelId && p.PostMessageId == query.SavedFromMsgId,
+                p.ChannelId == query.ChannelId && p.MessageId == query.SavedFromMsgId,
             cancellationToken: cancellationToken);
     }
 }

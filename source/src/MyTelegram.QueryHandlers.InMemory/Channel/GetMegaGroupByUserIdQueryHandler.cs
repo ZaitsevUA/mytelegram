@@ -2,7 +2,7 @@
 namespace MyTelegram.QueryHandlers.InMemory.Channel;
 
 public class
-    GetMegaGroupByUidQueryHandler(IQueryOnlyReadModelStore<ChannelReadModel> store) : IQueryHandler<GetMegaGroupByUserIdQuery, IReadOnlyCollection<IChannelReadModel>>
+    GetMegaGroupByUserIdQueryHandler(IQueryOnlyReadModelStore<ChannelReadModel> store) : IQueryHandler<GetMegaGroupByUserIdQuery, IReadOnlyCollection<IChannelReadModel>>
 {
     public async Task<IReadOnlyCollection<IChannelReadModel>> ExecuteQueryAsync(GetMegaGroupByUserIdQuery query,
         CancellationToken cancellationToken)

@@ -1,4 +1,4 @@
-﻿namespace MyTelegram.QueryHandlers.MongoDB.Messaging;
+﻿namespace MyTelegram.QueryHandlers.InMemory.Messaging;
 
 public class GetRepliesQueryHandler(IQueryOnlyReadModelStore<ReplyReadModel> store) : IQueryHandler<GetRepliesQuery, IReadOnlyCollection<IReplyReadModel>>
 {

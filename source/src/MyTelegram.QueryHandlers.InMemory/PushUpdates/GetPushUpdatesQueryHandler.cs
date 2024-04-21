@@ -1,4 +1,4 @@
-﻿//namespace MyTelegram.QueryHandlers.MongoDB.PushUpdates;
+﻿//namespace MyTelegram.QueryHandlers.InMemory.PushUpdates;
 
 //public class GetPushUpdatesQueryHandler : IQueryHandler<GetPushUpdatesQuery, IReadOnlyCollection<IPushUpdatesReadModel>>
 //{

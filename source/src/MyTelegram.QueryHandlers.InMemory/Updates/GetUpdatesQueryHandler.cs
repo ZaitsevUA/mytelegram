@@ -1,4 +1,6 @@
-﻿namespace MyTelegram.QueryHandlers.InMemory.Updates;
+﻿using MyTelegram.ReadModel;
+
+namespace MyTelegram.QueryHandlers.InMemory.Updates;
 
 public class GetUpdatesQueryHandler(IQueryOnlyReadModelStore<UpdatesReadModel> store) : IQueryHandler<GetUpdatesQuery, IReadOnlyCollection<IUpdatesReadModel>>
 {
