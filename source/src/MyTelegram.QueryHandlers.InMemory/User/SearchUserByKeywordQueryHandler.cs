@@ -1,4 +1,6 @@
-﻿// ReSharper disable once CheckNamespace
+﻿using MyTelegram.QueryHandlers.InMemory;
+
+// ReSharper disable once CheckNamespace
 namespace MyTelegram.Queries;
 //.MongoDB.User
 

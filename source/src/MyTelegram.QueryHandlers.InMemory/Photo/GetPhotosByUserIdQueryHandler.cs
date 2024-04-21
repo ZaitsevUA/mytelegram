@@ -1,4 +1,11 @@
-﻿namespace MyTelegram.QueryHandlers.InMemory.Photo;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using MyTelegram.Domain.Extensions;
+
+namespace MyTelegram.QueryHandlers.InMemory.Photo;
 
 public class GetPhotosByUserIdQueryHandler(IQueryOnlyReadModelStore<PhotoReadModel> store) : IQueryHandler<GetPhotosByUserIdQuery, IReadOnlyCollection<IPhotoReadModel>>
 {

@@ -10,7 +10,6 @@ public class
             return null;
         }
 
-
         switch (query.ToPeer.PeerType)
         {
             case PeerType.User:
