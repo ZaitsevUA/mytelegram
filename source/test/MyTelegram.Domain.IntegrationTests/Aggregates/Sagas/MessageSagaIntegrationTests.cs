@@ -131,7 +131,7 @@ public class MessageSagaIntegrationTests : IntegrationTest
             Array.Empty<long>(),
             A<int>(),
             A<long>(),
-            A<string>());
+            A<string>(), ChatJoinType.InvitedByAdmin);
         return CommandBus.PublishAsync(command, default);
     }
 
@@ -143,12 +143,13 @@ public class MessageSagaIntegrationTests : IntegrationTest
             toPeer.PeerType == PeerType.Channel ? toPeer : senderPeer,
             toPeer,
             senderPeer,
+            senderPeer.PeerId,
             0,
             message,
             A<int>(),
             randomId,
             true);
-        var command = new StartSendMessageCommand(aggregateId, A<RequestInfo>() with { UserId = senderPeer.PeerId }, item);
+        var command = new CreateOutboxMessageCommand(aggregateId, A<RequestInfo>() with { UserId = senderPeer.PeerId }, item);
         return CommandBus.PublishAsync(command, default);
     }
 
@@ -203,7 +204,7 @@ public class MessageSagaIntegrationTests : IntegrationTest
 
     protected override IServiceProvider Configure(IEventFlowOptions options)
     {
-        options.AddDefaults(typeof(StartSendMessageCommand).Assembly);
+        options.AddDefaults(typeof(MyTelegram.Domain.IChatInviteLinkHelper).Assembly);
         options.ServiceCollection.AddMyEventFlow();
         options.ServiceCollection.AddSingleton<IIdGenerator, SimpleInMemoryIdGenerator>();
         options.AddInMemoryReadModel();

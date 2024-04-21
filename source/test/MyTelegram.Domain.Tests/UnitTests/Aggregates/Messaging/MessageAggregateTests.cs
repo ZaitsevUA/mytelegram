@@ -72,6 +72,7 @@ public class MessageAggregateTests : TestsFor<MessageAggregate>
             new Peer(PeerType.User, ownerPeerId),
             new Peer(PeerType.User, toPeerUserId),
             new Peer(PeerType.User, ownerPeerId),
+            ownerPeerId,
             _messageId,
             "test message",
             creationDate,
