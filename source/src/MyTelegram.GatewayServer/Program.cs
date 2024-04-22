@@ -58,6 +58,15 @@ if (appConfig == null)
 builder.Services.AddHostedService<EncryptedDataProcessorBackgroundService>();
 builder.Services.AddHostedService<UnencryptedDataProcessorBackgroundService>();
 builder.Services.AddHostedService<ClientDisconnectedDataProcessorBackgroundService>();
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(p =>
+    {
+        p.AllowAnyOrigin();
+        p.AllowAnyHeader();
+        p.AllowAnyMethod();
+    });
+});
 
 builder.Services.AddTransient<WebsocketMiddleware>();
 
@@ -114,6 +123,7 @@ var app = builder.Build();
 app.UseWebSockets();
 app.UseRouting();
 app.UseMiddleware<WebsocketMiddleware>();
+app.UseCors();
 
 app.MapGet("/", () => "Only websocket requests are supported.");
 
