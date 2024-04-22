@@ -15,7 +15,7 @@ public class MessageConverterLatest(
         if (m is TMessage tMessage)
         {
             var replies = ToMessageReplies(messageReadModel.Post, messageReadModel.Reply);
-                tMessage.Replies = replies;
+            tMessage.Replies = replies;
 
         }
 
@@ -328,6 +328,10 @@ public class MessageConverterLatest(
                         ReplyMarkup = readModel.ReplyMarkup.ToTObject<IReplyMarkup>(),
                         SavedPeerId = readModel.SavedPeerId.ToPeer()
                     };
+                    if (m.GroupedId == 0)
+                    {
+                        m.GroupedId = null;
+                    }
 
                     // Process existing data
                     if (readModel.EditDate == 0)
@@ -377,7 +381,7 @@ public class MessageConverterLatest(
     private IMessageReplies? ToMessageReplies(bool post/*, long? channelId,*/ , MessageReply? reply)
     {
         if (reply == null)
-    {
+        {
             return null;
         }
         if (post)
@@ -397,7 +401,7 @@ public class MessageConverterLatest(
         };
 
         if (post)
-            {
+        {
             messageReplies.ChannelId = reply.ChannelId;
             messageReplies.RecentRepliers = new();
             if (reply.RecentRepliers?.Count > 0)

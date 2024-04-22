@@ -19,7 +19,7 @@ public record SendMessageInput
         MessageType messageType = MessageType.Text,
         //MessageActionType messageActionType = MessageActionType.None,
         string? messageActionData = null,
-        long groupId = 0,
+        long? groupId = null,
         int groupItemCount = 1,
         long? pollId = null,
         byte[]? replyMarkup = null,
@@ -56,7 +56,7 @@ public record SendMessageInput
     public IList<IMessageEntity>? Entities { get; }
     public IInputReplyTo? InputReplyTo { get; }
     //public IReplyTo? ReplyTo { get; }
-    public long GroupId { get; }
+    public long? GroupId { get; }
     public int GroupItemCount { get; } = 1;
     public long? PollId { get; }
     public byte[]? ReplyMarkup { get; }
