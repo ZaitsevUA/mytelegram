@@ -9,12 +9,44 @@ namespace MyTelegram.Handlers.Account;
 internal sealed class GetRecentEmojiStatusesHandler : RpcResultObjectHandler<MyTelegram.Schema.Account.RequestGetRecentEmojiStatuses, MyTelegram.Schema.Account.IEmojiStatuses>,
     Account.IGetRecentEmojiStatusesHandler
 {
-    protected override Task<MyTelegram.Schema.Account.IEmojiStatuses> HandleCoreAsync(IRequestInput input,
+    private readonly IQueryProcessor _queryProcessor;
+
+    public GetRecentEmojiStatusesHandler(IQueryProcessor queryProcessor)
+    {
+        _queryProcessor = queryProcessor;
+    }
+
+    protected override async Task<MyTelegram.Schema.Account.IEmojiStatuses> HandleCoreAsync(IRequestInput input,
         MyTelegram.Schema.Account.RequestGetRecentEmojiStatuses obj)
     {
-        return Task.FromResult<IEmojiStatuses>(new TEmojiStatuses
+        if (input.UserId == 0)
+        {
+            return new TEmojiStatuses
+            {
+                Statuses = new()
+            };
+        }
+
+        var user = await _queryProcessor.ProcessAsync(new GetUserByIdQuery(input.UserId), default);
+        if (user == null)
+        {
+            RpcErrors.RpcErrors400.PeerIdInvalid.ThrowRpcError();
+        }
+
+        if (user!.RecentEmojiStatuses?.Count > 0)
+        {
+            return new TEmojiStatuses
+            {
+                Statuses = new TVector<IEmojiStatus>(user!.RecentEmojiStatuses.Select(p => new TEmojiStatus()
+                {
+                    DocumentId = p
+                }))
+            };
+        }
+
+        return new TEmojiStatuses
         {
             Statuses = new()
-        });
+        };
     }
 }
