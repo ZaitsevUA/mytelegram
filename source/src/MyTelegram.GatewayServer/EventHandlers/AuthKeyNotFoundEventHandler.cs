@@ -5,20 +5,11 @@ namespace MyTelegram.GatewayServer.EventHandlers;
 public class AuthKeyNotFoundEventHandler(IClientDataSender clientDataSender) : IEventHandler<AuthKeyNotFoundEvent>
 {
     // 0x6c, 0xfe, 0xff, 0xff
-    private static readonly byte[] AuthKeyNotFoundData = { 0x6c, 0xfe, 0xff, 0xff }; //-404
+    private static readonly byte[] AuthKeyNotFoundData = [0x6c, 0xfe, 0xff, 0xff]; //-404
 
     public Task HandleEventAsync(AuthKeyNotFoundEvent eventData)
     {
         var m = new EncryptedMessageResponse(eventData.AuthKeyId, AuthKeyNotFoundData, eventData.ConnectionId, 2);
-        return clientDataSender.SendAsync(m);
-    }
-}
-
-public class TransportErrorEventHandler(IClientDataSender clientDataSender) : IEventHandler<TransportErrorEvent>
-{
-    public Task HandleEventAsync(TransportErrorEvent eventData)
-    {
-        var m = new EncryptedMessageResponse(eventData.AuthKeyId, BitConverter.GetBytes(eventData.TransportErrorCode), eventData.ConnectionId, 2);
         return clientDataSender.SendAsync(m);
     }
 }

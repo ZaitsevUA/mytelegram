@@ -2,6 +2,8 @@
 
 using MyTelegram.GatewayServer.NativeAot;
 
+Console.Title = "MyTelegram gateway server";
+
 Log.Logger = new LoggerConfiguration()
     .Enrich.FromLogContext()
     .WriteTo.Async(c => c.Console(theme: AnsiConsoleTheme.Code))
@@ -43,6 +45,7 @@ builder.Services.AddRebusEventBus(options =>
             .ExchangeNames(eventBusOptions.ExchangeName, eventBusOptions.TopicExchangeName ?? "RebusTopics")
             ;
     });
+
     options.AddSystemTextJson(jsonOptions =>
     {
         jsonOptions.TypeInfoResolverChain.Add(GatewayServerJsonContext.Default);
@@ -50,6 +53,7 @@ builder.Services.AddRebusEventBus(options =>
 });
 
 var appConfig = builder.Configuration.GetRequiredSection("App").Get<MyTelegramGatewayServerOption>();
+
 if (appConfig == null)
 {
     Log.Error("Get app config failed.");

@@ -17,4 +17,6 @@ public class ClientData : IClientData
     public bool ObfuscationEnabled { get; set; }
     public int CurrentPacketLength { get; set; }
     public int SkipCount { get; set; }
+    public long Seq { get; set; }
+    public Channel<MyTelegram.MTProto.EncryptedMessageResponse> ResponseQueue { get; set; } = Channel.CreateUnbounded<MyTelegram.MTProto.EncryptedMessageResponse>();
 }

@@ -4,10 +4,12 @@ public class WebSocketMiddleware(
     IMtpMessageParser messageParser,
     IMtpMessageDispatcher messageDispatcher,
     IClientManager clientManager,
+    IClientDataSender clientDataSender,
     IMessageQueueProcessor<ClientDisconnectedEvent> messageQueueProcessor)
     : IMiddleware
 {
     private readonly string _subProtocol = "binary";
+    private readonly string _wsPath = "/apiws";
     private bool _isWebSocketConnected;
 
     public async Task InvokeAsync(HttpContext context,
@@ -15,7 +17,7 @@ public class WebSocketMiddleware(
     {
         if (context.WebSockets.IsWebSocketRequest)
         {
-            if (context.Request.Path == "/apiws")
+            if (context.Request.Path == _wsPath)
             {
                 var webSocket = await context.WebSockets.AcceptWebSocketAsync(_subProtocol);
                 _isWebSocketConnected = true;
@@ -24,7 +26,7 @@ public class WebSocketMiddleware(
                     ConnectionId = context.Connection.Id,
                     WebSocket = webSocket,
                     ClientType = ClientType.WebSocket,
-                    ClientIp = context.Connection.RemoteIpAddress?.ToString() ?? string.Empty
+                    ClientIp = context.Connection.RemoteIpAddress?.ToString() ?? string.Empty,
                 };
                 clientManager.AddClient(context.Connection.Id, clientData);
 
@@ -56,9 +58,31 @@ public class WebSocketMiddleware(
         var pipe = new Pipe();
         var writeTask = WritePipeAsync(webSocket, pipe.Writer);
         var readTask = ReadPipeAsync(pipe.Reader, clientData);
-        await Task.WhenAll(writeTask, readTask);
+        var processResponseQueueTask = ProcessResponseQueueAsync(clientData);
+        await Task.WhenAll(writeTask, readTask, processResponseQueueTask);
         clientManager.RemoveClient(clientData.ConnectionId);
         messageQueueProcessor.Enqueue(new ClientDisconnectedEvent(clientData.ConnectionId, clientData.AuthKeyId, 0), clientData.AuthKeyId);
+    }
+
+    private async Task ProcessResponseQueueAsync(ClientData clientData)
+    {
+        var queue = clientData.ResponseQueue;
+        while (await queue.Reader.WaitToReadAsync() && _isWebSocketConnected)
+        {
+            while (queue.Reader.TryRead(out var response))
+            {
+                var encodedBytes = ArrayPool<byte>.Shared.Rent(clientDataSender.GetEncodedDataMaxLength(response.Data.Length));
+                try
+                {
+                    var totalCount = clientDataSender.EncodeData(response, clientData, encodedBytes);
+                    await clientData.WebSocket!.SendAsync(encodedBytes.AsMemory()[..totalCount], WebSocketMessageType.Binary, true, default);
+                }
+                finally
+                {
+                    ArrayPool<byte>.Shared.Return(encodedBytes);
+                }
+            }
+        }
     }
 
     private async Task ReadPipeAsync(PipeReader reader,
@@ -124,7 +148,7 @@ public class WebSocketMiddleware(
     private async Task WritePipeAsync(WebSocket webSocket,
         PipeWriter writer)
     {
-        const int minimumBufferSize = 8192;
+        const int minimumBufferSize = 8192 * 2;
         while (webSocket.State == WebSocketState.Open)
         {
             var memory = writer.GetMemory(minimumBufferSize);

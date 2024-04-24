@@ -1,4 +1,4 @@
-﻿namespace MyTelegram.GatewayServer.EventHandlers;
+﻿namespace MyTelegram.GatewayServer.Services;
 
 public interface IClientDataSender
 {
@@ -7,4 +7,6 @@ public interface IClientDataSender
 
     Task SendAsync(MTProto.UnencryptedMessageResponse data);
     Task SendAsync(MTProto.EncryptedMessageResponse data);
+    int EncodeData(MTProto.EncryptedMessageResponse data, ClientData d, byte[] encodedBytes);
+    int GetEncodedDataMaxLength(int messageDataLength);
 }

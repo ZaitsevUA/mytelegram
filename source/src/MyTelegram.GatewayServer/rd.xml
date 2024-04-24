@@ -2,8 +2,6 @@
   <Application>
     <Assembly Name="MyTelegram.GatewayServer" Serialize="Required All" Dynamic="Required All"></Assembly>
     <Assembly Name="MyTelegram.Core" Serialize="Required All" Dynamic="Required All"></Assembly>
-    <Assembly Name="MyTelegram.EventBus.Rebus" Serialize="Required All" Dynamic="Required All">
-    </Assembly>
     <Assembly Name="MyTelegram.MTProto" Serialize="Required All" Dynamic="Required All"></Assembly>
     <Assembly Name="Serilog.Sinks.Console" Serialize="Required All" Dynamic="Required All"></Assembly>
     <Assembly Name="Serilog.Sinks.File" Serialize="Required All" Dynamic="Required All"></Assembly>

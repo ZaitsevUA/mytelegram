@@ -1,4 +1,4 @@
-﻿namespace MyTelegram.GatewayServer.EventHandlers;
+﻿namespace MyTelegram.GatewayServer.Services;
 
 public class ClientDataSender(
     IClientManager clientManager,
@@ -10,19 +10,20 @@ public class ClientDataSender(
     {
         if (!clientManager.TryGetClientData(data.ConnectionId, out var d))
         {
-            logger.LogWarning("Can not find cached client info,connectionId={ConnectionId}", data.ConnectionId);
+            logger.LogWarning("[0]Can not find cached client info,skip sending message,connectionId={ConnectionId}", data.ConnectionId);
             return Task.CompletedTask;
         }
 
-        var encodedBytes = ArrayPool<byte>.Shared.Rent(GetEncodedByteLength(data.Data.Length));
+        var encodedBytes = ArrayPool<byte>.Shared.Rent(GetEncodedDataMaxLength(data.Data.Length));
         try
         {
             var totalCount = messageEncoder.Encode(d, data, encodedBytes);
+
             return SendAsync(encodedBytes.AsMemory()[..totalCount], d);
         }
         finally
         {
-            ArrayPool<byte>.Shared.Return(encodedBytes);
+            ArrayPool<byte>.Shared.Return(encodedBytes, true);
         }
     }
 
@@ -30,25 +31,26 @@ public class ClientDataSender(
     {
         if (!clientManager.TryGetClientData(data.ConnectionId, out var d))
         {
-            logger.LogWarning("Can not find cached client info,connectionId={ConnectionId}", data.ConnectionId);
+            logger.LogWarning("Can not find cached client info,skip sending message,connectionId={ConnectionId},authKeyId={AuthKeyId}",
+                data.ConnectionId,
+                data.AuthKeyId
+                );
             return Task.CompletedTask;
         }
 
-        var encodedBytes = ArrayPool<byte>.Shared.Rent(GetEncodedByteLength(data.Data.Length));
+        d.ResponseQueue.Writer.TryWrite(data);
+
+        return Task.CompletedTask;
+    }
+
+    public int EncodeData(MTProto.EncryptedMessageResponse data, ClientData d, byte[] encodedBytes)
+    {
         if (d.AuthKeyId == 0)
         {
             d.AuthKeyId = data.AuthKeyId;
         }
-        try
-        {
-            var totalCount = messageEncoder.Encode(d, data, encodedBytes);
 
-            return SendAsync(encodedBytes.AsMemory()[..totalCount], d);
-        }
-        finally
-        {
-            ArrayPool<byte>.Shared.Return(encodedBytes);
-        }
+        return messageEncoder.Encode(d, data, encodedBytes);
     }
 
     public async Task SendAsync(ReadOnlyMemory<byte> encodedBytes,
@@ -59,17 +61,20 @@ public class ClientDataSender(
             case ClientType.Tcp:
                 await clientData.ConnectionContext!.Transport.Output.WriteAsync(encodedBytes);
                 await clientData.ConnectionContext!.Transport.Output.FlushAsync();
+                
                 break;
 
             case ClientType.WebSocket:
                 await clientData.WebSocket!.SendAsync(encodedBytes, WebSocketMessageType.Binary, true, default);
+
                 break;
         }
     }
 
-    private int GetEncodedByteLength(int messageDataLength)
+    public int GetEncodedDataMaxLength(int messageDataLength)
     {
-        // lengthBytes,defaultAuthKeyIdBytes,messageIdBytes,messageDataLengthBytes
-        return 1 + 8 + 8 + 4 + messageDataLength;
+        // LengthBytes=1~19 Abridged:1/4 | Intermediate:4 | Padded intermediate:4+(0~15) | Full:12
+        // length(use max length 20),authKeyId(8),messageId(8),messageDataLength(4),messageData
+        return 20 + 8 + 8 + 4 + messageDataLength;
     }
 }

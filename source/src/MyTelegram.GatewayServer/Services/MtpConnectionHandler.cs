@@ -5,37 +5,34 @@ public class MtpConnectionHandler(
     IMtpMessageParser messageParser,
     IMtpMessageDispatcher messageDispatcher,
     ILogger<MtpConnectionHandler> logger,
+    IClientDataSender clientDataSender,
     IMessageQueueProcessor<ClientDisconnectedEvent> messageQueueProcessor)
     : ConnectionHandler
 {
     public override async Task OnConnectedAsync(ConnectionContext connection)
     {
-        logger.LogInformation(
-            "[ConnectionId={ConnectionId}] New client connected,RemoteEndPoint:{RemoteEndPoint},online count:{OnlineCount}",
+        logger.LogInformation("[ConnectionId={ConnectionId}] New client connected,RemoteEndPoint:{RemoteEndPoint},online count:{OnlineCount}",
             connection.ConnectionId,
             connection.RemoteEndPoint, clientManager.GetOnlineCount());
-        clientManager.AddClient(connection.ConnectionId,
-            new ClientData
-            {
-                ConnectionContext = connection,
-                ConnectionId = connection.ConnectionId,
-                ClientType = ClientType.Tcp
-            });
+        var clientData = new ClientData
+        {
+            ConnectionContext = connection,
+            ConnectionId = connection.ConnectionId,
+            ClientType = ClientType.Tcp
+        };
+        clientManager.AddClient(connection.ConnectionId, clientData);
         connection.ConnectionClosed.Register(() =>
         {
-            if (clientManager.TryRemoveClient(connection.ConnectionId, out var clientData))
+            if (clientManager.TryRemoveClient(connection.ConnectionId, out _))
             {
-                //_eventBus.PublishAsync(new ClientDisconnectedEvent(connection.ConnectionId, clientData.AuthKeyId, 0));
-                messageQueueProcessor.Enqueue(
-                    new ClientDisconnectedEvent(clientData.ConnectionId, clientData.AuthKeyId, 0),
-                    clientData.AuthKeyId);
-            }
+                messageQueueProcessor.Enqueue(new ClientDisconnectedEvent(clientData.ConnectionId, clientData.AuthKeyId, 0), clientData.AuthKeyId);
 
+            }
             logger.LogInformation("[ConnectionId={ConnectionId}] Client disconnected,RemoteEndPoint:{RemoteEndPoint}",
                 connection.ConnectionId,
                 connection.RemoteEndPoint);
         });
-
+        _ = ProcessResponseQueueAsync(clientData, connection);
         var input = connection.Transport.Input;
         while (!connection.ConnectionClosed.IsCancellationRequested)
         {
@@ -46,8 +43,7 @@ public class MtpConnectionHandler(
             }
 
             var buffer = result.Buffer;
-            
-            if (!clientManager.TryGetClientData(connection.ConnectionId, out var clientData))
+            if (!clientManager.TryGetClientData(connection.ConnectionId, out _))
             {
                 logger.LogWarning("Can not find client data,connectionId={ConnectionId}", connection.ConnectionId);
                 break;
@@ -71,14 +67,40 @@ public class MtpConnectionHandler(
         }
     }
 
+    private Task ProcessResponseQueueAsync(ClientData clientData, ConnectionContext connectionContext)
+    {
+        Task.Run(async () =>
+        {
+            var queue = clientData.ResponseQueue;
+            while (await queue.Reader.WaitToReadAsync() && !connectionContext.ConnectionClosed.IsCancellationRequested)
+            {
+                while (queue.Reader.TryRead(out var response))
+                {
+                    var encodedBytes = ArrayPool<byte>.Shared.Rent(clientDataSender.GetEncodedDataMaxLength(response.Data.Length));
+                    try
+                    {
+                        var totalCount = clientDataSender.EncodeData(response, clientData, encodedBytes);
+                        await connectionContext.Transport.Output.WriteAsync(encodedBytes.AsMemory()[..totalCount]);
+                        await connectionContext.Transport.Output.FlushAsync();
+                    }
+                    finally
+                    {
+                        ArrayPool<byte>.Shared.Return(encodedBytes);
+                    }
+                }
+            }
+        });
+
+        return Task.CompletedTask;
+    }
+
     private Task ProcessDataAsync(IMtpMessage mtpMessage,
         ClientData clientData)
     {
         if (clientData.IsFirstPacketParsed)
         {
             mtpMessage.ConnectionId = clientData.ConnectionId;
-            mtpMessage.ClientIp = (clientData.ConnectionContext!.RemoteEndPoint as IPEndPoint)?.Address.ToString() ??
-                                  string.Empty;
+            mtpMessage.ClientIp = (clientData.ConnectionContext!.RemoteEndPoint as IPEndPoint)?.Address.ToString() ?? string.Empty;
             return messageDispatcher.DispatchAsync(mtpMessage);
         }
 

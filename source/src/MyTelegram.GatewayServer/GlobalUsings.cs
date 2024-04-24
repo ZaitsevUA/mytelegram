@@ -17,17 +17,19 @@ global using System.IO.Pipelines;
 global using System.Net;
 global using System.Net.WebSockets;
 global using System.Security.Cryptography.X509Certificates;
+global using System.Threading.Channels;
 
 global using MyTelegram.EventBus.Rebus;
 global using Rebus.Config;
+global using Microsoft.Extensions.Options;
 
-global using UnencryptedMessage=MyTelegram.MTProto.UnencryptedMessage;
+global using UnencryptedMessage = MyTelegram.MTProto.UnencryptedMessage;
 //global using UnencryptedMessageResponse = MyTelegram.MTProto.UnencryptedMessageResponse;
 global using EncryptedMessage = MyTelegram.MTProto.EncryptedMessage;
 //global using EncryptedMessageResponse = MyTelegram.MTProto.EncryptedMessageResponse;
 
-global using CtrState=MyTelegram.MTProto.CtrState;
+global using CtrState = MyTelegram.MTProto.CtrState;
 global using IAesHelper = MyTelegram.MTProto.IAesHelper;
 global using AesHelper = MyTelegram.MTProto.AesHelper;
-global using IMessageIdHelper=MyTelegram.MTProto.IMessageIdHelper;
+global using IMessageIdHelper = MyTelegram.MTProto.IMessageIdHelper;
 global using MessageIdHelper = MyTelegram.MTProto.MessageIdHelper;

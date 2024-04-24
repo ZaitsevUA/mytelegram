@@ -6,6 +6,7 @@ namespace MyTelegram.GatewayServer.NativeAot;
 [JsonSerializable(typeof(MTProto.EncryptedMessageResponse))]
 [JsonSerializable(typeof(MTProto.UnencryptedMessage))]
 [JsonSerializable(typeof(MTProto.UnencryptedMessageResponse))]
+
 [JsonSerializable(typeof(MyTelegram.Core.EncryptedMessage))]
 [JsonSerializable(typeof(MyTelegram.Core.EncryptedMessageResponse))]
 [JsonSerializable(typeof(MyTelegram.Core.UnencryptedMessage))]

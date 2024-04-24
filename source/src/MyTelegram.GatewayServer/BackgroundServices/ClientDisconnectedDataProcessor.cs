@@ -1,4 +1,4 @@
-﻿namespace MyTelegram.GatewayServer.Services;
+﻿namespace MyTelegram.GatewayServer.BackgroundServices;
 
 public class ClientDisconnectedDataProcessor(IEventBus eventBus) : IDataProcessor<ClientDisconnectedEvent>
 {
