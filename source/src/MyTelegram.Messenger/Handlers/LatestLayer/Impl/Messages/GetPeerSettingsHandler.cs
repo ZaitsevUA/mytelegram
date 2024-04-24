@@ -43,7 +43,7 @@ internal sealed class GetPeerSettingsHandler : RpcResultObjectHandler<MyTelegram
         await _accessHashHelper.CheckAccessHashAsync(obj.Peer);
         var userId = input.UserId;
         var peer = _peerHelper.GetPeer(obj.Peer, userId);
-        if (peer.PeerId == MyTelegramServerDomainConsts.OfficialUserId)
+        if (peer.PeerId == MyTelegramServerDomainConsts.OfficialUserId || peer.PeerType == PeerType.Self)
         {
             return new MyTelegram.Schema.Messages.TPeerSettings
             {
