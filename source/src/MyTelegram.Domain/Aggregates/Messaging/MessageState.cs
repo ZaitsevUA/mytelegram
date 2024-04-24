@@ -42,7 +42,7 @@ public class MessageState : AggregateState<MessageAggregate, MessageId, MessageS
 
     //public List<Peer> RecentRepliers { get; private set; } = new(MyTelegramServerDomainConsts.MaxRecentRepliersCount);
 
-    public MessageReply? Reply { get; private set; }
+    //public MessageReply? Reply { get; private set; }
 
     public void LoadSnapshot(MessageSnapshot snapshot)
     {
@@ -274,7 +274,8 @@ public class MessageState : AggregateState<MessageAggregate, MessageId, MessageS
 
     public void Apply(ReplyChannelMessageCompletedEvent aggregateEvent)
     {
-        Reply = aggregateEvent.Reply;
+        //Reply = aggregateEvent.Reply;
+        MessageItem = MessageItem with { Reply = aggregateEvent.Reply };
     }
 
     public void Apply(ChannelMessagePinnedEvent aggregateEvent)
@@ -290,9 +291,9 @@ public class MessageState : AggregateState<MessageAggregate, MessageId, MessageS
     public void Apply(MessageReplyUpdatedEvent aggregateEvent)
     {
         //throw new NotImplementedException();
-        if (Reply != null)
+        if (MessageItem.Reply != null)
         {
-            Reply.ChannelId = aggregateEvent.ChannelId;
+            MessageItem.Reply.ChannelId = aggregateEvent.ChannelId;
         }
     }
 

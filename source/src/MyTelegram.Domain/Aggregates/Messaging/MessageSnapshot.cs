@@ -5,8 +5,7 @@ public class MessageSnapshot(MessageItem messageItem,
         int senderMessageId,
         bool pinned,
         int editDate, bool edited,
-        int pts,
-        MessageReply? reply
+        int pts
         )
     : ISnapshot
 {
@@ -22,6 +21,5 @@ public class MessageSnapshot(MessageItem messageItem,
     public MessageItem MessageItem { get; } = messageItem;
     public bool Pinned { get; } = pinned;
     public int Pts { get; } = pts;
-    public MessageReply? Reply { get; } = reply;
     public int SenderMessageId { get; } = senderMessageId;
 }

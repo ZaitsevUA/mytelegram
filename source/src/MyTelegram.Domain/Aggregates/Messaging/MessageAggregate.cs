@@ -264,7 +264,7 @@ public class MessageAggregate : SnapshotAggregateRoot<MessageAggregate, MessageI
     public void ReplyToMessage(RequestInfo requestInfo, Peer replierPeer, int repliesPts, int messageId)
     {
         Specs.AggregateIsCreated.ThrowDomainErrorIfNotSatisfied(this);
-        var reply = _state.Reply ?? new MessageReply(null, 0, repliesPts, messageId, new List<Peer>());
+        var reply = _state.MessageItem.Reply ?? new MessageReply(null, 0, repliesPts, messageId, new List<Peer>());
         reply.Replies++;
         var recentRepliers = reply.RecentRepliers ?? new List<Peer>();
         var peer = recentRepliers.FirstOrDefault(p => p.PeerId == replierPeer.PeerId);
@@ -288,6 +288,7 @@ public class MessageAggregate : SnapshotAggregateRoot<MessageAggregate, MessageI
             postMessageId = _state.MessageItem.PostMessageId;
         }
 
+        reply.RecentRepliers = recentRepliers;
         Emit(new ReplyChannelMessageCompletedEvent(requestInfo, _state.MessageItem.ToPeer.PeerId,
             _state.MessageItem.MessageId, reply, postChannelId, postMessageId));
     }
@@ -418,8 +419,7 @@ public class MessageAggregate : SnapshotAggregateRoot<MessageAggregate, MessageI
             _state.Pinned,
             _state.EditDate,
             _state.Edited,
-            _state.Pts,
-            _state.Reply
+            _state.Pts
         ));
     }
 
