@@ -480,7 +480,8 @@ public class MessageAppService(
             query.IsSearchGlobal,
             pts,
             query.SelfUserId,
-            query.Limit
+            query.Limit,
+            query.Offset
         );
     }
 

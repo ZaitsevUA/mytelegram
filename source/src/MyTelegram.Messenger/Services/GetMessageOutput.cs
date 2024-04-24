@@ -22,14 +22,30 @@ public class GetMessageOutput(
     bool isSearchGlobal,
     int pts,
     long selfUserId,
-    int limit)
+    int limit,
+    OffsetInfo? offsetInfo
+    )
 {
     //    public void SetChannelReadModelList(IReadOnlyCollection<IChannelReadModel> channelReadModels)
     //{
     //    ChannelList = channelReadModels;
     //}
 
-    public GetMessageOutput() : this(Array.Empty<IChannelReadModel>(), Array.Empty<IChannelMemberReadModel>(), Array.Empty<IChatReadModel>(), Array.Empty<IContactReadModel>(), Array.Empty<long>(), Array.Empty<IMessageReadModel>(), Array.Empty<IPrivacyReadModel>(), Array.Empty<IUserReadModel>(), Array.Empty<IPhotoReadModel>(), Array.Empty<IPollReadModel>(), Array.Empty<IPollAnswerVoterReadModel>(), false, false, 0, 0, 0)
+    public GetMessageOutput() : this(
+        Array.Empty<IChannelReadModel>(),
+        Array.Empty<IChannelMemberReadModel>(),
+        Array.Empty<IChatReadModel>(),
+        Array.Empty<IContactReadModel>(),
+        Array.Empty<long>(),
+        Array.Empty<IMessageReadModel>(),
+        Array.Empty<IPrivacyReadModel>(),
+        Array.Empty<IUserReadModel>(),
+        Array.Empty<IPhotoReadModel>(),
+        Array.Empty<IPollReadModel>(),
+        Array.Empty<IPollAnswerVoterReadModel>(),
+        false, false, 0, 0, 0,
+        null
+        )
     {
     }
 
@@ -49,4 +65,5 @@ public class GetMessageOutput(
     public int Pts { get; init; } = pts;
     public long SelfUserId { get; set; } = selfUserId;
     public int Limit { get; set; } = limit;
+    public OffsetInfo? OffsetInfo { get; } = offsetInfo;
 }
