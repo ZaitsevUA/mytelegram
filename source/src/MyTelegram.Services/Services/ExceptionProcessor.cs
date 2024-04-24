@@ -1,6 +1,5 @@
 ﻿using EventFlow.Exceptions;
 using Microsoft.Extensions.Logging;
-using MyTelegram.Core;
 using MyTelegram.Schema;
 
 namespace MyTelegram.Services.Services;
@@ -9,35 +8,59 @@ public class ExceptionProcessor(
     ILogger<ExceptionProcessor> logger,
     IObjectMessageSender objectMessageSender,
     IEventBus eventBus)
-    : IExceptionProcessor
+    : IExceptionProcessor //, ISingletonDependency
 {
     //private const int BufferSize = 1024 * 4;
 
-    public async Task HandleExceptionAsync(Exception ex,
-        IObject requestData,
+    public Task HandleExceptionAsync(Exception ex,
+        //int errorCode,
+        //string errorMessage,
         long userId,
         string? handlerName,
         long reqMsgId,
+        //byte[] authKeyData,
+        //byte[] serverSalt,
+        //string connectionId,
+        //int seqNumber,
         long authKeyId,
-        bool isInMsgContainer)
+        //long sessionId, 
+        bool isInMsgContainer,
+        DeviceType deviceType
+        )
     {
         logger.LogError(ex,
-            "Process request {ReqMsgId} {IsInMsgContainer} failed,handler={HandlerName},userId={UserId},authKeyId={AuthKeyId:x2},requestData={@RequestData}",
+            "Process request {ReqMsgId} {IsInMsgContainer} failed,handler={HandlerName},userId={UserId},authKeyId={AuthKeyId:x2},deviceType={DeviceType}",
             reqMsgId,
             isInMsgContainer ? "in msgContainer" : string.Empty,
             handlerName,
+            //connectionId,
             userId,
             authKeyId,
-            requestData
+            deviceType
         );
 
+        return ProcessExceptionCoreAsync(ex, userId, reqMsgId);
+    }
+
+    public Task HandleExceptionAsync(Exception ex, IRequestInput input, IObject? requestData, string? handlerName)
+    {
+        logger.LogError(ex,
+            "Process request failed,handler={HandlerName},userId={UserId},requestInput={@RequestInput},requestData={@RequestData}",
+            handlerName,
+            input.UserId,
+            input,
+            requestData
+        );
+        return ProcessExceptionCoreAsync(ex, input.UserId, input.ReqMsgId);
+    }
+
+    private async Task ProcessExceptionCoreAsync(Exception ex, long userId, long reqMsgId)
+    {
         string errorMessage;
         int errorCode;
         switch (ex)
         {
-            case DuplicateOperationException duplicateOperationException:
-                //errorCode = MyTelegramServerDomainConsts.InternalErrorCode;
-                //errorMessage = MyTelegramServerDomainConsts.InternalErrorMessage;
+            case DuplicateOperationException:
                 var eventData = new DuplicateCommandEvent(userId, reqMsgId);
                 await eventBus.PublishAsync(eventData);
                 return;
@@ -63,12 +86,6 @@ public class ExceptionProcessor(
                 break;
 
             case SagaPublishException sagaPublishException:
-                //{
-                //    InnerException: CommandException
-                //    {
-                //        InnerException: UserFriendlyException or DomainError
-                //    } commandException
-                //}:
                 var innerException = sagaPublishException.InnerException;
                 errorMessage = innerException switch
                 {
@@ -77,7 +94,6 @@ public class ExceptionProcessor(
                     _ => MyTelegramServerDomainConsts.InternalErrorMessage
                 };
                 errorCode = MyTelegramServerDomainConsts.BadRequestErrorCode;
-                //errorMessage = commandException.InnerException?.Message ?? MyTelegramServerDomainConsts.InternalErrorMessage;
                 break;
 
             default:

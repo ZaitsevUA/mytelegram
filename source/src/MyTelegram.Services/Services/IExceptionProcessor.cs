@@ -5,7 +5,6 @@ namespace MyTelegram.Services.Services;
 public interface IExceptionProcessor
 {
     Task HandleExceptionAsync(Exception ex,
-        IObject requestData,
         //int errorCode,
         //string errorMessage,
         long userId,
@@ -17,5 +16,9 @@ public interface IExceptionProcessor
         //int seqNumber,
         long authKeyId,
         //long sessionId, 
-        bool isInMsgContainer);
+        bool isInMsgContainer,
+        DeviceType deviceType
+        );
+
+    Task HandleExceptionAsync(Exception ex, IRequestInput input, IObject? requestData, string? handlerName);
 }

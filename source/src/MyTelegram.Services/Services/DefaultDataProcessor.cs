@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using MyTelegram.Schema;
+using MyTelegram.Schema.Extensions;
 using System.Diagnostics;
 
 namespace MyTelegram.Services.Services;
@@ -36,26 +37,33 @@ public class DefaultDataProcessor<TData>(
                     await SendMessageToPeerAsync(obj.ReqMsgId, rpcResult);
                     return;
                 }
+
+                IObject? data = null;
                 var req = GetRequestInput(obj);
-                var data = GetData(obj);
                 try
                 {
+                    data = GetData(obj);
                     var handlerName = handler.GetType().Name;
                     if (data is IHasSubQuery)
                     {
                         handlerName = handlerHelper.GetHandlerFullName(data);
                     }
                     var r = await handler.HandleAsync(req, data);
+
+
                     logger.LogInformation(
-                            "UserId={UserId} authKeyId={AuthKeyId:x2} reqMsgId={ReqMsgId} layer={Layer} handler={Handler} {DeviceType}. {Elapsed}ms",
+                        "UserId={UserId} authKeyId={AuthKeyId:x2} reqMsgId={ReqMsgId} layer={Layer} handler={Handler} {DeviceType}. {Elapsed}ms",
                         obj.UserId,
                         obj.AuthKeyId,
                         obj.ReqMsgId,
                         obj.Layer,
                         handlerName,
-                            obj.DeviceType,
-                            sw.Elapsed.TotalMilliseconds
-                        );
+                        obj.DeviceType,
+                        sw.Elapsed.TotalMilliseconds
+                    );
+                    // _logger.LogInformation("Request:{Handler},RequestData={@RequestData},Response={@Response}", handlerName, data, r);
+
+
 
                     if (r != null!)
                     {
@@ -66,13 +74,8 @@ public class DefaultDataProcessor<TData>(
                 }
                 catch (Exception ex)
                 {
-                    await exceptionProcessor.HandleExceptionAsync(ex,
-                        data,
-                        obj.UserId,
-                        handler.GetType().Name,
-                        obj.ReqMsgId,
-                        obj.AuthKeyId,
-                        false);
+                    await exceptionProcessor.HandleExceptionAsync(ex, req, data,
+                        handler.GetType().Name);
                 }
             }
         });
