@@ -53,9 +53,13 @@ public class RpcResultProcessorLayer166(
             output.ChannelMemberList);
         chatList.AddRange(channelList);
 
+        var offsetId = messageList.Any() ? messageList.Max(p => p.Id) : 0;
+        if (output.OffsetInfo?.LoadType == LoadType.Backward)
+        {
+            offsetId = messageList.Any() ? messageList.Min(p => p.Id) : 0;
+        }
         if (output.MessageList.Count > 0 && output.MessageList.All(p => p.ToPeerType == PeerType.Channel) && !output.IsSearchGlobal)
         {
-            var offsetId = messageList.Any() ? messageList.Max(p => p.Id) : 0;
             //var messageIdList=messageList.Select()
             //var offsetId = output.HasMoreData && messageList.Any() ? messageList.Min(p => p.Id) : 0;
             //if(messageList.Count==output.l)
@@ -82,7 +86,6 @@ public class RpcResultProcessorLayer166(
 
         if (messageList.Count == output.Limit)
         {
-            var maxId = messageList.Any() ? messageList.Max(p => p.Id) : 0;
             return new TMessagesSlice
             {
                 Chats = new(chatList),
@@ -91,7 +94,7 @@ public class RpcResultProcessorLayer166(
                 NextRate = DateTime.UtcNow.AddSeconds(3).ToTimestamp(),
                 Messages = new(messageList),
                 Users = new(userList),
-                OffsetIdOffset = maxId
+                OffsetIdOffset = offsetId
             };
         }
 

@@ -369,7 +369,6 @@ public class MessageConverterLatest(
                             //m.FromId = _peerHelper.ToPeer(PeerType.Channel, readModel.LinkedChannelId!.Value);
                             m.FromId = readModel.FwdHeader.FromId.ToPeer();
                             m.Out = false;
-                            m.Replies.Replies = readModel.Replies;
                         }
                     }
 
