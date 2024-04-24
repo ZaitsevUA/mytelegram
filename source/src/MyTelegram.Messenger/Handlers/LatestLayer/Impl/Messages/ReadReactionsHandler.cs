@@ -12,9 +12,28 @@ namespace MyTelegram.Handlers.Messages;
 internal sealed class ReadReactionsHandler : RpcResultObjectHandler<MyTelegram.Schema.Messages.RequestReadReactions, MyTelegram.Schema.Messages.IAffectedHistory>,
     Messages.IReadReactionsHandler
 {
-    protected override Task<MyTelegram.Schema.Messages.IAffectedHistory> HandleCoreAsync(IRequestInput input,
+    private readonly IPtsHelper _ptsHelper;
+    private readonly IPeerHelper _peerHelper;
+    private readonly IAccessHashHelper _accessHashHelper;
+    private readonly IQueryProcessor _queryProcessor;
+    public ReadReactionsHandler(IPtsHelper ptsHelper, IPeerHelper peerHelper, IAccessHashHelper accessHashHelper, IQueryProcessor queryProcessor)
+    {
+        _ptsHelper = ptsHelper;
+        _peerHelper = peerHelper;
+        _accessHashHelper = accessHashHelper;
+        _queryProcessor = queryProcessor;
+    }
+
+    protected override async Task<MyTelegram.Schema.Messages.IAffectedHistory> HandleCoreAsync(IRequestInput input,
         MyTelegram.Schema.Messages.RequestReadReactions obj)
     {
-        throw new NotImplementedException();
+        var peer = _peerHelper.GetPeer(obj.Peer, input.UserId);
+        await _accessHashHelper.CheckAccessHashAsync(obj.Peer);
+
+        return new TAffectedHistory
+        {
+            Pts = _ptsHelper.GetCachedPts(peer.PeerId),
+            PtsCount = 0
+        };
     }
 }
