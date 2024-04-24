@@ -68,7 +68,7 @@ builder.Services.AddCors(options =>
     });
 });
 
-builder.Services.AddTransient<WebsocketMiddleware>();
+builder.Services.AddTransient<WebSocketMiddleware>();
 
 builder.WebHost.ConfigureKestrel(options =>
 {
@@ -122,7 +122,7 @@ var app = builder.Build();
 
 app.UseWebSockets();
 app.UseRouting();
-app.UseMiddleware<WebsocketMiddleware>();
+app.UseMiddleware<WebSocketMiddleware>();
 app.UseCors();
 
 app.MapGet("/", () => "Only websocket requests are supported.");
