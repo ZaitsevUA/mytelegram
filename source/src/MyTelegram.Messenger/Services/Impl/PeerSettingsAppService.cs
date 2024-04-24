@@ -5,6 +5,10 @@ public class PeerSettingsAppService(IQueryProcessor queryProcessor) : IPeerSetti
     public async Task<PeerSettings> GetAsync(long userId,
         Peer peer)
     {
+        if (userId == peer.PeerId)
+        {
+            return new PeerSettings();
+        }
         var peerSettingsReadModel = await queryProcessor.ProcessAsync(new GetPeerSettingsQuery(userId, peer.PeerId), default);
         if (peerSettingsReadModel != null)
         {
@@ -37,7 +41,11 @@ public class PeerSettingsAppService(IQueryProcessor queryProcessor) : IPeerSetti
 
     public Task<IPeerSettingsReadModel?> GetPeerSettingsAsync(long userId, long peerId)
     {
-        return queryProcessor.ProcessAsync(new GetPeerSettingsQuery(userId, peerId), default);
+        if (userId == peerId)
+        {
+            return Task.FromResult<IPeerSettingsReadModel?>(null);
+        }
+        return queryProcessor.ProcessAsync(new GetPeerSettingsQuery(userId, peerId));
     }
 
     public Task<List<PeerSettings>> GetPeerSettingsListAsync(GetPeerSettingsListInput input)

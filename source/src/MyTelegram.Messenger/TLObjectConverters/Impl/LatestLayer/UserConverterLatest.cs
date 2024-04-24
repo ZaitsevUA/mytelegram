@@ -98,7 +98,7 @@ public class UserConverterLatest(
         fullUser.NotifySettings = notifySettings;
         fullUser.Blocked = isBlocked;
         fullUser.Settings = layeredPeerSettingsConverter.GetConverter(GetLayer())
-            .ToPeerSettings(user.UserId, peerSettingsReadModel, contactType);
+            .ToPeerSettings(selfUserId, user.UserId, peerSettingsReadModel, contactType);
 
 
         CallAfterUserFullCreated(user, tUser, fullUser);
@@ -202,17 +202,21 @@ public class UserConverterLatest(
         IUserReadModel user,
         IReadOnlyCollection<IPhotoReadModel>? photos)
     {
-        var isOfficialId = user.UserId == MyTelegramServerDomainConsts.OfficialUserId;
+        var isOfficialUserId = user.UserId == MyTelegramServerDomainConsts.OfficialUserId;
+        var phoneCallAvailable = !isOfficialUserId &&
+                                 !user.Bot &&
+                                 user.UserId != selfUserId
+                                 ;
         //var isBlocked = await _blockCacheAppService.IsBlockedAsync(selfUserId, user.UserId);
         var fullUser = new Schema.TUserFull
         {
             Id = user.UserId,
             About = user.About,
             //Blocked = isBlocked,
-            CanPinMessage = !isOfficialId,
-            PhoneCallsAvailable = !user.Bot && !isOfficialId,
-            VideoCallsAvailable = !user.Bot && !isOfficialId,
-            PhoneCallsPrivate = isOfficialId,
+            CanPinMessage = !isOfficialUserId,
+            PhoneCallsAvailable = phoneCallAvailable,
+            VideoCallsAvailable = phoneCallAvailable,
+            PhoneCallsPrivate = isOfficialUserId,
             PinnedMsgId = user.PinnedMsgId,
             //ProfilePhoto = user.ProfilePhoto.ToTObject<Schema.IPhoto>() ?? new TPhotoEmpty(),
             Settings = new TPeerSettings(),
