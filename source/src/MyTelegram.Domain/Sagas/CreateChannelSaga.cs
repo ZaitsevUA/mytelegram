@@ -59,17 +59,17 @@ public class CreateChannelSaga :
         var ownerPeerId = domainEvent.AggregateEvent.ChannelId;
         await _idGenerator.NextIdAsync(IdType.Pts, ownerPeerId, cancellationToken: cancellationToken);
 
-        // Create dialog for creator
-        var createDialogCommand = new CreateDialogCommand(
-            DialogId.Create(domainEvent.AggregateEvent.RequestInfo.UserId,
-                new Peer(PeerType.Channel, domainEvent.AggregateEvent.ChannelId)),
-            domainEvent.AggregateEvent.RequestInfo,
-            domainEvent.AggregateEvent.CreatorId,
-            new Peer(PeerType.Channel, domainEvent.AggregateEvent.ChannelId),
-            0,
-            1
-        );
-        Publish(createDialogCommand);
+        //// Create dialog for creator
+        //var createDialogCommand = new CreateDialogCommand(
+        //    DialogId.Create(domainEvent.AggregateEvent.RequestInfo.UserId,
+        //        new Peer(PeerType.Channel, domainEvent.AggregateEvent.ChannelId)),
+        //    domainEvent.AggregateEvent.RequestInfo,
+        //    domainEvent.AggregateEvent.CreatorId,
+        //    new Peer(PeerType.Channel, domainEvent.AggregateEvent.ChannelId),
+        //    0,
+        //    1
+        //);
+        //Publish(createDialogCommand);
 
         // Add creator to channel member list
         var createMemberCommand = new CreateChannelCreatorMemberCommand(
