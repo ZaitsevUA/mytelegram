@@ -35,6 +35,14 @@ internal sealed class ReadHistoryHandler : RpcResultObjectHandler<MyTelegram.Sch
         MyTelegram.Schema.Messages.RequestReadHistory obj)
     {
         await _accessHashHelper.CheckAccessHashAsync(obj.Peer);
+        if (obj.MaxId < 0)
+        {
+            return new TAffectedMessages
+            {
+                Pts = _ptsHelper.GetCachedPts(input.UserId),
+                PtsCount = 0
+            };
+        }
         var peer = _peerHelper.GetPeer(obj.Peer, input.UserId);
         var messageReadModel =
             await _queryProcessor.ProcessAsync(
