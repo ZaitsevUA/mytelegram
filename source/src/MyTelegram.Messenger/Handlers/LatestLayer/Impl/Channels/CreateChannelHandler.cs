@@ -57,7 +57,7 @@ internal sealed class CreateChannelHandler : RpcResultObjectHandler<MyTelegram.S
             date,
             _randomHelper.NextLong(),
             new TMessageActionChannelCreate { Title = obj.Title }.ToBytes().ToHexString(),
-            null,
+            obj.TtlPeriod,
             false,
             null,
             null,

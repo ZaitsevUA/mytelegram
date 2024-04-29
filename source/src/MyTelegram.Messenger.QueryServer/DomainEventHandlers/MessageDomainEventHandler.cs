@@ -116,6 +116,7 @@ public class MessageDomainEventHandler(
         {
             MessageSubType.CreateChat => HandleCreateChatAsync(aggregateEvent),
             MessageSubType.CreateChannel => HandleCreateChannelAsync(aggregateEvent),
+            MessageSubType.AutoCreateChannelFromChat => HandleCreateChannelAsync(aggregateEvent),
             MessageSubType.InviteToChannel => HandleInviteToChannelAsync(aggregateEvent),
             MessageSubType.UpdatePinnedMessage => HandleUpdatePinnedMessageAsync(aggregateEvent),
             MessageSubType.MigrateChat => HandleMigrateChatAsync(aggregateEvent),
@@ -191,8 +192,18 @@ public class MessageDomainEventHandler(
                 .ToCreateChannelUpdates(eventData, aggregateEvent);
             var layeredData =
                 updatesLayeredService.GetLayeredData(c => c.ToCreateChannelUpdates(eventData, aggregateEvent));
+            IObject rpcData = updates;
+            if (aggregateEvent.MessageItem.MessageSubType == MessageSubType.AutoCreateChannelFromChat)
+            {
+                var invitedUsers = new TInvitedUsers
+                {
+                    Updates = updates,
+                    MissingInvitees = new()
+                };
+                rpcData = invitedUsers;
+            }
             await SendRpcMessageToClientAsync(aggregateEvent.RequestInfo,
-                updates,
+                rpcData,
                 aggregateEvent.MessageItem.SenderPeer.PeerId
             );
             await PushUpdatesToChannelSingleMemberAsync(channelId, aggregateEvent.MessageItem.SenderPeer,

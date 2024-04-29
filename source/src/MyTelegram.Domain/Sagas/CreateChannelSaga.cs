@@ -25,6 +25,11 @@ public class CreateChannelSaga :
         var outMessageId =
             await _idGenerator.NextIdAsync(IdType.MessageId, ownerPeerId, cancellationToken: cancellationToken);
         var aggregateId = MessageId.Create(ownerPeerId, outMessageId);
+        var subType = _state.MigratedFromChat ? MessageSubType.MigrateChat : MessageSubType.CreateChannel;
+        if (_state.AutoCreateFromChat)
+        {
+            subType = MessageSubType.AutoCreateChannelFromChat;
+        }
         var messageItem = new MessageItem(
             new Peer(PeerType.Channel, ownerPeerId),
             new Peer(PeerType.Channel, ownerPeerId),
@@ -37,7 +42,7 @@ public class CreateChannelSaga :
             true,
             SendMessageType.MessageService,
             MessageType.Text,
-            _state.MigratedFromChat ? MessageSubType.MigrateChat : MessageSubType.CreateChannel,
+            subType,
             null,
             _state.MessageActionData,
             MessageActionType.ChannelCreate
@@ -55,7 +60,9 @@ public class CreateChannelSaga :
     {
         Emit(new CreateChannelSagaStartedEvent(domainEvent.AggregateEvent.RequestInfo,
             domainEvent.AggregateEvent.MessageActionData, domainEvent.AggregateEvent.RandomId,
-            domainEvent.AggregateEvent.MigratedFromChat));
+            domainEvent.AggregateEvent.MigratedFromChat,
+            domainEvent.AggregateEvent.AutoCreateFromChat
+            ));
         var ownerPeerId = domainEvent.AggregateEvent.ChannelId;
         await _idGenerator.NextIdAsync(IdType.Pts, ownerPeerId, cancellationToken: cancellationToken);
 

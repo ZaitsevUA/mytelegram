@@ -22,7 +22,8 @@ public class CreateChannelCommandHandler : CommandHandler<ChannelAggregate, Chan
             command.MigratedFromChat,
             command.MigrateFromChatId,
             command.MigratedMaxId,
-            command.PhotoId
+            command.PhotoId,
+            command.AutoCreateFromChat
         );
         return Task.CompletedTask;
     }

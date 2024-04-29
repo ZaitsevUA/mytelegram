@@ -85,7 +85,9 @@ public class ChannelAggregate : MyInMemorySnapshotAggregateRoot<ChannelAggregate
         bool migratedFromChat,
         long? migratedFromChatId,
         int? migratedMaxId,
-        long? photoId)
+        long? photoId,
+        bool autoCreateFromChat
+        )
     {
         Specs.AggregateIsNew.ThrowDomainErrorIfNotSatisfied(this);
         Emit(new ChannelCreatedEvent(requestInfo,
@@ -104,7 +106,8 @@ public class ChannelAggregate : MyInMemorySnapshotAggregateRoot<ChannelAggregate
             migratedFromChat,
             migratedFromChatId,
             migratedMaxId,
-            photoId
+            photoId,
+            autoCreateFromChat
         ));
     }
 

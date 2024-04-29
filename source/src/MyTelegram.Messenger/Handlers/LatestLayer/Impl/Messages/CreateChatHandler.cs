@@ -77,7 +77,8 @@ internal sealed class CreateChatHandler : RpcResultObjectHandler<MyTelegram.Sche
                 false,
                 null,
                 null,
-                null
+                null,
+                true
             );
             await _commandBus.PublishAsync(createChannelCommand, CancellationToken.None);
 

@@ -18,7 +18,9 @@ public class CreateChannelCommand(
     bool migratedFromChat,
     long? migrateFromChatId,
     int? migratedMaxId,
-    long? photoId)
+    long? photoId,
+    bool autoCreateFromChat = false
+    )
     : RequestCommand2<ChannelAggregate, ChannelId, IExecutionResult>(aggregateId, requestInfo)
 {
     public string? About { get; } = about;
@@ -36,6 +38,7 @@ public class CreateChannelCommand(
     public long? MigrateFromChatId { get; } = migrateFromChatId;
     public int? MigratedMaxId { get; } = migratedMaxId;
     public long? PhotoId { get; } = photoId;
+    public bool AutoCreateFromChat { get; } = autoCreateFromChat;
     public long RandomId { get; } = randomId;
     public string Title { get; } = title;
 }
