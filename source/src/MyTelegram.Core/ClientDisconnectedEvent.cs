@@ -1,5 +1,6 @@
 ﻿namespace MyTelegram.Core;
 
-public partial record ClientDisconnectedEvent(string ConnectionId,
+public record ClientDisconnectedEvent(
+    string ConnectionId,
     long AuthKeyId,
     long SessionId);

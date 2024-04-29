@@ -2,7 +2,8 @@
 
 ////[MemoryPackable]
 
-public partial record UnencryptedMessage(long AuthKeyId,
+public record UnencryptedMessage(
+    long AuthKeyId,
     string ClientIp,
     string ConnectionId,
     //ReadOnlyMemory<byte> MessageData,
@@ -12,7 +13,7 @@ public partial record UnencryptedMessage(long AuthKeyId,
     uint ObjectId,
     Guid RequestId,
     long Date
-    )
+)
 {
     public string ClientIp { get; set; } = ClientIp;
     public string ConnectionId { get; set; } = ConnectionId;

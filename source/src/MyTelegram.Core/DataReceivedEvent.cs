@@ -1,6 +1,6 @@
 ﻿namespace MyTelegram.Core;
 
-public partial record DataReceivedEvent(
+public record DataReceivedEvent(
     string ConnectionId,
     Guid RequestId,
     uint ObjectId,

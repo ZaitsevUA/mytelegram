@@ -1,6 +1,7 @@
 ﻿namespace MyTelegram.Core;
 
-public record NewPtsMessageHasSentEvent(long ToUid,
+public record NewPtsMessageHasSentEvent(
+    long ToUid,
     Peer ToPeer,
     long MsgId,
     long TempAuthKeyId,

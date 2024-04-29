@@ -1,6 +1,14 @@
 ﻿namespace MyTelegram.Core;
 
-public record GlobalPrivacySettingsCacheItem(bool ArchiveAndMuteNewNoncontactPeers, bool KeepArchivedUnmuted, bool KeepArchivedFolders, bool HideReadMarks, bool NewNoncontactPeersRequirePremium)
+public record GlobalPrivacySettingsCacheItem(
+    bool ArchiveAndMuteNewNoncontactPeers,
+    bool KeepArchivedUnmuted,
+    bool KeepArchivedFolders,
+    bool HideReadMarks,
+    bool NewNoncontactPeersRequirePremium)
 {
-    public static string GetCacheKey(long userId) => MyCacheKey.With("global_privacy_settings", $"{userId}");
+    public static string GetCacheKey(long userId)
+    {
+        return MyCacheKey.With("global_privacy_settings", $"{userId}");
+    }
 }

@@ -1,6 +1,7 @@
 ﻿namespace MyTelegram.Core;
 
-public record CreatePushMessageEvent(Peer ToPeer,
+public record CreatePushMessageEvent(
+    Peer ToPeer,
     byte[] Data,
     int Pts,
     long OnlyPushToThisAuthKeyId,

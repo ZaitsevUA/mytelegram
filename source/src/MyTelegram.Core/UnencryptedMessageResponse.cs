@@ -1,8 +1,9 @@
 ﻿namespace MyTelegram.Core;
 
 ////[MemoryPackable]
-public partial record UnencryptedMessageResponse(long AuthKeyId,
-        byte[] Data,
+public record UnencryptedMessageResponse(
+    long AuthKeyId,
+    byte[] Data,
     //ReadOnlyMemory<byte> Data,
     string ConnectionId,
     long ReqMsgId);

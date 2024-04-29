@@ -4,15 +4,16 @@ public class RandomHelper : IRandomHelper
 {
     private const string Characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
     private const string NumberCharacters = "0123456789";
+
     public string GenerateRandomNumber(int length)
     {
-        return new(Enumerable.Repeat(NumberCharacters, length)
+        return new string(Enumerable.Repeat(NumberCharacters, length)
             .Select(s => s[Random.Shared.Next(s.Length)]).ToArray());
     }
 
     public string GenerateRandomString(int length)
     {
-        return new(Enumerable.Repeat(Characters, length)
+        return new string(Enumerable.Repeat(Characters, length)
             .Select(s => s[Random.Shared.Next(s.Length)]).ToArray());
     }
 
@@ -28,6 +29,7 @@ public class RandomHelper : IRandomHelper
 
         return buffer;
     }
+
     public int NextInt(int min,
         int max)
     {

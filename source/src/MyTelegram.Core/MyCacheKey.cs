@@ -8,6 +8,7 @@ public class MyCacheKey
         {
             throw new ArgumentException("Keys can not be null");
         }
+
         return string.Join(":", keys);
     }
 }

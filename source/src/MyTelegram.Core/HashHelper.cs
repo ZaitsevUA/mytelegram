@@ -1,8 +1,6 @@
-﻿using System.Security.Cryptography;
+﻿namespace MyTelegram.Core;
 
-namespace MyTelegram.Core;
-
-public class HashHelper : IHashHelper//, ISingletonDependency
+public class HashHelper : IHashHelper //, ISingletonDependency
 {
     public byte[] Md5(ReadOnlySpan<byte> source)
     {

@@ -1,6 +1,7 @@
 ﻿namespace MyTelegram.Core;
 
-public partial record NewDeviceCreatedEvent(RequestInfo RequestInfo,
+public record NewDeviceCreatedEvent(
+    RequestInfo RequestInfo,
     long PermAuthKeyId,
     long TempAuthKeyId,
     long UserId,
