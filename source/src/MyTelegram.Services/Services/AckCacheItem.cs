@@ -2,4 +2,6 @@
 
 public record AckCacheItem(int Pts,
     long GlobalSeqNo,
-    Peer ToPeer);
+    Peer ToPeer,
+    bool IsQts=false
+    );

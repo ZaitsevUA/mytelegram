@@ -4,15 +4,13 @@ using System.Text.Json.Serialization;
 
 namespace MyTelegram.Messenger.NativeAot;
 
-// Generation time:2024-04-17 08:28:18Z
+// Generation time:2024-04-29 06:56:10Z
 // MyTelegram.Domain
 [JsonSerializable(typeof(MyTelegram.Domain.Aggregates.Channel.ChannelSnapshot))]
 [JsonSerializable(typeof(MyTelegram.Domain.Aggregates.Chat.ChatSnapshot))]
 [JsonSerializable(typeof(MyTelegram.Domain.Aggregates.ChatInvite.ChatInviteSnapshot))]
 [JsonSerializable(typeof(MyTelegram.Domain.Aggregates.Contact.ContactSnapshot))]
 [JsonSerializable(typeof(MyTelegram.Domain.Aggregates.Contact.ImportedContactSnapshot))]
-[JsonSerializable(typeof(MyTelegram.Domain.Aggregates.Dialog.DialogFilterDeletedEvent))]
-[JsonSerializable(typeof(MyTelegram.Domain.Aggregates.Dialog.DialogFilterUpdatedEvent))]
 [JsonSerializable(typeof(MyTelegram.Domain.Aggregates.Dialog.DialogSnapshot))]
 [JsonSerializable(typeof(MyTelegram.Domain.Aggregates.Messaging.MessageSnapshot))]
 [JsonSerializable(typeof(MyTelegram.Domain.Aggregates.PeerNotifySettings.PeerNotifySettingsSnapshot))]
@@ -94,6 +92,8 @@ namespace MyTelegram.Messenger.NativeAot;
 [JsonSerializable(typeof(MyTelegram.Domain.Events.Dialog.ClearChannelHistoryEvent))]
 [JsonSerializable(typeof(MyTelegram.Domain.Events.Dialog.DeleteUserMessagesStartedEvent))]
 [JsonSerializable(typeof(MyTelegram.Domain.Events.Dialog.DialogCreatedEvent))]
+[JsonSerializable(typeof(MyTelegram.Domain.Events.Dialog.DialogFilterDeletedEvent))]
+[JsonSerializable(typeof(MyTelegram.Domain.Events.Dialog.DialogFilterUpdatedEvent))]
 [JsonSerializable(typeof(MyTelegram.Domain.Events.Dialog.DialogMsgIdPinnedEvent))]
 [JsonSerializable(typeof(MyTelegram.Domain.Events.Dialog.DialogPinChangedEvent))]
 [JsonSerializable(typeof(MyTelegram.Domain.Events.Dialog.DialogUnreadMarkChangedEvent))]
@@ -150,6 +150,8 @@ namespace MyTelegram.Messenger.NativeAot;
 [JsonSerializable(typeof(MyTelegram.Domain.Events.Pts.PtsGlobalSeqNoUpdatedEvent))]
 [JsonSerializable(typeof(MyTelegram.Domain.Events.Pts.PtsIncrementedEvent))]
 [JsonSerializable(typeof(MyTelegram.Domain.Events.Pts.PtsUpdatedEvent))]
+[JsonSerializable(typeof(MyTelegram.Domain.Events.Pts.QtsAckedEvent))]
+[JsonSerializable(typeof(MyTelegram.Domain.Events.Pts.QtsForAuthKeyIdUpdatedEvent))]
 [JsonSerializable(typeof(MyTelegram.Domain.Events.Pts.QtsIncrementedEvent))]
 [JsonSerializable(typeof(MyTelegram.Domain.Events.Pts.QtsUpdatedEvent))]
 [JsonSerializable(typeof(MyTelegram.Domain.Events.PushDevice.PushDeviceRegisteredEvent))]

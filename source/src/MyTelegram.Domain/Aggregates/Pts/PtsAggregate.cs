@@ -113,6 +113,20 @@ public class PtsAggregate : MyInMemorySnapshotAggregateRoot<PtsAggregate, PtsId,
             toPeer));
     }
 
+    public void QtsAcked(long peerId,
+        long permAuthKeyId,
+        long msgId,
+        int qts,
+        long globalSeqNo,
+        Peer toPeer)
+    {
+        Emit(new QtsAckedEvent(peerId,
+            permAuthKeyId,
+            msgId,
+            qts,
+            globalSeqNo,
+            toPeer));
+    }
     public void UpdateGlobalSeqNo(long peerId,
         long permAuthKeyId,
         long globalSeqNo)
@@ -138,18 +152,19 @@ public class PtsAggregate : MyInMemorySnapshotAggregateRoot<PtsAggregate, PtsId,
     }
 
     public void UpdateQts(long peerId,
-        int newQts)
+        long permAuthKeyId,
+        int newQts, long globalSeqNo)
     {
         if (!IsNew)
         {
             if (_state.Qts < newQts)
             {
-                Emit(new QtsUpdatedEvent(peerId, newQts));
+                Emit(new QtsUpdatedEvent(peerId, permAuthKeyId, newQts, DateTime.UtcNow.ToTimestamp(), globalSeqNo));
             }
         }
         else
         {
-            Emit(new QtsUpdatedEvent(peerId, newQts));
+            Emit(new QtsUpdatedEvent(peerId, permAuthKeyId, newQts, DateTime.UtcNow.ToTimestamp(), globalSeqNo));
         }
     }
 
@@ -162,6 +177,14 @@ public class PtsAggregate : MyInMemorySnapshotAggregateRoot<PtsAggregate, PtsId,
         Emit(new PtsForAuthKeyIdUpdatedEvent(peerId, permAuthKeyId, pts, changedUnreadCount, globalSeqNo));
     }
 
+    public void UpdateQtsForAuthKeyId(long peerId,
+        long permAuthKeyId,
+        int qts,
+        long globalSeqNo
+        )
+    {
+        Emit(new QtsForAuthKeyIdUpdatedEvent(peerId, permAuthKeyId, qts, globalSeqNo));
+    }
     //public void UpdateChannelPtsForUser(long userId, long channelId, int pts, long globalSeqNo)
     //{
     //    Emit(new ChannelPtsForUserUpdatedEvent(userId, channelId,pts,globalSeqNo));

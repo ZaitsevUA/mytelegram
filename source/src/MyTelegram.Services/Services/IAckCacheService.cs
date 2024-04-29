@@ -5,9 +5,9 @@ namespace MyTelegram.Services.Services;
 public interface IAckCacheService
 {
     Task AddMsgIdToCacheAsync(long msgId,
-        int pts,
+        int ptsOrQts,
         long globalSeqNo,
-        Peer toPeer);
+        Peer toPeer, bool isQts = false);
 
     void AddRpcMsgIdToCache(long msgId,
         long reqMsgId);

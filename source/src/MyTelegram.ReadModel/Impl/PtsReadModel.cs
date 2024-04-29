@@ -2,6 +2,7 @@
 
 public class PtsReadModel : IPtsReadModel,
     IAmReadModelFor<PtsAggregate, PtsId, PtsUpdatedEvent>,
+    IAmReadModelFor<PtsAggregate, PtsId, QtsUpdatedEvent>,
     IAmReadModelFor<PtsAggregate, PtsId, PtsGlobalSeqNoUpdatedEvent>
 {
     public virtual int Date { get; private set; }
@@ -38,6 +39,18 @@ public class PtsReadModel : IPtsReadModel,
         UnreadCount += domainEvent.AggregateEvent.ChangedUnreadCount;
 
 
+        return Task.CompletedTask;
+    }
+    public Task ApplyAsync(IReadModelContext context, IDomainEvent<PtsAggregate, PtsId, QtsUpdatedEvent> domainEvent, CancellationToken cancellationToken)
+    {
+        if (Qts >= domainEvent.AggregateEvent.NewQts)
+        {
+            return Task.CompletedTask;
+        }
+        Id = PtsId.Create(domainEvent.AggregateEvent.PeerId).Value;
+        PeerId = domainEvent.AggregateEvent.PeerId;
+        Qts = domainEvent.AggregateEvent.NewQts;
+        Date = domainEvent.AggregateEvent.Date;
         return Task.CompletedTask;
     }
 }

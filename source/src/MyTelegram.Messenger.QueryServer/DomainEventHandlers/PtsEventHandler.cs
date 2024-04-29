@@ -23,6 +23,7 @@ public class PtsEventHandler(
         ISubscribeSynchronousTo<EditMessageSaga, EditMessageSagaId, OutboxMessageEditCompletedEvent>,
         ISubscribeSynchronousTo<EditMessageSaga, EditMessageSagaId, InboxMessageEditCompletedEvent>,
         ISubscribeSynchronousTo<PtsAggregate, PtsId, PtsAckedEvent>,
+        ISubscribeSynchronousTo<PtsAggregate, PtsId, QtsAckedEvent>,
         ISubscribeSynchronousTo<DeleteChannelMessagesSaga, DeleteChannelMessagesSagaId,
             DeleteChannelMessagePtsIncrementedEvent>,
         ISubscribeSynchronousTo<PinForwardedChannelMessageSaga, PinForwardedChannelMessageSagaId,
@@ -232,6 +233,15 @@ public class PtsEventHandler(
 
             //return _commandBus.PublishAsync(updatePtsForAuthKeyIdCommand, default);
         });
+        return Task.CompletedTask;
+    }
+    private Task UpdateQtsForAuthKeyIdAsync(long ownerPeerId, long permAuthKeyId, int qts, long globalSeqNo)
+    {
+        var command =
+            new UpdateQtsForAuthKeyIdCommand(PtsId.Create(ownerPeerId, permAuthKeyId), ownerPeerId, permAuthKeyId,
+                qts,
+                globalSeqNo);
+        ptsCommandExecutor.Enqueue(command);
 
         return Task.CompletedTask;
     }
@@ -268,5 +278,10 @@ public class PtsEventHandler(
     {
         await ptsHelper.IncrementPtsAsync(domainEvent.AggregateEvent.UserId, domainEvent.AggregateEvent.Pts);
         await IncrementTempPtsAsync(domainEvent.AggregateEvent.UserId, domainEvent.AggregateEvent.Pts);
+    }
+    public Task HandleAsync(IDomainEvent<PtsAggregate, PtsId, QtsAckedEvent> domainEvent, CancellationToken cancellationToken)
+    {
+        return UpdateQtsForAuthKeyIdAsync(domainEvent.AggregateEvent.PeerId, domainEvent.AggregateEvent.PermAuthKeyId,
+            domainEvent.AggregateEvent.Qts, domainEvent.AggregateEvent.GlobalSeqNo);
     }
 }

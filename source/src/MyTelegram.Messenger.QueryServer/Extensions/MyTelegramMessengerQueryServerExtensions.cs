@@ -68,6 +68,7 @@ public static class MyTelegramMessengerQueryServerExtensions
                 typeof(CreateEncryptedPushUpdatesCommand),
                 typeof(UpdatePtsCommand),
                 typeof(PtsAckedCommand),
+                typeof(QtsAckedCommand),
                 typeof(IncrementTempPtsCommand),
                 typeof(UpdateQtsCommand),
                 typeof(UpdatePtsForAuthKeyIdCommand),
@@ -80,7 +81,8 @@ public static class MyTelegramMessengerQueryServerExtensions
                 typeof(CreateEncryptedPushUpdatesCommandHandler),
                 typeof(UpdatePtsCommandHandler),
                 typeof(PtsAckedCommandHandler),
-                //typeof(IncrementTempPtsCommandHandler),
+                typeof(QtsAckedCommandHandler),
+                typeof(IncrementTempPtsCommandHandler),
                 typeof(UpdateQtsCommandHandler),
                 typeof(UpdatePtsForAuthKeyIdCommandHandler),
                 typeof(UpdateGlobalSeqNoCommandHandler)
@@ -95,6 +97,7 @@ public static class MyTelegramMessengerQueryServerExtensions
                 typeof(TempPtsIncrementedEvent),
                 typeof(QtsUpdatedEvent),
                 typeof(PtsForAuthKeyIdUpdatedEvent),
+                typeof(QtsForAuthKeyIdUpdatedEvent),
                 typeof(PtsGlobalSeqNoUpdatedEvent)
                 );
 

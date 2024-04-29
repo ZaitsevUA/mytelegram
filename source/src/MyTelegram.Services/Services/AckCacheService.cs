@@ -8,10 +8,24 @@ public class AckCacheService(IScheduleAppService scheduleAppService) : IAckCache
     private readonly ConcurrentDictionary<long, AckCacheItem> _msgIdToPtsDict = new();
     private readonly ConcurrentDictionary<long, long> _msgIdToReqMsgIdDict = new();
     private readonly ConcurrentDictionary<long, AckCacheItem> _rpcReqMsgIdToPtsDict = new();
-    private readonly int _timeoutSeconds = 60 * 10;//10minute
+    private readonly int _timeoutSeconds = 60 * 10;
+
+    public Task AddMsgIdToCacheAsync(long msgId,
+        int ptsOrQts,
+        long globalSeqNo,
+        Peer toPeer, bool isQts = false)
+    {
+        _msgIdToPtsDict.TryAdd(msgId, new AckCacheItem(ptsOrQts, globalSeqNo, toPeer, isQts));
+        scheduleAppService.Execute(() =>
+            {
+                _msgIdToPtsDict.TryRemove(msgId, out _);
+            },
+            TimeSpan.FromSeconds(_timeoutSeconds));
+        return Task.CompletedTask;
+    }
 
     public void AddRpcMsgIdToCache(long msgId,
-        long reqMsgId)
+            long reqMsgId)
     {
         //Console.WriteLine($"Add Rpc msgId to cache,msgId:{msgId} reqMsgId:{reqMsgId}");
         _msgIdToReqMsgIdDict.TryAdd(msgId, reqMsgId);
@@ -23,8 +37,6 @@ public class AckCacheService(IScheduleAppService scheduleAppService) : IAckCache
         long globalSeqNo,
         Peer toPeer)
     {
-        //Console.WriteLine($"AddRpcPtsToCacheAsync,reqMsgId:{reqMsgId} pts:{pts} globalSeqNo:{globalSeqNo} toPeer:{toPeer}");
-
         _rpcReqMsgIdToPtsDict.TryAdd(reqMsgId, new AckCacheItem(pts, globalSeqNo, toPeer));
         scheduleAppService.Execute(() =>
             {
@@ -34,8 +46,14 @@ public class AckCacheService(IScheduleAppService scheduleAppService) : IAckCache
         return Task.CompletedTask;
     }
 
+    public bool TryGetPts(long msgId,
+        [NotNullWhen(true)] out AckCacheItem? ackCacheItem)
+    {
+        return _msgIdToPtsDict.TryRemove(msgId, out ackCacheItem);
+    }
+
     public bool TryGetRpcPtsCache(long msgId,
-        [NotNullWhen(true)] out AckCacheItem? ackRpcCacheItem)
+            [NotNullWhen(true)] out AckCacheItem? ackRpcCacheItem)
     {
         if (_msgIdToReqMsgIdDict.TryRemove(msgId, out var reqMsgId))
         {
@@ -44,26 +62,5 @@ public class AckCacheService(IScheduleAppService scheduleAppService) : IAckCache
 
         ackRpcCacheItem = null;
         return false;
-    }
-
-    public Task AddMsgIdToCacheAsync(long msgId,
-        int pts,
-        long globalSeqNo,
-        Peer toPeer)
-    {
-        //Console.WriteLine($"##########AddMsgIdToCacheAsync msgId {msgId} pts {pts} globalSeqNo {globalSeqNo} toPeer:{toPeer}");
-        _msgIdToPtsDict.TryAdd(msgId, new AckCacheItem(pts, globalSeqNo, toPeer));
-        scheduleAppService.Execute(() =>
-            {
-                _msgIdToPtsDict.TryRemove(msgId, out _);
-            },
-            TimeSpan.FromSeconds(_timeoutSeconds));
-        return Task.CompletedTask;
-    }
-
-    public bool TryGetPts(long msgId,
-        [NotNullWhen(true)] out AckCacheItem? ackCacheItem)
-    {
-        return _msgIdToPtsDict.TryRemove(msgId, out ackCacheItem);
     }
 }

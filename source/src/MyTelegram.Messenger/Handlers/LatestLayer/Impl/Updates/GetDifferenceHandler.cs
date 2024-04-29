@@ -1,6 +1,5 @@
 ﻿// ReSharper disable All
 
-using Microsoft.Extensions.Logging;
 using MyTelegram.Schema.Updates;
 
 namespace MyTelegram.Handlers.Updates;
@@ -52,6 +51,7 @@ internal sealed class GetDifferenceHandler : RpcResultObjectHandler<MyTelegram.S
     protected override async Task<MyTelegram.Schema.Updates.IDifference> HandleCoreAsync(IRequestInput input,
         MyTelegram.Schema.Updates.RequestGetDifference obj)
     {
+        //_logger.LogInformation("Get difference:{UserId},reqMsgId={ReqMsgId},obj={@RequestData}", input.UserId, input.ReqMsgId, obj);
         var userId = input.UserId;
         if (userId == 0)
         {
@@ -62,7 +62,7 @@ internal sealed class GetDifferenceHandler : RpcResultObjectHandler<MyTelegram.S
         }
 
         var cachedPts = _ptsHelper.GetCachedPts(userId);
-        var ptsReadModel = await _queryProcessor.ProcessAsync(new GetPtsByPeerIdQuery(userId), default);
+        var ptsReadModel = await _queryProcessor.ProcessAsync(new GetPtsByPeerIdQuery(userId));
         var pts = Math.Max(cachedPts, ptsReadModel?.Pts ?? 0);
 
         var ptsForAuthKeyIdReadModel =
@@ -75,10 +75,14 @@ internal sealed class GetDifferenceHandler : RpcResultObjectHandler<MyTelegram.S
             diff = pts - obj.Pts;
         }
 
-        var joinedChannelIdList = await _queryProcessor
-            .ProcessAsync(new GetChannelIdListByMemberUserIdQuery(input.UserId), default);
+        var globalSeqNo = ptsForAuthKeyIdReadModel?.GlobalSeqNo ?? 0;
+        IReadOnlyCollection<IUpdatesReadModel> userUpdates = [];
+        //IReadOnlyCollection<IUpdatesReadModel> userUpdates = await _queryProcessor.ProcessAsync(new GetUpdatesByGlobalSeqNoQuery(input.UserId, globalSeqNo));
 
-        if (joinedChannelIdList.Count == 0)
+        var joinedChannelIdList = await _queryProcessor
+            .ProcessAsync(new GetChannelIdListByMemberUserIdQuery(input.UserId));
+
+        if (!joinedChannelIdList.Any() && !userUpdates.Any())
         {
             if ((obj.Pts != 0 && obj.Pts == ptsForAuthKeyId) || diff == 0)
             {
@@ -90,18 +94,16 @@ internal sealed class GetDifferenceHandler : RpcResultObjectHandler<MyTelegram.S
         limit = Math.Min(limit, MyTelegramServerDomainConsts.DefaultPtsTotalLimit);
 
         var updatesReadModels =
-            await _queryProcessor.ProcessAsync(new GetUpdatesQuery(input.UserId, input.UserId, obj.Pts, obj.Date, limit), default);
+            await _queryProcessor.ProcessAsync(new GetUpdatesQuery(input.UserId, input.UserId, obj.Pts, obj.Date, limit));
         var messageIds = updatesReadModels.Where(p => p.UpdatesType == UpdatesType.NewMessages)
                 .Select(p => p.MessageId ?? 0)
                 .ToList()
             ;
 
-
         // all channel updates
-        var globalSeqNo = ptsForAuthKeyIdReadModel?.GlobalSeqNo ?? 0;// Math.Min(ptsReadModel?.GlobalSeqNo ?? 0, ptsForAuthKeyIdReadModel?.GlobalSeqNo ?? 0);
         var channelUpdatesReadModels = await _queryProcessor.ProcessAsync(
             new GetChannelUpdatesByGlobalSeqNoQuery(joinedChannelIdList.ToList(), globalSeqNo,
-                limit), default);
+                limit));
 
         if (channelUpdatesReadModels.Any(p => p.OnlySendToUserId.HasValue))
         {
@@ -110,6 +112,7 @@ internal sealed class GetDifferenceHandler : RpcResultObjectHandler<MyTelegram.S
             channelUpdatesReadModels = tempChannelReadModels;
         }
 
+        // Console.WriteLine($"### {input.UserId} ChannelGlobalSeqNo:{globalSeqNo} count={channelUpdatesReadModels.Count}");
         var users = updatesReadModels.SelectMany(p => p.Users ?? new List<long>(0)).ToList();
         var chats = updatesReadModels.SelectMany(p => p.Chats ?? new List<long>(0)).ToList();
         users.AddRange(channelUpdatesReadModels.SelectMany(p => p.Users ?? new List<long>(0)).ToList());
@@ -121,27 +124,36 @@ internal sealed class GetDifferenceHandler : RpcResultObjectHandler<MyTelegram.S
                 obj.Pts,
                 limit, messageIds, users, chats));
 
+        //var channelMessages=await _messageAppService.GetChannelDifferenceAsync(new GetDifferenceInput(input.UserId,))
+
         var allUpdateList = updatesReadModels.Where(p => p.UpdatesType == UpdatesType.Updates)
             .SelectMany(p => p.Updates ?? new List<IUpdate>()).ToList();
-        allUpdateList.AddRange(channelUpdatesReadModels.Where(p => p.UpdatesType == UpdatesType.Updates).SelectMany(p => p.Updates ?? new List<IUpdate>()));
+        allUpdateList.AddRange(channelUpdatesReadModels.Where(p => p.UpdatesType == UpdatesType.Updates).SelectMany(p => p.Updates ?? []));
+        allUpdateList.AddRange(userUpdates.SelectMany(p => p.Updates ?? []));
+        //var hasEncryptedMessage = false;// updatesReadModels.Any(p => p.UpdatesType == UpdatesType.NewEncryptedMessages);
 
-        var hasEncryptedMessage = false;// updatesReadModels.Any(p => p.UpdatesType == UpdatesType.NewEncryptedMessages);
-        var encryptedMessages = Array.Empty<IEncryptedMessageReadModel>();
+        IReadOnlyCollection<IEncryptedMessageReadModel> encryptedMessages = [];
 
         var maxPts = 0;
-        if (updatesReadModels.Any() || channelUpdatesReadModels.Any())
+
+        if (updatesReadModels.Any() || channelUpdatesReadModels.Any() || userUpdates.Any())
         {
             maxPts = updatesReadModels.Any() ? updatesReadModels.Max(p => p.Pts) : obj.Pts;
             var channelMaxGlobalSeqNo =
                 channelUpdatesReadModels.Count > 0 ? channelUpdatesReadModels.Max(p => p.GlobalSeqNo) : 0; //updatesReadModels.Max(p => p.GlobalSeqNo);
+            var userGlobalSeqNo = userUpdates.Any() ? userUpdates.Max(p => p.GlobalSeqNo) : 0;
+
+            var maxGlobalSeqNo = Math.Max(channelMaxGlobalSeqNo, userGlobalSeqNo);
 
             await _ackCacheService.AddRpcPtsToCacheAsync(input.ReqMsgId,
                 maxPts,
-                channelMaxGlobalSeqNo,
+                maxGlobalSeqNo,
                 new Peer(PeerType.User, input.UserId));
-        }
 
+            //Console.WriteLine($"[{input.UserId}]Add channelMaxGlobalSeqNo to cache:{channelMaxGlobalSeqNo}");
+        }
         var r = _layeredService.GetConverter(input.Layer).ToDifference(dto, ptsReadModel, cachedPts, limit, allUpdateList, new List<IChat>(), encryptedMessages);
+        //_logger.LogInformation("GetDifference:{UserId},updates count={Count},channelUpdates count={ChannelUpdatesCount},Data={@Data},channelUpdates count={ChannelUpdatesCount}", input.UserId, updatesReadModels.Count, channelUpdatesReadModels.Count, r, channelUpdatesReadModels.Count);
         return r;
     }
 }

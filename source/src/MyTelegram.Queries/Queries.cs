@@ -365,6 +365,7 @@ public record GetUpdatesQuery(
 public record GetChannelUpdatesByGlobalSeqNoQuery(List<long> ChannelIdList, long MinGlobalSeqNo, int Limit)
     : IQuery<IReadOnlyCollection<IUpdatesReadModel>>;
 
+public record GetUpdatesByGlobalSeqNoQuery(long UserId,long MinGlobalSeqNo) : IQuery<IReadOnlyCollection<IUpdatesReadModel>>;
 public record GetReplyToMsgIdListQuery(Peer ToPeer, long SelfUserId, int? ReplyToMsgId)
     : IQuery<IReadOnlyCollection<ReplyToMsgItem>?>;
 

@@ -1,5 +1,4 @@
-﻿using MyTelegram.Core;
-using MyTelegram.Schema;
+﻿using MyTelegram.Schema;
 using MyTelegram.Schema.Extensions;
 
 namespace MyTelegram.Services.Services;
@@ -14,8 +13,7 @@ public class QueuedObjectMessageSender(
     public Task PushSessionMessageToAuthKeyIdAsync<TData>(long authKeyId,
         TData data,
         int pts = 0,
-        //PtsType ptsType = PtsType.Unknown,
-        //UpdatesType updatesType = UpdatesType.Updates,
+        int? qts = null,
         long globalSeqNo = 0, LayeredData<TData>? layeredData = null) where TData : IObject
     {
         var layeredByteData = layeredData?.DataWithLayer?.ToDictionary(k => k.Key, v => v.Value.ToBytes());
@@ -23,7 +21,7 @@ public class QueuedObjectMessageSender(
         sessionMessageQueueProcessor.Enqueue(new LayeredAuthKeyIdMessageCreatedIntegrationEvent(authKeyId,
                 data.ToBytes(),
                 pts,
-                //updatesType,
+                qts,
                 globalSeqNo, new LayeredData<byte[]>(layeredByteData)),
             authKeyId);
         return Task.CompletedTask;
@@ -36,8 +34,7 @@ public class QueuedObjectMessageSender(
         long? onlySendToUserId = null,
         long? onlySendToThisAuthKeyId = null,
         int pts = 0,
-        //PtsType ptsType = PtsType.Unknown,
-        //UpdatesType updatesType = UpdatesType.Updates,
+        int? qts = null,
         long globalSeqNo = 0,
         LayeredData<TData>? layeredData = null) where TData : IObject
     {
@@ -49,7 +46,7 @@ public class QueuedObjectMessageSender(
                 onlySendToUserId,
                 onlySendToThisAuthKeyId,
                 pts,
-                //updatesType,
+                qts,
                 globalSeqNo,
                 new LayeredData<byte[]>(layeredData?.DataWithLayer?.ToDictionary(k => k.Key, v => v.Value.ToBytes()))),
             peer.PeerId);
@@ -63,8 +60,7 @@ public class QueuedObjectMessageSender(
         long? onlySendToUserId = null,
         long? onlySendToThisAuthKeyId = null,
         int pts = 0,
-        //PtsType ptsType = PtsType.Unknown,
-        //UpdatesType updatesType = UpdatesType.Updates,
+        int? qts = null,
         long globalSeqNo = 0, LayeredData<TData>? layeredData = null) where TData : IObject
     {
         sessionMessageQueueProcessor.Enqueue(new LayeredPushMessageCreatedIntegrationEvent((int)peer.PeerType,
@@ -75,7 +71,7 @@ public class QueuedObjectMessageSender(
                 onlySendToUserId,
                 onlySendToThisAuthKeyId,
                 pts,
-                //updatesType,
+                qts,
                 globalSeqNo,
                 new LayeredData<byte[]>(layeredData?.DataWithLayer?.ToDictionary(k => k.Key, v => v.Value.ToBytes()))
             ),
@@ -90,8 +86,7 @@ public class QueuedObjectMessageSender(
         long? onlySendToUserId = null,
         long? onlySendToThisAuthKeyId = null,
         int pts = 0,
-        //PtsType ptsType = PtsType.Unknown,
-        //UpdatesType updatesType = UpdatesType.Updates,
+        int? qts = null,
         long globalSeqNo = 0,
         LayeredData<TData>? layeredData = null,
         TExtraData? extraData = default) where TData : IObject
@@ -105,12 +100,13 @@ public class QueuedObjectMessageSender(
                 onlySendToUserId,
                 onlySendToThisAuthKeyId,
                 pts,
-                //updatesType,
+                qts,
                 globalSeqNo,
                 layeredData);
         }
 
-        sessionMessageQueueProcessor.Enqueue(new LayeredPushMessageCreatedIntegrationEvent<TExtraData>((int)peer.PeerType,
+        sessionMessageQueueProcessor.Enqueue(new LayeredPushMessageCreatedIntegrationEvent<TExtraData>(
+                (int)peer.PeerType,
                 peer.PeerId,
                 data.ToBytes(),
                 excludeAuthKeyId,
@@ -118,8 +114,7 @@ public class QueuedObjectMessageSender(
                 onlySendToUserId,
                 onlySendToThisAuthKeyId,
                 pts,
-                //ptsType,
-                //updatesType,
+                qts,
                 globalSeqNo,
                 new LayeredData<byte[]>(layeredData?.DataWithLayer?.ToDictionary(k => k.Key, v => v.Value.ToBytes())),
                 extraData
@@ -150,6 +145,7 @@ public class QueuedObjectMessageSender(
         int pts = 0) where TData : IObject
     {
         var rpcResult = CreateRpcResult(reqMsgId, data);
+
         sessionMessageQueueProcessor.Enqueue(new DataResultResponseReceivedEvent(reqMsgId, rpcResult.ToBytes()),
             reqMsgId % _maxQueueCount);
         return Task.CompletedTask;
@@ -160,14 +156,18 @@ public class QueuedObjectMessageSender(
         int pts = 0) where TData : IObject
     {
         var rpcResult = CreateRpcResult(reqMsgId, data);
-        sessionMessageQueueProcessor.Enqueue(new DataResultResponseWithUserIdReceivedEvent(reqMsgId, rpcResult.ToBytes(), userId, authKeyId, permAuthKeyId),
+        sessionMessageQueueProcessor.Enqueue(
+            new DataResultResponseWithUserIdReceivedEvent(reqMsgId, rpcResult.ToBytes(), userId, authKeyId,
+                permAuthKeyId),
             reqMsgId % _maxQueueCount);
         return Task.CompletedTask;
     }
+
     private TRpcResult CreateRpcResult<TData>(long reqMsgId, TData data) where TData : IObject
     {
         var newData = data;
         var rpcResult = new TRpcResult { ReqMsgId = reqMsgId, Result = data };
+
         var length = data.GetLength();
         if (length > 500)
         {
@@ -177,6 +177,7 @@ public class QueuedObjectMessageSender(
             };
             rpcResult.Result = gzipPacked;
         }
+
         return rpcResult;
     }
 }

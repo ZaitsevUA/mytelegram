@@ -107,7 +107,7 @@ public class DifferenceConverterLatest(
                         Qts = qts,
                         Pts = pts?.Pts ?? 1,
                         UnreadCount = unreadCount,
-                        Seq = 1,
+                        Seq = 1
                     }
                     : objectMapper.Map<IPtsReadModel, TState>(pts)
             };
@@ -162,13 +162,14 @@ public class DifferenceConverterLatest(
     protected IUserConverter GetUserConverter()
     {
         var converter = _userConverter ??= layeredUserService.GetConverter(GetLayer());
+        // Console.WriteLine($"UserConverter:GetLayer()={GetLayer()} {converter.Layer} {converter.GetType().Namespace}.{converter.GetType().Name}");
         return converter;
     }
 
     //private readonly IObjectMapper _objectMapper;
     //private readonly IOptions<MyTelegramMessengerServerOptions> _options;
 
-    //public DifferenceConverterLayer143(
+    //public DifferenceConverter(
     //    IObjectMapper objectMapper,
     //    IOptions<MyTelegramMessengerServerOptions> options)
     //{
@@ -176,7 +177,7 @@ public class DifferenceConverterLatest(
     //    _options = options;
     //}
 
-    //public virtual int Layer => Layers.Layer143;
+    //public virtual int Layer => Layers.LayerLatest;
 
     //public IChannelDifference ToChannelDifference(
     //    IList<IMessage> messages,

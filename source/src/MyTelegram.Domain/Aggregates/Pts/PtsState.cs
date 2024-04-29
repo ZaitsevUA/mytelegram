@@ -4,6 +4,7 @@ public class PtsState : AggregateState<PtsAggregate, PtsId, PtsState>,
     IApply<PtsUpdatedEvent>,
     IApply<QtsUpdatedEvent>,
     IApply<PtsAckedEvent>,
+    IApply<QtsAckedEvent>,
     IApply<PtsGlobalSeqNoUpdatedEvent>,
     IApply<PtsForAuthKeyIdUpdatedEvent>//,
     //IApply<ChannelPtsForUserUpdatedEvent>
@@ -80,4 +81,15 @@ public class PtsState : AggregateState<PtsAggregate, PtsId, PtsState>,
     //    Pts= aggregateEvent.Pts;
     //    GlobalSeqNo=aggregateEvent.GlobalSeqNo;
     //}
+    public void Apply(QtsAckedEvent aggregateEvent)
+    {
+        if (aggregateEvent.Qts != 0)
+        {
+            Qts = aggregateEvent.Qts;
+        }
+        if (aggregateEvent.GlobalSeqNo != 0)
+        {
+            GlobalSeqNo = aggregateEvent.GlobalSeqNo;
+        }
+    }
 }

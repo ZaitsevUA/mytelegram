@@ -6,7 +6,7 @@ public class UpdateQtsCommandHandler : CommandHandler<PtsAggregate, PtsId, Updat
         UpdateQtsCommand command,
         CancellationToken cancellationToken)
     {
-        aggregate.UpdateQts(command.PeerId, command.NewQts);
+        aggregate.UpdateQts(command.PeerId, command.PermAuthKeyId,command.NewQts,command.GlobalSeqNo);
         return Task.CompletedTask;
     }
 }

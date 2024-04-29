@@ -1,5 +1,4 @@
-﻿using MyTelegram.Domain.Aggregates.Pts;
-using MyTelegram.Domain.Aggregates.Updates;
+﻿using MyTelegram.Domain.Aggregates.Updates;
 using MyTelegram.Domain.Commands.Pts;
 using MyTelegram.Domain.Commands.Updates;
 
@@ -59,9 +58,8 @@ public abstract class DomainEventHandlerBase(
             onlySendToUserId,
             onlySendToThisAuthKeyId,
             pts,
-            //ptsType,
-            globalSeqNo,
-            layeredData);
+           globalSeqNo: globalSeqNo,
+           layeredData: layeredData);
     }
 
     protected async Task PushUpdatesToChannelSingleMemberAsync(
@@ -96,9 +94,8 @@ public abstract class DomainEventHandlerBase(
             onlySendToUserId,
             onlySendToThisAuthKeyId,
             pts,
-            //ptsType,
-            globalSeqNo,
-            layeredData);
+            globalSeqNo: globalSeqNo,
+            layeredData: layeredData);
     }
 
     protected async Task PushUpdatesToPeerAsync(Peer toPeer,
@@ -157,9 +154,8 @@ public abstract class DomainEventHandlerBase(
             onlySendToUserId,
             onlySendToThisAuthKeyId,
             pts,
-            //ptsType,
-            globalSeqNo,
-            layeredData);
+            globalSeqNo: globalSeqNo,
+            layeredData: layeredData);
 
         // Console.WriteLine($"##################### push to {toPeer} globalSeqNo={globalSeqNo}");
         //return globalSeqNo;
@@ -378,9 +374,8 @@ public abstract class DomainEventHandlerBase(
             onlySendToUserId,
             onlySendToThisAuthKeyId,
             pts,
-            //ptsType,
-            globalSeqNo,
-            layeredData);
+            globalSeqNo: globalSeqNo,
+            layeredData: layeredData);
     }
 
     protected async Task SendMessageToPeerAsync<TData, TExtraData>(Peer toPeer,
@@ -419,13 +414,17 @@ public abstract class DomainEventHandlerBase(
             onlySendToUserId,
             onlySendToThisAuthKeyId,
             pts,
-            //ptsType,
-            globalSeqNo,
-            layeredData,
-            extraData
+            globalSeqNo: globalSeqNo,
+            layeredData: layeredData,
+            extraData: extraData
             );
     }
 
+    protected Task SendMessageToAuthKeyIdAsync<TData>(Peer toPeer, TData data, long authKeyId, int? qts = null, UpdatesType updatesType = UpdatesType.Updates)
+        where TData : IObject
+    {
+        return objectMessageSender.PushMessageToPeerAsync(toPeer, data, onlySendToThisAuthKeyId: authKeyId, qts: qts);
+    }
 
     protected async Task SendMultiMediaResultAsync(
         RequestInfo requestInfo,
@@ -492,6 +491,7 @@ public abstract class DomainEventHandlerBase(
 
         await objectMessageSender.SendRpcMessageToClientAsync(requestInfo.ReqMsgId, data);
     }
+
 
     protected Task UpdateSelfGlobalSeqNoAfterSendChannelMessageAsync(long userId,
         long globalSeqNo)

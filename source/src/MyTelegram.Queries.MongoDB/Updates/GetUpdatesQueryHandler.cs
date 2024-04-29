@@ -1,6 +1,4 @@
-﻿using MyTelegram.ReadModel;
-
-namespace MyTelegram.QueryHandlers.MongoDB.Updates;
+﻿namespace MyTelegram.QueryHandlers.MongoDB.Updates;
 
 public class GetUpdatesQueryHandler(IQueryOnlyReadModelStore<UpdatesReadModel> store) : IQueryHandler<GetUpdatesQuery, IReadOnlyCollection<IUpdatesReadModel>>
 {
