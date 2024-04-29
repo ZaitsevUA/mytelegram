@@ -7,8 +7,9 @@ public class UpdateOutboxMessagePinnedCommand(
     bool pmOneSize,
     bool silent,
     int date)
-    : RequestCommand2<MessageAggregate, MessageId, IExecutionResult>(aggregateId, requestInfo)
+    : Command<MessageAggregate, MessageId, IExecutionResult>(aggregateId), IHasRequestInfo
 {
+    public RequestInfo RequestInfo { get; } = requestInfo;
     public bool Pinned { get; } = pinned;
     public bool PmOneSize { get; } = pmOneSize;
     public bool Silent { get; } = silent;

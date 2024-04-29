@@ -3,14 +3,14 @@
 namespace MyTelegram.Messenger.Services.Impl;
 
 public class MediaHelper(
-    IOptions<MyTelegramMessengerServerOptions> options,
+    IOptionsMonitor<MyTelegramMessengerServerOptions> options,
     ILogger<MediaHelper> logger)
     : IMediaHelper
 {
     public async Task<IEncryptedFile> SaveEncryptedFileAsync(long reqMsgId,
         IInputEncryptedFile encryptedFile)
     {
-        var client = GrpcClientFactory.CreateMediaServiceClient(options.Value.FileServerGrpcServiceUrl);
+        var client = GrpcClientFactory.CreateMediaServiceClient(options.CurrentValue.FileServerGrpcServiceUrl);
         var r = await client
             .SaveEncryptedFileAsync(new SaveEncryptedFileRequest
             {
@@ -36,7 +36,7 @@ public class MediaHelper(
         string name,
         string md5)
     {
-        var client = GrpcClientFactory.CreateMediaServiceClient(options.Value.FileServerGrpcServiceUrl);
+        var client = GrpcClientFactory.CreateMediaServiceClient(options.CurrentValue.FileServerGrpcServiceUrl);
         var r = await client.SavePhotoAsync(new SavePhotoRequest
         {
             FileId = fileId,
@@ -55,7 +55,7 @@ public class MediaHelper(
     {
         try
         {
-            var client = GrpcClientFactory.CreateMediaServiceClient(options.Value.FileServerGrpcServiceUrl);
+            var client = GrpcClientFactory.CreateMediaServiceClient(options.CurrentValue.FileServerGrpcServiceUrl);
             var r = await client.SaveMediaAsync(new SaveMediaRequest
             {
                 Media = ByteString.CopyFrom(media.ToBytes())
@@ -66,7 +66,7 @@ public class MediaHelper(
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Save media failed,serviceUrl={FileServerGrpcServiceUrl}",options.Value.FileServerGrpcServiceUrl);
+            logger.LogError(ex, "Save media failed,serviceUrl={FileServerGrpcServiceUrl}",options.CurrentValue.FileServerGrpcServiceUrl);
             RpcErrors.RpcErrors400.FileIdInvalid.ThrowRpcError();
         }
 

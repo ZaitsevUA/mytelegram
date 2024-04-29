@@ -73,7 +73,7 @@ internal sealed class ForwardMessagesHandler : RpcResultObjectHandler<MyTelegram
         var fromPeer = _peerHelper.GetPeer(obj.FromPeer, input.UserId);
         var toPeer = _peerHelper.GetPeer(obj.ToPeer, input.UserId);
         var sendAs = _peerHelper.GetPeer(obj.SendAs);
-         
+
         var command = new StartForwardMessagesCommand(TempId.New,
             input.ToRequestInfo(),
             obj.Silent,
@@ -89,7 +89,7 @@ internal sealed class ForwardMessagesHandler : RpcResultObjectHandler<MyTelegram
             obj.ScheduleDate,
             sendAs,
             false
-        );
+            );
         await _commandBus.PublishAsync(command);
         return null!;
     }

@@ -51,6 +51,21 @@ public class PhotoConverterLatest : IPhotoConverterLatest
                     Type = s.Type
                 });
             }
+
+            //if (photoReadModel.Sizes.Any(p => p.Type == "a"))
+            //{
+            //    var bytes = File.ReadAllBytes(@"C:\work\t1.jpg").AsSpan();
+            //    var newBytes = bytes[620..^2];
+            //    newBytes[0] = 0x01;
+            //    newBytes[1] = bytes[164];
+            //    newBytes[2] = bytes[166];
+
+            //    photo.Sizes.Add(new TPhotoStrippedSize
+            //    {
+            //        Type = "i",
+            //        Bytes = newBytes.ToArray()
+            //    });
+            //}
         }
 
         if (photoReadModel.VideoSizes?.Count > 0)
@@ -84,6 +99,8 @@ public class PhotoConverterLatest : IPhotoConverterLatest
             DcId = photoReadModel.DcId,
             PhotoId = photoReadModel.PhotoId,
             HasVideo = photoReadModel.VideoSizes?.Count > 0
+            //Personal = 
+            //StrippedThumb = 
         };
     }
 }

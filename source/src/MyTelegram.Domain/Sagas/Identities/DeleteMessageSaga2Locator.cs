@@ -1,4 +1,4 @@
-//namespace MyTelegram.Domain.Sagas.Identities;
+﻿//namespace MyTelegram.Domain.Sagas.Identities;
 
 //public class DeleteMessageSaga2Locator : DefaultSagaLocator<DeleteMessageSaga2, DeleteMessageSaga2Id>
 //{

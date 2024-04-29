@@ -1,4 +1,4 @@
-namespace MyTelegram.Domain.Sagas.States;
+﻿namespace MyTelegram.Domain.Sagas.States;
 
 public class ClearHistoryState : AggregateState<ClearHistorySaga, ClearHistorySagaId, ClearHistoryState>,
     IApply<ClearHistorySagaStartedEvent>,

@@ -162,7 +162,7 @@ public static class Extension
         return new RequestInfo(requestInput.ReqMsgId,
             requestInput.UserId,
             requestInput.AuthKeyId,
-            requestInput.PermAuthKeyId, requestInput.RequestId, requestInput.Layer, requestInput.Date);
+            requestInput.PermAuthKeyId, requestInput.RequestId, requestInput.Layer, requestInput.Date, requestInput.DeviceType);
     }
 
     public static TRpcError ToRpcError(this string rpcErrorMessage, int rpcCode = 400)

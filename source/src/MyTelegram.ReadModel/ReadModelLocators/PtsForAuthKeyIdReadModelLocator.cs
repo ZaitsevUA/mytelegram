@@ -14,8 +14,13 @@ public class PtsForAuthKeyIdReadModelLocator : IPtsForAuthKeyIdReadModelLocator
             //    peerId= ptsAckedEvent.PeerId;
             //    break;
             case PtsUpdatedEvent ptsUpdatedEvent:
-                permAuthKeyId = ptsUpdatedEvent.PermAuthKeyId;
-                peerId = ptsUpdatedEvent.PeerId;
+                permAuthKeyId=ptsUpdatedEvent.PermAuthKeyId;
+                peerId= ptsUpdatedEvent.PeerId;
+                break;
+
+            case QtsUpdatedEvent qtsUpdatedEvent:
+                permAuthKeyId = qtsUpdatedEvent.PermAuthKeyId;
+                peerId = qtsUpdatedEvent.PeerId;
                 break;
         }
 

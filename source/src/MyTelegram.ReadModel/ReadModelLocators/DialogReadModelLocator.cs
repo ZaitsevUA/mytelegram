@@ -1,6 +1,4 @@
-﻿using SendOutboxMessageCompletedEvent = MyTelegram.Domain.Sagas.Events.SendOutboxMessageCompletedEvent;
-
-namespace MyTelegram.ReadModel.ReadModelLocators;
+﻿namespace MyTelegram.ReadModel.ReadModelLocators;
 
 public class DialogReadModelLocator : IDialogReadModelLocator
 {
@@ -19,6 +17,7 @@ public class DialogReadModelLocator : IDialogReadModelLocator
                     yield return DialogId.Create(updateReadChannelOutboxEvent.MessageSenderUserId, PeerType.Channel,
                         updateReadChannelOutboxEvent.ChannelId).Value;
                     break;
+
                 case OutboxMessageCreatedEvent outboxCreatedEvent:
                     //yield return outboxCreatedEvent.DialogId.Value;
                     yield return DialogId.Create(outboxCreatedEvent.RequestInfo.UserId,

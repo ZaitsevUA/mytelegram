@@ -11,6 +11,15 @@ internal sealed class GetPremiumGiftCodeOptionsHandler : RpcResultObjectHandler<
     protected override Task<TVector<MyTelegram.Schema.IPremiumGiftCodeOption>> HandleCoreAsync(IRequestInput input,
         MyTelegram.Schema.Payments.RequestGetPremiumGiftCodeOptions obj)
     {
-        throw new NotImplementedException();
+        return Task.FromResult<TVector<MyTelegram.Schema.IPremiumGiftCodeOption>>(
+            new TVector<IPremiumGiftCodeOption>
+            {
+                new TPremiumGiftCodeOption
+                {
+                    Months=3,
+                    Currency="USD",
+                    Users=1
+                }
+            });
     }
 }

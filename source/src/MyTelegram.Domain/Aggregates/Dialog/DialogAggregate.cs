@@ -207,19 +207,10 @@ public class DialogAggregate : MyInMemorySnapshotAggregateRoot<DialogAggregate, 
         Emit(new PinnedOrderChangedEvent(order));
     }
 
-    public void StartDeleteUserMessages(RequestInfo requestInfo,
-        bool revoke,
-        List<int> messageIds,
-        bool isClearHistory,
-        Guid correlationId)
+    public void StartDeleteUserMessages(RequestInfo requestInfo, bool revoke, List<int> messageIds, bool isClearHistory)
     {
         Specs.AggregateIsCreated.ThrowDomainErrorIfNotSatisfied(this);
-        Emit(new DeleteUserMessagesStartedEvent(requestInfo,
-            revoke,
-            _state.ToPeer.PeerId,
-            messageIds,
-            isClearHistory,
-            correlationId));
+        Emit(new DeleteUserMessagesStartedEvent(requestInfo, revoke, _state.ToPeer.PeerId, messageIds, isClearHistory));
     }
 
     public void TogglePinned(RequestInfo requestInfo,

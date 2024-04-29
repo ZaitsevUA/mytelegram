@@ -1,6 +1,6 @@
 ﻿namespace MyTelegram.Messenger.Services.Impl;
 
-public class PeerSettingsAppService(IQueryProcessor queryProcessor) : IPeerSettingsAppService
+public class PeerSettingsAppService(IQueryProcessor queryProcessor) : IPeerSettingsAppService //, ISingletonDependency
 {
     public async Task<PeerSettings> GetAsync(long userId,
         Peer peer)
@@ -9,6 +9,7 @@ public class PeerSettingsAppService(IQueryProcessor queryProcessor) : IPeerSetti
         {
             return new PeerSettings();
         }
+
         var peerSettingsReadModel = await queryProcessor.ProcessAsync(new GetPeerSettingsQuery(userId, peer.PeerId), default);
         if (peerSettingsReadModel != null)
         {

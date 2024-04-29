@@ -35,24 +35,39 @@ internal sealed class ReadDiscussionHandler : RpcResultObjectHandler<MyTelegram.
         var selfDialogId = DialogId.Create(input.UserId, peer);
 
         var messageReadModel =
-            await _queryProcessor.ProcessAsync(new GetMessageByIdQuery(MessageId.Create(peer.PeerId, obj.MsgId).Value), default);
+            await _queryProcessor.ProcessAsync(new GetMessageByIdQuery(MessageId.Create(peer.PeerId, obj.MsgId).Value));
 
         if (messageReadModel == null)
         {
             RpcErrors.RpcErrors400.MessageIdInvalid.ThrowRpcError();
         }
 
-        //Console.WriteLine($"ReqMsgId={input.ReqMsgId} {input.UserId} ReadDiscussion:{obj.MsgId} {obj.ReadMaxId}");
-        var command = new ReadChannelInboxMessageCommand(
-            selfDialogId,
-            input.ToRequestInfo(),
-            input.UserId,
-            peer.PeerId,
-            obj.ReadMaxId,
-            messageReadModel!.SenderPeerId,
-            obj.MsgId);
-        await _commandBus.PublishAsync(command, CancellationToken.None);
+        var dialogReadModel = await _queryProcessor.ProcessAsync(
+            new GetDialogByIdQuery(DialogId.Create(input.UserId, peer)));
+        if (dialogReadModel == null)
+        {
+            RpcErrors.RpcErrors400.ChannelIdInvalid.ThrowRpcError();
+        }
 
-        return new TBoolTrue();
+        if (dialogReadModel!.ReadInboxMaxId >= obj.ReadMaxId)
+        {
+            return new TBoolFalse();
+        }
+
+        var command = new UpdateReadChannelInboxCommand(selfDialogId, input.ToRequestInfo(),
+            messageReadModel!.SenderUserId, obj.ReadMaxId);
+        await _commandBus.PublishAsync(command);
+
+        //var command = new ReadChannelInboxMessageCommand(
+        //    selfDialogId,
+        //    input.ToRequestInfo(),
+        //    input.UserId,
+        //    peer.PeerId,
+        //    obj.ReadMaxId,
+        //    messageReadModel!.SenderPeerId,
+        //    obj.MsgId);
+        //await _commandBus.PublishAsync(command, CancellationToken.None);
+
+        return null!;
     }
 }

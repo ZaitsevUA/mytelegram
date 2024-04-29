@@ -39,7 +39,8 @@ public class SendAppCodeEventHandler(
                     0,
                     Guid.NewGuid(),
                     MyTelegramServerDomainConsts.Layer,
-                    DateTime.UtcNow.ToTimestamp()
+                    DateTime.UtcNow.ToTimestamp(),
+                    DeviceType.Desktop
                 ),
                 MyTelegramServerDomainConsts.OfficialUserId,
                 new Peer(PeerType.User, domainEvent.AggregateEvent.UserId),

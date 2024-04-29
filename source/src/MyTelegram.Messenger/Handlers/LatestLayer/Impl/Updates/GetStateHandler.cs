@@ -31,26 +31,30 @@ internal sealed class GetStateHandler : RpcResultObjectHandler<MyTelegram.Schema
     {
         if (input.UserId == 0)
         {
+            //RpcErrors.RpcErrors403.UserInvalid.ThrowRpcError();
             RpcErrors.RpcErrors401.AuthKeyInvalid.ThrowRpcError();
         }
+
         //var userId = await GetUidAsync(input);
-        var pts = await _queryProcessor.ProcessAsync(new GetPtsByPeerIdQuery(input.UserId), default);
+        var pts = await _queryProcessor.ProcessAsync(new GetPtsByPeerIdQuery(input.UserId));
         TState state;
         if (pts == null)
         {
             var cachedPts = _ptsHelper.GetCachedPts(input.UserId);
+
             state = new TState
             {
                 Date = DateTime.UtcNow.ToTimestamp(),
                 Pts = cachedPts,
                 Qts = 0,
-                Seq = 0,
+                Seq = 1,
                 UnreadCount = 0,
             };
         }
         else
         {
             state = _objectMapper.Map<IPtsReadModel, TState>(pts);
+            state.Seq = 1;
             var cachedPts = _ptsHelper.GetCachedPts(input.UserId);
             if (cachedPts > 0 && cachedPts != pts.Pts)
             {
@@ -58,7 +62,7 @@ internal sealed class GetStateHandler : RpcResultObjectHandler<MyTelegram.Schema
             }
         }
 
-        _logger.LogInformation("Get state:{@state}", state);
+        _logger.LogInformation("[{UserId}]Get state:{@state}",input.UserId, state);
 
 
         return state;

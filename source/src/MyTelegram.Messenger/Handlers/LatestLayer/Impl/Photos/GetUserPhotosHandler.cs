@@ -3,7 +3,6 @@
 using MyTelegram.Schema.Photos;
 using IPhoto = MyTelegram.Schema.IPhoto;
 
-
 namespace MyTelegram.Handlers.Photos;
 
 ///<summary>
@@ -21,6 +20,8 @@ internal sealed class GetUserPhotosHandler : RpcResultObjectHandler<MyTelegram.S
     protected override Task<MyTelegram.Schema.Photos.IPhotos> HandleCoreAsync(IRequestInput input,
         MyTelegram.Schema.Photos.RequestGetUserPhotos obj)
     {
+        // todo:get user photos
         return Task.FromResult<MyTelegram.Schema.Photos.IPhotos>(new TPhotos { Photos = new TVector<IPhoto>(), Users = new TVector<IUser>() });
+        //throw new NotImplementedException();
     }
 }

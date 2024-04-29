@@ -8,6 +8,5 @@ public class ForwardMessageCommand(
 {
     public long RandomId { get; } = randomId;
 
-
     public RequestInfo RequestInfo { get; } = requestInfo;
 }

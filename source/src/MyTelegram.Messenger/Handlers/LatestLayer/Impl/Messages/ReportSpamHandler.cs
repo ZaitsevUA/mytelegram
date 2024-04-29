@@ -1,5 +1,7 @@
 ﻿// ReSharper disable All
 
+using IBool = MyTelegram.Schema.IBool;
+
 namespace MyTelegram.Handlers.Messages;
 
 ///<summary>
@@ -17,6 +19,6 @@ internal sealed class ReportSpamHandler : RpcResultObjectHandler<MyTelegram.Sche
     protected override Task<IBool> HandleCoreAsync(IRequestInput input,
         MyTelegram.Schema.Messages.RequestReportSpam obj)
     {
-        throw new NotImplementedException();
+        return System.Threading.Tasks.Task.FromResult<IBool>(new TBoolTrue());
     }
 }

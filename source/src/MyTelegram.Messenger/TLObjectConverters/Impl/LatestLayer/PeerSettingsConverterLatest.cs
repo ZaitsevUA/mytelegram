@@ -7,12 +7,15 @@ public class PeerSettingsConverterLatest(IObjectMapper objectMapper) : IPeerSett
 {
     public int Layer => Layers.LayerLatest;
     public int RequestLayer { get; set; }
-    public virtual IPeerSettings ToPeerSettings(long selfUserId, long targetUserId, IPeerSettingsReadModel? readModel, ContactType? contactType)
+
+    public virtual IPeerSettings ToPeerSettings(long selfUserId, long targetUserId, IPeerSettingsReadModel? readModel,
+        ContactType? contactType)
     {
         if (targetUserId == MyTelegramServerDomainConsts.OfficialUserId || selfUserId == targetUserId)
         {
             return new TPeerSettings();
         }
+
         var isContact = contactType == ContactType.Mutual || contactType == ContactType.Unilateral;
 
         var settings = new TPeerSettings

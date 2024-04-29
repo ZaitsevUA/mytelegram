@@ -10,5 +10,7 @@ namespace MyTelegram;
 /// <param name="PermAuthKeyId">Request permanent auth key id</param>
 /// <param name="RequestId">Request id</param>
 /// <param name="Layer">Request layer</param>
+/// <param name="Date">Request date</param>
+/// <param name="DeviceType">Client device type</param>
 /// <param name="AddRequestIdToCache">Add the request id to cache(used by InvokeAfterMsgHandler)</param>
-public record RequestInfo(long ReqMsgId, long UserId, long AuthKeyId, long PermAuthKeyId, Guid RequestId, int Layer, long Date, bool AddRequestIdToCache = true);
+public record RequestInfo(long ReqMsgId, long UserId, long AuthKeyId, long PermAuthKeyId, Guid RequestId, int Layer, long Date, DeviceType DeviceType = DeviceType.Desktop, bool AddRequestIdToCache = true);

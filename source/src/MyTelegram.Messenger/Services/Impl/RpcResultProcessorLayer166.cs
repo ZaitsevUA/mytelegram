@@ -12,7 +12,8 @@ public class RpcResultProcessorLayer166(
 
     public IFound ToFound(SearchContactOutput output, int layer)
     {
-        var userList = layeredUserService.GetConverter(layer).ToUserList(output.SelfUserId, output.UserList, output.PhotoList, output.ContactList, output.PrivacyList);
+        var userList = layeredUserService.GetConverter(layer).ToUserList(output.SelfUserId, output.UserList,
+            output.PhotoList, output.ContactList, output.PrivacyList);
         var peerList = output.UserList.Select(p => (IPeer)new TPeerUser { UserId = p.UserId }).ToList();
         peerList.AddRange(output.MyChannelList.Select(p => (IPeer)new TPeerChannel { ChannelId = p.ChannelId }));
         var otherPeerList = output.ChannelList.Select(p => (IPeer)new TPeerChannel { ChannelId = p.ChannelId });
@@ -42,9 +43,12 @@ public class RpcResultProcessorLayer166(
 
     public IMessages ToMessages(GetMessageOutput output, int layer)
     {
-        var messageList = layeredMessageService.GetConverter(layer).ToMessages(output.MessageList, output.PollList, output.ChosenPollOptions, output.SelfUserId);
-        var userList = layeredUserService.GetConverter(layer).ToUserList(output.SelfUserId, output.UserList, output.PhotoList, output.ContactList, output.PrivacyList);
-        var chatList = layeredChatService.GetConverter(layer).ToChatList(output.SelfUserId, output.ChatList, output.PhotoList).ToList();
+        var messageList = layeredMessageService.GetConverter(layer).ToMessages(output.MessageList, output.PollList,
+            output.ChosenPollOptions, output.SelfUserId);
+        var userList = layeredUserService.GetConverter(layer).ToUserList(output.SelfUserId, output.UserList,
+            output.PhotoList, output.ContactList, output.PrivacyList);
+        var chatList = layeredChatService.GetConverter(layer)
+            .ToChatList(output.SelfUserId, output.ChatList, output.PhotoList).ToList();
         var channelList = layeredChatService.GetConverter(layer).ToChannelList(
             output.SelfUserId,
             output.ChannelList,
@@ -58,7 +62,9 @@ public class RpcResultProcessorLayer166(
         {
             offsetId = messageList.Any() ? messageList.Min(p => p.Id) : 0;
         }
-        if (output.MessageList.Count > 0 && output.MessageList.All(p => p.ToPeerType == PeerType.Channel) && !output.IsSearchGlobal)
+
+        if (output.MessageList.Count > 0 && output.MessageList.All(p => p.ToPeerType == PeerType.Channel) &&
+            !output.IsSearchGlobal)
         {
             //var messageIdList=messageList.Select()
             //var offsetId = output.HasMoreData && messageList.Any() ? messageList.Min(p => p.Id) : 0;
@@ -88,12 +94,12 @@ public class RpcResultProcessorLayer166(
         {
             return new TMessagesSlice
             {
-                Chats = new(chatList),
+                Chats = new TVector<IChat>(chatList),
                 Count = messageList.Count,
                 Inexact = true,
                 NextRate = DateTime.UtcNow.AddSeconds(3).ToTimestamp(),
-                Messages = new(messageList),
-                Users = new(userList),
+                Messages = new TVector<IMessage>(messageList),
+                Users = new TVector<IUser>(userList),
                 OffsetIdOffset = offsetId
             };
         }
@@ -106,9 +112,10 @@ public class RpcResultProcessorLayer166(
         };
     }
 
-    protected virtual IMessages ToChannelMessages(IEnumerable<IChat> chats, IList<IMessage> messages, IEnumerable<IUser> users, int channelPts, int offsetIdOffset)
+    protected virtual IMessages ToChannelMessages(IEnumerable<IChat> chats, IList<IMessage> messages,
+        IEnumerable<IUser> users, int channelPts, int offsetIdOffset)
     {
-        return new Schema.Messages.TChannelMessages
+        return new TChannelMessages
         {
             Chats = new TVector<IChat>(chats),
             Messages = new TVector<IMessage>(messages),
@@ -116,7 +123,7 @@ public class RpcResultProcessorLayer166(
             Pts = channelPts,
             Count = messages.Count,
             OffsetIdOffset = offsetIdOffset,
-            Topics = new()
+            Topics = new TVector<IForumTopic>()
         };
     }
 }

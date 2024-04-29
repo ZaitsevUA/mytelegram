@@ -40,13 +40,12 @@ internal sealed class SendMultiMediaHandler : RpcResultObjectHandler<MyTelegram.
     private readonly IPeerHelper _peerHelper;
     private readonly IRandomHelper _randomHelper;
     private readonly IAccessHashHelper _accessHashHelper;
-
     public SendMultiMediaHandler(IMessageAppService messageAppService,
-    IMediaHelper mediaHelper,
-    //IRequestCacheAppService requestCacheAppService,
-    IPeerHelper peerHelper,
-    IRandomHelper randomHelper,
-    IAccessHashHelper accessHashHelper)
+        IMediaHelper mediaHelper,
+        //IRequestCacheAppService requestCacheAppService,
+        IPeerHelper peerHelper,
+        IRandomHelper randomHelper,
+        IAccessHashHelper accessHashHelper)
     {
         _messageAppService = messageAppService;
         _mediaHelper = mediaHelper;
@@ -57,7 +56,7 @@ internal sealed class SendMultiMediaHandler : RpcResultObjectHandler<MyTelegram.
     }
 
     protected override async Task<IUpdates> HandleCoreAsync(IRequestInput input,
-        MyTelegram.Schema.Messages.RequestSendMultiMedia obj)
+        RequestSendMultiMedia obj)
     {
         await _accessHashHelper.CheckAccessHashAsync(obj.Peer);
         await _accessHashHelper.CheckAccessHashAsync(obj.SendAs);
@@ -73,6 +72,7 @@ internal sealed class SendMultiMediaHandler : RpcResultObjectHandler<MyTelegram.
             topMsgId = replyToMessage.TopMsgId;
         }
 
+        var sendAs = _peerHelper.GetPeer(obj.SendAs, input.UserId);
         foreach (var inputSingleMedia in obj.MultiMedia)
         {
             var media = await _mediaHelper.SaveMediaAsync(inputSingleMedia.Media);
@@ -85,12 +85,13 @@ internal sealed class SendMultiMediaHandler : RpcResultObjectHandler<MyTelegram.
                 entities: inputSingleMedia.Entities,
                 media: media.ToBytes(),
                 //replyToMsgId: replyToMsgId,
-                inputReplyTo:obj.ReplyTo,
+                inputReplyTo: obj.ReplyTo,
                 sendMessageType: SendMessageType.Media,
                 messageType: _mediaHelper.GeMessageType(media),
                 groupId: groupId,
                 groupItemCount: groupItemCount,
-                topMsgId: topMsgId
+                topMsgId: topMsgId,
+                sendAs: sendAs
             );
             await _messageAppService.SendMessageAsync(sendMessageInput);
             //_requestCacheAppService.AddRequest(input.ReqMsgId, input.AuthKeyId, input.RequestSessionId, input.SeqNumber);

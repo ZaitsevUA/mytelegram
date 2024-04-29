@@ -72,7 +72,7 @@ internal sealed class EditMessageHandler : RpcResultObjectHandler<MyTelegram.Sch
                 await _accessHashHelper.CheckAccessHashAsync(inputPeerChannel.ChannelId, inputPeerChannel.AccessHash);
                 break;
             case TInputPeerChat inputPeerChat:
-                chatReadModel = await _queryProcessor.ProcessAsync(new GetChatByChatIdQuery(inputPeerChat.ChatId), default);
+                chatReadModel = await _queryProcessor.ProcessAsync(new GetChatByChatIdQuery(inputPeerChat.ChatId));
                 break;
             case TInputPeerUser inputPeerUser:
                 await _accessHashHelper.CheckAccessHashAsync(inputPeerUser.UserId, inputPeerUser.AccessHash);

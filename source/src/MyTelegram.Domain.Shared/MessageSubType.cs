@@ -20,5 +20,6 @@ public enum MessageSubType
     CreateChannelForumTopic = 14,
     EditForumTopic = 15,
     MigrateChat = 16,
-    EditChannelPhoto = 17
+    EditChannelPhoto = 17,
+    AutoCreateChannelFromChat= 18,
 }

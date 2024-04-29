@@ -27,11 +27,7 @@ internal sealed class TranslateTextHandler : RpcResultObjectHandler<MyTelegram.S
                     $"The external translation API is not configured for MyTelegram,and the text will not be translated,ToLang:{obj.ToLang}"
             }).ToList() ?? new List<TTextWithEntities>())
         };
-
+        
         return Task.FromResult<ITranslatedText>(r);
-        //return new TTranslateResultText
-        //{
-        //    Text=$"The external translation API is not configured,ToLang:{obj.ToLang} Original text:{obj.Text}"
-        //};
     }
 }

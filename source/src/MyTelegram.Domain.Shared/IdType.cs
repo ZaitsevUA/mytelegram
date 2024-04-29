@@ -23,4 +23,5 @@ public enum IdType
     GlobalSeqNo = 18,
     NextHiLoHighValue = 19,
     InviteId = 20,
+    SecretChatId= 21,
 }

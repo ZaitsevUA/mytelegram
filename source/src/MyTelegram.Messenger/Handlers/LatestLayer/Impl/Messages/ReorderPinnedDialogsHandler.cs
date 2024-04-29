@@ -36,15 +36,15 @@ internal sealed class ReorderPinnedDialogsHandler : RpcResultObjectHandler<MyTel
                     await _accessHashHelper.CheckAccessHashAsync(inputDialogPeer1.Peer);
                     peerList.Add(_peerHelper.GetPeer(inputDialogPeer1.Peer, input.UserId));
                     break;
-                //case TInputDialogPeerFolder inputDialogPeerFolder:
-                //    break;
-                //default:
-                //    throw new ArgumentOutOfRangeException(nameof(inputDialogPeer));
+                    //case TInputDialogPeerFolder inputDialogPeerFolder:
+                    //    break;
+                    //default:
+                    //    throw new ArgumentOutOfRangeException(nameof(inputDialogPeer));
             }
         }
 
         await _dialogAppService.ReorderPinnedDialogsAsync(new ReorderPinnedDialogsInput(input.UserId, peerList))
-            ;
+     ;
         return new TBoolTrue();
     }
 }

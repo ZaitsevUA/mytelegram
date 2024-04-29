@@ -127,10 +127,10 @@ internal sealed class SendMediaHandler : RpcResultObjectHandler<MyTelegram.Schem
         if (needCheckAudioMessagePrivacy && obj.Peer is TInputPeerUser inputPeerUser)
         {
             await _privacyAppService.ApplyPrivacyAsync(input.UserId, inputPeerUser.UserId, () =>
-            {
-                //ThrowHelper.ThrowUserFriendlyException(RpcErrorMessages.ChatSendVoicesForbidden);
-                RpcErrors.RpcErrors403.ChatSendVoicesForbidden.ThrowRpcError();
-            },
+                {
+                    //ThrowHelper.ThrowUserFriendlyException(RpcErrorMessages.ChatSendVoicesForbidden);
+                    RpcErrors.RpcErrors403.ChatSendVoicesForbidden.ThrowRpcError();
+                },
                 new List<PrivacyType>
                 {
                     PrivacyType.VoiceMessages
@@ -169,7 +169,8 @@ internal sealed class SendMediaHandler : RpcResultObjectHandler<MyTelegram.Schem
             sendMessageType: SendMessageType.Media,
             messageType: _mediaHelper.GeMessageType(media),
             pollId: pollId,
-            topMsgId: topMsgId
+            topMsgId: topMsgId,
+            sendAs: _peerHelper.GetPeer(obj.SendAs, input.UserId)
         );
         await _messageAppService.SendMessageAsync(sendMessageInput);
 

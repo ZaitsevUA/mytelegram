@@ -18,6 +18,6 @@ internal sealed class ReportSpamHandler : RpcResultObjectHandler<MyTelegram.Sche
     protected override Task<IBool> HandleCoreAsync(IRequestInput input,
         MyTelegram.Schema.Channels.RequestReportSpam obj)
     {
-        throw new NotImplementedException();
+        return System.Threading.Tasks.Task.FromResult<IBool>(new TBoolTrue());
     }
 }

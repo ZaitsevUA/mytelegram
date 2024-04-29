@@ -42,7 +42,6 @@ public class InviteToChannelSaga :
             );
             Publish(createDialogCommand);
 
-            Console.WriteLine($"Create dialog:owner={domainEvent.AggregateEvent.UserId} toPeer:{toPeer}");
         }
 
         await HandleInviteToChannelCompletedAsync();

@@ -49,7 +49,7 @@ internal sealed class GetFullChatHandler : RpcResultObjectHandler<MyTelegram.Sch
                     var channelFull = await _queryProcessor.ProcessAsync(new GetChannelFullByIdQuery(obj.ChatId),
                         CancellationToken.None);
                     var migratedFromChatReadModel = channelFull!.MigratedFromChatId == null ? null :
-                        await _queryProcessor.ProcessAsync(new GetChatByChatIdQuery(channelFull.MigratedFromChatId.Value), default);
+                        await _queryProcessor.ProcessAsync(new GetChatByChatIdQuery(channelFull.MigratedFromChatId.Value));
 
 
                     var channelMember = await _queryProcessor
@@ -85,7 +85,7 @@ internal sealed class GetFullChatHandler : RpcResultObjectHandler<MyTelegram.Sch
                     }
 
                     var migrateToChannelReadModel = chat!.MigrateToChannelId.HasValue
-                        ? await _queryProcessor.ProcessAsync(new GetChannelByIdQuery(chat.MigrateToChannelId.Value),default)
+                        ? await _queryProcessor.ProcessAsync(new GetChannelByIdQuery(chat.MigrateToChannelId.Value))
                         : null;
 
                     var userList = chat!.IsDeleted ? Array.Empty<IUserReadModel>() : await _queryProcessor

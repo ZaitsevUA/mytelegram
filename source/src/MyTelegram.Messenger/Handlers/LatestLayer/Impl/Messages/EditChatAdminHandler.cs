@@ -15,9 +15,32 @@ namespace MyTelegram.Handlers.Messages;
 internal sealed class EditChatAdminHandler : RpcResultObjectHandler<MyTelegram.Schema.Messages.RequestEditChatAdmin, IBool>,
     Messages.IEditChatAdminHandler
 {
-    protected override Task<IBool> HandleCoreAsync(IRequestInput input,
-        MyTelegram.Schema.Messages.RequestEditChatAdmin obj)
+    private readonly ICommandBus _commandBus;
+    private readonly IPeerHelper _peerHelper;
+
+    public EditChatAdminHandler(ICommandBus commandBus, IPeerHelper peerHelper)
     {
-        throw new NotImplementedException();
+        _commandBus = commandBus;
+        _peerHelper = peerHelper;
+    }
+
+    protected override async Task<IBool> HandleCoreAsync(IRequestInput input,
+        RequestEditChatAdmin obj)
+    {
+        var peer = _peerHelper.GetPeer(obj.UserId);
+        var isBot = _peerHelper.IsBotUser(peer.PeerId);
+        var command = new EditChatAdminCommand(ChatId.Create(obj.ChatId), input.ToRequestInfo(),
+            input.UserId,
+            false,
+            peer.PeerId,
+            isBot,
+            new ChatAdminRights(true, true, true, true, true, true, true, false, true, true, true, true, true, true, true),
+            string.Empty,
+            CurrentDate
+        );
+
+        await _commandBus.PublishAsync(command, default);
+
+        return new TBoolTrue();
     }
 }

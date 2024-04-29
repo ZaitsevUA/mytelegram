@@ -22,7 +22,7 @@ internal sealed class GetDialogFiltersHandler : RpcResultObjectHandler<MyTelegra
         RequestGetDialogFilters obj)
     {
         var filterReadModels = await _queryProcessor.ProcessAsync(new GetDialogFiltersQuery(input.UserId), default)
-            ;
+     ;
 
         var filters = new TVector<IDialogFilter>();
         foreach (var filterReadModel in filterReadModels)

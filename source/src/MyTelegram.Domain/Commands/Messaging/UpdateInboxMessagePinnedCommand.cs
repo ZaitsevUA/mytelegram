@@ -7,10 +7,12 @@ public class UpdateInboxMessagePinnedCommand(
     bool pmOneSize,
     bool silent,
     int date)
-    : RequestCommand2<MessageAggregate, MessageId, IExecutionResult>(aggregateId, requestInfo)
+    : Command<MessageAggregate, MessageId, IExecutionResult>(aggregateId), IHasRequestInfo
 {
     public bool Pinned { get; } = pinned;
     public bool PmOneSize { get; } = pmOneSize;
     public bool Silent { get; } = silent;
     public int Date { get; } = date;
+
+    public RequestInfo RequestInfo { get; } = requestInfo;
 }

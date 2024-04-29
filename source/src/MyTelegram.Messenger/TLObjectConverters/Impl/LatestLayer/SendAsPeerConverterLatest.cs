@@ -18,8 +18,8 @@ public class SendAsPeerConverterLatest : ISendAsPeerConverterLatest
                     ChannelId = p.Id
                 }
             })),
-            Chats = new(),
-            Users = new(),
+            Chats = [],
+            Users = []
         };
 
         return sendAsPeers;

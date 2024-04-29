@@ -12,6 +12,6 @@ public interface IHashHelper
     byte[] Sha1(ReadOnlySpan<byte> source);
 
     byte[] Sha256(ReadOnlySpan<byte> source);
-
+    byte[] Sha256(byte[] inputBuffer1, byte[] inputBuffer2);
     byte[] Sha512(ReadOnlySpan<byte> source);
 }

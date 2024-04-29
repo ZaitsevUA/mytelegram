@@ -10,3 +10,4 @@ public class ClearDraftCommandHandler : CommandHandler<DialogAggregate, DialogId
         return Task.CompletedTask;
     }
 }
+

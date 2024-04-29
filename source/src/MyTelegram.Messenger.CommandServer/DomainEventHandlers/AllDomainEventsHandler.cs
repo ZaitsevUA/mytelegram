@@ -15,7 +15,7 @@ public class AllDomainEventsHandler(
                 var totalMilliseconds = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() - requestInfo.RequestInfo.Date;
                 if (totalMilliseconds > 500)
                 {
-                    logger.LogInformation("Process domain event '{DomainEvent}' is too slow,time={Timespan}ms,reqMsgId={ReqMsgId}",
+                    logger.LogDebug("Process domain event '{DomainEvent}' is too slow,time={Timespan}ms,reqMsgId={ReqMsgId}",
                         domainEvent.GetAggregateEvent().GetType().Name,
                         totalMilliseconds,
                         requestInfo.RequestInfo.ReqMsgId);

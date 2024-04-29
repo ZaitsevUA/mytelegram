@@ -8,7 +8,7 @@ namespace MyTelegram.Schema.LayerN;
 /// See <a href="https://corefork.telegram.org/constructor/phoneCallProtocol" />
 ///</summary>
 [TlObject(0xa2bb35cb)]
-public sealed class TPhoneCallProtocol : IObject
+public sealed class TPhoneCallProtocolLayerN : IPhoneCallProtocol
 {
     public uint ConstructorId => 0xa2bb35cb;
     ///<summary>
@@ -37,6 +37,7 @@ public sealed class TPhoneCallProtocol : IObject
     /// Maximum layer for remote libtgvoip
     ///</summary>
     public int MaxLayer { get; set; }
+    public TVector<string> LibraryVersions { get; set; }
 
     public void ComputeFlag()
     {

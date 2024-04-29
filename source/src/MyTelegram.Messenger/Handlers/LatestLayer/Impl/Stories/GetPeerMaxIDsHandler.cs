@@ -8,9 +8,16 @@ namespace MyTelegram.Handlers.Stories;
 internal sealed class GetPeerMaxIDsHandler : RpcResultObjectHandler<MyTelegram.Schema.Stories.RequestGetPeerMaxIDs, TVector<int>>,
     Stories.IGetPeerMaxIDsHandler
 {
+    private readonly ILogger<GetPeerMaxIDsHandler> _logger;
+
+    public GetPeerMaxIDsHandler(ILogger<GetPeerMaxIDsHandler> logger)
+    {
+        _logger = logger;
+    }
+
     protected override Task<TVector<int>> HandleCoreAsync(IRequestInput input,
         MyTelegram.Schema.Stories.RequestGetPeerMaxIDs obj)
     {
-        return Task.FromResult(new TVector<int>());
+        return Task.FromResult(new TVector<int>(obj.Id.Select(p => 0)));
     }
 }

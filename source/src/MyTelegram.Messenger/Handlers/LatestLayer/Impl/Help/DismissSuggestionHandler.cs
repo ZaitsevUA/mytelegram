@@ -12,6 +12,6 @@ internal sealed class DismissSuggestionHandler : RpcResultObjectHandler<MyTelegr
     protected override Task<IBool> HandleCoreAsync(IRequestInput input,
         MyTelegram.Schema.Help.RequestDismissSuggestion obj)
     {
-        throw new NotImplementedException();
+        return System.Threading.Tasks.Task.FromResult<IBool>(new TBoolTrue());
     }
 }

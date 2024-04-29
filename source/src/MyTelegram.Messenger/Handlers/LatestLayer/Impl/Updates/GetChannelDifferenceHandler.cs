@@ -1,7 +1,5 @@
 ﻿// ReSharper disable All
 
-using Microsoft.Extensions.Logging;
-
 namespace MyTelegram.Handlers.Updates;
 
 ///<summary>
@@ -53,14 +51,17 @@ internal sealed class GetChannelDifferenceHandler : RpcResultObjectHandler<MyTel
         await _accessHashHelper.CheckAccessHashAsync(obj.Channel);
         if (obj.Channel is TInputChannel inputChannel)
         {
+            // Console.WriteLine($"[{input.UserId}]get channel difference:{inputChannel.ChannelId} pts:{obj.Pts}");
+
             var isChannelMember = true;
             var channelMemberReadModel = await _queryProcessor
-                .ProcessAsync(new GetChannelMemberByUserIdQuery(inputChannel.ChannelId, input.UserId), default)
+                .ProcessAsync(new GetChannelMemberByUserIdQuery(inputChannel.ChannelId, input.UserId))
          ;
             isChannelMember = channelMemberReadModel != null;
 
             if (channelMemberReadModel != null && channelMemberReadModel.Kicked)
             {
+                //ThrowHelper.ThrowUserFriendlyException("CHANNEL_PUBLIC_GROUP_NA");
                 RpcErrors.RpcErrors403.ChannelPublicGroupNa.ThrowRpcError();
             }
 
@@ -72,7 +73,10 @@ internal sealed class GetChannelDifferenceHandler : RpcResultObjectHandler<MyTel
             //    pts = 0;
             //}
             var updatesReadModels = await _queryProcessor
-                .ProcessAsync(new GetUpdatesQuery(input.UserId, inputChannel.ChannelId, pts, 0, limit), default);
+                .ProcessAsync(new GetUpdatesQuery(input.UserId, inputChannel.ChannelId, pts, 0, limit));
+
+            //Console.WriteLine($"=============== {input.UserId} {inputChannel.ChannelId}   updates:{updatesReadModels.Count}  pts:{obj.Pts}");
+            //_logger.LogWarning("##### GetChannelDifferenceHandler:{UserId}  channelId={ChannelId} pts={Pts}  updates count={Count}", input.UserId, inputChannel.ChannelId, obj.Pts, updatesReadModels.Count);
 
             var messageIds = updatesReadModels.Where(p => p.UpdatesType == UpdatesType.NewMessages)
                  .Select(p => p.MessageId ?? 0)
@@ -102,7 +106,7 @@ internal sealed class GetChannelDifferenceHandler : RpcResultObjectHandler<MyTel
 
             var allUpdateList = updatesReadModels.Where(p => p.UpdatesType == UpdatesType.Updates)
                 .SelectMany(p => p.Updates ?? new List<IUpdate>(0)).ToList();
-            //_logger.LogInformation("Get channelDifference:updatesCount={Count} {@Input} {@Data},fromPts={Pts} channel updates count={Count}", updatesReadModels.Count, input, new { }, obj.Pts, updatesReadModels.Count);
+            //_logger.LogInformation("Get channelDifference:updatesCount={Count} {@Input} {@Data},fromPts={Pts} channel updates count={Count}", updatesReadModels.Count, input, allUpdateList, obj.Pts, updatesReadModels.Count);
             return _layeredService.GetConverter(input.Layer).ToChannelDifference(dto, isChannelMember, allUpdateList, maxPts);
         }
 

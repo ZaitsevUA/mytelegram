@@ -8,5 +8,4 @@ public record PushMessageToPeerEvent(
     long ExcludeUid,
     long OnlySendToThisAuthKeyId,
     int Pts,
-    PtsType PtsType,
     long GlobalSeqNo) : ISessionMessage;

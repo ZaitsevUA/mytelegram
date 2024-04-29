@@ -1,4 +1,4 @@
-//namespace MyTelegram.Domain.Sagas.States;
+﻿//namespace MyTelegram.Domain.Sagas.States;
 
 //public class DeleteMessageSaga2State : AggregateState<DeleteMessageSaga2, DeleteMessageSaga2Id, DeleteMessageSaga2State>,
 //    IApply<DeleteMessageSaga2StartedEvent>,

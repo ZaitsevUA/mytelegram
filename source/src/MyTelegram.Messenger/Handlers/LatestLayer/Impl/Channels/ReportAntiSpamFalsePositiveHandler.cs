@@ -12,6 +12,6 @@ internal sealed class ReportAntiSpamFalsePositiveHandler : RpcResultObjectHandle
     protected override Task<IBool> HandleCoreAsync(IRequestInput input,
         MyTelegram.Schema.Channels.RequestReportAntiSpamFalsePositive obj)
     {
-        throw new NotImplementedException();
+        return Task.FromResult<IBool>(new TBoolTrue());
     }
 }

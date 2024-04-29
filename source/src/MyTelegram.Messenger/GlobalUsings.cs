@@ -21,6 +21,7 @@ global using MyTelegram.Domain.Aggregates.Dialog;
 global using MyTelegram.Domain.Aggregates.Messaging;
 global using MyTelegram.Domain.Aggregates.PeerNotifySettings;
 global using MyTelegram.Domain.Aggregates.PeerSettings;
+global using MyTelegram.Domain.Aggregates.Pts;
 global using MyTelegram.Domain.Aggregates.Poll;
 global using MyTelegram.Domain.Aggregates.PushDevice;
 global using MyTelegram.Domain.Aggregates.QrCode;

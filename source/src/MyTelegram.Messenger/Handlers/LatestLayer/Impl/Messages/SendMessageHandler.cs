@@ -72,9 +72,11 @@ internal sealed class SendMessageHandler : RpcResultObjectHandler<MyTelegram.Sch
         _queryProcessor = queryProcessor;
     }
 
-    protected override async Task<MyTelegram.Schema.IUpdates> HandleCoreAsync(IRequestInput input,
-        MyTelegram.Schema.Messages.RequestSendMessage obj)
+    protected override async Task<IUpdates> HandleCoreAsync(IRequestInput input,
+        RequestSendMessage obj)
     {
+        await _accessHashHelper.CheckAccessHashAsync(obj.Peer);
+        await _accessHashHelper.CheckAccessHashAsync(obj.SendAs);
         var media = await ProcessUrlsInMessageAsync(obj);
         if (obj.Message.StartsWith("/"))
         {
@@ -97,7 +99,7 @@ internal sealed class SendMessageHandler : RpcResultObjectHandler<MyTelegram.Sch
             topMsgId = replyToMessage.TopMsgId;
         }
 
-        //await Task.Delay(TimeSpan.FromMilliseconds(1200));
+        var sendAs = _peerHelper.GetPeer(obj.SendAs, input.UserId);
         var sendMessageInput = new SendMessageInput(input.ToRequestInfo(),
             input.UserId,
             _peerHelper.GetPeer(obj.Peer, input.UserId),
@@ -108,14 +110,14 @@ internal sealed class SendMessageHandler : RpcResultObjectHandler<MyTelegram.Sch
             obj.ReplyTo,
             obj.ClearDraft,
             media: media.ToBytes(),
-            topMsgId: topMsgId
+            topMsgId: topMsgId,
+            sendAs: sendAs
         );
 
         await _messageAppService.SendMessageAsync(sendMessageInput);
 
         return null!;
     }
-
     private async Task<TMessageMediaWebPage?> ProcessUrlsInMessageAsync(MyTelegram.Schema.Messages.RequestSendMessage obj)
     {
         var pattern = @"(?:^|\s)(https?://[^\s]+)(?=\s|$)";
@@ -129,25 +131,23 @@ internal sealed class SendMessageHandler : RpcResultObjectHandler<MyTelegram.Sch
             {
                 obj.Entities = new();
             }
-
             var url = match.Groups[1].Value;
             var m2 = Regex.Match(url, pattern2);
             if (m2.Success && !isInviteUrlAdded)
             {
                 var link = m2.Groups[1].Value;
-                var chatInvite = await _queryProcessor.ProcessAsync(new GetChatInviteByLinkQuery(link), default);
+                var chatInvite = await _queryProcessor.ProcessAsync(new GetChatInviteByLinkQuery(link));
                 if (chatInvite != null)
                 {
                     var channelReadModel =
-                        await _queryProcessor.ProcessAsync(new GetChannelByIdQuery(chatInvite.PeerId), default);
+                        await _queryProcessor.ProcessAsync(new GetChannelByIdQuery(chatInvite.PeerId));
                     media = new TMessageMediaWebPage
                     {
-                        Webpage = new MyTelegram.Schema.TWebPage
+                        Webpage = new Schema.TWebPage
                         {
                             Id = Random.Shared.NextInt64(),
                             Url = $"{_options.Value.JoinChatDomain}/+{link}",
                             DisplayUrl = $"{_options.Value.JoinChatDomain}/+{link}",
-                            //Type = "telegram_megagroup",
                             Type = channelReadModel.Broadcast ? "telegram_channel" : "telegram_megagroup",
                             SiteName = "MyTelegram",
                             Title = channelReadModel.Title,
@@ -157,14 +157,12 @@ internal sealed class SendMessageHandler : RpcResultObjectHandler<MyTelegram.Sch
                     isInviteUrlAdded = true;
                 }
             }
-
             obj.Entities.Add(new TMessageEntityUrl
             {
                 Offset = match.Groups[1].Index,
                 Length = match.Groups[1].Value.Length,
             });
         }
-
         return media;
     }
 }

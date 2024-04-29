@@ -103,4 +103,7 @@ public class OffsetHelper : IOffsetHelper
 
         return LoadType.Forward;
     }
+
+    //private static LoadType GetOffsetLoadType(GetPagedListInput input) =>
+    //    GetOffsetLoadType(input.Limit, input.AddOffset, input.MaxId);
 }

@@ -1,4 +1,4 @@
-using EncryptedMessageResponse = MyTelegram.MTProto.EncryptedMessageResponse;
+﻿using EncryptedMessageResponse = MyTelegram.MTProto.EncryptedMessageResponse;
 
 namespace MyTelegram.GatewayServer.EventHandlers;
 

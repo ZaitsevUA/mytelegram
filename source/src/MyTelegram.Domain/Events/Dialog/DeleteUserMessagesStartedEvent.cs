@@ -5,13 +5,11 @@ public class DeleteUserMessagesStartedEvent(
     bool revoke,
     long toUserId,
     List<int> messageIds,
-    bool isClearHistory,
-    Guid correlationId)
-    : RequestAggregateEvent2<DialogAggregate, DialogId>(requestInfo), IHasCorrelationId
+    bool isClearHistory)
+    : RequestAggregateEvent2<DialogAggregate, DialogId>(requestInfo)
 {
     public bool Revoke { get; } = revoke;
     public long ToUserId { get; } = toUserId;
     public List<int> MessageIds { get; } = messageIds;
     public bool IsClearHistory { get; } = isClearHistory;
-    public Guid CorrelationId { get; } = correlationId;
 }

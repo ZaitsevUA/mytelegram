@@ -1,5 +1,8 @@
 ﻿// ReSharper disable All
 
+using MyTelegram.Schema;
+using MyTelegram.Schema;
+
 namespace MyTelegram.Handlers.Photos;
 
 ///<summary>
@@ -12,9 +15,76 @@ namespace MyTelegram.Handlers.Photos;
 internal sealed class UploadContactProfilePhotoHandler : RpcResultObjectHandler<MyTelegram.Schema.Photos.RequestUploadContactProfilePhoto, MyTelegram.Schema.Photos.IPhoto>,
     Photos.IUploadContactProfilePhotoHandler
 {
-    protected override Task<MyTelegram.Schema.Photos.IPhoto> HandleCoreAsync(IRequestInput input,
+    private readonly ICommandBus _commandBus;
+    private readonly IMediaHelper _mediaHelper;
+    private readonly IPeerHelper _peerHelper;
+
+    public UploadContactProfilePhotoHandler(ICommandBus commandBus, IMediaHelper mediaHelper, IPeerHelper peerHelper)
+    {
+        _commandBus = commandBus;
+        _mediaHelper = mediaHelper;
+        _peerHelper = peerHelper;
+    }
+
+    protected override async Task<MyTelegram.Schema.Photos.IPhoto> HandleCoreAsync(IRequestInput input,
         MyTelegram.Schema.Photos.RequestUploadContactProfilePhoto obj)
     {
-        throw new NotImplementedException();
+        var file = obj.File ?? obj.Video;
+        var md5 = string.Empty;
+        switch (file)
+        {
+            case TInputFile inputFile:
+                md5 = inputFile.Md5Checksum;
+                break;
+            case TInputFileBig inputFileBig:
+                break;
+        }
+
+        VideoSizeEmojiMarkup? videoSizeEmojiMarkup = null;
+        if (obj.VideoEmojiMarkup != null)
+        {
+            switch (obj.VideoEmojiMarkup)
+            {
+                case TVideoSizeEmojiMarkup videoSizeEmojiMarkup1:
+                    videoSizeEmojiMarkup = new VideoSizeEmojiMarkup(videoSizeEmojiMarkup1.EmojiId,
+                        videoSizeEmojiMarkup1.BackgroundColors.ToList());
+                    break;
+            }
+        }
+
+        var photoId = 0L;
+        IPhoto? photo = null;
+        if (file != null)
+        {
+            var r = file == null
+                ? null
+                : await _mediaHelper.SavePhotoAsync(input.ReqMsgId,
+                    file?.Id ?? 0,
+                    obj.Video != null,
+                    obj.VideoStartTs,
+                    file?.Parts ?? 0,
+                    file?.Name ?? string.Empty,
+                    md5 ?? string.Empty);
+            photoId = r.PhotoId;
+            photo = r.Photo;
+        }
+
+        var peer = _peerHelper.GetPeer(obj.UserId);
+        var command = new UpdateContactProfilePhotoCommand(
+            ContactId.Create(input.UserId, peer.PeerId),
+            input.ToRequestInfo(),
+            input.UserId,
+            peer.PeerId,
+            photoId,
+            obj.Suggest,
+            !obj.Suggest ? null : new TMessageActionSuggestProfilePhoto
+            {
+                Photo = photo
+            }.ToBytes().ToHexString()
+        );
+
+        await _commandBus.PublishAsync(command, default);
+
+        return null!;
     }
 }

@@ -49,6 +49,7 @@ internal sealed class GetRepliesHandler : RpcResultObjectHandler<MyTelegram.Sche
             MinDate = obj.OffsetDate,
             SelfUserId = input.UserId
         });
+        //return _rpcResultProcessor.ToMessages(r, input.Layer);
         return _layeredService.GetConverter(input.Layer).ToMessages(r, input.Layer);
     }
 }

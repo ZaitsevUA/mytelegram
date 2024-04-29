@@ -14,9 +14,51 @@ namespace MyTelegram.Handlers.Messages;
 internal sealed class DeleteExportedChatInviteHandler : RpcResultObjectHandler<MyTelegram.Schema.Messages.RequestDeleteExportedChatInvite, IBool>,
     Messages.IDeleteExportedChatInviteHandler
 {
-    protected override Task<IBool> HandleCoreAsync(IRequestInput input,
-        MyTelegram.Schema.Messages.RequestDeleteExportedChatInvite obj)
+    private readonly IQueryProcessor _queryProcessor;
+    private readonly IAccessHashHelper _accessHashHelper;
+    private readonly ICommandBus _commandBus;
+    private readonly IChannelAdminRightsChecker _channelAdminRightsChecker;
+    private readonly IChatInviteLinkHelper _chatInviteLinkHelper;
+    public DeleteExportedChatInviteHandler(IQueryProcessor queryProcessor, IAccessHashHelper accessHashHelper, ICommandBus commandBus, IChannelAdminRightsChecker channelAdminRightsChecker, IChatInviteLinkHelper chatInviteLinkHelper)
     {
-        throw new NotImplementedException();
+        _queryProcessor = queryProcessor;
+        _accessHashHelper = accessHashHelper;
+        _commandBus = commandBus;
+        _channelAdminRightsChecker = channelAdminRightsChecker;
+        _chatInviteLinkHelper = chatInviteLinkHelper;
+    }
+
+    protected override async Task<IBool> HandleCoreAsync(IRequestInput input,
+        RequestDeleteExportedChatInvite obj)
+    {
+        switch (obj.Peer)
+        {
+            case TInputPeerChannel inputPeerChannel:
+                {
+                    var link = _chatInviteLinkHelper.GetHashFromLink(obj.Link);
+                    await _accessHashHelper.CheckAccessHashAsync(inputPeerChannel);
+                    var chatInviteReadModel = await _queryProcessor.ProcessAsync(new GetChatInviteQuery(inputPeerChannel.ChannelId, link));
+                    if (chatInviteReadModel == null)
+                    {
+                        RpcErrors.RpcErrors400.PeerIdInvalid.ThrowRpcError();
+                    }
+
+                    await _channelAdminRightsChecker.CheckAdminRightAsync(inputPeerChannel.ChannelId, input.UserId,
+                        (p) => p.AdminRights.ChangeInfo, RpcErrors.RpcErrors403.ChatAdminRequired);
+
+                    var command = new DeleteExportedInviteCommand(
+                        ChatInviteId.Create(inputPeerChannel.ChannelId, chatInviteReadModel!.InviteId),
+                        input.ToRequestInfo());
+                    await _commandBus.PublishAsync(command, default);
+                }
+                break;
+
+            case TInputPeerChat inputPeerChat:
+                break;
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
+
+        return new TBoolTrue();
     }
 }

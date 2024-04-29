@@ -72,6 +72,7 @@ public class AuthorizationConverterLatest(IObjectMapper objectMapper) : IAuthori
     {
         return ToWebAuthorization(deviceReadModel, -1);
     }
+
     public virtual IReadOnlyList<IWebAuthorization> ToWebAuthorizations(
         IReadOnlyCollection<IDeviceReadModel> deviceList,
         long selfPermAuthKeyId)
@@ -84,6 +85,7 @@ public class AuthorizationConverterLatest(IObjectMapper objectMapper) : IAuthori
 
         return authList;
     }
+
     private Schema.IAuthorization ToAuthorization(IDeviceReadModel deviceReadModel,
         long selfPermAuthKeyId)
     {

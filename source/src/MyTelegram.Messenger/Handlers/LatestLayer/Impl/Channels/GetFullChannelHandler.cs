@@ -22,11 +22,12 @@ internal sealed class GetFullChannelHandler : RpcResultObjectHandler<MyTelegram.
     private readonly IPhotoAppService _photoAppService;
     private readonly ILogger<GetFullChannelHandler> _logger;
     private readonly IOptions<MyTelegramMessengerServerOptions> _options;
+    private readonly IChatInviteLinkHelper _chatInviteLinkHelper;
 
     public GetFullChannelHandler(IQueryProcessor queryProcessor,
         ILayeredService<IChatConverter> layeredService,
         IAccessHashHelper accessHashHelper,
-        IPhotoAppService photoAppService, ILogger<GetFullChannelHandler> logger, IOptions<MyTelegramMessengerServerOptions> options)
+        IPhotoAppService photoAppService, ILogger<GetFullChannelHandler> logger, IOptions<MyTelegramMessengerServerOptions> options, IChatInviteLinkHelper chatInviteLinkHelper)
     {
         _queryProcessor = queryProcessor;
         _layeredService = layeredService;
@@ -34,6 +35,7 @@ internal sealed class GetFullChannelHandler : RpcResultObjectHandler<MyTelegram.
         _photoAppService = photoAppService;
         _logger = logger;
         _options = options;
+        _chatInviteLinkHelper = chatInviteLinkHelper;
     }
 
     protected override async Task<MyTelegram.Schema.Messages.IChatFull> HandleCoreAsync(IRequestInput input,
@@ -43,15 +45,16 @@ internal sealed class GetFullChannelHandler : RpcResultObjectHandler<MyTelegram.
         {
             await _accessHashHelper.CheckAccessHashAsync(inputChannel.ChannelId, inputChannel.AccessHash);
 
-            var channel = await _queryProcessor.ProcessAsync(new GetChannelByIdQuery(inputChannel.ChannelId), default);
+            var channel = await _queryProcessor.ProcessAsync(new GetChannelByIdQuery(inputChannel.ChannelId));
             if (channel == null)
             {
                 RpcErrors.RpcErrors400.ChannelInvalid.ThrowRpcError();
             }
 
-            var channelFull = await _queryProcessor.ProcessAsync(new GetChannelFullByIdQuery(inputChannel.ChannelId), default);
+            var channelFull = await _queryProcessor.ProcessAsync(new GetChannelFullByIdQuery(inputChannel.ChannelId));
+
             var dialogReadModel = await _queryProcessor.ProcessAsync(
-                new GetDialogByIdQuery(DialogId.Create(input.UserId, PeerType.Channel, inputChannel.ChannelId)), default);
+                new GetDialogByIdQuery(DialogId.Create(input.UserId, PeerType.Channel, inputChannel.ChannelId)));
             if (dialogReadModel == null)
             {
                 _logger.LogWarning("Dialog not exists,userId={UserId},ToPeer={ToPeer}", input.UserId, new Peer(PeerType.Channel, inputChannel.ChannelId));
@@ -66,26 +69,30 @@ internal sealed class GetFullChannelHandler : RpcResultObjectHandler<MyTelegram.
                 channelFull.UnreadCount = channel!.TopMessageId - maxId;
             }
 
+            // Console.WriteLine($"# GetFullChannel:{input.UserId} {channelFull.ChannelId} TopMessageId:{channel.TopMessageId}  ReadInboxMaxId:{channelFull.ReadInboxMaxId} ReadOutboxMaxId:{channelFull.ReadOutboxMaxId} UnreadCount:{channelFull.UnreadCount} Pts:{channel.Pts}");
+
             var channelMember = await _queryProcessor
-                .ProcessAsync(new GetChannelMemberByUserIdQuery(inputChannel.ChannelId, input.UserId), default);
+                .ProcessAsync(new GetChannelMemberByUserIdQuery(inputChannel.ChannelId, input.UserId));
             var migratedFromChatReadModel = channelFull!.MigratedFromChatId == null ? null :
-                await _queryProcessor.ProcessAsync(new GetChatByChatIdQuery(channelFull.MigratedFromChatId.Value),default);
+                await _queryProcessor.ProcessAsync(new GetChatByChatIdQuery(channelFull.MigratedFromChatId.Value));
 
             var peerNotifySettings = await _queryProcessor
                 .ProcessAsync(
                     new GetPeerNotifySettingsByIdQuery(PeerNotifySettingsId.Create(input.UserId,
                         PeerType.Channel,
-                        inputChannel.ChannelId)), default);
+                        inputChannel.ChannelId)));
             //var chatPhoto = _layeredPhotoService.GetConverter(input.Layer).ToChatPhoto(channel!.Photo);
             var photoReadModel = await _photoAppService.GetPhotoAsync(channel!.PhotoId);
             IChatInviteReadModel? chatInviteReadModel = null;
             if (channel.AdminList.Any(p => p.UserId == input.UserId))
             {
                 chatInviteReadModel =
-                    await _queryProcessor.ProcessAsync(new GetPermanentChatInviteQuery(inputChannel.ChannelId), default);
+                    await _queryProcessor.ProcessAsync(new GetPermanentChatInviteQuery(inputChannel.ChannelId));
                 if (chatInviteReadModel != null)
                 {
-                    chatInviteReadModel.Link = $"{_options.Value.JoinChatDomain}/+{chatInviteReadModel.Link}";
+                    //chatInviteReadModel.Link = $"{_options.Value.JoinChatDomain}/+{chatInviteReadModel.Link}";
+                    chatInviteReadModel.Link =
+                        _chatInviteLinkHelper.GetFullLink(_options.Value.JoinChatDomain, chatInviteReadModel.Link);
                 }
             }
 
@@ -99,6 +106,22 @@ internal sealed class GetFullChannelHandler : RpcResultObjectHandler<MyTelegram.
                 migratedFromChatReadModel,
                 chatInviteReadModel
                 );
+
+            if (channelFull!.LinkedChatId.HasValue)
+            {
+                var linkedChannelReadModel = await _queryProcessor.ProcessAsync(new GetChannelByIdQuery(channelFull.LinkedChatId.Value));
+                if (linkedChannelReadModel != null)
+                {
+                    var linkedChannelPhotoReadModel = await _photoAppService.GetPhotoAsync(linkedChannelReadModel.PhotoId);
+                    var linkedChannel = _layeredService.GetConverter(input.Layer).ToChannel(input.UserId,
+                        linkedChannelReadModel, linkedChannelPhotoReadModel, null, false);
+
+                    r.Chats.Add(linkedChannel);
+                }
+            }
+
+
+            //_logger.LogInformation("GetFullChannel:{UserId},Data={@Data}", input.UserId, r);
 
             return r;
         }

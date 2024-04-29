@@ -12,6 +12,6 @@ internal sealed class SetDefaultHistoryTTLHandler : RpcResultObjectHandler<MyTel
     protected override Task<IBool> HandleCoreAsync(IRequestInput input,
         MyTelegram.Schema.Messages.RequestSetDefaultHistoryTTL obj)
     {
-        throw new NotImplementedException();
+        return Task.FromResult<IBool>(new TBoolTrue());
     }
 }

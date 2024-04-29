@@ -1,11 +1,11 @@
 ﻿namespace MyTelegram.Core;
 
-public record NewPtsMessageHasSentEvent(
+public record NewQtsMessageHasSentEvent(
     long UserId,
     Peer ToPeer,
     long MsgId,
     long TempAuthKeyId,
     long PermAuthKeyId,
-    int Pts,
+    int Qts,
     long GlobalSeqNo,
     long ReqMsgId);

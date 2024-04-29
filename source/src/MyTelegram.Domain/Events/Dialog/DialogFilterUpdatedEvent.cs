@@ -1,4 +1,4 @@
-﻿namespace MyTelegram.Domain.Aggregates.Dialog;
+﻿namespace MyTelegram.Domain.Events.Dialog;
 
 public class DialogFilterUpdatedEvent(
     RequestInfo requestInfo,
