@@ -11,12 +11,25 @@ namespace MyTelegram.Handlers.Channels;
 /// 400 TOPICS_EMPTY &nbsp;
 /// See <a href="https://corefork.telegram.org/method/channels.getForumTopicsByID" />
 ///</summary>
-internal sealed class GetForumTopicsByIDHandler : RpcResultObjectHandler<MyTelegram.Schema.Channels.RequestGetForumTopicsByID, MyTelegram.Schema.Messages.IForumTopics>,
+internal sealed class GetForumTopicsByIDHandler(IAccessHashHelper accessHashHelper,IPeerHelper peerHelper, IPtsHelper ptsHelper) : RpcResultObjectHandler<MyTelegram.Schema.Channels.RequestGetForumTopicsByID, MyTelegram.Schema.Messages.IForumTopics>,
     Channels.IGetForumTopicsByIDHandler
 {
-    protected override Task<MyTelegram.Schema.Messages.IForumTopics> HandleCoreAsync(IRequestInput input,
+    protected override async Task<MyTelegram.Schema.Messages.IForumTopics> HandleCoreAsync(IRequestInput input,
         MyTelegram.Schema.Channels.RequestGetForumTopicsByID obj)
     {
-        throw new NotImplementedException();
+        await accessHashHelper.CheckAccessHashAsync(obj.Channel);
+        var peer = peerHelper.GetChannel(obj.Channel);
+        var pts = ptsHelper.GetCachedPts(peer.PeerId);
+
+        var forumTopics = new TForumTopics
+        {
+            Pts=pts,
+            Chats = new(),
+            Messages = new(),
+            Topics = new(),
+            Users = new(),
+        };
+
+        return forumTopics;
     }
 }
