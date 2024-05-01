@@ -4,7 +4,7 @@ public class StartDeleteHistoryCommandHandler : CommandHandler<TempAggregate, Te
 {
     public override Task ExecuteAsync(TempAggregate aggregate, StartDeleteHistoryCommand command, CancellationToken cancellationToken)
     {
-        aggregate.StartDeleteHistory(command.RequestInfo, command.MessageItems, command.Revoke, command.DeleteGroupMessagesForEveryone);
+        aggregate.StartDeleteHistory(command.RequestInfo, command.MessageItems, command.Revoke, command.DeleteGroupMessagesForEveryone, command.IsDeletePhoneCallHistory);
 
         return Task.CompletedTask;
     }

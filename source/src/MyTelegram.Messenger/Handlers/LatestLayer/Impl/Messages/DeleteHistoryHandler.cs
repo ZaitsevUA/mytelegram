@@ -52,7 +52,7 @@ internal sealed class DeleteHistoryHandler : RpcResultObjectHandler<MyTelegram.S
 
         var messageItemsToBeDeleted =
             await _queryProcessor.ProcessAsync(
-                new GetMessageItemListToBeDeletedQuery2(input.UserId, peer.PeerId, maxId, pageSize));
+                new GetMessageItemListToBeDeletedQuery2(input.UserId, peer.PeerId, maxId, pageSize, obj.Revoke));
 
         if (messageItemsToBeDeleted.Count == 0)
         {

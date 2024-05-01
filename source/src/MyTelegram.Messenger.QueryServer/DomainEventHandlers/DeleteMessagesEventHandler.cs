@@ -84,12 +84,23 @@ ISubscribeSynchronousTo<DialogAggregate, DialogId, ChannelHistoryClearedEvent>
 
     public async Task HandleAsync(IDomainEvent<DeleteMessagesSaga4, DeleteMessagesSaga4Id, DeleteSelfHistoryCompletedEvent4> domainEvent, CancellationToken cancellationToken)
     {
-        var r = new TAffectedHistory
+        IObject r = new TAffectedHistory
         {
             Pts = domainEvent.AggregateEvent.Pts,
             PtsCount = domainEvent.AggregateEvent.PtsCount,
             Offset = domainEvent.AggregateEvent.Offset
         };
+        if (domainEvent.AggregateEvent.IsDeletePhoneCallHistory)
+        {
+            r = new TAffectedFoundMessages
+            {
+                Pts = domainEvent.AggregateEvent.Pts,
+                PtsCount = domainEvent.AggregateEvent.PtsCount,
+                Offset = domainEvent.AggregateEvent.Offset,
+                Messages = new TVector<int>(domainEvent.AggregateEvent.MessageIds)
+            };
+        }
+
         await SendRpcMessageToClientAsync(domainEvent.AggregateEvent.RequestInfo, r);
         var selfOtherDeviceUpdates = layeredUpdatesService.Converter.ToDeleteMessagesUpdates(PeerType.User,
             new DeletedBoxItem(domainEvent.AggregateEvent.RequestInfo.UserId, domainEvent.AggregateEvent.Pts,

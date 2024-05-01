@@ -43,9 +43,9 @@ public class TempAggregate(TempId id) : AggregateRoot<TempAggregate, TempId>(id)
         Emit(new DeleteMessagesStartedEvent(requestInfo, messageItems, revoke, deleteGroupMessagesForEveryone, newTopMessageId, newTopMessageIdForOtherParticipant));
     }
 
-    public void StartDeleteHistory(RequestInfo requestInfo, IReadOnlyCollection<MessageItemToBeDeleted> messageItems, bool revoke, bool deleteGroupMessagesForEveryone)
+    public void StartDeleteHistory(RequestInfo requestInfo, IReadOnlyCollection<MessageItemToBeDeleted> messageItems, bool revoke, bool deleteGroupMessagesForEveryone, bool isDeletePhoneCallHistory)
     {
-        Emit(new DeleteHistoryStartedEvent(requestInfo, messageItems, revoke, deleteGroupMessagesForEveryone));
+        Emit(new DeleteHistoryStartedEvent(requestInfo, messageItems, revoke, deleteGroupMessagesForEveryone, isDeletePhoneCallHistory));
     }
 
     public void StartDeleteChannelMessages(RequestInfo requestInfo,

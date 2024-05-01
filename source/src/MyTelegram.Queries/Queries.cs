@@ -415,8 +415,9 @@ public record GetTopMessageIdQuery(long OwnerPeerId, List<int> MessageIds) : IQu
 public record GetTopMessageQuery(long OwnerPeerId, List<int> MessageIds) : IQuery<IMessageReadModel?>;
 
 //public record GetSenderTopMessageIdQuery(long SenderUserId,)
-public record GetMessageItemListToBeDeletedQuery(long OwnerPeerId, List<int> MessageIds)
+public record GetMessageItemListToBeDeletedQuery(long OwnerPeerId, List<int> MessageIds, bool Revoke)
     : IQuery<IReadOnlyCollection<MessageItemToBeDeleted>>;
 
-public record GetMessageItemListToBeDeletedQuery2(long OwnerPeerId, long ToPeerId, int MaxId, int Limit)
+public record GetMessageItemListToBeDeletedQuery2(long OwnerPeerId, long ToPeerId, int MaxId, int Limit, bool Revoke)
     : IQuery<IReadOnlyCollection<MessageItemToBeDeleted>>;
+public record GetPhoneCallHistoryToBeDeletedQuery(long UserId, int Limit, bool Revoke) : IQuery<IReadOnlyCollection<MessageItemToBeDeleted>>;

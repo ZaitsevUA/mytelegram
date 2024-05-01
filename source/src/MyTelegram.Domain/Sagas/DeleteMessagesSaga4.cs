@@ -20,13 +20,17 @@ public class DeleteMessageSaga4StartedEvent(RequestInfo requestInfo,
     bool deleteGroupMessagesForEveryone,
     bool isDeleteHistory,
     int? newTopMessageId,
-    int? newTopMessageIdForOtherParticipant
+    int? newTopMessageIdForOtherParticipant,
+    bool isDeletePhoneCallHistory
     ) : AggregateEvent<DeleteMessagesSaga4, DeleteMessagesSaga4Id>
 {
     public bool DeleteGroupMessagesForEveryone { get; } = deleteGroupMessagesForEveryone;
     public bool IsDeleteHistory { get; } = isDeleteHistory;
     public int? NewTopMessageId { get; } = newTopMessageId;
     public int? NewTopMessageIdForOtherParticipant { get; } = newTopMessageIdForOtherParticipant;
+
+    public bool IsDeletePhoneCallHistory { get; } = isDeletePhoneCallHistory;
+
     //public List<int> MessageIds { get; } = messageIds;
     public RequestInfo RequestInfo { get; } = requestInfo;
     public IReadOnlyCollection<MessageItemToBeDeleted> MessageItems { get; } = messageItems;
@@ -93,7 +97,8 @@ public class
             domainEvent.AggregateEvent.MessageItems, domainEvent.AggregateEvent.Revoke,
             domainEvent.AggregateEvent.DeleteGroupMessagesForEveryone, false,
             domainEvent.AggregateEvent.NewTopMessageId,
-            domainEvent.AggregateEvent.NewTopMessageIdForOtherParticipant
+            domainEvent.AggregateEvent.NewTopMessageIdForOtherParticipant,
+            false
             );
 
         //foreach (var item in domainEvent.AggregateEvent.MessageItems)
@@ -114,7 +119,9 @@ public class
             domainEvent.AggregateEvent.DeleteGroupMessagesForEveryone,
             true,
             null,
-            null);
+            null,
+            domainEvent.AggregateEvent.IsDeletePhoneCallHistory
+            );
 
         return Task.CompletedTask;
     }
@@ -186,7 +193,9 @@ public class
                             pts,
                             item.MessageIds.Count,
                             item.MessageIds.Min(),
-                            item.MessageIds));
+                            item.MessageIds,
+                            _state.IsDeletePhoneCallHistory
+                            ));
                     }
                     else
                     {
@@ -225,10 +234,11 @@ public class
         bool deleteGroupMessagesForEveryone,
         bool isDeleteHistory,
         int? newTopMessageId,
-        int? newTopMessageIdForOtherParticipant
+        int? newTopMessageIdForOtherParticipant,
+        bool isDeletePhoneCallHistory
         )
     {
-        Emit(new DeleteMessageSaga4StartedEvent(requestInfo, messageItems, revoke, deleteGroupMessagesForEveryone, isDeleteHistory, newTopMessageId, newTopMessageIdForOtherParticipant));
+        Emit(new DeleteMessageSaga4StartedEvent(requestInfo, messageItems, revoke, deleteGroupMessagesForEveryone, isDeleteHistory, newTopMessageId, newTopMessageIdForOtherParticipant, isDeletePhoneCallHistory));
         foreach (var item in messageItems)
         {
             var command = new DeleteMessageCommand(
@@ -287,6 +297,7 @@ public class DeleteMessagesSaga4State : AggregateState<DeleteMessagesSaga4, Dele
     public int TotalCount { get; private set; }
     public int DeletedCount { get; private set; }
     public Dictionary<long, int> UserIdToPts = new();
+    public bool IsDeletePhoneCallHistory { get; private set; }
 
     public void Apply(DeleteMessageSaga4StartedEvent aggregateEvent)
     {
@@ -296,6 +307,7 @@ public class DeleteMessagesSaga4State : AggregateState<DeleteMessagesSaga4, Dele
         IsDeleteHistory = aggregateEvent.IsDeleteHistory;
         NewTopMessageId = aggregateEvent.NewTopMessageId;
         NewTopMessageIdForOtherParticipant = aggregateEvent.NewTopMessageIdForOtherParticipant;
+        IsDeletePhoneCallHistory = aggregateEvent.IsDeletePhoneCallHistory;
         //UserIdToDeletedItems.TryAdd(aggregateEvent.RequestInfo.UserId, new DeletedItem
         //{
         //    TotalCount = aggregateEvent.MessageItems.Count,
@@ -326,7 +338,7 @@ public class DeleteMessagesSaga4State : AggregateState<DeleteMessagesSaga4, Dele
             DeletedMessageIds.TryAdd(aggregateEvent.MessageItem.OwnerUserId, item);
         }
         item.MessageIds.Add(aggregateEvent.MessageItem.MessageId);
-        item.Pts= aggregateEvent.Pts;
+        item.Pts = aggregateEvent.Pts;
 
         DeletedCount++;
     }
@@ -359,11 +371,12 @@ public class DeleteOtherParticipantMessagesCompletedEvent4(long userId, int pts,
     public long UserId { get; } = userId;
 }
 
-public class DeleteSelfHistoryCompletedEvent4(RequestInfo requestInfo, int pts, int ptsCount, int offset, List<int> messageIds)
+public class DeleteSelfHistoryCompletedEvent4(RequestInfo requestInfo, int pts, int ptsCount, int offset, List<int> messageIds, bool isDeletePhoneCallHistory)
     : RequestAggregateEvent2<DeleteMessagesSaga4, DeleteMessagesSaga4Id>(requestInfo)
 {
     public int Offset { get; } = offset;
     public List<int> MessageIds { get; } = messageIds;
+    public bool IsDeletePhoneCallHistory { get; } = isDeletePhoneCallHistory;
     public int Pts { get; } = pts;
     public int PtsCount { get; } = ptsCount;
 }

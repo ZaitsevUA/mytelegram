@@ -34,7 +34,7 @@ internal sealed class DeleteMessagesHandler : RpcResultObjectHandler<MyTelegram.
         {
             var messageIds = obj.Id.ToList();
             var messageItemsToBeDeletedList =
-                await _queryProcessor.ProcessAsync(new GetMessageItemListToBeDeletedQuery(input.UserId, messageIds));
+                await _queryProcessor.ProcessAsync(new GetMessageItemListToBeDeletedQuery(input.UserId, messageIds, obj.Revoke));
             int? newTopMessageId = null;
             int? newTopMessageIdForOtherParticipant = null;
 
