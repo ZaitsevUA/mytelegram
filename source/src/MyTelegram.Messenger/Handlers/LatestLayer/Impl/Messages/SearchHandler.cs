@@ -103,6 +103,7 @@ internal sealed class SearchHandler : RpcResultObjectHandler<MyTelegram.Schema.M
                     break;
 
                 case TInputMessagesFilterMusic:
+                    messageType = MessageType.Music;
                     break;
 
                 case TInputMessagesFilterMyMentions:
