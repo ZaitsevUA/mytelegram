@@ -25,6 +25,7 @@ public static class MyTelegramGatewayServerExtensions
         services.AddTransient<AuthKeyNotFoundEventHandler>();
         services.AddTransient<TransportErrorEventHandler>();
         services.AddTransient<IClientDataSender, ClientDataSender>();
+        services.AddTransient<IProxyProtocolParser, ProxyProtocolParser>();
 
         services.AddTransient<IDataProcessor<ClientDisconnectedEvent>, ClientDisconnectedDataProcessor>();
 

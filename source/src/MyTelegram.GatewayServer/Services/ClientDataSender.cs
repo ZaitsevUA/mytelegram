@@ -3,6 +3,7 @@
 public class ClientDataSender(
     IClientManager clientManager,
     ILogger<ClientDataSender> logger,
+    IMessageQueueProcessor<ClientDisconnectedEvent> messageQueueProcessor,
     IMtpMessageEncoder messageEncoder)
     : IClientDataSender
 {
@@ -35,6 +36,7 @@ public class ClientDataSender(
                 data.ConnectionId,
                 data.AuthKeyId
                 );
+            messageQueueProcessor.Enqueue(new ClientDisconnectedEvent(data.ConnectionId, data.AuthKeyId, 0), 0);
             return Task.CompletedTask;
         }
 

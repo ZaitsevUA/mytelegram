@@ -11,14 +11,24 @@ public class MtpConnectionHandler(
 {
     public override async Task OnConnectedAsync(ConnectionContext connection)
     {
+        var remoteEndPoint = connection.RemoteEndPoint;
+        var proxyProtocolFeature = connection.Features.Get<ProxyProtocolFeature>();
+        var clientIp = (connection.RemoteEndPoint as IPEndPoint)?.Address.ToString() ?? string.Empty;
+        if (proxyProtocolFeature != null)
+        {
+            remoteEndPoint = new IPEndPoint(proxyProtocolFeature.SourceIp, proxyProtocolFeature.SourcePort);
+            clientIp = proxyProtocolFeature.SourceIp.ToString();
+        }
+
         logger.LogInformation("[ConnectionId={ConnectionId}] New client connected,RemoteEndPoint:{RemoteEndPoint},online count:{OnlineCount}",
             connection.ConnectionId,
-            connection.RemoteEndPoint, clientManager.GetOnlineCount());
+            remoteEndPoint, clientManager.GetOnlineCount());
         var clientData = new ClientData
         {
             ConnectionContext = connection,
             ConnectionId = connection.ConnectionId,
-            ClientType = ClientType.Tcp
+            ClientType = ClientType.Tcp,
+            ClientIp = clientIp
         };
         clientManager.AddClient(connection.ConnectionId, clientData);
         connection.ConnectionClosed.Register(() =>
@@ -30,7 +40,7 @@ public class MtpConnectionHandler(
             }
             logger.LogInformation("[ConnectionId={ConnectionId}] Client disconnected,RemoteEndPoint:{RemoteEndPoint}",
                 connection.ConnectionId,
-                connection.RemoteEndPoint);
+                remoteEndPoint);
         });
         _ = ProcessResponseQueueAsync(clientData, connection);
         var input = connection.Transport.Input;
@@ -43,6 +53,11 @@ public class MtpConnectionHandler(
             }
 
             var buffer = result.Buffer;
+            if (buffer.Length == 0)
+            {
+                continue;
+            }
+
             if (!clientManager.TryGetClientData(connection.ConnectionId, out _))
             {
                 logger.LogWarning("Can not find client data,connectionId={ConnectionId}", connection.ConnectionId);
@@ -100,7 +115,8 @@ public class MtpConnectionHandler(
         if (clientData.IsFirstPacketParsed)
         {
             mtpMessage.ConnectionId = clientData.ConnectionId;
-            mtpMessage.ClientIp = (clientData.ConnectionContext!.RemoteEndPoint as IPEndPoint)?.Address.ToString() ?? string.Empty;
+            mtpMessage.ClientIp = clientData.ClientIp;
+            //mtpMessage.ClientIp = (clientData.ConnectionContext!.RemoteEndPoint as IPEndPoint)?.Address.ToString() ?? string.Empty;
             return messageDispatcher.DispatchAsync(mtpMessage);
         }
 

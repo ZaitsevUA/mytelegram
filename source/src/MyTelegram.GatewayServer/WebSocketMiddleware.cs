@@ -5,6 +5,8 @@ public class WebSocketMiddleware(
     IMtpMessageDispatcher messageDispatcher,
     IClientManager clientManager,
     IClientDataSender clientDataSender,
+    IOptionsMonitor<MyTelegramGatewayServerOption> options,
+    IProxyProtocolParser proxyProtocolParser,
     IMessageQueueProcessor<ClientDisconnectedEvent> messageQueueProcessor)
     : IMiddleware
 {
@@ -21,12 +23,20 @@ public class WebSocketMiddleware(
             {
                 var webSocket = await context.WebSockets.AcceptWebSocketAsync(_subProtocol);
                 _isWebSocketConnected = true;
+
+                var proxyProtocolFeature = context.Features.Get<ProxyProtocolFeature>();
+                var clientIp = context.Connection.RemoteIpAddress?.ToString() ?? string.Empty;
+                if (proxyProtocolFeature != null)
+                {
+                    clientIp = proxyProtocolFeature.SourceIp.ToString();
+                }
+
                 var clientData = new ClientData
                 {
                     ConnectionId = context.Connection.Id,
                     WebSocket = webSocket,
                     ClientType = ClientType.WebSocket,
-                    ClientIp = context.Connection.RemoteIpAddress?.ToString() ?? string.Empty,
+                    ClientIp = clientIp,
                 };
                 clientManager.AddClient(context.Connection.Id, clientData);
 

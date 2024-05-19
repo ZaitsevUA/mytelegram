@@ -78,6 +78,7 @@ builder.WebHost.ConfigureKestrel(options =>
 {
     if (appConfig != null)
     {
+        var logger = options.ApplicationServices.GetRequiredService<ILogger<ProxyProtocol>>();
         foreach (var item in appConfig.Servers)
         {
             if (item.Enabled)
@@ -93,8 +94,17 @@ builder.WebHost.ConfigureKestrel(options =>
                         options.Listen(iep,
                             listenOptions =>
                             {
+                                if (item.EnableProxyProtocolV2)
+                                {
+                                    listenOptions.Use(async (connectionContext, next) =>
+                                    {
+                                        await ProxyProtocol.ProcessAsync(connectionContext, next, logger);
+                                    });
+                                }
+
                                 listenOptions.UseConnectionLogging()
-                                    .UseConnectionHandler<MtpConnectionHandler>();
+                                    .UseConnectionHandler<MtpConnectionHandler>()
+                                    ;
                             });
 
                         break;
@@ -103,6 +113,15 @@ builder.WebHost.ConfigureKestrel(options =>
                         options.Listen(iep,
                             listenOptions =>
                             {
+                                if (item.EnableProxyProtocolV2)
+                                {
+                                    //listenOptions.UseConnectionHandler<ProxyProtocolHandler>();
+                                    listenOptions.Use(async (connectionContext, next) =>
+                                    {
+                                        await ProxyProtocol.ProcessAsync(connectionContext, next, logger);
+                                    });
+                                }
+
                                 if (item.Ssl)
                                 {
                                     listenOptions.UseHttps(httpsOptions =>
@@ -115,7 +134,7 @@ builder.WebHost.ConfigureKestrel(options =>
                         break;
                 }
 
-                Log.Information("{ServerType} server started at:{Address},ssl:{Ssl}", item.ServerType, iep, item.Ssl);
+                Log.Information("{ServerType} server started at:{Address},ssl:{Ssl},proxyProtocol:{ProxyProtocol}", item.ServerType, iep, item.Ssl, item.EnableProxyProtocolV2);
             }
         }
     }
