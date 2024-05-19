@@ -68,12 +68,8 @@ public class ProxyProtocolParser : IProxyProtocolParser
             return null;
         }
 
-        Span<byte> prefixSpan = stackalloc byte[Preamble.Length];
-        buffer.Slice(0, prefixSpan.Length).CopyTo(prefixSpan);
-        if (!prefixSpan.SequenceEqual(Preamble))
+        if (!IsProxyProtocolV2(buffer))
         {
-            Console.WriteLine("Protocol prefix mismatch:{0}", BitConverter.ToString(prefixSpan.ToArray()));
-            //Console.WriteLine($"Protocol prefix mismatch:{BitConverter.ToString(prefixSpan.ToArray())}");
             return null;
         }
 
