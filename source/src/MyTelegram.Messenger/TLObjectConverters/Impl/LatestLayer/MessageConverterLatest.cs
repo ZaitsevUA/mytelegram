@@ -242,7 +242,7 @@ public class MessageConverterLatest(
         long selfUserId)
     {
         var messages = new List<IMessage>();
-        foreach (var readModel in readModels)
+        foreach (var readModel in readModels.OrderBy(p => p.MessageId))
         {
             IPollReadModel? poll = null;
             List<string>? chosenOptions = null;
