@@ -19,16 +19,22 @@ public class MtpConnectionHandler(
             remoteEndPoint = new IPEndPoint(proxyProtocolFeature.SourceIp, proxyProtocolFeature.SourcePort);
             clientIp = proxyProtocolFeature.SourceIp.ToString();
         }
+        var connectionTypeFeature = connection.Features.Get<ConnectionTypeFeature>();
 
-        logger.LogInformation("[ConnectionId={ConnectionId}] New client connected,RemoteEndPoint:{RemoteEndPoint},online count:{OnlineCount}",
+        logger.LogInformation("[ConnectionId={ConnectionId}] New client connected,localPort={LocalPort}({ConnectionType}), remoteEndPoint:{RemoteEndPoint},online count:{OnlineCount}",
             connection.ConnectionId,
-            remoteEndPoint, clientManager.GetOnlineCount());
+            (connection.LocalEndPoint as IPEndPoint)?.Port,
+            connectionTypeFeature?.ConnectionType,
+            remoteEndPoint,
+            clientManager.GetOnlineCount());
+
         var clientData = new ClientData
         {
             ConnectionContext = connection,
             ConnectionId = connection.ConnectionId,
             ClientType = ClientType.Tcp,
-            ClientIp = clientIp
+            ClientIp = clientIp,
+            ConnectionType = connectionTypeFeature?.ConnectionType ?? ConnectionType.Generic
         };
         clientManager.AddClient(connection.ConnectionId, clientData);
         connection.ConnectionClosed.Register(() =>
@@ -66,6 +72,11 @@ public class MtpConnectionHandler(
 
             if (!clientData.IsFirstPacketParsed)
             {
+                //if (buffer.Length < 4)
+                //{
+                //    continue;
+                //}
+
                 messageParser.ProcessFirstUnencryptedPacket(ref buffer, clientData);
             }
 
@@ -116,6 +127,7 @@ public class MtpConnectionHandler(
         {
             mtpMessage.ConnectionId = clientData.ConnectionId;
             mtpMessage.ClientIp = clientData.ClientIp;
+            mtpMessage.ConnectionType = (int)clientData.ConnectionType;
             //mtpMessage.ClientIp = (clientData.ConnectionContext!.RemoteEndPoint as IPEndPoint)?.Address.ToString() ?? string.Empty;
             return messageDispatcher.DispatchAsync(mtpMessage);
         }

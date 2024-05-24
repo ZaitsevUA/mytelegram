@@ -16,4 +16,6 @@ public interface ILayeredUser : IUser
     ///See <a href="https://core.telegram.org/type/UserProfilePhoto" />
     ///</summary>
     MyTelegram.Schema.IUserProfilePhoto? Photo { get; set; }
+
+    string? BotInlinePlaceholder { get; set; }
 }

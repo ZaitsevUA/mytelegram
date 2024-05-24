@@ -3,23 +3,24 @@
 public enum ChatJoinType
 {
     Unknown,
+
     /// <summary>
-    /// Invited by admin
+    ///     Invited by admin
     /// </summary>
     InvitedByAdmin,
 
     /// <summary>
-    /// Joined by self request
+    ///     Joined by self request
     /// </summary>
     ByRequest,
 
     /// <summary>
-    /// Joined By link
+    ///     Joined By link
     /// </summary>
     ByLink,
 
     /// <summary>
-    /// Approved by admin
+    ///     Approved by admin
     /// </summary>
-    ApprovedByAdmin,
+    ApprovedByAdmin
 }

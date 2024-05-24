@@ -14,12 +14,22 @@ namespace MyTelegram.Handlers.Channels;
 /// 403 CHAT_WRITE_FORBIDDEN You can't write in this chat.
 /// See <a href="https://corefork.telegram.org/method/channels.deleteChannel" />
 ///</summary>
-internal sealed class DeleteChannelHandler : RpcResultObjectHandler<MyTelegram.Schema.Channels.RequestDeleteChannel, MyTelegram.Schema.IUpdates>,
+internal sealed class DeleteChannelHandler(
+    ICommandBus commandBus,
+    IAccessHashHelper accessHashHelper,
+    IPeerHelper peerHelper
+    ) : RpcResultObjectHandler<MyTelegram.Schema.Channels.RequestDeleteChannel, MyTelegram.Schema.IUpdates>,
     Channels.IDeleteChannelHandler
 {
-    protected override Task<MyTelegram.Schema.IUpdates> HandleCoreAsync(IRequestInput input,
+    protected override async Task<MyTelegram.Schema.IUpdates> HandleCoreAsync(IRequestInput input,
         MyTelegram.Schema.Channels.RequestDeleteChannel obj)
     {
-        throw new NotImplementedException();
+        await accessHashHelper.CheckAccessHashAsync(obj.Channel);
+        var peer = peerHelper.GetChannel(obj.Channel);
+        var command = new DeleteChannelCommand(ChannelId.Create(peer.PeerId), input.ToRequestInfo());
+
+        await commandBus.PublishAsync(command);
+
+        return null!;
     }
 }

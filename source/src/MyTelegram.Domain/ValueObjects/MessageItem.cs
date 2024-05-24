@@ -12,7 +12,8 @@ public record MessageItem //: ValueObject
         bool IsOut,
         SendMessageType SendMessageType = SendMessageType.Text,
         MessageType MessageType = MessageType.Text,
-        MessageSubType MessageSubType = MessageSubType.Normal, IInputReplyTo? InputReplyTo = null,
+        MessageSubType MessageSubType = MessageSubType.Normal,
+        IInputReplyTo? InputReplyTo = null,
         string? MessageActionData = null,
         MessageActionType MessageActionType = MessageActionType.None,
         byte[]? Entities = null,
@@ -34,5 +35,5 @@ public record MessageItem //: ValueObject
         int? PostMessageId = null,
         bool IsQuickReply = false,
         string? QuickReplyShortcut = null,
-        Guid? BatchId=null
+        Guid? BatchId = null
         );

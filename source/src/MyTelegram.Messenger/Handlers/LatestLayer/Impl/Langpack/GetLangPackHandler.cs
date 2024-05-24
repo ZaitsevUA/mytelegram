@@ -40,8 +40,6 @@ internal sealed class GetLangPackHandler : RpcResultObjectHandler<MyTelegram.Sch
             Version = 9999
         };
 
-        // Console.WriteLine($"Get lang:{obj.LangCode} {obj.LangPack} count={r.Strings.Count}");
-
         return r;
     }
 }

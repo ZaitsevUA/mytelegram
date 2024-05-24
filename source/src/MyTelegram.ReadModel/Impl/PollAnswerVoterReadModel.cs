@@ -5,8 +5,10 @@ public class PollAnswerVoterReadModel : IPollAnswerVoterReadModel,
     IAmReadModelFor<PollAggregate, PollId, VoteAnswerDeletedEvent>
 {
     public virtual string Id { get; private set; } = null!;
+    public string Option { get; private set; } = default!;
+    public long PollId { get; private set; }
     public virtual long? Version { get; set; }
-
+    public long VoterPeerId { get; private set; }
     public Task ApplyAsync(IReadModelContext context,
         IDomainEvent<PollAggregate, PollId, VoteAnswerCreatedEvent> domainEvent,
         CancellationToken cancellationToken)
@@ -31,8 +33,4 @@ public class PollAnswerVoterReadModel : IPollAnswerVoterReadModel,
 
         return Task.CompletedTask;
     }
-
-    public long PollId { get; private set; }
-    public long VoterPeerId { get; private set; }
-    public string Option { get; private set; } = null!;
 }

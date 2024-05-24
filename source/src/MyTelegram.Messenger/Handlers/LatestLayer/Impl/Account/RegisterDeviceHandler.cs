@@ -16,18 +16,20 @@ namespace MyTelegram.Handlers.Account;
 ///</summary>
 internal sealed class RegisterDeviceHandler : RpcResultObjectHandler<MyTelegram.Schema.Account.RequestRegisterDevice, IBool>,
     Account.IRegisterDeviceHandler
+
 {
     private readonly ICommandBus _commandBus;
-    private readonly IEventBus _eventBus;
-    public RegisterDeviceHandler(ICommandBus commandBus, IEventBus eventBus)
+
+    public RegisterDeviceHandler(ICommandBus commandBus)
     {
         _commandBus = commandBus;
-        _eventBus = eventBus;
     }
 
     protected override async Task<IBool> HandleCoreAsync(IRequestInput input,
         MyTelegram.Schema.Account.RequestRegisterDevice obj)
     {
+        // Console.WriteLine($"RequestRegisterDevice:{obj.Token} {System.Text.Encoding.UTF8.GetString(obj.Secret)}");
+
         var command = new RegisterDeviceCommand(PushDeviceId.Create(obj.Token),
             input.ToRequestInfo(),
             input.UserId,
@@ -38,18 +40,7 @@ internal sealed class RegisterDeviceHandler : RpcResultObjectHandler<MyTelegram.
             obj.AppSandbox,
             obj.Secret,
             obj.OtherUids.ToList());
-        await _commandBus.PublishAsync(command, default);
-
-        // tokenType:7 - MTProto separate session
-        if (obj.TokenType == 7)
-        {
-            if (long.TryParse(obj.Token, out var sessionId))
-            {
-                await _eventBus.PublishAsync(new DeviceRegisteredEvent(input.AuthKeyId, input.PermAuthKeyId,
-                    sessionId));
-            }
-        }
-
+        await _commandBus.PublishAsync(command);
         return new TBoolTrue();
     }
 }

@@ -28,4 +28,4 @@ public class PushUpdatesState : AggregateState<PushUpdatesAggregate, PushUpdates
         //PtsType = aggregateEvent.PtsType;
         //SeqNo = aggregateEvent.SeqNo;
     }
-} 
+}

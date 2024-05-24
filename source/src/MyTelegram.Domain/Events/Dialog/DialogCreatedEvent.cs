@@ -8,12 +8,8 @@ public class DialogCreatedEvent(
     DateTime creationTime)
     : AggregateEvent<DialogAggregate, DialogId>
 {
-    //string topMessageBoxId,
-    //TopMessageBoxId = topMessageBoxId;
-
     public int ChannelHistoryMinId { get; } = channelHistoryMinId;
 
-    //public string TopMessageBoxId { get; }
     public DateTime CreationTime { get; } = creationTime;
 
     public long OwnerId { get; } = ownerId;

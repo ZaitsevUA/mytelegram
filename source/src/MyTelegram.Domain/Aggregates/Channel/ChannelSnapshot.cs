@@ -3,6 +3,8 @@
 public class ChannelSnapshot(
     bool broadcast,
     long channelId,
+    long accessHash,
+    string title,
     long creatorUid,
     long? photoId,
     bool preHistoryHidden,
@@ -30,7 +32,9 @@ public class ChannelSnapshot(
     bool signatureEnabled,
     int participantCount,
     PeerColor? color,
-    bool hasLink)
+    bool hasLink,
+    bool isDeleted
+    )
     : ISnapshot
 {
     //bool megaGroup,
@@ -46,6 +50,8 @@ public class ChannelSnapshot(
 
     //public bool MegaGroup { get; }
     public long ChannelId { get; } = channelId;
+    public long AccessHash { get; } = accessHash;
+    public string Title { get; } = title;
 
     public long CreatorUid { get; } = creatorUid;
     public long? PhotoId { get; } = photoId;
@@ -75,4 +81,5 @@ public class ChannelSnapshot(
     public int ParticipantCount { get; } = participantCount;
     public PeerColor? Color { get; } = color;
     public bool HasLink { get; } = hasLink;
+    public bool IsDeleted { get; } = isDeleted;
 }

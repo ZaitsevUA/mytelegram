@@ -14,7 +14,7 @@ public interface IUserReadModel : IReadModel
     string? LastName { get; }
     DateTime LastUpdateDate { get; }
     string PhoneNumber { get; }
-    int PinnedMsgId { get; }
+    int? PinnedMsgId { get; }
     List<int> PinnedMsgIdList { get; } // = new();
     //byte[]? ProfilePhoto { get; }
     bool SensitiveCanChange { get; } //= true;

@@ -31,6 +31,9 @@ public class ChannelReadModelLocator : IChannelReadModelLocator
                 case ChannelMemberBannedRightsChangedEvent channelMemberBannedRightsChangedEvent:
                     yield return ChannelId.Create(channelMemberBannedRightsChangedEvent.ChannelId).Value;
                     break;
+                case ChannelMemberCreatedEvent channelMemberCreatedEvent:
+                    yield return ChannelId.Create(channelMemberCreatedEvent.ChannelId).Value;
+                    break;
             }
         }
     }

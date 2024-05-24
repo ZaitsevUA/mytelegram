@@ -1,10 +1,10 @@
 ﻿namespace MyTelegram.Domain.Aggregates.Channel;
 
-public class ChannelMemberAggregate : AggregateRoot<ChannelMemberAggregate, ChannelMemberId>
+public class ChannelMemberAggregate : SnapshotAggregateRoot<ChannelMemberAggregate, ChannelMemberId, ChannelMemberSnapshot>
 {
     private readonly ChannelMemberState _state = new();
 
-    public ChannelMemberAggregate(ChannelMemberId id) : base(id)
+    public ChannelMemberAggregate(ChannelMemberId id) : base(id, SnapshotEveryFewVersionsStrategy.Default)
     {
         Register(_state);
     }
@@ -93,18 +93,19 @@ public class ChannelMemberAggregate : AggregateRoot<ChannelMemberAggregate, Chan
             {
                 removedFromKicked = true;
             }
-            else if (bannedRights.ToIntValue() == ChatBannedRights.Default.ToIntValue())
+            else if (bannedRights.ToIntValue() == ChatBannedRights.CreateDefaultBannedRights().ToIntValue())
             {
                 removedFromBanned = true;
             }
         }
 
-        var banned = bannedRights.ToIntValue() != ChatBannedRights.Default.ToIntValue();
+        var banned = bannedRights.ToIntValue() != ChatBannedRights.CreateDefaultBannedRights().ToIntValue();
 
         Emit(new ChannelMemberBannedRightsChangedEvent(requestInfo,
             adminId,
             channelId,
             memberUserId,
+            _state.IsBot,
             kicked,
             kickedBy,
             left,
@@ -128,11 +129,15 @@ public class ChannelMemberAggregate : AggregateRoot<ChannelMemberAggregate, Chan
             RpcErrors.RpcErrors400.UserAlreadyParticipant.ThrowRpcError();
         }
 
+        var isBot = memberUserId >= MyTelegramServerDomainConsts.BotUserInitId;
+
         Emit(new ChannelMemberJoinedEvent(requestInfo,
             channelId,
             memberUserId,
             DateTime.UtcNow.ToTimestamp(),
-            !IsNew));
+            !IsNew,
+            isBot
+            ));
     }
 
     public void LeaveChannel(RequestInfo requestInfo,
@@ -140,6 +145,18 @@ public class ChannelMemberAggregate : AggregateRoot<ChannelMemberAggregate, Chan
         long memberUserId)
     {
         Specs.AggregateIsCreated.ThrowDomainErrorIfNotSatisfied(this);
-        Emit(new ChannelMemberLeftEvent(requestInfo, channelId, memberUserId));
+        Emit(new ChannelMemberLeftEvent(requestInfo, channelId, memberUserId, _state.IsBot));
+    }
+
+    protected override Task<ChannelMemberSnapshot> CreateSnapshotAsync(CancellationToken cancellationToken)
+    {
+        return Task.FromResult(new ChannelMemberSnapshot(_state.Banned, _state.BannedRights, _state.Kicked,
+            _state.KickedBy, _state.Left, _state.IsBot));
+    }
+
+    protected override Task LoadSnapshotAsync(ChannelMemberSnapshot snapshot, ISnapshotMetadata metadata, CancellationToken cancellationToken)
+    {
+        _state.LoadSnapshot(snapshot);
+        return Task.CompletedTask;
     }
 }

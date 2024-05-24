@@ -1,7 +1,5 @@
 ﻿// ReSharper disable All
 
-using MyTelegram.Schema;
-
 namespace MyTelegram.Handlers.Photos;
 
 ///<summary>
@@ -49,33 +47,23 @@ internal sealed class UploadProfilePhotoHandler : RpcResultObjectHandler<MyTeleg
                 break;
         }
 
-        VideoSizeEmojiMarkup? videoSizeEmojiMarkup = null;
-        if (obj.VideoEmojiMarkup != null)
-        {
-            switch (obj.VideoEmojiMarkup)
-            {
-                case TVideoSizeEmojiMarkup videoSizeEmojiMarkup1:
-                    videoSizeEmojiMarkup = new VideoSizeEmojiMarkup(videoSizeEmojiMarkup1.EmojiId,
-                        videoSizeEmojiMarkup1.BackgroundColors.ToList());
-                    break;
-            }
-        }
-
-        var r = file == null ? null : await _mediaHelper.SavePhotoAsync(input.ReqMsgId,
+        var r = await _mediaHelper.SavePhotoAsync(input.ReqMsgId,
             file?.Id ?? 0,
             obj.Video != null,
             obj.VideoStartTs,
             file?.Parts ?? 0,
             file?.Name ?? string.Empty,
-            md5 ?? string.Empty);
+            md5 ?? string.Empty,
+            obj.VideoEmojiMarkup
+            );
+
         var command = new UploadProfilePhotoCommand(UserId.Create(input.UserId),
             input.ToRequestInfo(),
             r.PhotoId,
             obj.Fallback,
-            r.Photo.ToBytes(),
-            videoSizeEmojiMarkup
+            obj.VideoEmojiMarkup
         );
-        await _commandBus.PublishAsync(command, default);
+        await _commandBus.PublishAsync(command);
 
         return null!;
     }

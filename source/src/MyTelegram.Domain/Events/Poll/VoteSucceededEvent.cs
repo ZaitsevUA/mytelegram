@@ -1,4 +1,4 @@
-﻿namespace MyTelegram.Domain.Aggregates.Poll;
+﻿namespace MyTelegram.Domain.Events.Poll;
 
 public class VoteSucceededEvent(
     RequestInfo requestInfo,

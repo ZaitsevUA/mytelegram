@@ -18,7 +18,9 @@ public class EditBannedSaga(
             //    var command = new RemoveBotCommand(ChannelId.Create(domainEvent.AggregateEvent.ChannelId),
             //        domainEvent.AggregateEvent.MemberUserId);
             //    Publish(command);
-            //}
+
+            var updateParticipantCountCommand = new UpdateParticipantCountCommand(ChannelId.Create(domainEvent.AggregateEvent.ChannelId), -1);
+            Publish(updateParticipantCountCommand);
         }
 
         return Task.CompletedTask;

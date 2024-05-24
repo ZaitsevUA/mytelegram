@@ -29,6 +29,11 @@ internal sealed class ResolvePhoneHandler : RpcResultObjectHandler<MyTelegram.Sc
     protected async override Task<MyTelegram.Schema.Contacts.IResolvedPeer> HandleCoreAsync(IRequestInput input,
         MyTelegram.Schema.Contacts.RequestResolvePhone obj)
     {
+        var phone = obj.Phone;
+        if (phone.StartsWith("+"))
+        {
+            phone = phone[1..];
+        }
         var userReadModel = await _queryProcessor.ProcessAsync(new GetUserByPhoneNumberQuery(obj.Phone));
         if (userReadModel == null)
         {

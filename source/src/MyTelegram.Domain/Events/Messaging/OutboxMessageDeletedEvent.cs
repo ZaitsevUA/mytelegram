@@ -9,6 +9,6 @@ public class OutboxMessageDeletedEvent(
 {
     public IReadOnlyCollection<InboxItem>? InboxItems { get; } = inboxItems;
     public int MessageId { get; } = messageId;
-    public RequestInfo RequestInfo { get; } = requestInfo;
     public long OwnerPeerId { get; } = ownerPeerId;
+    public RequestInfo RequestInfo { get; } = requestInfo;
 }

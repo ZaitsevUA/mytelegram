@@ -25,6 +25,8 @@ public interface IUserConverter : ILayeredConverter
         IPeerSettingsReadModel? peerSettingsReadModel = null,
         IReadOnlyCollection<IPhotoReadModel>? photos = null,
         IBotReadModel? bot = null,
+        IDocumentReadModel? botDescriptionDocumentReadModel=null,
+        IPhotoReadModel? botDescriptionPhotoReadModel=null,
         IContactReadModel? contactReadModel = null,
         ContactType? contactType = null,
         IReadOnlyCollection<IPrivacyReadModel>? privacies = null

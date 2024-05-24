@@ -11,4 +11,6 @@ public class GatewayServerItem
     public string CertPemFilePath { get; set; } = string.Empty;
     public string KeyPemFilePath { get; set; } = string.Empty;
     public bool EnableProxyProtocolV2 { get; set; }
+
+    public bool MediaOnly { get; set; }
 }

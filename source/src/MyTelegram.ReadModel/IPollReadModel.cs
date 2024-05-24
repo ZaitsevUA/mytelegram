@@ -1,4 +1,6 @@
-﻿namespace MyTelegram.ReadModel;
+﻿using MyTelegram.Domain.Aggregates.Poll;
+
+namespace MyTelegram.ReadModel;
 
 public interface IPollReadModel : IReadModel
 {
@@ -17,4 +19,5 @@ public interface IPollReadModel : IReadModel
     int? ClosePeriod { get; }
     int TotalVoters { get; }
     IReadOnlyCollection<PollAnswerVoter>? AnswerVoters { get; }
+    byte[]? QuestionEntities { get; }
 }

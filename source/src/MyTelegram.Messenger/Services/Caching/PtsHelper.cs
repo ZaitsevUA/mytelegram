@@ -3,7 +3,6 @@
 public class PtsHelper : IPtsHelper
 {
     private readonly ConcurrentDictionary<long, PtsCacheItem> _ownerToPtsDict = new();
-    private readonly int _syncToReadModelIntervalCount = 1000;
 
     public int GetCachedPts(long ownerId)
     {
@@ -14,8 +13,6 @@ public class PtsHelper : IPtsHelper
 
         return MyTelegramServerDomainConsts.PtsInitId;
     }
-
-    //public async Task AddPtsAsync(long ownerId,int currentPts){}
 
     public Task<int> IncrementPtsAsync(long ownerId, int currentPts, int ptsCount = 1, long permAuthKeyId = 0, int newUnreadCount = 0)
     {
@@ -34,15 +31,6 @@ public class PtsHelper : IPtsHelper
             {
                 cacheItem.AddPts(currentPts - cacheItem.Pts);
             }
-
-            //if (cacheItem.Pts + 1 < currentPts)
-            //{
-            //    cacheItem.AddPts(currentPts - cacheItem.Pts);
-            //}
-            //else
-            //{
-            //    cacheItem.IncrementPts();
-            //}
         }
         else
         {
@@ -54,14 +42,6 @@ public class PtsHelper : IPtsHelper
         {
             cacheItem.AddUnreadCount(newUnreadCount);
         }
-
-        if (cacheItem.Pts % _syncToReadModelIntervalCount == 0)
-        {
-            //var command = new UpdatePtsCommand(PtsId.Create(ownerId), ownerId, currentPts);
-            //await _commandBus.PublishAsync(command, CancellationToken.None);
-        }
-
-        // _logger.LogInformation("##### pts updated {UserId} {Pts}", ownerId, cacheItem.Pts);
 
         return Task.FromResult(cacheItem.Pts);
     }
@@ -89,14 +69,6 @@ public class PtsHelper : IPtsHelper
             cacheItem = new PtsCacheItem(ownerId, currentQts);
             _ownerToPtsDict.TryAdd(ownerId, cacheItem);
         }
-
-        if (cacheItem.Qts % _syncToReadModelIntervalCount == 0)
-        {
-            //var command = new UpdatePtsCommand(PtsId.Create(ownerId), ownerId, currentPts);
-            //await _commandBus.PublishAsync(command, CancellationToken.None);
-        }
-
-        // _logger.LogInformation("##### pts updated {UserId} {Pts}", ownerId, cacheItem.Pts);
 
         return Task.FromResult(cacheItem.Qts);
     }

@@ -84,6 +84,5 @@ internal sealed class GetHistoryHandler : RpcResultObjectHandler<MyTelegram.Sche
         });
 
         return _layeredService.GetConverter(input.Layer).ToMessages(r, input.Layer);
-        //return _rpcResultProcessor.ToMessages(r, input.Layer);
     }
 }

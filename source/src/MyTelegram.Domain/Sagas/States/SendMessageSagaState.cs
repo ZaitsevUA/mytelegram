@@ -13,13 +13,6 @@ public class SendMessageSagaState : AggregateState<SendMessageSaga, SendMessageS
     public List<long>? MentionedUserIds { get; private set; }
     public int GroupItemCount { get; set; }
     public long? LinkedChannelId { get; set; }
-    //public List<long>? BotUserIds { get; set; }
-    public long ReplyToMessageSavedFromPeerId { get; private set; }
-    //public int ReplyToMsgId { get; set; }
-    //public bool ForwardFromLinkedChannel { get; set; }
-    //public int Pts { get; private set; }
-
-    //public List<ReplyToMsgItem>? ReplyToMsgItems { get; private set; }
     public List<long>? ChatMembers { get; private set; } = new();
     public List<InboxItem> InboxItems { get; private set; } = new();
 
@@ -33,7 +26,6 @@ public class SendMessageSagaState : AggregateState<SendMessageSaga, SendMessageS
         GroupItemCount = aggregateEvent.GroupItemCount;
         LinkedChannelId = aggregateEvent.LinkedChannelId;
         ChatMembers = aggregateEvent.ChatMembers;
-        //ReplyToMsgItems=aggregateEvent.ReplyToMsgItems;
 
         if (aggregateEvent.ReplyToMsgItems?.Count > 0)
         {
@@ -43,12 +35,10 @@ public class SendMessageSagaState : AggregateState<SendMessageSaga, SendMessageS
 
     public void Apply(SendOutboxMessageCompletedEvent aggregateEvent)
     {
-        //throw new NotImplementedException();
     }
 
     public void Apply(ReceiveInboxMessageCompletedEvent aggregateEvent)
     {
-        //throw new NotImplementedException();
         InboxItems.Add(new(aggregateEvent.MessageItem.OwnerPeer.PeerId, aggregateEvent.MessageItem.MessageId));
     }
 
@@ -67,16 +57,13 @@ public class SendMessageSagaState : AggregateState<SendMessageSaga, SendMessageS
 
     public void Apply(ReplyChannelMessageCompletedEvent aggregateEvent)
     {
-        //throw new NotImplementedException();
     }
 
     public void Apply(ReplyBroadcastChannelCompletedSagaEvent aggregateEvent)
     {
-        //throw new NotImplementedException();
     }
 
     public void Apply(PostChannelIdUpdatedEvent aggregateEvent)
     {
-        //throw new NotImplementedException();
     }
 }

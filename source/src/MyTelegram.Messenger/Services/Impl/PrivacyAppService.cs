@@ -45,7 +45,7 @@ public class PrivacyAppService(
         var globalPrivacySettings = await queryProcessor.ProcessAsync(new GetGlobalPrivacySettingsQuery(userId));
         if (globalPrivacySettings != null)
         {
-            item = new(globalPrivacySettings.ArchiveAndMuteNewNoncontactPeers,
+            item = new GlobalPrivacySettingsCacheItem(globalPrivacySettings.ArchiveAndMuteNewNoncontactPeers,
                 globalPrivacySettings.KeepArchivedUnmuted, globalPrivacySettings.KeepArchivedFolders,
                 globalPrivacySettings.HideReadMarks, globalPrivacySettings.NewNoncontactPeersRequirePremium);
             await cacheManager.SetAsync(cacheKey, item);

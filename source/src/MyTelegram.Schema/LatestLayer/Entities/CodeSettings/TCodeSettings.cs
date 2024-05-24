@@ -45,6 +45,7 @@ public sealed class TCodeSettings : ICodeSettings
     /// See <a href="https://corefork.telegram.org/type/true" />
     ///</summary>
     public bool AllowFirebase { get; set; }
+    public bool UnknownNumber { get; set; }
 
     ///<summary>
     /// Previously stored future auth tokens, see <a href="https://corefork.telegram.org/api/auth#future-auth-tokens">the documentation for more info »</a>
@@ -69,6 +70,7 @@ public sealed class TCodeSettings : ICodeSettings
         if (AllowAppHash) { Flags[4] = true; }
         if (AllowMissedCall) { Flags[5] = true; }
         if (AllowFirebase) { Flags[7] = true; }
+        if (UnknownNumber) { Flags[9] = true; }
         if (LogoutTokens?.Count > 0) { Flags[6] = true; }
         if (Token != null) { Flags[8] = true; }
         if (AppSandbox !=null) { Flags[8] = true; }
@@ -92,6 +94,7 @@ public sealed class TCodeSettings : ICodeSettings
         if (Flags[4]) { AllowAppHash = true; }
         if (Flags[5]) { AllowMissedCall = true; }
         if (Flags[7]) { AllowFirebase = true; }
+        if (Flags[9]) { UnknownNumber = true; }
         if (Flags[6]) { LogoutTokens = reader.Read<TVector<byte[]>>(); }
         if (Flags[8]) { Token = reader.ReadString(); }
         if (Flags[8]) { AppSandbox = reader.Read(); }

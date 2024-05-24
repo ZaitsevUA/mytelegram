@@ -7,6 +7,7 @@ public class ChannelAdminRightsEditedEvent(
     bool canEdit,
     long userId,
     bool isBot,
+    bool isChannelMember,
     bool isNewAdmin,
     ChatAdminRights adminRights,
     string rank,
@@ -30,5 +31,6 @@ public class ChannelAdminRightsEditedEvent(
 
     public long UserId { get; } = userId;
     public bool IsBot { get; } = isBot;
+    public bool IsChannelMember { get; } = isChannelMember;
     public bool IsNewAdmin { get; } = isNewAdmin;
 }

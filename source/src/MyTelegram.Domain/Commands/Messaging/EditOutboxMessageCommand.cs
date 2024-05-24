@@ -8,6 +8,7 @@ public class EditOutboxMessageCommand(
     byte[]? entities,
     int editDate,
     byte[]? media,
+    byte[]? replyMarkup,
     List<long>? chatMembers)
     : RequestCommand2<MessageAggregate, MessageId, IExecutionResult>(aggregateId, requestInfo)
 {
@@ -16,6 +17,7 @@ public class EditOutboxMessageCommand(
     public byte[]? Entities { get; } = entities;
     public int EditDate { get; } = editDate;
     public byte[]? Media { get; } = media;
+    public byte[]? ReplyMarkup { get; } = replyMarkup;
     public List<long>? ChatMembers { get; } = chatMembers;
 
     protected override IEnumerable<byte[]> GetSourceIdComponents()

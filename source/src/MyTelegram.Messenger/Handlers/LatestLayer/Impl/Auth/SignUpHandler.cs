@@ -38,8 +38,8 @@ internal sealed class SignUpHandler : RpcResultObjectHandler<MyTelegram.Schema.A
     {
         var phoneNumber = obj.PhoneNumber.ToPhoneNumber();
         var userReadModel = await _queryProcessor
-                .ProcessAsync(new GetUserByPhoneNumberQuery(phoneNumber), default)
-            ;
+            .ProcessAsync(new GetUserByPhoneNumberQuery(phoneNumber), default)
+     ;
         var userId = userReadModel?.UserId ?? 0;
 
         var command = new CheckSignUpCodeCommand(AppCodeId.Create(phoneNumber, obj.PhoneCodeHash),

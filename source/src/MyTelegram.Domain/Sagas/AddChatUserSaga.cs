@@ -36,7 +36,7 @@ public class AddChatUserSaga(
         );
 
         var command = new CreateOutboxMessageCommand(aggregateId,
-            domainEvent.AggregateEvent.RequestInfo,//with { RequestId = Guid.NewGuid() },
+            domainEvent.AggregateEvent.RequestInfo ,//with { RequestId = Guid.NewGuid() },
             item,
             chatMembers: domainEvent.AggregateEvent.AllChatMembers
         );

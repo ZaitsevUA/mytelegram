@@ -7,7 +7,7 @@ public interface IChannelReadModel : IReadModel
     string? Address { get; }
 
     List<ChatAdmin> AdminList { get; }
-
+    List<long> Bots { get; }
     bool Broadcast { get; }
 
     long ChannelId { get; }
@@ -50,4 +50,5 @@ public interface IChannelReadModel : IReadModel
     long? BackgroundEmojiId { get; }
     int? Level { get; }
     bool HasLink { get; }
+    bool IsDeleted { get; }
 }

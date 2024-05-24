@@ -1,4 +1,5 @@
 ﻿global using Microsoft.AspNetCore.Connections;
+global using MyTelegram;
 global using MyTelegram.Core;
 global using MyTelegram.EventBus;
 global using MyTelegram.GatewayServer;

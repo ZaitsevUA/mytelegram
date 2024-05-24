@@ -31,41 +31,38 @@ namespace MyTelegram.Handlers.Channels;
 /// 403 USER_RESTRICTED You're spamreported, you can't create channels or chats.
 /// See <a href="https://corefork.telegram.org/method/channels.editAdmin" />
 ///</summary>
-internal sealed class EditAdminHandler : RpcResultObjectHandler<MyTelegram.Schema.Channels.RequestEditAdmin, MyTelegram.Schema.IUpdates>,
-    Channels.IEditAdminHandler
+internal sealed class EditAdminHandler(
+    ICommandBus commandBus,
+    IPeerHelper peerHelper,
+    IQueryProcessor queryProcessor,
+    IAccessHashHelper accessHashHelper)
+    : RpcResultObjectHandler<MyTelegram.Schema.Channels.RequestEditAdmin, MyTelegram.Schema.IUpdates>,
+        Channels.IEditAdminHandler
 {
-    private readonly ICommandBus _commandBus;
-    private readonly IPeerHelper _peerHelper;
-    private readonly IAccessHashHelper _accessHashHelper;
-    public EditAdminHandler(ICommandBus commandBus,
-        IPeerHelper peerHelper,
-        IAccessHashHelper accessHashHelper)
-    {
-        _commandBus = commandBus;
-        _peerHelper = peerHelper;
-        _accessHashHelper = accessHashHelper;
-    }
-
     protected override async Task<IUpdates> HandleCoreAsync(IRequestInput input,
         MyTelegram.Schema.Channels.RequestEditAdmin obj)
     {
         if (obj.Channel is TInputChannel inputChannel)
         {
-            await _accessHashHelper.CheckAccessHashAsync(inputChannel.ChannelId, inputChannel.AccessHash);
+            await accessHashHelper.CheckAccessHashAsync(inputChannel.ChannelId, inputChannel.AccessHash);
 
-            var peer = _peerHelper.GetPeer(obj.UserId);
-            var isBot = _peerHelper.IsBotUser(peer.PeerId);
+            var peer = peerHelper.GetPeer(obj.UserId);
+            var isBot = peerHelper.IsBotUser(peer.PeerId);
+            var channelMember =
+                await queryProcessor.ProcessAsync(
+                    new GetChannelMemberByUserIdQuery(inputChannel.ChannelId, peer.PeerId));
             var command = new EditChannelAdminCommand(ChannelId.Create(inputChannel.ChannelId),
                 input.ToRequestInfo(),
                 input.UserId,
                 false,
                 peer.PeerId,
                 isBot,
+                channelMember != null,
                 new ChatAdminRights(obj.AdminRights.Flags),
                 obj.Rank,
                 CurrentDate
             );
-            await _commandBus.PublishAsync(command, CancellationToken.None);
+            await commandBus.PublishAsync(command);
             return null!;
         }
 

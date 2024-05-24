@@ -30,8 +30,9 @@ public class ChatMapper :
         destination.Title = source.Title;
         destination.Megagroup = source.MegaGroup;
         destination.ParticipantsCount = 1;
-        destination.DefaultBannedRights = Map(ChatBannedRights.Default);
+        destination.DefaultBannedRights = Map(ChatBannedRights.CreateDefaultBannedRights());
         destination.Photo = new TChatPhotoEmpty();
+
         return destination;
     }
 
@@ -84,6 +85,7 @@ public class ChatMapper :
         destination.InviteUsers = source.InviteUsers;
         destination.PinMessages = source.PinMessages;
         destination.ManageTopics = source.ManageTopics;
+
         destination.SendPhotos = source.SendPhotos;
         destination.SendVideos = source.SendVideos;
         destination.SendRoundvideos = source.SendRoundVideos;
@@ -91,6 +93,7 @@ public class ChatMapper :
         destination.SendVoices = source.SendVoices;
         destination.SendDocs = source.SendDocs;
         destination.SendPlain = source.SendPlain;
+
         destination.UntilDate = source.UntilDate;
 
         return destination;
@@ -174,10 +177,12 @@ public class ChatMapper :
                         }))
                     };
                 }
+
                 break;
             default:
                 throw new ArgumentOutOfRangeException();
         }
+
         destination.Antispam = source.AntiSpam;
         destination.TtlPeriod = source.TtlPeriod;
         destination.TranslationsDisabled = false;
@@ -207,12 +212,13 @@ public class ChatMapper :
         destination.Username = source.UserName;
         destination.Date = source.Date;
         destination.SlowmodeEnabled = source.SlowModeEnabled;
-        destination.DefaultBannedRights = Map(source.DefaultBannedRights ?? ChatBannedRights.Default);
+        destination.DefaultBannedRights = Map(source.DefaultBannedRights ?? ChatBannedRights.CreateDefaultBannedRights());
 
         destination.HasLink = source.HasLink;
         destination.Noforwards = source.NoForwards;
-        destination.Color=source.Color.ToPeerColor();
+        destination.Color = source.Color.ToPeerColor();
         destination.ProfileColor = source.ProfileColor.ToPeerColor();
+
         if (source.BackgroundEmojiId.HasValue)
         {
             destination.EmojiStatus = new TEmojiStatus
@@ -236,7 +242,7 @@ public class ChatMapper :
         destination.Id = source.ChatId;
         destination.Title = source.Title;
         destination.Date = source.Date;
-        destination.DefaultBannedRights = Map(source.DefaultBannedRights ?? ChatBannedRights.Default);
+        destination.DefaultBannedRights = Map(source.DefaultBannedRights ?? ChatBannedRights.CreateDefaultBannedRights());
         destination.ParticipantsCount = source.ChatMembers.Count;
         destination.Deactivated = source.Deactivated;
         if (source is { MigrateToChannelId: not null, MigrateToChannelAccessHash: not null })
@@ -259,6 +265,7 @@ public class ChatMapper :
         destination.About = source.About ?? string.Empty;
         destination.CanSetUsername = true;
         destination.Id = source.ChatId;
+
         //destination.ChatPhoto = source.Photo.ToTObject<IPhoto>() ?? new TPhotoEmpty();
         switch (source.ReactionType)
         {
@@ -282,10 +289,12 @@ public class ChatMapper :
                         }))
                     };
                 }
+
                 break;
             default:
                 throw new ArgumentOutOfRangeException();
         }
+
         destination.TranslationsDisabled = false;
 
         return destination;
@@ -322,7 +331,7 @@ public class ChatMapper :
 
     public ChatBannedRights Map(TChatBannedRights source)
     {
-        return Map(source, new ChatBannedRights());
+        return Map(source, ChatBannedRights.CreateDefaultBannedRights());
     }
 
     public ChatBannedRights Map(TChatBannedRights source, ChatBannedRights destination)
@@ -340,6 +349,7 @@ public class ChatMapper :
         destination.InviteUsers = source.InviteUsers;
         destination.PinMessages = source.PinMessages;
         destination.ManageTopics = source.ManageTopics;
+
         destination.SendPhotos = source.SendPhotos;
         destination.SendVideos = source.SendVideos;
         destination.SendRoundVideos = source.SendRoundvideos;

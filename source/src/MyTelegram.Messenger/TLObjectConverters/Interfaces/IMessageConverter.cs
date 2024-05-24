@@ -29,5 +29,6 @@ public interface IMessageConverter : ILayeredConverter
         IReadOnlyCollection<IPollAnswerVoterReadModel>? pollAnswerVoterReadModels,
         long selfUserId);
 
-    IMessage ToDiscussionMessage(long selfUserId, IMessageReadModel messageReadModel/*, IReplyReadModel? replyReadModel*/);
+    IMessage ToDiscussionMessage(long selfUserId,
+        IMessageReadModel messageReadModel /*, IReplyReadModel? replyReadModel*/);
 }

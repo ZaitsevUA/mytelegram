@@ -75,18 +75,14 @@ public class PtsState : AggregateState<PtsAggregate, PtsId, PtsState>,
         PermAuthKeyId= aggregateEvent.PermAuthKeyId;
     }
 
-    //public void Apply(ChannelPtsForUserUpdatedEvent aggregateEvent)
-    //{
-    //    PeerId = aggregateEvent.UserId;
-    //    Pts= aggregateEvent.Pts;
-    //    GlobalSeqNo=aggregateEvent.GlobalSeqNo;
-    //}
+
     public void Apply(QtsAckedEvent aggregateEvent)
     {
         if (aggregateEvent.Qts != 0)
         {
             Qts = aggregateEvent.Qts;
         }
+
         if (aggregateEvent.GlobalSeqNo != 0)
         {
             GlobalSeqNo = aggregateEvent.GlobalSeqNo;

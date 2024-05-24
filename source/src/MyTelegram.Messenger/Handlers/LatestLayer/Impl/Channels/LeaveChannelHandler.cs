@@ -35,9 +35,7 @@ internal sealed class LeaveChannelHandler : RpcResultObjectHandler<MyTelegram.Sc
     {
         if (obj.Channel is TInputChannel inputChannel)
         {
-            await _accessHashHelper.CheckAccessHashAsync(inputChannel.ChannelId, inputChannel.AccessHash)
-                ;
-
+            await _accessHashHelper.CheckAccessHashAsync(inputChannel.ChannelId, inputChannel.AccessHash);
             var channel = _peerHelper.GetChannel(obj.Channel);
             var command = new LeaveChannelCommand(ChannelMemberId.Create(channel.PeerId, input.UserId),
                 input.ToRequestInfo(),

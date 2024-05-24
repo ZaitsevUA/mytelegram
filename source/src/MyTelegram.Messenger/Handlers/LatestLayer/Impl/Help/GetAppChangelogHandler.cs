@@ -29,6 +29,7 @@ internal sealed class GetAppChangelogHandler : RpcResultObjectHandler<MyTelegram
                     Message="Updated to the latest version",
                     Media = new TMessageMediaEmpty(),
                     Entities=new(),
+                    InvertMedia = false,
                 }
             }
         };

@@ -35,9 +35,10 @@ internal sealed class ReadHistoryHandler : RpcResultObjectHandler<MyTelegram.Sch
             var messageReadModel =
                 await _queryProcessor.ProcessAsync(
                     new GetMessageByIdQuery(MessageId.Create(inputChannel.ChannelId, obj.MaxId).Value));
-
+            
             if (messageReadModel == null)
             {
+                //Console.WriteLine($"ReadHistory message not exists:ChannelId{inputChannel.ChannelId} maxId={obj.MaxId}");
                 RpcErrors.RpcErrors400.MessageIdInvalid.ThrowRpcError();
             }
 

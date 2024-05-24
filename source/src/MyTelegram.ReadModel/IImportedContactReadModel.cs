@@ -7,5 +7,5 @@ public interface IImportedContactReadModel : IReadModel
     string? LastName { get; }
     string Phone { get; }
     long SelfUserId { get; }
-    long TargetUid { get; }
+    long TargetUserId { get; }
 }

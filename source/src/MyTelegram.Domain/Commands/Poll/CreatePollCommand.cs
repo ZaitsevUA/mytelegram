@@ -11,7 +11,9 @@ public class CreatePollCommand(
     IReadOnlyCollection<PollAnswer> answers,
     IReadOnlyCollection<string>? correctAnswers,
     string? solution,
-    byte[]? solutionEntities)
+    byte[]? solutionEntities,
+    byte[]? questionEntities
+    )
     : Command<PollAggregate, PollId, IExecutionResult>(aggregateId)
 {
     public Peer ToPeer { get; } = toPeer;
@@ -24,4 +26,5 @@ public class CreatePollCommand(
     public IReadOnlyCollection<string>? CorrectAnswers { get; } = correctAnswers;
     public string? Solution { get; } = solution;
     public byte[]? SolutionEntities { get; } = solutionEntities;
+    public byte[]? QuestionEntities { get; } = questionEntities;
 }

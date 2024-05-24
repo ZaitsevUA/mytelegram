@@ -9,20 +9,12 @@ namespace MyTelegram.Handlers.Account;
 /// 400 PEER_ID_INVALID The provided peer id is invalid.
 /// See <a href="https://corefork.telegram.org/method/account.getNotifySettings" />
 ///</summary>
-internal sealed class GetNotifySettingsHandler : RpcResultObjectHandler<MyTelegram.Schema.Account.RequestGetNotifySettings, MyTelegram.Schema.IPeerNotifySettings>,
-    Account.IGetNotifySettingsHandler
+internal sealed class GetNotifySettingsHandler(
+    IQueryProcessor queryProcessor,
+    ILayeredService<IPeerNotifySettingsConverter> layeredService)
+    : RpcResultObjectHandler<MyTelegram.Schema.Account.RequestGetNotifySettings, MyTelegram.Schema.IPeerNotifySettings>,
+        Account.IGetNotifySettingsHandler
 {
-    private readonly IObjectMapper _objectMapper;
-    private readonly IQueryProcessor _queryProcessor;
-
-    public GetNotifySettingsHandler(IQueryProcessor queryProcessor,
-        IObjectMapper objectMapper)
-    {
-        _queryProcessor = queryProcessor;
-        _objectMapper = objectMapper;
-    }
-
-    //private readonly ipeerno
     protected override async Task<MyTelegram.Schema.IPeerNotifySettings> HandleCoreAsync(IRequestInput input,
         MyTelegram.Schema.Account.RequestGetNotifySettings obj)
     {
@@ -83,25 +75,8 @@ internal sealed class GetNotifySettingsHandler : RpcResultObjectHandler<MyTelegr
 
         id = PeerNotifySettingsId.Create(userId, peerType, peerId);
         var peerNotifySettingsReadModel =
-            await _queryProcessor.ProcessAsync(new GetPeerNotifySettingsByIdQuery(id), CancellationToken.None)
-         ;
-        var peerNotifySettings = peerNotifySettingsReadModel?.NotifySettings ?? PeerNotifySettings.DefaultSettings;
+            await queryProcessor.ProcessAsync(new GetPeerNotifySettingsByIdQuery(id), CancellationToken.None);
 
-        var r = _objectMapper.Map<PeerNotifySettings, TPeerNotifySettings>(peerNotifySettings);
-        r.MuteUntil = 0;
-        r.IosSound = new TNotificationSoundDefault();
-
-        r.AndroidSound = new TNotificationSoundLocal
-        {
-            Title = "default",
-            Data = "default"
-        };
-        r.OtherSound = new TNotificationSoundLocal
-        {
-            Title = "default",
-            Data = "default"
-        };
-
-        return r;
+        return layeredService.GetConverter(input.Layer).ToPeerNotifySettings(peerNotifySettingsReadModel);
     }
 }

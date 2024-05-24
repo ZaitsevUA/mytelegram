@@ -14,4 +14,4 @@ public record RequestInput(
     long Date,
     DeviceType DeviceType,
     string ClientIp
-    ) : IRequestInput;
+) : IRequestInput;

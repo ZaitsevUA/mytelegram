@@ -12,6 +12,7 @@ namespace MyTelegram.Handlers.Auth;
 internal sealed class ExportAuthorizationHandler : RpcResultObjectHandler<MyTelegram.Schema.Auth.RequestExportAuthorization, MyTelegram.Schema.Auth.IExportedAuthorization>,
     Auth.IExportAuthorizationHandler
 {
+    //private readonly IDistributedCache<string> _distributedCache;
     private readonly ICacheManager<string> _cacheManager;
     private readonly IHashHelper _hashHelper;
     private readonly IOptions<MyTelegramMessengerServerOptions> _options;

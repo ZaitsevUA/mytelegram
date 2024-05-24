@@ -12,10 +12,12 @@ namespace MyTelegram.Schema.Messages;
 /// 400 PEER_ID_INVALID The provided peer id is invalid.
 /// See <a href="https://corefork.telegram.org/method/messages.setChatAvailableReactions" />
 ///</summary>
-[TlObject(0xfeb16771)]
+[TlObject(0x5a150bd4)]
 public sealed class RequestSetChatAvailableReactions : IRequest<MyTelegram.Schema.IUpdates>
 {
-    public uint ConstructorId => 0xfeb16771;
+    public uint ConstructorId => 0x5a150bd4;
+    public BitArray Flags { get; set; } = new BitArray(32);
+
     ///<summary>
     /// Group where to apply changes
     /// See <a href="https://corefork.telegram.org/type/InputPeer" />
@@ -27,23 +29,28 @@ public sealed class RequestSetChatAvailableReactions : IRequest<MyTelegram.Schem
     /// See <a href="https://corefork.telegram.org/type/ChatReactions" />
     ///</summary>
     public MyTelegram.Schema.IChatReactions AvailableReactions { get; set; }
+    public int? ReactionsLimit { get; set; }
 
     public void ComputeFlag()
     {
-
+        if (/*ReactionsLimit != 0 && */ReactionsLimit.HasValue) { Flags[0] = true; }
     }
 
     public void Serialize(IBufferWriter<byte> writer)
     {
         ComputeFlag();
         writer.Write(ConstructorId);
+        writer.Write(Flags);
         writer.Write(Peer);
         writer.Write(AvailableReactions);
+        if (Flags[0]) { writer.Write(ReactionsLimit.Value); }
     }
 
     public void Deserialize(ref SequenceReader<byte> reader)
     {
+        Flags = reader.ReadBitArray();
         Peer = reader.Read<MyTelegram.Schema.IInputPeer>();
         AvailableReactions = reader.Read<MyTelegram.Schema.IChatReactions>();
+        if (Flags[0]) { ReactionsLimit = reader.ReadInt32(); }
     }
 }

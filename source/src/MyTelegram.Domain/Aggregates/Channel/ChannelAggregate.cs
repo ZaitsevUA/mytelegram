@@ -10,6 +10,25 @@ public class ChannelAggregate : MyInMemorySnapshotAggregateRoot<ChannelAggregate
         Register(_state);
     }
 
+    public void UpdateParticipantCount(int updatedCount)
+    {
+        Specs.AggregateIsCreated.ThrowDomainErrorIfNotSatisfied(this);
+        var newCount = _state.ParticipantCount + updatedCount;
+        Emit(new ChannelParticipantCountChangedEvent(_state.ChannelId, newCount));
+    }
+
+    public void DeleteChannel(RequestInfo requestInfo)
+    {
+        Specs.AggregateIsCreated.ThrowDomainErrorIfNotSatisfied(this);
+
+        if (_state.CreatorId != requestInfo.UserId)
+        {
+            RpcErrors.RpcErrors400.ChatAdminRequired.ThrowRpcError();
+        }
+
+        Emit(new ChannelDeletedEvent(requestInfo, _state.ChannelId, _state.Broadcast, !_state.Broadcast, _state.AccessHash, _state.Title));
+    }
+
     public void CheckChannelState(
         RequestInfo requestInfo,
         long senderPeerId,
@@ -139,6 +158,7 @@ public class ChannelAggregate : MyInMemorySnapshotAggregateRoot<ChannelAggregate
         bool canEdit,
         long userId,
         bool isBot,
+        bool isChannelMember,
         ChatAdminRights adminRights,
         string rank,
         int date
@@ -163,6 +183,7 @@ public class ChannelAggregate : MyInMemorySnapshotAggregateRoot<ChannelAggregate
             canEdit,
             userId,
             isBot,
+            isChannelMember,
             isNewAdmin,
             adminRights,
             rank,
@@ -489,6 +510,8 @@ public class ChannelAggregate : MyInMemorySnapshotAggregateRoot<ChannelAggregate
     {
         return Task.FromResult(new ChannelSnapshot(_state.Broadcast,
             _state.ChannelId,
+            _state.AccessHash,
+            _state.Title,
             _state.CreatorId,
             _state.PhotoId,
             _state.PreHistoryHidden,
@@ -517,7 +540,8 @@ public class ChannelAggregate : MyInMemorySnapshotAggregateRoot<ChannelAggregate
             _state.SignatureEnabled,
             _state.ParticipantCount,
             _state.Color,
-            _state.HasLink
+            _state.HasLink,
+            _state.IsDeleted
         ));
     }
     protected override Task LoadSnapshotAsync(ChannelSnapshot snapshot,
@@ -536,6 +560,11 @@ public class ChannelAggregate : MyInMemorySnapshotAggregateRoot<ChannelAggregate
     private void CheckAdminRights(long userId, Func<ChatAdminRights, bool> rightsToCheck,
         RpcError? rpcError = null /*string errorMessage = RpcErrorMessages.ChatAdminRequired*/)
     {
+        if (_state.IsDeleted)
+        {
+            RpcErrors.RpcErrors400.ChannelPrivate.ThrowRpcError();
+        }
+
         if (_state.CreatorId != userId)
         {
             var admin = _state.GetAdmin(userId);
@@ -560,6 +589,11 @@ public class ChannelAggregate : MyInMemorySnapshotAggregateRoot<ChannelAggregate
 
     private void CheckBannedRights(RequestInfo requestInfo, bool bannedRights, RpcError? rpcError = null)
     {
+        if (_state.IsDeleted)
+        {
+            RpcErrors.RpcErrors400.ChannelPrivate.ThrowRpcError();
+        }
+
         CheckBannedRights(requestInfo.UserId, bannedRights, rpcError);
     }
 

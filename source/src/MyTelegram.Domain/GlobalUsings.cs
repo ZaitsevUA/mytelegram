@@ -66,6 +66,7 @@ global using MyTelegram.Domain.Events.PushUpdates;
 global using MyTelegram.Domain.Events.QrCode;
 global using MyTelegram.Domain.Events.RpcResult;
 global using MyTelegram.Domain.Events.User;
+global using MyTelegram.Domain.Events.Poll;
 global using MyTelegram.Domain.Events.UserName;
 global using MyTelegram.Domain.Events.ChatInvite;
 global using MyTelegram.Domain.Events.Temp;

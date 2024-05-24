@@ -1,8 +1,9 @@
 ﻿// ReSharper disable once CheckNamespace
+
 namespace MyTelegram;
 
 /// <summary>
-/// The request info
+///     The request info
 /// </summary>
 /// <param name="ReqMsgId">Request message id</param>
 /// <param name="UserId">Request userId</param>
@@ -13,4 +14,13 @@ namespace MyTelegram;
 /// <param name="Date">Request date</param>
 /// <param name="DeviceType">Client device type</param>
 /// <param name="AddRequestIdToCache">Add the request id to cache(used by InvokeAfterMsgHandler)</param>
-public record RequestInfo(long ReqMsgId, long UserId, long AuthKeyId, long PermAuthKeyId, Guid RequestId, int Layer, long Date, DeviceType DeviceType = DeviceType.Desktop, bool AddRequestIdToCache = true);
+public record RequestInfo(
+    long ReqMsgId,
+    long UserId,
+    long AuthKeyId,
+    long PermAuthKeyId,
+    Guid RequestId,
+    int Layer,
+    long Date,
+    DeviceType DeviceType = DeviceType.Desktop,
+    bool AddRequestIdToCache = true);

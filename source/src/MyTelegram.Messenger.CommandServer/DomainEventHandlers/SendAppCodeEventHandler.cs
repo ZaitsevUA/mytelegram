@@ -1,8 +1,4 @@
-﻿using MyTelegram.Domain.Aggregates.AppCode;
-using MyTelegram.Domain.Events.AppCode;
-using MyTelegram.Domain.Extensions;
-
-namespace MyTelegram.Messenger.CommandServer.DomainEventHandlers;
+﻿namespace MyTelegram.Messenger.CommandServer.DomainEventHandlers;
 
 public class SendAppCodeEventHandler(
     ILogger<SendAppCodeEventHandler> logger,
@@ -39,8 +35,7 @@ public class SendAppCodeEventHandler(
                     0,
                     Guid.NewGuid(),
                     MyTelegramServerDomainConsts.Layer,
-                    DateTime.UtcNow.ToTimestamp(),
-                    DeviceType.Desktop
+                    DateTime.UtcNow.ToTimestamp()
                 ),
                 MyTelegramServerDomainConsts.OfficialUserId,
                 new Peer(PeerType.User, domainEvent.AggregateEvent.UserId),

@@ -1,46 +1,46 @@
-﻿namespace MyTelegram.Messenger.Services.Impl;
+﻿//namespace MyTelegram.Messenger.Services.Impl;
 
 
-public class MongoDbHighValueGenerator(IMongoDbIdGenerator idGenerator) : IHiLoHighValueGenerator
-{
-    public Task<long> GetNewHighValueAsync(IdType idType, long key, CancellationToken cancellationToken = default)
-    {
-        return idGenerator.NextLongIdAsync(idType, key, cancellationToken: cancellationToken);
-    }
-}
+//public class MongoDbHighValueGenerator(IMongoDbIdGenerator idGenerator) : IHiLoHighValueGenerator
+//{
+//    public Task<long> GetNewHighValueAsync(IdType idType, long key, CancellationToken cancellationToken = default)
+//    {
+//        return idGenerator.NextLongIdAsync(idType, key, cancellationToken: cancellationToken);
+//    }
+//}
 
-public class RedisHighValueGenerator(IRedisIdGenerator redisIdGenerator) : IHiLoHighValueGenerator
-{
-    public Task<long> GetNewHighValueAsync(IdType idType, long key, CancellationToken cancellationToken = default)
-    {
-        return redisIdGenerator.NextLongIdAsync(idType, key, cancellationToken: cancellationToken);
-    }
-}
+//public class RedisHighValueGenerator(IRedisIdGenerator redisIdGenerator) : IHiLoHighValueGenerator
+//{
+//    public Task<long> GetNewHighValueAsync(IdType idType, long key, CancellationToken cancellationToken = default)
+//    {
+//        return redisIdGenerator.NextLongIdAsync(idType, key, cancellationToken: cancellationToken);
+//    }
+//}
 
-public class HiLoHighValueGenerator(IOptions<MyTelegramMessengerServerOptions> options) : IHiLoHighValueGenerator
-{
-    public async Task<long> GetNewHighValueAsync(IdType idType,
-        long key,
-        CancellationToken cancellationToken = default)
-    {
-        try
-        {
-            var client = GrpcClientFactory.CreateIdGeneratorServiceClient(options.Value.IdGeneratorGrpcServiceUrl);
-            var r = await client
-                .GenerateNextHighValueAsync(new GenerateNextHighValueRequest { IdType = (int)idType, IdKey = key },
-                    cancellationToken: cancellationToken)
-                .ResponseAsync;
-            return r.HighValue;
-        }
-        catch (HttpRequestException ex)
-        {
-            Console.WriteLine($"Get next id failed:{ex}");
-            var client = GrpcClientFactory.CreateIdGeneratorServiceClient(options.Value.IdGeneratorGrpcServiceUrl, true);
-            var r = await client
-                .GenerateNextHighValueAsync(new GenerateNextHighValueRequest { IdType = (int)idType, IdKey = key },
-                    cancellationToken: cancellationToken)
-                .ResponseAsync;
-            return r.HighValue;
-        }
-    }
-}
+//public class HiLoHighValueGenerator(IOptions<MyTelegramMessengerServerOptions> options) : IHiLoHighValueGenerator
+//{
+//    public async Task<long> GetNewHighValueAsync(IdType idType,
+//        long key,
+//        CancellationToken cancellationToken = default)
+//    {
+//        try
+//        {
+//            var client = GrpcClientFactory.CreateIdGeneratorServiceClient(options.Value.IdGeneratorGrpcServiceUrl);
+//            var r = await client
+//                .GenerateNextHighValueAsync(new GenerateNextHighValueRequest { IdType = (int)idType, IdKey = key },
+//                    cancellationToken: cancellationToken)
+//                .ResponseAsync;
+//            return r.HighValue;
+//        }
+//        catch (HttpRequestException ex)
+//        {
+//            Console.WriteLine($"Get next id failed:{ex}");
+//            var client = GrpcClientFactory.CreateIdGeneratorServiceClient(options.Value.IdGeneratorGrpcServiceUrl, true);
+//            var r = await client
+//                .GenerateNextHighValueAsync(new GenerateNextHighValueRequest { IdType = (int)idType, IdKey = key },
+//                    cancellationToken: cancellationToken)
+//                .ResponseAsync;
+//            return r.HighValue;
+//        }
+//    }
+//}

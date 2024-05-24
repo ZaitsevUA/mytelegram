@@ -6,10 +6,8 @@ public class GetUpdatesQueryHandler(IQueryOnlyReadModelStore<UpdatesReadModel> s
         CancellationToken cancellationToken)
     {
         Expression<Func<UpdatesReadModel, bool>> predicate = p => (p.OwnerPeerId == query.PeerId) /*&& (p.OnlySendToUserId == null || p.OnlySendToUserId == query.SelfUserId) */&& p.Pts > query.MinPts;
-        if (query.Date > 0)
-        {
-            predicate = predicate.And(p => p.Date > query.Date);
-        }
+        predicate = predicate.WhereIf(query.Date > 0, p => p.Date > query.Date)
+            .WhereIf(query.MinPts > 0, p => p.Pts > query.MinPts);
 
         return await store.FindAsync(predicate,
             0,

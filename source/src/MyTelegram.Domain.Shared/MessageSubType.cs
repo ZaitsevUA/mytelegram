@@ -1,4 +1,5 @@
 ﻿// ReSharper disable once CheckNamespace
+
 namespace MyTelegram;
 
 public enum MessageSubType
@@ -21,5 +22,5 @@ public enum MessageSubType
     EditForumTopic = 15,
     MigrateChat = 16,
     EditChannelPhoto = 17,
-    AutoCreateChannelFromChat= 18,
+    AutoCreateChannelFromChat = 18
 }

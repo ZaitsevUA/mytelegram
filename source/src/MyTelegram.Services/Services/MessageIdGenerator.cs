@@ -21,7 +21,7 @@ public class MessageIdGenerator : IMessageIdGenerator
 
         _lastMessageId = messageId;
 
-        //Console.WriteLine($"New server message id:{messageId}");
+        // Console.WriteLine($"New server message id:{messageId}");
 
         return Task.FromResult(messageId);
     }

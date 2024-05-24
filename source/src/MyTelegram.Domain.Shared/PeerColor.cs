@@ -1,3 +1,3 @@
 ﻿namespace MyTelegram;
 
-public partial record PeerColor(int? Color, long? BackgroundEmojiId);
+public record PeerColor(int? Color, long? BackgroundEmojiId);

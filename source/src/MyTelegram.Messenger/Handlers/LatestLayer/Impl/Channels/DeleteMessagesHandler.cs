@@ -58,6 +58,8 @@ internal sealed class DeleteMessagesHandler : RpcResultObjectHandler<MyTelegram.
                 // Delete forwarded post message: update post message channelId to 777
                 var channelReadModel =
                     await _queryProcessor.ProcessAsync(new GetChannelByIdQuery(inputChannel.ChannelId));
+                channelReadModel.ThrowExceptionIfChannelDeleted();
+
                 IReadOnlyCollection<int>? repliesMessageIds = null;
                 long? discussionGroupChannelId = null;
                 var newTopMessageId =

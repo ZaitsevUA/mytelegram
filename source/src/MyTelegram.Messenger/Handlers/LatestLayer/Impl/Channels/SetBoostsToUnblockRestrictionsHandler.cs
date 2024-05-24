@@ -11,6 +11,8 @@ internal sealed class SetBoostsToUnblockRestrictionsHandler : RpcResultObjectHan
     protected override Task<MyTelegram.Schema.IUpdates> HandleCoreAsync(IRequestInput input,
         MyTelegram.Schema.Channels.RequestSetBoostsToUnblockRestrictions obj)
     {
-        throw new NotImplementedException();
+        RpcErrors.RpcErrors400.ChatNotModified.ThrowRpcError();
+
+        return null!;
     }
 }

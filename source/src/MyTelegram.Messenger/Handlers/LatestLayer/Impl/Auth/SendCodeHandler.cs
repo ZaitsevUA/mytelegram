@@ -92,7 +92,7 @@ internal sealed class SendCodeHandler : RpcResultObjectHandler<MyTelegram.Schema
         }
 
         string code = _options.Value.FixedVerifyCode;
-        if (string.IsNullOrEmpty(code))
+        if (string.IsNullOrEmpty(code) || string.IsNullOrWhiteSpace(code))
         {
             code = _randomHelper.GenerateRandomNumber(_options.Value.VerificationCodeLength);
         }

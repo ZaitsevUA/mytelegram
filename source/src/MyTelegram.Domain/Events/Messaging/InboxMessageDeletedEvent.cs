@@ -9,6 +9,6 @@ public class InboxMessageDeletedEvent(
 {
     public int MessageId { get; } = messageId;
     public int SenderMessageId { get; } = senderMessageId;
-    public RequestInfo RequestInfo { get; } = requestInfo;
     public long OwnerPeerId { get; } = ownerPeerId;
+    public RequestInfo RequestInfo { get; } = requestInfo;
 }

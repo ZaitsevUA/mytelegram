@@ -1,8 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 using EventFlow.Core;
 using EventFlow.ValueObjects;
-using MyTelegram.Domain.Sagas.Identities;
-using MyTelegram.Schema.Extensions;
 
 namespace MyTelegram.ReadModel.ReadModelLocators;
 
@@ -35,12 +33,6 @@ public class ReplyReadModelLocator : IReplyReadModelLocator
 
             case ReplyChannelMessageCompletedEvent replyChannelMessageCompletedEvent:
                 yield return ReplyId.Create(replyChannelMessageCompletedEvent.ChannelId, replyChannelMessageCompletedEvent.ReplyToMessageId).Value;
-                //if (replyChannelMessageCompletedEvent.PostChannelId != null && replyChannelMessageCompletedEvent.PostMessageId != null)
-                //{
-                //    yield return ReplyId.Create(replyChannelMessageCompletedEvent.PostChannelId.Value,
-                //        replyChannelMessageCompletedEvent.PostMessageId.Value).Value;
-                //}
-
                 break;
             case MessageReplyCreatedEvent messageReplyCreatedEvent:
 

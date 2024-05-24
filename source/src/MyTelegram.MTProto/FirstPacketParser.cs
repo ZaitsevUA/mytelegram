@@ -42,46 +42,54 @@ public class FirstPacketParser(
         };
 
         var encryptedNonce = ArrayPool<byte>.Shared.Rent(nonce.Length);
-        nonce.CopyTo(encryptedNonce);
-        aesHelper.Ctr128Encrypt(encryptedNonce, sendKey.ToArray(), sendCtrState);
-
-        var data = new FirstPacketData
+        try
         {
-            ObfuscationEnabled = true
-        };
+            nonce.CopyTo(encryptedNonce);
+            aesHelper.Ctr128Encrypt(encryptedNonce, sendKey.ToArray(), sendCtrState);
 
-        var protocolBytes = encryptedNonce.AsSpan().Slice(56, 4);
-
-        switch (protocolBytes)
-        {
-            case [AbridgedFlag, AbridgedFlag, AbridgedFlag, AbridgedFlag]:
-                data.ProtocolType = ProtocolType.Abridge;
-                break;
-            case [IntermediateFlag, IntermediateFlag, IntermediateFlag, IntermediateFlag]:
-                data.ProtocolType = ProtocolType.Intermediate;
-                break;
-            default:
-                logger.LogWarning("Unknown protocol:{nonce56:x} {nonce57:x} {nonce58:x} {nonce59:x}",
-                    protocolBytes[0],
-                    protocolBytes[1],
-                    protocolBytes[2],
-                    protocolBytes[3]);
-                break;
-        }
-
-        if (data.ProtocolType != ProtocolType.Unknown)
-        {
-            logger.LogInformation("[{ProtocolType}] Protocol detected", data.ProtocolType);
-            data.SendKey = sendKey;
-            data.ReceiveState = new CtrState
+            var data = new FirstPacketData
             {
-                Iv = receiveIv
+                ObfuscationEnabled = true
             };
-            data.ReceiveKey = receiveKey;
-            data.SendState = sendCtrState;
-        }
 
-        return data;
+            var protocolBytes = encryptedNonce.AsSpan().Slice(56, 4);
+
+            switch (protocolBytes)
+            {
+                case [AbridgedFlag, AbridgedFlag, AbridgedFlag, AbridgedFlag]:
+                    data.ProtocolType = ProtocolType.Abridge;
+                    break;
+                case [IntermediateFlag, IntermediateFlag, IntermediateFlag, IntermediateFlag]:
+                    data.ProtocolType = ProtocolType.Intermediate;
+                    break;
+                default:
+                    logger.LogWarning("Unknown protocol:{nonce56:x} {nonce57:x} {nonce58:x} {nonce59:x}",
+                        protocolBytes[0],
+                        protocolBytes[1],
+                        protocolBytes[2],
+                        protocolBytes[3]);
+                    break;
+            }
+
+            if (data.ProtocolType != ProtocolType.Unknown)
+            {
+                var dcId = BitConverter.ToInt16(encryptedNonce, 60);
+                logger.LogInformation("[{ProtocolType}] Protocol detected,dcId:{DcId}", data.ProtocolType, dcId);
+                data.SendKey = sendKey;
+                data.ReceiveState = new CtrState
+                {
+                    Iv = receiveIv
+                };
+                data.ReceiveKey = receiveKey;
+                data.SendState = sendCtrState;
+            }
+
+            return data;
+        }
+        finally
+        {
+            ArrayPool<byte>.Shared.Return(encryptedNonce);
+        }
     }
 
     private FirstPacketData ParseUnObfuscationFirstPacket(ReadOnlySpan<byte> firstPacket)

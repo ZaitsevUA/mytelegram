@@ -45,7 +45,7 @@ internal sealed class EditChatDefaultBannedRightsHandler : RpcResultObjectHandle
                         GetChatBannedRights(obj.BannedRights)
                         ,
                         input.UserId);
-                    await _commandBus.PublishAsync(command, CancellationToken.None);
+                    await _commandBus.PublishAsync(command);
                 }
                 break;
             case PeerType.Channel:
@@ -54,7 +54,7 @@ internal sealed class EditChatDefaultBannedRightsHandler : RpcResultObjectHandle
                         input.ToRequestInfo(),
                        GetChatBannedRights(obj.BannedRights),
                         input.UserId);
-                    await _commandBus.PublishAsync(command, CancellationToken.None);
+                    await _commandBus.PublishAsync(command);
                 }
                 break;
         }
@@ -65,5 +65,22 @@ internal sealed class EditChatDefaultBannedRightsHandler : RpcResultObjectHandle
     private ChatBannedRights GetChatBannedRights(IChatBannedRights chatBannedRights)
     {
         return ChatBannedRights.FromValue(chatBannedRights.Flags.ToInt(), chatBannedRights.UntilDate);
+        //ChatBannedRights r = new();
+        //switch (chatBannedRights)
+        //{
+        //    case TChatBannedRights r1:
+        //        r = _objectMapper.Map<TChatBannedRights, ChatBannedRights>(r1);
+        //        break;
+        //    case Schema.TChatBannedRights r2:
+        //        r = _objectMapper.Map<Schema.TChatBannedRights, ChatBannedRights>(r2);
+
+        //        break;
+        //    case Schema.TChatBannedRights r3:
+        //        r = _objectMapper.Map<Schema.TChatBannedRights, ChatBannedRights>(r3);
+
+        //        break;
+        //}
+
+        //return r;
     }
 }

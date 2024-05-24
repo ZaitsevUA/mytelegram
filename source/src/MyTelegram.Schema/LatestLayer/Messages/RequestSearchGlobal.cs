@@ -19,6 +19,7 @@ public sealed class RequestSearchGlobal : IRequest<MyTelegram.Schema.Messages.IM
     /// Flags, see <a href="https://corefork.telegram.org/mtproto/TL-combinators#conditional-fields">TL conditional fields</a>
     ///</summary>
     public BitArray Flags { get; set; } = new BitArray(32);
+    public bool BroadcastsOnly { get; set; }
 
     ///<summary>
     /// <a href="https://corefork.telegram.org/api/folders#peer-folders">Peer folder ID, for more info click here</a>
@@ -69,6 +70,7 @@ public sealed class RequestSearchGlobal : IRequest<MyTelegram.Schema.Messages.IM
 
     public void ComputeFlag()
     {
+        if (BroadcastsOnly) { Flags[1] = true; }
         if (/*FolderId != 0 && */FolderId.HasValue) { Flags[0] = true; }
 
     }
@@ -92,6 +94,7 @@ public sealed class RequestSearchGlobal : IRequest<MyTelegram.Schema.Messages.IM
     public void Deserialize(ref SequenceReader<byte> reader)
     {
         Flags = reader.ReadBitArray();
+        if (Flags[1]) { BroadcastsOnly = true; }
         if (Flags[0]) { FolderId = reader.ReadInt32(); }
         Q = reader.ReadString();
         Filter = reader.Read<MyTelegram.Schema.IMessagesFilter>();

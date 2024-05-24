@@ -29,7 +29,6 @@ public class ContactAppService(
 
             var channelIdList = userNameReadModel.Where(p => p.PeerType == PeerType.Channel).Select(p => p.PeerId)
                 .ToList();
-            //var userIdList = userNameReadModel.Where(p => p.PeerType == PeerType.User).Select(p => p.PeerId).ToList();
 
             var userIdList = contactReadModels.Select(p => p.TargetUserId).ToList();
 
@@ -41,6 +40,7 @@ public class ContactAppService(
                 .ProcessAsync(new GetChannelByChannelIdListQuery(channelIdList));
 
             var photos = await photoAppService.GetPhotosAsync(allUserList, contactReadModels);
+
             var privacyList = await privacyAppService.GetPrivacyListAsync(allUserList.Select(p => p.UserId).ToList());
 
             return new SearchContactOutput(selfUserId,
@@ -48,13 +48,9 @@ public class ContactAppService(
                 photos,
                 contactReadModels,
                 Array.Empty<IChannelReadModel>(),
-                //Array.Empty<IChannelReadModel>(),
                 channelList,
-                //myChannelList,
-                //otherChannelList,
                 privacyList,
                 Array.Empty<IChannelMemberReadModel>()
-                //channelMemberList
                 );
         }
 

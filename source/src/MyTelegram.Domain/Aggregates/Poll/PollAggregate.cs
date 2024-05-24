@@ -98,7 +98,9 @@ public class PollAggregate : AggregateRoot<PollAggregate, PollId>
         IReadOnlyCollection<PollAnswer> answers,
         IReadOnlyCollection<string>? correctAnswers,
         string? solution,
-        byte[]? solutionEntities)
+        byte[]? solutionEntities,
+        byte[]? questionEntities
+        )
     {
         Specs.AggregateIsNew.ThrowDomainErrorIfNotSatisfied(this);
         if (answers.Count > MyTelegramServerDomainConsts.MaxVoteOptions)
@@ -115,7 +117,9 @@ public class PollAggregate : AggregateRoot<PollAggregate, PollId>
             answers.ToList(),
             correctAnswers,
             solution,
-            solutionEntities));
+            solutionEntities,
+            questionEntities
+            ));
     }
 
     public void CreateVoteAnswer(long pollId,

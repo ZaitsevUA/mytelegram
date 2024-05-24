@@ -6,15 +6,13 @@ namespace MyTelegram.Schema.Stats;
 ///<summary>
 /// See <a href="https://corefork.telegram.org/constructor/stats.broadcastRevenueStats" />
 ///</summary>
-[TlObject(0xd07b4bad)]
+[TlObject(0x5407e297)]
 public sealed class TBroadcastRevenueStats : IBroadcastRevenueStats
 {
-    public uint ConstructorId => 0xd07b4bad;
+    public uint ConstructorId => 0x5407e297;
     public MyTelegram.Schema.IStatsGraph TopHoursGraph { get; set; }
     public MyTelegram.Schema.IStatsGraph RevenueGraph { get; set; }
-    public long CurrentBalance { get; set; }
-    public long AvailableBalance { get; set; }
-    public long OverallRevenue { get; set; }
+    public MyTelegram.Schema.IBroadcastRevenueBalances Balances { get; set; }
     public double UsdRate { get; set; }
 
     public void ComputeFlag()
@@ -28,9 +26,7 @@ public sealed class TBroadcastRevenueStats : IBroadcastRevenueStats
         writer.Write(ConstructorId);
         writer.Write(TopHoursGraph);
         writer.Write(RevenueGraph);
-        writer.Write(CurrentBalance);
-        writer.Write(AvailableBalance);
-        writer.Write(OverallRevenue);
+        writer.Write(Balances);
         writer.Write(UsdRate);
     }
 
@@ -38,9 +34,7 @@ public sealed class TBroadcastRevenueStats : IBroadcastRevenueStats
     {
         TopHoursGraph = reader.Read<MyTelegram.Schema.IStatsGraph>();
         RevenueGraph = reader.Read<MyTelegram.Schema.IStatsGraph>();
-        CurrentBalance = reader.ReadInt64();
-        AvailableBalance = reader.ReadInt64();
-        OverallRevenue = reader.ReadInt64();
+        Balances = reader.Read<MyTelegram.Schema.IBroadcastRevenueBalances>();
         UsdRate = reader.ReadDouble();
     }
 }

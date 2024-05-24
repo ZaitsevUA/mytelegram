@@ -59,3 +59,4 @@
 //    public const string InviteHashExpired = "INVITE_HASH_EXPIRED";
 //    public const string InviteRequestSent = "INVITE_REQUEST_SENT";
 //}
+

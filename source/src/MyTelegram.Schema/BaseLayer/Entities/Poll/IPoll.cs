@@ -41,8 +41,9 @@ public interface IPoll : IObject
 
     ///<summary>
     /// The question of the poll
+    /// See <a href="https://corefork.telegram.org/type/TextWithEntities" />
     ///</summary>
-    string Question { get; set; }
+    MyTelegram.Schema.ITextWithEntities Question { get; set; }
 
     ///<summary>
     /// The possible answers, vote using <a href="https://corefork.telegram.org/method/messages.sendVote">messages.sendVote</a>.

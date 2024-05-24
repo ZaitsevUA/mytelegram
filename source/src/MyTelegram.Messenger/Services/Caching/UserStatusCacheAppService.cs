@@ -3,8 +3,16 @@
 public class UserStatusCacheAppService(IInMemoryRepository<UserStatus, long> inMemoryRepository)
     : IUserStatusCacheAppService
 {
+    public IUserStatus GetUserStatus(long userId)
+    {
+        var status = inMemoryRepository.Find(userId);
+        if (status == null) return new TUserStatusEmpty();
+
+        return GetUserStatus(status.LastUpdateDate, status.Online);
+    }
+
     public void UpdateStatus(long userId,
-        bool online)
+            bool online)
     {
         var item = inMemoryRepository.Find(userId);
         if (item == null)
@@ -17,18 +25,6 @@ public class UserStatusCacheAppService(IInMemoryRepository<UserStatus, long> inM
             item.UpdateStatus(online);
         }
     }
-
-    public IUserStatus GetUserStatus(long userId)
-    {
-        var status = inMemoryRepository.Find(userId);
-        if (status == null)
-        {
-            return new TUserStatusEmpty();
-        }
-
-        return GetUserStatus(status.LastUpdateDate, status.Online);
-    }
-
     private static IUserStatus GetUserStatus(DateTime lastUpdateUtcTime,
         bool isOnline)
     {
@@ -38,7 +34,6 @@ public class UserStatusCacheAppService(IInMemoryRepository<UserStatus, long> inM
         const int day = 60 * 60 * 24;
         IUserStatus status;
         if (isOnline)
-        {
             status = timespan switch
             {
                 < 60 => new TUserStatusOnline { Expires = expire },
@@ -48,11 +43,8 @@ public class UserStatusCacheAppService(IInMemoryRepository<UserStatus, long> inM
                 < day * 30 => new TUserStatusLastMonth(),
                 _ => new TUserStatusEmpty()
             };
-        }
         else
-        {
             status = new TUserStatusOffline { WasOnline = wasOnline };
-        }
 
         return status;
     }

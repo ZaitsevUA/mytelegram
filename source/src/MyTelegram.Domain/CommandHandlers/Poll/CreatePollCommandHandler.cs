@@ -1,4 +1,7 @@
-﻿namespace MyTelegram.Domain.CommandHandlers.Poll;
+﻿using MyTelegram.Domain.Aggregates.Poll;
+using MyTelegram.Domain.Commands.Poll;
+
+namespace MyTelegram.Domain.CommandHandlers.Poll;
 
 public class CreatePollCommandHandler : CommandHandler<PollAggregate, PollId, CreatePollCommand>
 {
@@ -16,7 +19,9 @@ public class CreatePollCommandHandler : CommandHandler<PollAggregate, PollId, Cr
             command.Answers,
             command.CorrectAnswers,
             command.Solution,
-            command.SolutionEntities);
+            command.SolutionEntities,
+            command.QuestionEntities
+            );
         return Task.CompletedTask;
     }
 }

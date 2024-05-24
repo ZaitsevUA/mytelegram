@@ -13,6 +13,7 @@ public class OutboxMessageEditCompletedEvent(
     Peer toPeer,
     byte[]? entities,
     byte[]? media,
+    byte[]? replyMarkup,
     MessageFwdHeader? fwdHeader,
     MessageReply? reply)
     : RequestAggregateEvent2<EditMessageSaga, EditMessageSagaId>(requestInfo)
@@ -21,6 +22,7 @@ public class OutboxMessageEditCompletedEvent(
     public Peer ToPeer { get; } = toPeer;
     public byte[]? Entities { get; } = entities;
     public byte[]? Media { get; } = media;
+    public byte[]? ReplyMarkup { get; } = replyMarkup;
     public MessageFwdHeader? FwdHeader { get; } = fwdHeader;
     public MessageReply? Reply { get; } = reply;
     public string Message { get; } = message;

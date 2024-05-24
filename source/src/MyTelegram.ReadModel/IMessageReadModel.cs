@@ -31,6 +31,7 @@ public interface IMessageReadModel : IReadModel, IHasReactions
     bool Silent { get; }
     long ToPeerId { get; }
     PeerType ToPeerType { get; }
+
     Peer? SavedPeerId { get; }
     int? Views { get; }
     long? LinkedChannelId { get; }
@@ -42,12 +43,17 @@ public interface IMessageReadModel : IReadModel, IHasReactions
     //List<long>? ReactionUserIds { get; }
     //List<ReactionCount>? Reactions { get; }
     //List<Reaction>? RecentReactions { get; }
+
+    //IReplyTo? ReplyTo { get; }
     IInputReplyTo? ReplyTo { get; }
     Peer? SendAs { get; }
     MessageReply? Reply { get; }
     long? PostChannelId { get; }
     int? PostMessageId { get; }
+
     bool HasQuickReplyShortcut { get; }
     string? QuickReplyShortcut { get; }
+    // long RandomId { get; }
     Guid BatchId { get; }
+    
 }

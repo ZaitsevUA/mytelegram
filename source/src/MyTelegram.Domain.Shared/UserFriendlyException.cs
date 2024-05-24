@@ -2,11 +2,8 @@
 
 public class UserFriendlyException : Exception
 {
-    public int ErrorCode { get; }
-
     public UserFriendlyException()
     {
-
     }
 
     public UserFriendlyException(string message, int errorCode = 400) : base(message)
@@ -16,6 +13,7 @@ public class UserFriendlyException : Exception
 
     public UserFriendlyException(string message, Exception inner) : base(message, inner)
     {
-
     }
+
+    public int ErrorCode { get; }
 }

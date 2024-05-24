@@ -110,8 +110,7 @@ public class MtpMessageParser(
           Payload: the MTProto payload
         */
         const int maxFirstByteValue = 0x7f;
-        Span<byte> firstBytes = stackalloc byte[1]; //data.First[..1];
-        firstBytes[0] = data.FirstSpan[0];
+        Span<byte> firstBytes = [data.FirstSpan[0]]; //data.First[..1];
         DecryptBytes(firstBytes, d);
         var firstByte = firstBytes[0] & maxFirstByteValue;
 

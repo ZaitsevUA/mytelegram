@@ -33,7 +33,7 @@ ISubscribeSynchronousTo<DialogAggregate, DialogId, ChannelHistoryClearedEvent>
                 domainEvent.AggregateEvent.PtsCount, domainEvent.AggregateEvent.MessageIds),
             DateTime.UtcNow.ToTimestamp());
         await PushUpdatesToPeerAsync(domainEvent.AggregateEvent.RequestInfo.UserId.ToUserPeer(), selfOtherDeviceUpdates,
-            domainEvent.AggregateEvent.RequestInfo.AuthKeyId);
+            domainEvent.AggregateEvent.RequestInfo.AuthKeyId, pts: domainEvent.AggregateEvent.Pts);
     }
 
     public Task HandleAsync(IDomainEvent<DeleteMessagesSaga4, DeleteMessagesSaga4Id, DeleteOtherParticipantMessagesCompletedEvent4> domainEvent, CancellationToken cancellationToken)

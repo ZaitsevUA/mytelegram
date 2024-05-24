@@ -10,7 +10,9 @@ public class PollCreatedEvent(
     IReadOnlyCollection<PollAnswer> answers,
     IReadOnlyCollection<string>? correctAnswers,
     string? solution,
-    byte[]? solutionEntities)
+    byte[]? solutionEntities,
+    byte[]? questionEntities
+    )
     : AggregateEvent<PollAggregate, PollId>
 {
     public Peer ToPeer { get; } = toPeer;
@@ -23,4 +25,5 @@ public class PollCreatedEvent(
     public IReadOnlyCollection<string>? CorrectAnswers { get; } = correctAnswers;
     public string? Solution { get; } = solution;
     public byte[]? SolutionEntities { get; } = solutionEntities;
+    public byte[]? QuestionEntities { get; } = questionEntities;
 }

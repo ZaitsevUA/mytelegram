@@ -80,7 +80,7 @@ internal sealed class GetPeerDialogsHandler : RpcResultObjectHandler<MyTelegram.
                 Limit = limit,
                 PeerIdList = peerList.Select(p => p.PeerId).ToList()
             });
-        var pts = await _queryProcessor.ProcessAsync(new GetPtsByPeerIdQuery(input.UserId), default);
+        var pts = await _queryProcessor.ProcessAsync(new GetPtsByPeerIdQuery(input.UserId));
         var cachedPts = _ptsHelper.GetCachedPts(input.UserId);
 
         output.PtsReadModel = pts;

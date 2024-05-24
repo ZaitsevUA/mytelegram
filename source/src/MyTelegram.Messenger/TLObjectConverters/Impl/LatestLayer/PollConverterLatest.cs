@@ -14,13 +14,21 @@ public class PollConverterLatest : IPollConverterLatest
             Closed = pollReadModel.Closed,
             MultipleChoice = pollReadModel.MultipleChoice,
             Quiz = pollReadModel.Quiz,
-            Question = pollReadModel.Question,
+            Question = new TTextWithEntities
+            {
+                Text = pollReadModel.Question,
+                Entities = pollReadModel.QuestionEntities.ToTObject<TVector<IMessageEntity>>() ?? []
+            },
             CloseDate = pollReadModel.CloseDate,
             ClosePeriod = pollReadModel.ClosePeriod,
             Answers = new TVector<IPollAnswer>(pollReadModel.Answers.Select(p => new TPollAnswer
             {
                 Option = p.Option,
-                Text = p.Text
+                Text = new TTextWithEntities
+                {
+                    Text = p.Text,
+                    Entities = p.Entities.ToTObject<TVector<IMessageEntity>>() ?? []
+                }
             }))
         };
     }

@@ -27,7 +27,7 @@ internal sealed class ResetAuthorizationsHandler : RpcResultObjectHandler<MyTele
         RequestResetAuthorizations obj)
     {
         var deviceList = await _queryProcessor
-            .ProcessAsync(new GetDeviceByUserIdQuery(input.UserId), default);
+            .ProcessAsync(new GetDeviceByUserIdQuery(input.UserId));
         foreach (var deviceReadModel in deviceList)
         {
             if (deviceReadModel.PermAuthKeyId == input.PermAuthKeyId)
@@ -39,7 +39,7 @@ internal sealed class ResetAuthorizationsHandler : RpcResultObjectHandler<MyTele
         }
 
         var updatesTooLong = new TUpdatesTooLong();
-
+       
         await _messageSender.PushMessageToPeerAsync(new Peer(PeerType.User, input.UserId),
             updatesTooLong,
             input.AuthKeyId);

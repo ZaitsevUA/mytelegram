@@ -23,8 +23,7 @@ internal sealed class GetAllDraftsHandler : RpcResultObjectHandler<MyTelegram.Sc
     protected override async Task<IUpdates> HandleCoreAsync(IRequestInput input,
         RequestGetAllDrafts obj)
     {
-        var draftList = await _queryProcessor.ProcessAsync(new GetAllDraftQuery(input.UserId), CancellationToken.None)
-            ;
+        var draftList = await _queryProcessor.ProcessAsync(new GetAllDraftQuery(input.UserId));
 
         return _layeredService.GetConverter(input.Layer).ToDraftsUpdates(draftList);
     }

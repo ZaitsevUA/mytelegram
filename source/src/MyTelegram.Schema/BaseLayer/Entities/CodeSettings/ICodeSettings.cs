@@ -38,6 +38,7 @@ public interface ICodeSettings : IObject
     /// Whether Firebase auth is supported
     ///</summary>
     bool AllowFirebase { get; set; }
+    bool UnknownNumber { get; set; }
 
     ///<summary>
     /// Previously stored future auth tokens, see <a href="https://corefork.telegram.org/api/auth#future-auth-tokens">the documentation for more info »</a>

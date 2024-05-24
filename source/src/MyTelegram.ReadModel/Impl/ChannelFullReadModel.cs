@@ -167,7 +167,7 @@ public class ChannelFullReadModel : IChannelFullReadModel,
                 KickedCount--;
             }
             else if (domainEvent.AggregateEvent.BannedRights.ToIntValue() !=
-                       ChatBannedRights.Default.ToIntValue())
+                       ChatBannedRights.CreateDefaultBannedRights().ToIntValue())
             {
                 BannedCount--;
             }

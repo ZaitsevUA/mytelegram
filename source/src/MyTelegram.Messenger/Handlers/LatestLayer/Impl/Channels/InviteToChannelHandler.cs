@@ -56,6 +56,7 @@ internal sealed class InviteToChannelHandler : RpcResultObjectHandler<MyTelegram
         {
             await _accessHashHelper.CheckAccessHashAsync(inputChannel.ChannelId, inputChannel.AccessHash);
             var channelReadModel = await _queryProcessor.ProcessAsync(new GetChannelByIdQuery(inputChannel.ChannelId));
+            channelReadModel.ThrowExceptionIfChannelDeleted();
 
             if (obj.Users.Count == 1)
             {
@@ -111,7 +112,7 @@ internal sealed class InviteToChannelHandler : RpcResultObjectHandler<MyTelegram
                 new TMessageActionChatAddUser { Users = new TVector<long>(userIdList) }.ToBytes().ToHexString(),
                 ChatJoinType.InvitedByAdmin
                 );
-            await _commandBus.PublishAsync(command, CancellationToken.None);
+            await _commandBus.PublishAsync(command);
 
             return null!;
         }

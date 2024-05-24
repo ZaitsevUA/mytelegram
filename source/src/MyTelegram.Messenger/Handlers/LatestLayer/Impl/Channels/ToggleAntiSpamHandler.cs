@@ -12,6 +12,7 @@ internal sealed class ToggleAntiSpamHandler : RpcResultObjectHandler<MyTelegram.
     protected override Task<MyTelegram.Schema.IUpdates> HandleCoreAsync(IRequestInput input,
         MyTelegram.Schema.Channels.RequestToggleAntiSpam obj)
     {
-        throw new NotImplementedException();
+        RpcErrors.RpcErrors400.ChatNotModified.ThrowRpcError();
+        return null!;
     }
 }

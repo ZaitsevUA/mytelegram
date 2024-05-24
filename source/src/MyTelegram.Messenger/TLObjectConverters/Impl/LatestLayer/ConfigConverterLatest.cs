@@ -5,12 +5,12 @@ public class ConfigConverterLatest(IObjectMapper objectMapper) : IConfigConverte
     public virtual int Layer => Layers.LayerLatest;
     public int RequestLayer { get; set; }
     protected IObjectMapper ObjectMapper { get; } = objectMapper;
-
     public virtual IConfig ToConfig(List<DcOption> dcOptions,
         int thisDcId,
         int mediaDcId)
     {
         var options = ObjectMapper.Map<List<DcOption>, List<TDcOption>>(dcOptions);
+
         var date = DateTime.UtcNow.ToTimestamp();
         var config = new TConfig
         {

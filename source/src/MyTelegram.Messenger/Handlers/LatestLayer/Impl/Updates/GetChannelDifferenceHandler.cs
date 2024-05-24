@@ -20,41 +20,31 @@ namespace MyTelegram.Handlers.Updates;
 /// 400 USER_BANNED_IN_CHANNEL You're banned from sending messages in supergroups/channels.
 /// See <a href="https://corefork.telegram.org/method/updates.getChannelDifference" />
 ///</summary>
-internal sealed class GetChannelDifferenceHandler : RpcResultObjectHandler<MyTelegram.Schema.Updates.RequestGetChannelDifference, MyTelegram.Schema.Updates.IChannelDifference>,
-    Updates.IGetChannelDifferenceHandler
+internal sealed class GetChannelDifferenceHandler(
+    IMessageAppService messageAppService,
+    IQueryProcessor queryProcessor,
+    IAckCacheService ackCacheService,
+    ILayeredService<IDifferenceConverter> layeredService,
+    IAccessHashHelper accessHashHelper,
+    ILogger<GetChannelDifferenceHandler> logger)
+    : RpcResultObjectHandler<MyTelegram.Schema.Updates.RequestGetChannelDifference,
+            MyTelegram.Schema.Updates.IChannelDifference>,
+        Updates.IGetChannelDifferenceHandler
 {
-    private readonly IAckCacheService _ackCacheService;
-    private readonly IMessageAppService _messageAppService;
-    private readonly IQueryProcessor _queryProcessor;
     //private readonly IRpcResultProcessor _rpcResultProcessor;
-    private readonly ILayeredService<IDifferenceConverter> _layeredService;
-    private readonly IAccessHashHelper _accessHashHelper;
-    private readonly ILogger<GetChannelDifferenceHandler> _logger;
-    public GetChannelDifferenceHandler(IMessageAppService messageAppService,
-        IQueryProcessor queryProcessor,
-        IAckCacheService ackCacheService,
-        ILayeredService<IDifferenceConverter> layeredService,
-        IAccessHashHelper accessHashHelper, ILogger<GetChannelDifferenceHandler> logger)
-    {
-        _messageAppService = messageAppService;
-        _queryProcessor = queryProcessor;
-        _ackCacheService = ackCacheService;
-        _layeredService = layeredService;
-        _accessHashHelper = accessHashHelper;
-        _logger = logger;
-    }
+    private readonly ILogger<GetChannelDifferenceHandler> _logger = logger;
 
     protected override async Task<MyTelegram.Schema.Updates.IChannelDifference> HandleCoreAsync(IRequestInput input,
         MyTelegram.Schema.Updates.RequestGetChannelDifference obj)
     {
-
-        await _accessHashHelper.CheckAccessHashAsync(obj.Channel);
+        //logger.LogInformation("[{UserId}]GetDifference:{@Data}",input.UserId, obj);
+        await accessHashHelper.CheckAccessHashAsync(obj.Channel);
         if (obj.Channel is TInputChannel inputChannel)
         {
             // Console.WriteLine($"[{input.UserId}]get channel difference:{inputChannel.ChannelId} pts:{obj.Pts}");
 
             var isChannelMember = true;
-            var channelMemberReadModel = await _queryProcessor
+            var channelMemberReadModel = await queryProcessor
                 .ProcessAsync(new GetChannelMemberByUserIdQuery(inputChannel.ChannelId, input.UserId))
          ;
             isChannelMember = channelMemberReadModel != null;
@@ -72,7 +62,7 @@ internal sealed class GetChannelDifferenceHandler : RpcResultObjectHandler<MyTel
             //{
             //    pts = 0;
             //}
-            var updatesReadModels = await _queryProcessor
+            var updatesReadModels = await queryProcessor
                 .ProcessAsync(new GetUpdatesQuery(input.UserId, inputChannel.ChannelId, pts, 0, limit));
 
             //Console.WriteLine($"=============== {input.UserId} {inputChannel.ChannelId}   updates:{updatesReadModels.Count}  pts:{obj.Pts}");
@@ -86,7 +76,7 @@ internal sealed class GetChannelDifferenceHandler : RpcResultObjectHandler<MyTel
             var chats = updatesReadModels.SelectMany(p => p.Chats ?? new List<long>(0)).ToList();
             chats.Add(inputChannel.ChannelId);
 
-            var dto = await _messageAppService
+            var dto = await messageAppService
                 .GetChannelDifferenceAsync(new GetDifferenceInput(input.UserId, inputChannel.ChannelId,
                     obj.Pts,
                     obj.Limit, messageIds, users, chats));
@@ -98,7 +88,7 @@ internal sealed class GetChannelDifferenceHandler : RpcResultObjectHandler<MyTel
                 maxPts = updatesReadModels.Max(p => p.Pts);
                 var channelMaxGlobalSeqNo = updatesReadModels.Max(p => p.GlobalSeqNo);
 
-                await _ackCacheService.AddRpcPtsToCacheAsync(input.ReqMsgId,
+                await ackCacheService.AddRpcPtsToCacheAsync(input.ReqMsgId,
                     0,
                     channelMaxGlobalSeqNo,
                     new Peer(PeerType.Channel, inputChannel.ChannelId));
@@ -106,8 +96,11 @@ internal sealed class GetChannelDifferenceHandler : RpcResultObjectHandler<MyTel
 
             var allUpdateList = updatesReadModels.Where(p => p.UpdatesType == UpdatesType.Updates)
                 .SelectMany(p => p.Updates ?? new List<IUpdate>(0)).ToList();
-            //_logger.LogInformation("Get channelDifference:updatesCount={Count} {@Input} {@Data},fromPts={Pts} channel updates count={Count}", updatesReadModels.Count, input, allUpdateList, obj.Pts, updatesReadModels.Count);
-            return _layeredService.GetConverter(input.Layer).ToChannelDifference(dto, isChannelMember, allUpdateList, maxPts);
+            var r = layeredService.GetConverter(input.Layer).ToChannelDifference(dto, isChannelMember, allUpdateList, maxPts);
+
+            //logger.LogInformation("[{UserId}]Get channelDifference:updatesCount={Count} {@Input} {@Data},fromPts={Pts} channel updates count={Count}", input.UserId, updatesReadModels.Count, input, new { }, obj.Pts, updatesReadModels.Count);
+
+            return r;
         }
 
         throw new NotImplementedException();

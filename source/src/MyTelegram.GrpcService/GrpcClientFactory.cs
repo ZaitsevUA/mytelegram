@@ -7,18 +7,8 @@ public static class GrpcClientFactory
     private static IdGeneratorService.IdGeneratorServiceClient? _idGeneratorServiceClient;
     private static MediaService.MediaServiceClient? _mediaServiceClient;
 
-    private static HttpMessageHandler CreateHttpHandler()
-    {
-        return new SocketsHttpHandler
-        {
-            PooledConnectionIdleTimeout = Timeout.InfiniteTimeSpan,
-            KeepAlivePingDelay = TimeSpan.FromSeconds(60),
-            KeepAlivePingTimeout = TimeSpan.FromSeconds(30),
-            EnableMultipleHttp2Connections = true
-        };
-    }
-
-    public static IdGeneratorService.IdGeneratorServiceClient CreateIdGeneratorServiceClient(string address, bool forceRecreate = false)
+    public static IdGeneratorService.IdGeneratorServiceClient CreateIdGeneratorServiceClient(string address,
+        bool forceRecreate = false)
     {
         if (_idGeneratorServiceClient == null || forceRecreate)
         {
@@ -27,7 +17,7 @@ public static class GrpcClientFactory
                 PooledConnectionIdleTimeout = Timeout.InfiniteTimeSpan,
                 KeepAlivePingDelay = TimeSpan.FromSeconds(60),
                 KeepAlivePingTimeout = TimeSpan.FromSeconds(30),
-                EnableMultipleHttp2Connections = true,
+                EnableMultipleHttp2Connections = true
             };
 
             var channel = GrpcChannel.ForAddress(address, new GrpcChannelOptions
@@ -53,5 +43,16 @@ public static class GrpcClientFactory
         }
 
         return _mediaServiceClient;
+    }
+
+    private static HttpMessageHandler CreateHttpHandler()
+    {
+        return new SocketsHttpHandler
+        {
+            PooledConnectionIdleTimeout = Timeout.InfiniteTimeSpan,
+            KeepAlivePingDelay = TimeSpan.FromSeconds(60),
+            KeepAlivePingTimeout = TimeSpan.FromSeconds(30),
+            EnableMultipleHttp2Connections = true
+        };
     }
 }

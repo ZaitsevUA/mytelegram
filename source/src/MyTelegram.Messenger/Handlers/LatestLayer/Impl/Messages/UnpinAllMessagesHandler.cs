@@ -10,12 +10,41 @@ namespace MyTelegram.Handlers.Messages;
 /// 400 CHAT_NOT_MODIFIED No changes were made to chat information because the new information you passed is identical to the current information.
 /// See <a href="https://corefork.telegram.org/method/messages.unpinAllMessages" />
 ///</summary>
-internal sealed class UnpinAllMessagesHandler : RpcResultObjectHandler<MyTelegram.Schema.Messages.RequestUnpinAllMessages, MyTelegram.Schema.Messages.IAffectedHistory>,
-    Messages.IUnpinAllMessagesHandler
+internal sealed class UnpinAllMessagesHandler(ICommandBus commandBus, IPeerHelper peerHelper,
+    IChannelAdminRightsChecker channelAdminRightsChecker,
+    IPtsHelper ptsHelper, IQueryProcessor queryProcessor, IAccessHashHelper accessHashHelper)
+    : RpcResultObjectHandler<MyTelegram.Schema.Messages.RequestUnpinAllMessages,
+            MyTelegram.Schema.Messages.IAffectedHistory>,
+        Messages.IUnpinAllMessagesHandler
 {
-    protected override Task<MyTelegram.Schema.Messages.IAffectedHistory> HandleCoreAsync(IRequestInput input,
+    protected override async Task<MyTelegram.Schema.Messages.IAffectedHistory> HandleCoreAsync(IRequestInput input,
         MyTelegram.Schema.Messages.RequestUnpinAllMessages obj)
     {
-        throw new NotImplementedException();
+        await accessHashHelper.CheckAccessHashAsync(obj.Peer);
+        var peer = peerHelper.GetPeer(obj.Peer);
+        var ownerPeerId = input.UserId;
+        if (peer.PeerType == PeerType.Channel)
+        {
+            await channelAdminRightsChecker.CheckAdminRightAsync(peer.PeerId, input.UserId,
+                rights => rights.AdminRights.PinMessages, RpcErrors.RpcErrors400.ChatAdminRequired);
+            ownerPeerId = peer.PeerId;
+        }
+
+        var messageItems = await queryProcessor.ProcessAsync(new GetSimpleMessageListQuery(ownerPeerId, peer, null, true, true, MyTelegramServerDomainConsts.UnPinAllMessagesDefaultPageSize));
+
+        if (!messageItems.Any())
+        {
+            return new TAffectedHistory
+            {
+                Pts = ptsHelper.GetCachedPts(ownerPeerId),
+                PtsCount = 0,
+                Offset = 0
+            };
+        }
+
+        var command = new StartUnpinAllMessagesCommand(TempId.New, input.ToRequestInfo(), messageItems, peer);
+        await commandBus.PublishAsync(command);
+
+        return null!;
     }
 }

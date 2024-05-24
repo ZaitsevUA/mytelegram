@@ -5,17 +5,10 @@ public class UploadProfilePhotoCommand(
     RequestInfo requestInfo,
     long photoId,
     bool fallback,
-    byte[]? photo,
-    VideoSizeEmojiMarkup? videoEmojiMarkup = null)
+    IVideoSize? videoEmojiMarkup)
     : RequestCommand2<UserAggregate, UserId, IExecutionResult>(aggregateId, requestInfo)
 {
-    //public byte[]? Photo { get; }
-    //public VideoSizeEmojiMarkup? VideoEmojiMarkup { get; }
-
-    //long fileId,
-
     public long PhotoId { get; } = photoId;
     public bool Fallback { get; } = fallback;
-    public byte[]? Photo { get; } = photo;
-    public VideoSizeEmojiMarkup? VideoEmojiMarkup { get; } = videoEmojiMarkup;
+    public IVideoSize? VideoEmojiMarkup { get; } = videoEmojiMarkup;
 }

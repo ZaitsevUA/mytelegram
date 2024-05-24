@@ -34,9 +34,12 @@ public class MediaHelper(
         double? videoStartTs,
         int parts,
         string name,
-        string md5)
+        string md5,
+        IVideoSize? videoEmojiMarkup = null
+        )
     {
         var client = GrpcClientFactory.CreateMediaServiceClient(options.CurrentValue.FileServerGrpcServiceUrl);
+
         var r = await client.SavePhotoAsync(new SavePhotoRequest
         {
             FileId = fileId,
@@ -45,7 +48,9 @@ public class MediaHelper(
             Name = name ?? string.Empty,
             Parts = parts,
             ReqMsgId = reqMsgId,
-            VideoStartTs = videoStartTs ?? 0
+            VideoStartTs = videoStartTs ?? 0,
+            VideoEmojiMarkup = videoEmojiMarkup == null ? ByteString.Empty : ByteString.CopyFrom(videoEmojiMarkup.ToBytes())
+
         }).ResponseAsync;
 
         return new SavePhotoResult(r.PhotoId, r.Photo.Span.ToArray().ToTObject<IPhoto>());
@@ -66,11 +71,9 @@ public class MediaHelper(
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Save media failed,serviceUrl={FileServerGrpcServiceUrl}",options.CurrentValue.FileServerGrpcServiceUrl);
-            RpcErrors.RpcErrors400.FileIdInvalid.ThrowRpcError();
+            logger.LogError(ex, "Save media failed");
+            throw new UserFriendlyException("FILE_ID_INVALID", 400);
         }
-
-        return new TMessageMediaEmpty();
     }
 
     public MessageType GeMessageType(IMessageMedia media)

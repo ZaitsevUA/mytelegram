@@ -30,6 +30,7 @@ public class WebSocketMiddleware(
                 {
                     clientIp = proxyProtocolFeature.SourceIp.ToString();
                 }
+                var connectionTypeFeature = context.Features.Get<ConnectionTypeFeature>();
 
                 var clientData = new ClientData
                 {
@@ -37,6 +38,7 @@ public class WebSocketMiddleware(
                     WebSocket = webSocket,
                     ClientType = ClientType.WebSocket,
                     ClientIp = clientIp,
+                    ConnectionType = connectionTypeFeature?.ConnectionType ?? ConnectionType.Generic
                 };
                 clientManager.AddClient(context.Connection.Id, clientData);
 

@@ -3,7 +3,7 @@
 public class ChatAdminReadModel : IChatAdminReadModel,
     IAmReadModelFor<ChannelAggregate, ChannelId, ChannelCreatedEvent>,
     IAmReadModelFor<ChannelAggregate, ChannelId, ChannelAdminRightsEditedEvent>,
-    IAmReadModelFor<ChatAggregate, ChatId, ChatAdminRightsEditedEvent>
+    IAmReadModelFor<ChatAggregate,ChatId,ChatAdminRightsEditedEvent>
 {
     public virtual string Id { get; private set; } = null!;
     //public long ChannelId { get; private set; }
@@ -32,7 +32,7 @@ public class ChatAdminReadModel : IChatAdminReadModel,
             if (domainEvent.AggregateEvent.IsNewAdmin)
             {
                 //ChannelId = domainEvent.AggregateEvent.ChannelId;
-                PeerId = domainEvent.AggregateEvent.ChannelId;
+                PeerId= domainEvent.AggregateEvent.ChannelId;
                 PromotedBy = domainEvent.AggregateEvent.PromotedBy;
                 UserId = domainEvent.AggregateEvent.UserId;
                 IsBot = domainEvent.AggregateEvent.IsBot;
@@ -53,7 +53,7 @@ public class ChatAdminReadModel : IChatAdminReadModel,
         Id = AdminId.Create(domainEvent.AggregateEvent.ChannelId, domainEvent.AggregateEvent.CreatorId).Value;
 
         //ChannelId = domainEvent.AggregateEvent.ChannelId;
-        PeerId = domainEvent.AggregateEvent.ChannelId;
+        PeerId= domainEvent.AggregateEvent.ChannelId;
 
         PromotedBy = domainEvent.AggregateEvent.CreatorId;
         UserId = domainEvent.AggregateEvent.CreatorId;

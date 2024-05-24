@@ -17,8 +17,12 @@ public class OffsetHelper : IOffsetHelper
         switch (loadType)
         {
             case LoadType.Backward:
-                fromId = offsetId - limit;
-                newMaxId = offsetId;
+                if (offsetId > 0)
+                {
+                    fromId = offsetId - limit;
+                    newMaxId = offsetId;
+                }
+
                 break;
 
             case LoadType.Forward:

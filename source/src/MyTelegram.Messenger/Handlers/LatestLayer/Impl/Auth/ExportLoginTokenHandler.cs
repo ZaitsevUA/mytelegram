@@ -14,6 +14,8 @@ namespace MyTelegram.Handlers.Auth;
 internal sealed class ExportLoginTokenHandler : RpcResultObjectHandler<MyTelegram.Schema.Auth.RequestExportLoginToken, MyTelegram.Schema.Auth.ILoginToken>,
     Auth.IExportLoginTokenHandler
 {
+    //private readonly IRequestCacheAppService _requestCacheAppService;
+    //private readonly ITempAuthKeyHelper _tempAuthKeyHelper;
     private readonly ICommandBus _commandBus;
     private readonly IEventBus _eventBus;
     private readonly ILogger<ExportLoginTokenHandler> _logger;

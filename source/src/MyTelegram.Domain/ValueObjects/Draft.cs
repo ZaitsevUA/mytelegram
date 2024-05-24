@@ -9,6 +9,8 @@ public class Draft(
     int? topMsgId = null)
     : ValueObject
 {
+    //bool? invertMedia,
+
     public string Message { get; init; } = message;
     public bool NoWebpage { get; init; } = noWebpage;
     public int? ReplyToMsgId { get; init; } = replyToMsgId;

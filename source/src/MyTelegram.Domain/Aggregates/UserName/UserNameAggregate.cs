@@ -42,7 +42,7 @@ public class UserNameAggregate : SnapshotAggregateRoot<UserNameAggregate, UserNa
         long selfUserId,
         PeerType peerType,
         long peerId,
-        string userName)
+        string userName )
     {
         if (userName.Length > 32 || userName.Length < 5)
         {

@@ -94,6 +94,15 @@ builder.WebHost.ConfigureKestrel(options =>
                         options.Listen(iep,
                             listenOptions =>
                             {
+                                if (item.MediaOnly)
+                                {
+                                    listenOptions.Use(async (connectionContext, next) =>
+                                    {
+                                        connectionContext.Features.Set(new ConnectionTypeFeature(ConnectionType.Media));
+                                        await next();
+                                    });
+                                }
+
                                 if (item.EnableProxyProtocolV2)
                                 {
                                     listenOptions.Use(async (connectionContext, next) =>
@@ -113,6 +122,15 @@ builder.WebHost.ConfigureKestrel(options =>
                         options.Listen(iep,
                             listenOptions =>
                             {
+                                if (item.MediaOnly)
+                                {
+                                    listenOptions.Use(async (connectionContext, next) =>
+                                    {
+                                        connectionContext.Features.Set(new ConnectionTypeFeature(ConnectionType.Media));
+                                        await next();
+                                    });
+                                }
+
                                 if (item.EnableProxyProtocolV2)
                                 {
                                     //listenOptions.UseConnectionHandler<ProxyProtocolHandler>();
@@ -134,7 +152,7 @@ builder.WebHost.ConfigureKestrel(options =>
                         break;
                 }
 
-                Log.Information("{ServerType} server started at:{Address},ssl:{Ssl},proxyProtocol:{ProxyProtocol}", item.ServerType, iep, item.Ssl, item.EnableProxyProtocolV2);
+                Log.Information("{ServerType} server started at:{Address},ssl:{Ssl},enableProxyProtocolV2:{ProxyProtocol},mediaOnly:{MediaOnly}", item.ServerType, iep, item.Ssl, item.EnableProxyProtocolV2, item.MediaOnly);
             }
         }
     }

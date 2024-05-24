@@ -63,6 +63,16 @@ public class UpdatePinnedMessageSaga : MyInMemoryAggregateSaga<UpdatePinnedMessa
         ISagaContext sagaContext,
         CancellationToken cancellationToken)
     {
+        // Pin/UnPin SavedMessages
+        if (domainEvent.AggregateEvent.RequestInfo.UserId == domainEvent.AggregateEvent.OwnerPeerId &&
+            domainEvent.AggregateEvent.RequestInfo.UserId == domainEvent.AggregateEvent.ToPeer.PeerId)
+        {
+            var pts = await _idGenerator.NextIdAsync(IdType.Pts, domainEvent.AggregateEvent.OwnerPeerId, cancellationToken: cancellationToken);
+            Emit(new UpdatePinnedBoxPtsCompletedEvent(domainEvent.AggregateEvent.OwnerPeerId, pts));
+            Emit(new UpdateSavedMessagesPinnedCompletedEvent(domainEvent.AggregateEvent.RequestInfo, domainEvent.AggregateEvent.Pinned, [domainEvent.AggregateEvent.MessageId], pts));
+            return;
+        }
+
         var inboxCount = domainEvent.AggregateEvent.InboxItems.Count;
         if (domainEvent.AggregateEvent.ToPeer.PeerType == PeerType.Channel)
         {
@@ -93,6 +103,8 @@ public class UpdatePinnedMessageSaga : MyInMemoryAggregateSaga<UpdatePinnedMessa
             return;
         }
 
+
+
         if (domainEvent.AggregateEvent.IsOut)
         {
             UpdateInboxPinned(domainEvent.AggregateEvent);
@@ -117,9 +129,9 @@ public class UpdatePinnedMessageSaga : MyInMemoryAggregateSaga<UpdatePinnedMessa
         }
     }
 
-    private async Task HandleUpdatePinnedCompletedAsync()
+    private async Task HandleUpdatePinnedCompletedAsync(bool forceCompleted = false)
     {
-        if (_state.IsCompleted)
+        if (_state.IsCompleted || forceCompleted)
         {
             switch (_state.ToPeer.PeerType)
             {
