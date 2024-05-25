@@ -87,7 +87,7 @@ public class ChannelAggregateTests : TestsFor<ChannelAggregate>
             1,
             1,
             "test",
-            0, false, null, null, null);
+            0, false, null, null, null, false);
 
         var exception = Assert.Throws<RpcException>(() =>
             Sut.CheckChannelState(A<RequestInfo>(), senderPeerId,
@@ -116,7 +116,7 @@ public class ChannelAggregateTests : TestsFor<ChannelAggregate>
             1,
             1,
             "test",
-            0, false, null, null, null);
+            0, false, null, null, null, false);
         var bannedWriteMessageRights = new ChatBannedRights(false,
             true,
             true,
@@ -160,7 +160,7 @@ public class ChannelAggregateTests : TestsFor<ChannelAggregate>
             1,
             "test",
             0,
-            false, null, null, null);
+            false, null, null, null, false);
         Sut.ToggleSlowMode(A<RequestInfo>(), 60, 1);
         var checkStateCompletedEvent = new CheckChannelStateCompletedEvent(
             A<RequestInfo>(),
@@ -196,7 +196,7 @@ public class ChannelAggregateTests : TestsFor<ChannelAggregate>
             1,
             1,
             "test",
-            0, false, null, null, null);
+            0, false, null, null, null, false);
         Sut.ApplyEvents(new IDomainEvent[] { ADomainEvent<ChannelAggregate, ChannelId, ChannelCreatedEvent>(aggregateEvent, 1) });
 
         Sut.CheckChannelState(A<RequestInfo>(), senderPeerId, 1, DateTime.UtcNow.ToTimestamp(), MessageSubType.Normal);
