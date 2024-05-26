@@ -46,8 +46,8 @@ build\docker\5.build-gateway-server.sh
 
 1. Download docker-compose configuration files
    ```
-   https://github.com/loyldg/mytelegram/blob/dev/docker/compose/docker-compose.yml
-   https://github.com/loyldg/mytelegram/blob/dev/docker/compose/.env
+   https://raw.githubusercontent.com/loyldg/mytelegram/dev/docker/compose/docker-compose.yml
+   https://raw.githubusercontent.com/loyldg/mytelegram/dev/docker/compose/.env
    ```
 2. Replace `192.168.1.100` with your own server IP in `.env`
 3. Run the following command in the directory where the docker-compose.yml file is located
