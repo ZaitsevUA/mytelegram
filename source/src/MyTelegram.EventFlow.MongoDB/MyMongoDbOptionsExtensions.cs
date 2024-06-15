@@ -3,10 +3,7 @@ using EventFlow.Aggregates;
 using EventFlow.Core;
 using EventFlow.Extensions;
 using EventFlow.MongoDB.ReadStores;
-using EventFlow.Queries;
 using EventFlow.ReadStores;
-using EventFlow.ReadStores.InMemory.Queries;
-using EventFlow.ReadStores.InMemory;
 using Microsoft.Extensions.DependencyInjection;
 using MyTelegram.EventFlow.MongoDB.ReadStores;
 using MyTelegram.EventFlow.ReadStores;
@@ -68,10 +65,12 @@ public static class MyMongoDbOptionsExtensions
 
         return eventFlowOptions;
     }
+
     private static void AddMongoDbStoreServices<TReadModel, TDbContext>(this IServiceCollection services)
         where TReadModel : class, IQueryOnlyReadModel
         where TDbContext : IMongoDbContext
     {
+        //services.AddTransient<IMongoDbReadModelStore<TReadModel>, MyMongoDbReadModelStore<TReadModel, TDbContext>>()
         services
             .AddTransient<IQueryOnlyReadModelStore<TReadModel>, MongoDbQueryOnlyReadModelStore<TReadModel, TDbContext>>();
     }

@@ -6,6 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Protos\botservice.proto" />
     <None Remove="Protos\chatmemberloaderservice.proto" />
     <None Remove="Protos\chatservice.proto" />
     <None Remove="Protos\idgeneratorservice.proto" />

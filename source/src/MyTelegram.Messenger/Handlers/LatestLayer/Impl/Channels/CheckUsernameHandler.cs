@@ -40,9 +40,16 @@ internal sealed class CheckUsernameHandler : RpcResultObjectHandler<MyTelegram.S
                 break;
         }
 
+        if (string.IsNullOrEmpty(obj.Username) ||
+            obj.Username.Length < MyTelegramServerDomainConsts.UsernameMinLength ||
+            obj.Username.Length > MyTelegramServerDomainConsts.UsernameMaxLength
+           )
+        {
+            RpcErrors.RpcErrors400.UsernameInvalid.ThrowRpcError();
+        }
+
         var item = await _queryProcessor
-            .ProcessAsync(new GetUserNameByIdQuery(obj.Username),
-                CancellationToken.None);
+            .ProcessAsync(new GetUserNameByIdQuery(obj.Username));
         if (item == null)
         {
             return new TBoolTrue();

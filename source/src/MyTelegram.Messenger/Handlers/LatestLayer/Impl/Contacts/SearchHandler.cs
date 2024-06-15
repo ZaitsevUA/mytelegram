@@ -28,7 +28,7 @@ internal sealed class SearchHandler : RpcResultObjectHandler<MyTelegram.Schema.C
     {
         var userId = input.UserId;
         var r = await _contactAppService.SearchAsync(userId, obj.Q);
-
+        
         return _rpcResultProcessor.ToFound(r, input.Layer);
     }
 }

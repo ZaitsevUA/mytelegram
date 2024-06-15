@@ -28,12 +28,10 @@ internal sealed class RegisterDeviceHandler : RpcResultObjectHandler<MyTelegram.
     protected override async Task<IBool> HandleCoreAsync(IRequestInput input,
         MyTelegram.Schema.Account.RequestRegisterDevice obj)
     {
-        // Console.WriteLine($"RequestRegisterDevice:{obj.Token} {System.Text.Encoding.UTF8.GetString(obj.Secret)}");
-
         var command = new RegisterDeviceCommand(PushDeviceId.Create(obj.Token),
             input.ToRequestInfo(),
             input.UserId,
-            input.AuthKeyId,
+            input.PermAuthKeyId,
             obj.TokenType,
             obj.Token,
             obj.NoMuted,

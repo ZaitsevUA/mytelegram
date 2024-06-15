@@ -157,7 +157,7 @@ public class ContactDomainEventHandler(
             updates.Add(updatePeerSettings);
         }
 
-        await SendMessageToPeerAsync(domainEvent.AggregateEvent.RequestInfo.UserId.ToUserPeer(), new TUpdates
+        await PushMessageToPeerAsync(domainEvent.AggregateEvent.RequestInfo.UserId.ToUserPeer(), new TUpdates
         {
             Updates = new TVector<IUpdate>(updates),
             Users = new TVector<IUser>(userList),

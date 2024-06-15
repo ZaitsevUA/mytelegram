@@ -431,3 +431,4 @@ public record GetMaxBotUserIdQuery() : IQuery<long>;
 public record GetMyBotQuery(long OwnerUserId, long BotUserId) : IQuery<IBotReadModel?>;
 public record GetMyBotsQuery(long OwnerUserId) : IQuery<IReadOnlyCollection<IBotReadModel>>;
 public record GetBotListQuery(List<long> BotUserIds):IQuery<IReadOnlyCollection<IBotReadModel>>;
+public record GetPushDevicesQuery(long UserId) : IQuery<IReadOnlyCollection<IPushDeviceReadModel>>;

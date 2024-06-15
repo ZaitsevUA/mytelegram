@@ -37,7 +37,7 @@ internal sealed class ExportLoginTokenHandler(
             var userReadModel = await queryProcessor
                 .ProcessAsync(new GetUserByIdQuery(userId));
             var photos = await photoAppService.GetPhotosAsync(userReadModel);
-            ILayeredUser? user = userReadModel == null ? null : layeredUserService.GetConverter(input.Layer).ToUser(input.UserId, userReadModel, photos);
+            ILayeredUser? user = userReadModel == null ? null : layeredUserService.GetConverter(input.Layer).ToUser(userReadModel.UserId, userReadModel, photos);
             return new TLoginTokenSuccess
             {
                 Authorization = layeredService.GetConverter(input.Layer).CreateAuthorization(user)

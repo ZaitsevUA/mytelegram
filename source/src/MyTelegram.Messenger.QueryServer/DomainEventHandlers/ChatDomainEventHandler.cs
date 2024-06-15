@@ -105,6 +105,6 @@ public class ChatDomainEventHandler(
             Seq = 0
         };
         var peer = new Peer(PeerType.Chat, domainEvent.AggregateEvent.ChatId);
-        await SendMessageToPeerAsync(peer, updates);
+        await PushMessageToPeerAsync(peer, updates);
     }
 }

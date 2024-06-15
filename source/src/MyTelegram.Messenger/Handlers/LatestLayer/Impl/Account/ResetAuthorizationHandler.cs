@@ -14,6 +14,7 @@ internal sealed class ResetAuthorizationHandler(
     ICommandBus commandBus,
     IQueryProcessor queryProcessor,
     IObjectMessageSender messageSender,
+    ILogger<ResetAuthorizationHandler> logger,
     IEventBus eventBus)
     : RpcResultObjectHandler<MyTelegram.Schema.Account.RequestResetAuthorization, IBool>,
         Account.IResetAuthorizationHandler
@@ -28,20 +29,15 @@ internal sealed class ResetAuthorizationHandler(
         MyTelegram.Schema.Account.RequestResetAuthorization obj)
     {
         var deviceReadModel = await queryProcessor
-            .ProcessAsync(new GetDeviceByHashQuery(input.UserId, obj.Hash), CancellationToken.None)
-     ;
+            .ProcessAsync(new GetDeviceByHashQuery(input.UserId, obj.Hash));
         if (deviceReadModel != null)
         {
-            await eventBus.PublishAsync(new UnRegisterAuthKeyEvent(deviceReadModel.PermAuthKeyId))
-         ;
+            await eventBus.PublishAsync(new UnRegisterAuthKeyEvent(deviceReadModel.PermAuthKeyId));
         }
-        //// var command = new UnRegisterAuthKeyCommand(AuthKeyId.Create(deviceReadModel.PermAuthKeyId));
-        //// await _commandBus.PublishAsync(command, CancellationToken.None);
-        //var updatesTooLong = new TUpdatesTooLong();
-        //await _messageSender.PushMessageToPeerAsync(new Peer(PeerType.User, input.UserId),
-        //    updatesTooLong,
-        //    3,
-        //    onlySendToThisAuthKeyId: deviceReadModel.TempAuthKeyId);
+        else
+        {
+            logger.LogWarning("Can not find device,userId={UserId},hash={Hash}", input.UserId, obj.Hash);
+        }
 
         return new TBoolTrue();
     }

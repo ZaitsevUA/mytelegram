@@ -20,8 +20,8 @@ internal sealed class GetContentSettingsHandler : RpcResultObjectHandler<MyTeleg
         MyTelegram.Schema.Account.RequestGetContentSettings obj)
     {
         var user = await _queryProcessor
-                .ProcessAsync(new GetUserByIdQuery(input.UserId), CancellationToken.None)
-            ;
+            .ProcessAsync(new GetUserByIdQuery(input.UserId), CancellationToken.None)
+     ;
 
         return new TContentSettings
         {

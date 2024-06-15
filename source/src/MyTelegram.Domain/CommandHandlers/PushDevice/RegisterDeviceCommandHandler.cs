@@ -8,7 +8,7 @@ public class RegisterDeviceCommandHandler : CommandHandler<PushDeviceAggregate, 
     {
         aggregate.RegisterDevice(command.RequestInfo,
             command.UserId,
-            command.AuthKeyId,
+            command.PermAuthKeyId,
             command.TokenType,
             command.Token,
             command.NoMuted,

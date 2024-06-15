@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 
 namespace MyTelegram.Services.NativeAot;
 
-// Generation time:2024-04-29 06:56:10Z ,count:66
+// Generation time:2024-06-14 05:04:55Z ,count:70
 // MyTelegram.Core
 [JsonSerializable(typeof(MyTelegram.Core.AcksDataReceivedEvent))]
 [JsonSerializable(typeof(MyTelegram.Core.AppCodeCreatedIntegrationEvent))]
@@ -13,6 +13,7 @@ namespace MyTelegram.Services.NativeAot;
 [JsonSerializable(typeof(MyTelegram.Core.AuthKeyUnRegisteredIntegrationEvent))]
 [JsonSerializable(typeof(MyTelegram.Core.BindUidToAuthKeyIntegrationEvent))]
 [JsonSerializable(typeof(MyTelegram.Core.BindUidToSessionEvent))]
+[JsonSerializable(typeof(MyTelegram.Core.BindUserIdToAuthKeySuccessEvent))]
 [JsonSerializable(typeof(MyTelegram.Core.ChannelMemberChangedEvent))]
 [JsonSerializable(typeof(MyTelegram.Core.ChatMemberChangedEvent))]
 [JsonSerializable(typeof(MyTelegram.Core.ClientDisconnectedEvent))]
@@ -41,8 +42,10 @@ namespace MyTelegram.Services.NativeAot;
 [JsonSerializable(typeof(MyTelegram.Core.NewPtsMessageHasSentEvent))]
 [JsonSerializable(typeof(MyTelegram.Core.NewQtsMessageHasSentEvent))]
 [JsonSerializable(typeof(MyTelegram.Core.PhoneCallDataReceivedEvent))]
+[JsonSerializable(typeof(MyTelegram.Core.PingTimeoutEvent))]
 [JsonSerializable(typeof(MyTelegram.Core.PushDataReceivedEvent))]
 [JsonSerializable(typeof(MyTelegram.Core.PushMessageToPeerEvent))]
+[JsonSerializable(typeof(MyTelegram.Core.PushNotificationCreatedEvent))]
 [JsonSerializable(typeof(MyTelegram.Core.RpcMessageHasSentEvent))]
 [JsonSerializable(typeof(MyTelegram.Core.SessionPasswordStateChangedEvent))]
 [JsonSerializable(typeof(MyTelegram.Core.SetSessionPasswordStateEvent))]
@@ -66,6 +69,7 @@ namespace MyTelegram.Services.NativeAot;
 [JsonSerializable(typeof(MyTelegram.PhotoSize))]
 [JsonSerializable(typeof(MyTelegram.VideoSize))]
 [JsonSerializable(typeof(MyTelegram.VideoSizeEmojiMarkup))]
+[JsonSerializable(typeof(MyTelegram.WallPaperSettings))]
 
 // EventFlow
 [JsonSerializable(typeof(EventFlow.Aggregates.Metadata))]

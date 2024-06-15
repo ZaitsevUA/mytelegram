@@ -11,6 +11,7 @@ public class AppCodeReadModel :
     public virtual string Id { get; private set; } = null!;
     public virtual string PhoneCodeHash { get; private set; } = null!;
     public virtual string PhoneNumber { get; private set; } = null!;
+    public virtual string? Email { get; private set; }
     public virtual long? Version { get; set; }
 
     public Task ApplyAsync(IReadModelContext context,

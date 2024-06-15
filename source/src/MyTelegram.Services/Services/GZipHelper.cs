@@ -25,13 +25,16 @@ public class GZipHelper : IGZipHelper //, ISingletonDependency
         using var compressedStream = new MemoryStream();
         GZip.Compress(stream, compressedStream, true);
         return compressedStream.ToArray();
-
-        //using var compressedStream = new MemoryStream();
-        //using var stream = new MemoryStream(data);
-        //using var zipStream = new GZipStream(stream, CompressionMode.Compress);
-        //zipStream.CopyTo(compressedStream);
-
+        //using var compressor = new GZipStream(compressedStream, CompressionMode.Compress);
+        //compressor.Write(data, 0, data.Length);
         //return compressedStream.ToArray();
+
+        ////using var compressedStream = new MemoryStream();
+        ////using var stream = new MemoryStream(data);
+        ////using var zipStream = new GZipStream(stream, CompressionMode.Compress);
+        ////zipStream.CopyTo(compressedStream);
+
+        ////return compressedStream.ToArray();
     }
 
     private static bool IsGzipPacked(byte[] data)

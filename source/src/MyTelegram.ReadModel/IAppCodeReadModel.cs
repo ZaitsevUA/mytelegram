@@ -9,4 +9,5 @@ public interface IAppCodeReadModel : IReadModel
     string Id { get; }
     string PhoneCodeHash { get; }
     string PhoneNumber { get; }
+    string? Email { get; }
 }

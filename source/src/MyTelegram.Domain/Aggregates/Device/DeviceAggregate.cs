@@ -12,7 +12,7 @@ public class DeviceAggregate : AggregateRoot<DeviceAggregate, DeviceId>
     public void BindUidToDevice(long userId,
         long permAuthKeyId)
     {
-        Specs.AggregateIsCreated.ThrowDomainErrorIfNotSatisfied(this);
+        //Specs.AggregateIsCreated.ThrowDomainErrorIfNotSatisfied(this);
         Emit(new BindUidToDeviceEvent(userId, permAuthKeyId, DateTime.UtcNow.ToTimestamp()));
     }
 

@@ -481,7 +481,7 @@ public class OtherDomainEventHandler(
             Date = DateTime.UtcNow.ToTimestamp(),
         };
 
-        return SendMessageToPeerAsync(domainEvent.AggregateEvent.ChannelId.ToChannelPeer(), updateShort);
+        return PushMessageToPeerAsync(domainEvent.AggregateEvent.ChannelId.ToChannelPeer(), updateShort);
     }
 
     public async Task HandleAsync(IDomainEvent<UpdatePinnedMessageSaga, UpdatePinnedMessageSagaId, UpdateSavedMessagesPinnedCompletedEvent> domainEvent, CancellationToken cancellationToken)

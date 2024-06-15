@@ -19,7 +19,7 @@ internal sealed class GetAccountTTLHandler : RpcResultObjectHandler<MyTelegram.S
     protected override async Task<MyTelegram.Schema.IAccountDaysTTL> HandleCoreAsync(IRequestInput input,
         MyTelegram.Schema.Account.RequestGetAccountTTL obj)
     {
-        var user = await _queryProcessor.ProcessAsync(new GetUserByIdQuery(input.UserId), default);
+        var user = await _queryProcessor.ProcessAsync(new GetUserByIdQuery(input.UserId));
 
         return new TAccountDaysTTL { Days = user!.AccountTtl };
     }

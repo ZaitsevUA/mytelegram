@@ -6,12 +6,17 @@ namespace MyTelegram.Handlers.Messages;
 /// Notifies the sender about the recipient having listened a voice message or watched a video.
 /// See <a href="https://corefork.telegram.org/method/messages.readMessageContents" />
 ///</summary>
-internal sealed class ReadMessageContentsHandler : RpcResultObjectHandler<MyTelegram.Schema.Messages.RequestReadMessageContents, MyTelegram.Schema.Messages.IAffectedMessages>,
+internal sealed class ReadMessageContentsHandler(IPtsHelper ptsHelper) : RpcResultObjectHandler<MyTelegram.Schema.Messages.RequestReadMessageContents, MyTelegram.Schema.Messages.IAffectedMessages>,
     Messages.IReadMessageContentsHandler
 {
     protected override Task<MyTelegram.Schema.Messages.IAffectedMessages> HandleCoreAsync(IRequestInput input,
         MyTelegram.Schema.Messages.RequestReadMessageContents obj)
     {
-        throw new NotImplementedException();
+        return System.Threading.Tasks.Task.FromResult<MyTelegram.Schema.Messages.IAffectedMessages>(
+            new TAffectedMessages
+            {
+                Pts = ptsHelper.GetCachedPts(input.UserId),
+                PtsCount = 0
+            });
     }
 }

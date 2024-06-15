@@ -17,6 +17,7 @@ public class InMemoryEventBusSubscriptionsManager : IEventBusSubscriptionsManage
         _handlers.Clear();
     }
 
+
     public void AddSubscription<T, TH>()
         where TH : IEventHandler<T>
     {
@@ -84,8 +85,7 @@ public class InMemoryEventBusSubscriptionsManager : IEventBusSubscriptionsManage
         return GetEventKey(type);
     }
 
-    private void DoAddSubscription(Type handlerType,
-        string eventName)
+    private void DoAddSubscription(Type handlerType, string eventName)
     {
         if (!HasSubscriptionsForEvent(eventName))
         {
@@ -95,26 +95,14 @@ public class InMemoryEventBusSubscriptionsManager : IEventBusSubscriptionsManage
         if (_handlers[eventName].Any(s => s.HandlerType == handlerType))
         {
             throw new ArgumentException(
-                $"Handler Type {handlerType.Name} already registered for '{eventName}'",
-                nameof(handlerType));
+                $"Handler Type {handlerType.Name} already registered for '{eventName}'", nameof(handlerType));
         }
 
         _handlers[eventName].Add(SubscriptionInfo.Typed(handlerType));
     }
 
-    private SubscriptionInfo? DoFindSubscriptionToRemove(string eventName,
-        Type handlerType)
-    {
-        if (!HasSubscriptionsForEvent(eventName))
-        {
-            return null;
-        }
 
-        return _handlers[eventName].SingleOrDefault(s => s.HandlerType == handlerType);
-    }
-
-    private void DoRemoveHandler(string eventName,
-        SubscriptionInfo? subsToRemove)
+    private void DoRemoveHandler(string eventName, SubscriptionInfo? subsToRemove)
     {
         if (subsToRemove != null)
         {
@@ -129,6 +117,13 @@ public class InMemoryEventBusSubscriptionsManager : IEventBusSubscriptionsManage
         }
     }
 
+    private void RaiseOnEventRemoved(string eventName)
+    {
+        var handler = OnEventRemoved;
+        handler?.Invoke(this, eventName);
+    }
+
+
     private SubscriptionInfo? FindSubscriptionToRemove<T, TH>()
         where TH : IEventHandler<T>
     {
@@ -136,9 +131,13 @@ public class InMemoryEventBusSubscriptionsManager : IEventBusSubscriptionsManage
         return DoFindSubscriptionToRemove(eventName, typeof(TH));
     }
 
-    private void RaiseOnEventRemoved(string eventName)
+    private SubscriptionInfo? DoFindSubscriptionToRemove(string eventName, Type handlerType)
     {
-        var handler = OnEventRemoved;
-        handler?.Invoke(this, eventName);
+        if (!HasSubscriptionsForEvent(eventName))
+        {
+            return null;
+        }
+
+        return _handlers[eventName].SingleOrDefault(s => s.HandlerType == handlerType);
     }
 }

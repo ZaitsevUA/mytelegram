@@ -86,7 +86,7 @@ public class ChannelDomainEventHandler(
             Users = new TVector<IUser>(),
             Date = DateTime.UtcNow.ToTimestamp()
         };
-        await SendMessageToPeerAsync(domainEvent.AggregateEvent.UserId.ToUserPeer(), updates);
+        await PushMessageToPeerAsync(domainEvent.AggregateEvent.UserId.ToUserPeer(), updates);
     }
 
     public async Task HandleAsync(IDomainEvent<ChannelAggregate, ChannelId, ChannelColorUpdatedEvent> domainEvent,
@@ -179,7 +179,7 @@ public class ChannelDomainEventHandler(
 
         foreach (var userId in domainEvent.AggregateEvent.ChannelAdmins)
         {
-            await SendMessageToPeerAsync(new Peer(PeerType.User, userId), updates);
+            await PushMessageToPeerAsync(new Peer(PeerType.User, userId), updates);
         }
     }
 

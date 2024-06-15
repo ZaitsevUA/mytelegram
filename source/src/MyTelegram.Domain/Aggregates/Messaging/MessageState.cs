@@ -25,7 +25,9 @@ public class MessageState : AggregateState<MessageAggregate, MessageId, MessageS
     IApply<ReplyChannelMessageCompletedEvent>,
     IApply<ChannelMessagePinnedEvent>,
     IApply<ChannelMessageDeletedEvent>,
-    IApply<MessageReplyUpdatedEvent>
+    IApply<MessageReplyUpdatedEvent>,
+    IApply<MessageUnpinnedEvent>,
+    IApply<MessagePinnedUpdatedEvent>
 
 {
     public MessageItem MessageItem { get; private set; } = null!;

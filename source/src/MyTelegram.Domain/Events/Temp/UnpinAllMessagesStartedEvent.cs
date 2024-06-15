@@ -13,7 +13,7 @@ public class UnpinAllMessagesStartedEvent(
 public class UpdateMessagePinnedStartedEvent(
     RequestInfo requestInfo,
     IReadOnlyCollection<SimpleMessageItem> messageItems,
-    Peer toPeer,bool pinned, bool pmOneSide) : RequestAggregateEvent2<TempAggregate, TempId>(requestInfo)
+    Peer toPeer, bool pinned, bool pmOneSide) : RequestAggregateEvent2<TempAggregate, TempId>(requestInfo)
 {
     public IReadOnlyCollection<SimpleMessageItem> MessageItems { get; } = messageItems;
     public Peer ToPeer { get; } = toPeer;

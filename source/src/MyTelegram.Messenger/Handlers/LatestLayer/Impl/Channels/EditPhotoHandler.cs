@@ -118,20 +118,17 @@ internal sealed class EditPhotoHandler : RpcResultObjectHandler<MyTelegram.Schem
         IPhoto photo = new TPhotoEmpty();
 
         long? photoId = null;
-        if (fileId != 0)
-        {
-            var r = await _mediaHelper.SavePhotoAsync(input.ReqMsgId,
-                fileId,
-                hasVideo,
-                videoStartTs,
-                parts,
-                name,
-                md5,
-                videoSize
-            );
-            photoId = r.PhotoId;
-            photo = r.Photo;
-        }
+        var r = await _mediaHelper.SavePhotoAsync(input.ReqMsgId,
+            fileId,
+            hasVideo,
+            videoStartTs,
+            parts,
+            name,
+            md5,
+            videoSize
+        );
+        photoId = r.PhotoId;
+        photo = r.Photo;
 
         var command = new EditChannelPhotoCommand(ChannelId.Create(channelId),
             input.ToRequestInfo(),

@@ -179,7 +179,7 @@ ISubscribeSynchronousTo<DialogAggregate, DialogId, ChannelHistoryClearedEvent>
         };
         await SendRpcMessageToClientAsync(domainEvent.AggregateEvent.RequestInfo, updates);
 
-        await SendMessageToPeerAsync(domainEvent.AggregateEvent.RequestInfo.UserId.ToUserPeer(), updates,
+        await PushMessageToPeerAsync(domainEvent.AggregateEvent.RequestInfo.UserId.ToUserPeer(), updates,
             domainEvent.AggregateEvent.RequestInfo.AuthKeyId);
     }
 

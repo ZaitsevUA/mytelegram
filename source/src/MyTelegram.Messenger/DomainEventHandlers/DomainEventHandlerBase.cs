@@ -101,7 +101,8 @@ public abstract class DomainEventHandlerBase(
         UpdatesType updatesType = UpdatesType.Updates,
         LayeredData<IUpdates>? layeredData = null,
         long? senderUserId = null,
-        bool skipSaveUpdates = false
+        bool skipSaveUpdates = false,
+        PushData? pushData = null
         )
     {
         long globalSeqNo = 0;
@@ -144,7 +145,9 @@ public abstract class DomainEventHandlerBase(
             onlySendToThisAuthKeyId,
             pts,
             globalSeqNo: globalSeqNo,
-            layeredData: layeredData);
+            layeredData: layeredData,
+            pushData: pushData
+        );
     }
 
     protected async Task ReplyRpcResultToSenderAsync(
@@ -263,7 +266,7 @@ public abstract class DomainEventHandlerBase(
         return globalSeqNo;
     }
 
-    protected async Task SendMessageToPeerAsync<TData>(
+    protected async Task PushMessageToPeerAsync<TData>(
         Peer toPeer,
         TData data,
         long? excludeAuthKeyId = null,
@@ -273,7 +276,8 @@ public abstract class DomainEventHandlerBase(
         int pts = 0,
         UpdatesType updatesType = UpdatesType.Updates,
         LayeredData<TData>? layeredData = null,
-        long channelId = 0
+        long channelId = 0,
+        PushData? pushData = null
         ) where TData : IObject
     {
         var globalSeqNo = 0L;
@@ -299,10 +303,12 @@ public abstract class DomainEventHandlerBase(
             onlySendToThisAuthKeyId,
             pts,
             globalSeqNo: globalSeqNo,
-            layeredData: layeredData);
+            layeredData: layeredData,
+            pushData: pushData
+            );
     }
 
-    protected async Task SendMessageToPeerAsync<TData, TExtraData>(Peer toPeer,
+    protected async Task PushMessageToPeerAsync<TData, TExtraData>(Peer toPeer,
         TData data,
         long? excludeAuthKeyId = null,
         long? excludeUserId = null,
@@ -310,7 +316,10 @@ public abstract class DomainEventHandlerBase(
         long? onlySendToThisAuthKeyId = null,
         int pts = 0,
         UpdatesType updatesType = UpdatesType.Updates,
-        LayeredData<TData>? layeredData = null, TExtraData? extraData = default) where TData : IObject
+        LayeredData<TData>? layeredData = null,
+        TExtraData? extraData = default,
+        PushData? pushData = null
+        ) where TData : IObject
     {
         var globalSeqNo = 0L;
 
@@ -338,11 +347,12 @@ public abstract class DomainEventHandlerBase(
             pts,
             globalSeqNo: globalSeqNo,
             layeredData: layeredData,
-            extraData: extraData
+            extraData: extraData,
+            pushData: pushData
             );
     }
 
-    protected Task SendMessageToAuthKeyIdAsync<TData>(Peer toPeer, TData data, long authKeyId, int? qts = null, UpdatesType updatesType = UpdatesType.Updates)
+    protected Task PushMessageToAuthKeyIdAsync<TData>(Peer toPeer, TData data, long authKeyId, int? qts = null, UpdatesType updatesType = UpdatesType.Updates)
         where TData : IObject
     {
         return objectMessageSender.PushMessageToPeerAsync(toPeer, data, onlySendToThisAuthKeyId: authKeyId, qts: qts);

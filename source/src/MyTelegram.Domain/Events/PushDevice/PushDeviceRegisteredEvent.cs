@@ -3,7 +3,7 @@
 public class PushDeviceRegisteredEvent(
     RequestInfo requestInfo,
     long userId,
-    long authKeyId,
+    long permAuthKeyId,
     int tokenType,
     string token,
     bool noMuted,
@@ -17,7 +17,7 @@ public class PushDeviceRegisteredEvent(
     /// </summary>
     public bool AppSandbox { get; } = appSandbox;
 
-    public long AuthKeyId { get; } = authKeyId;
+    public long PermAuthKeyId { get; } = permAuthKeyId;
 
     /// <summary>
     ///     Avoid receiving (silent and invisible background) notifications. Useful to save battery.

@@ -8,7 +8,7 @@ public interface IPushDeviceReadModel : IReadModel
     /// </summary>
     bool AppSandbox { get; }
 
-    long AuthKeyId { get; }
+    long PermAuthKeyId { get; }
     string Id { get; }
 
     /// <summary>

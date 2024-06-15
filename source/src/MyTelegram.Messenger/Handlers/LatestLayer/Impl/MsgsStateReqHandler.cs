@@ -3,9 +3,9 @@
 
 namespace MyTelegram.Handlers;
 
-internal sealed class MsgsStateReqHandler : BaseObjectHandler<TMsgsStateReq, TMsgsStateInfo>, IMsgsStateReqHandler
+internal sealed class MsgsStateReqHandler : BaseObjectHandler<TMsgsStateReq, IObject>, IMsgsStateReqHandler
 {
-    protected override Task<TMsgsStateInfo> HandleCoreAsync(IRequestInput input,
+    protected override Task<IObject> HandleCoreAsync(IRequestInput input,
         TMsgsStateReq obj)
     {
         //https://core.telegram.org/mtproto/service_messages_about_messages
@@ -25,7 +25,7 @@ internal sealed class MsgsStateReqHandler : BaseObjectHandler<TMsgsStateReq, TMs
 
             Note that if it turns out suddenly that the other party does not have a message that looks like it has been sent to it, the message can simply be re-sent. Even if the other party should receive two copies of the message at the same time, the duplicate will be ignored. (If too much time has passed, and the original msg_id is not longer valid, the message is to be wrapped in msg_copy).
          */
-        var r = new TMsgsStateInfo { Info = "1", ReqMsgId = obj.MsgIds.FirstOrDefault() };
+        IObject r = new TMsgsStateInfo { Info = "1", ReqMsgId = obj.MsgIds.FirstOrDefault() };
 
         return Task.FromResult(r);
     }

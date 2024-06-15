@@ -4,12 +4,15 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
     </PropertyGroup>
-
     <ItemGroup>
       <PackageReference Update="Fody">
         <PrivateAssets>all</PrivateAssets>
         <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
       </PackageReference>
     </ItemGroup>
+
+    <!--<ItemGroup>
+      <PackageReference Include="Volo.Abp.EventBus.Rebus" />
+    </ItemGroup>-->
 
 </Project>

@@ -11,6 +11,9 @@ internal sealed class GetChatsToSendHandler : RpcResultObjectHandler<MyTelegram.
     protected override Task<MyTelegram.Schema.Messages.IChats> HandleCoreAsync(IRequestInput input,
         MyTelegram.Schema.Stories.RequestGetChatsToSend obj)
     {
-        throw new NotImplementedException();
+        return Task.FromResult<MyTelegram.Schema.Messages.IChats>(new TChats
+        {
+            Chats = []
+        });
     }
 }
