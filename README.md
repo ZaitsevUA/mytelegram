@@ -53,8 +53,7 @@ build\docker\5.build-gateway-server.sh
 2. Replace `192.168.1.100` with your own server IP in `.env`
 3. Run the following command in the directory where the docker-compose.yml file is located
    ```
-   Linux: docker compose up
-   Windows: docker-compose --env-file .env up 
+      docker compose up
    ```
 4. Default verification code is `22222`
 
