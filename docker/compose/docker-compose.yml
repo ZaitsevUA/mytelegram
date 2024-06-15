@@ -1,23 +1,22 @@
-version: '3.9'
+version: "3.9"
 
 networks:
   tg-net:
-   driver:
-    bridge
+    driver: bridge
 
 services:
-### Redis
+  ### Redis
   redis:
     image: redis:alpine
     restart: always
     networks:
-    - tg-net
+      - tg-net
     #ports:
     #- "6379:6379"
     volumes:
       - ./data/redis:/data
 
-### RabbitMq
+  ### RabbitMq
   rabbitmq:
     image: rabbitmq:3-management-alpine
     restart: always
@@ -29,10 +28,12 @@ services:
     volumes:
       - ./data/rabbitmq:/var/lib/rabbitmq
     environment:
-       RABBITMQ_DEFAULT_USER: ${RabbitMqConnectionsDefaultUserName}
-       RABBITMQ_DEFAULT_PASS: ${RabbitMqConnectionsDefaultPassword}
+      # RABBITMQ_DEFAULT_USER: ${RabbitMQ__Connections__Default__UserName}
+      # RABBITMQ_DEFAULT_PASS: ${RabbitMQ__Connections__Default__Password}
+      RABBITMQ_DEFAULT_USER: test
+      RABBITMQ_DEFAULT_PASS: test
 
- ### MongoDb
+  ### MongoDb
   mongodb:
     image: mongo:latest
     restart: always
@@ -46,7 +47,7 @@ services:
     #  MONGO_INITDB_ROOT_USERNAME: admin
     #  MONGO_INITDB_ROOT_PASSWORD: admin
 
- ### Minio
+  ### Minio
   minio:
     image: minio/minio:latest
     restart: always
@@ -58,16 +59,16 @@ services:
     #ports:
     #  - 9000:9000
     #  - 9001:9001
-    environment: 
-      MINIO_ROOT_USER: ${MinioAccessKey} 
-      MINIO_ROOT_PASSWORD: ${MinioSecretKey}
+    environment:
+      MINIO_ROOT_USER: ${Minio__AccessKey}
+      MINIO_ROOT_PASSWORD: ${Minio__SecretKey}
     volumes:
       - ./data/minio:/data
       #- /docker/minio/config:/root/./minio/
     command: server /data  --console-address ":9001"
     #privileged: true
 
-################### MyTelegram server
+  ################### MyTelegram server
 
   ### 1.Gateway server
   gateway-server:
@@ -76,33 +77,84 @@ services:
     networks:
       - tg-net
     ports:
-      - "${Servers0Port}:20443"
-      - "${Servers1Port}:30443"
-      - "${Servers2Port}:30444"
+      - "${App__Servers__0__Port}:${App__Servers__0__Port}"
+      #- "${App__Servers__1__Port}:${App__Servers__1__Port}"
+      #- "${App__Servers__2__Port}:${App__Servers__2__Port}"
+      #- "${App__Servers__3__Port}:${App__Servers__3__Port}"
+      - "${App__Servers__4__Port}:${App__Servers__4__Port}"
+      - "${App__Servers__5__Port}:${App__Servers__5__Port}"
     volumes:
-      - ./data/mytelegram/gateway/logs:/data/Logs
+      - ./data/mytelegram/gateway/logs:/app/Logs
     environment:
-       ConnectionStrings__Default: ${DefaultConnectionStrings}
-       RabbitMQ__Connections__Default__HostName: ${RabbitMqConnectionsDefaultHostName}
-       RabbitMQ__Connections__Default__Port: ${RabbitMqConnectionsDefaultPort}
-       RabbitMQ__Connections__Default__UserName: ${RabbitMqConnectionsDefaultUserName}
-       RabbitMQ__Connections__Default__Password: ${RabbitMqConnectionsDefaultPassword}
-       Redis__Configuration: ${RedsConfiguration}
-       Serilog__MinimumLevel__Default: ${DefaultLogLevel}
-       App__Servers__0__Enabled: ${Servers0Enabled}
-       App__Servers__0__ServerType: ${Servers0ServerType}
-       App__Servers__0__Ip: ${Servers0Ip}
-       App__Servers__0__Port: ${Servers0Port}
-       App__Servers__1__Enabled: ${Servers1Enabled}
-       App__Servers__1__ServerType: ${Servers1ServerType}
-       App__Servers__1__Ip: ${Servers1Ip}
-       App__Servers__1__Port: ${Servers1Port}
-       App__Servers__1__CertPemFilePath: ${Servers1CertPemFilePath}
-       App__Servers__1__KeyPemFilePath: ${Servers1KeyPemFilePath}
-       App__Servers__2__Enabled: ${Servers2Enabled}
-       App__Servers__2__ServerType: ${Servers2ServerType}
-       App__Servers__2__Ip: ${Servers2Ip}
-       App__Servers__2__Port: ${Servers2Port}
+      Serilog__MinimumLevel__Default: ${Serilog__MinimumLevel__Default}
+      # App__ThisDcId: ${App__ThisDcId}
+      # App__MediaOnly: ${App__MediaOnly}
+      # App__Servers__0__Enabled: ${App__Servers__0__Enabled}
+      # App__Servers__0__ServerType: ${App__Servers__0__ServerType}
+      # App__Servers__0__Ip: ${App__Servers__0__Ip}
+      # App__Servers__0__Ipv6: ${App__Servers__0__Ipv6}
+      App__Servers__0__Port: ${App__Servers__0__Port}
+      # App__Servers__0__Ssl: ${App__Servers__0__Ssl}
+      # App__Servers__0__CertPemFilePath: ${App__Servers__0__CertPemFilePath}
+      # App__Servers__0__KeyPemFilePath: ${App__Servers__0__KeyPemFilePath}
+      # App__Servers__0__EnableProxyProtocolV2: ${App__Servers__0__EnableProxyProtocolV2}
+      # App__Servers__0__MediaOnly: ${App__Servers__0__MediaOnly}
+      App__Servers__1__Enabled: ${App__Servers__1__Enabled}
+      # App__Servers__1__ServerType: ${App__Servers__1__ServerType}
+      # App__Servers__1__Ip: ${App__Servers__1__Ip}
+      # App__Servers__1__Ipv6: ${App__Servers__1__Ipv6}
+      App__Servers__1__Port: ${App__Servers__1__Port}
+      # App__Servers__1__Ssl: ${App__Servers__1__Ssl}
+      # App__Servers__1__CertPemFilePath: ${App__Servers__1__CertPemFilePath}
+      # App__Servers__1__KeyPemFilePath: ${App__Servers__1__KeyPemFilePath}
+      # App__Servers__1__EnableProxyProtocolV2: ${App__Servers__1__EnableProxyProtocolV2}
+      # App__Servers__1__MediaOnly: ${App__Servers__1__MediaOnly}
+      App__Servers__2__Enabled: ${App__Servers__2__Enabled}
+      # App__Servers__2__ServerType: ${App__Servers__2__ServerType}
+      # App__Servers__2__Ip: ${App__Servers__2__Ip}
+      # App__Servers__2__Ipv6: ${App__Servers__2__Ipv6}
+      App__Servers__2__Port: ${App__Servers__2__Port}
+      # App__Servers__2__Ssl: ${App__Servers__2__Ssl}
+      # App__Servers__2__CertPemFilePath: ${App__Servers__2__CertPemFilePath}
+      # App__Servers__2__KeyPemFilePath: ${App__Servers__2__KeyPemFilePath}
+      # App__Servers__2__EnableProxyProtocolV2: ${App__Servers__2__EnableProxyProtocolV2}
+      # App__Servers__2__MediaOnly: ${App__Servers__2__MediaOnly}
+      App__Servers__3__Enabled: ${App__Servers__3__Enabled}
+      # App__Servers__3__ServerType: ${App__Servers__3__ServerType}
+      # App__Servers__3__Ip: ${App__Servers__3__Ip}
+      # App__Servers__3__Ipv6: ${App__Servers__3__Ipv6}
+      App__Servers__3__Port: ${App__Servers__3__Port}
+      # App__Servers__3__Ssl: ${App__Servers__3__Ssl}
+      # App__Servers__3__CertPemFilePath: ${App__Servers__3__CertPemFilePath}
+      # App__Servers__3__KeyPemFilePath: ${App__Servers__3__KeyPemFilePath}
+      # App__Servers__3__EnableProxyProtocolV2: ${App__Servers__3__EnableProxyProtocolV2}
+      # App__Servers__3__MediaOnly: ${App__Servers__3__MediaOnly}
+      # App__Servers__4__Enabled: ${App__Servers__4__Enabled}
+      # App__Servers__4__ServerType: ${App__Servers__4__ServerType}
+      # App__Servers__4__Ip: ${App__Servers__4__Ip}
+      # App__Servers__4__Ipv6: ${App__Servers__4__Ipv6}
+      App__Servers__4__Port: ${App__Servers__4__Port}
+      # App__Servers__4__Ssl: ${App__Servers__4__Ssl}
+      # App__Servers__4__CertPemFilePath: ${App__Servers__4__CertPemFilePath}
+      # App__Servers__4__KeyPemFilePath: ${App__Servers__4__KeyPemFilePath}
+      # App__Servers__4__EnableProxyProtocolV2: ${App__Servers__4__EnableProxyProtocolV2}
+      # App__Servers__4__MediaOnly: ${App__Servers__4__MediaOnly}
+      # App__Servers__5__Enabled: ${App__Servers__5__Enabled}
+      # App__Servers__5__ServerType: ${App__Servers__5__ServerType}
+      # App__Servers__5__Ip: ${App__Servers__5__Ip}
+      # App__Servers__5__Ipv6: ${App__Servers__5__Ipv6}
+      App__Servers__5__Port: ${App__Servers__5__Port}
+      # App__Servers__5__Ssl: ${App__Servers__5__Ssl}
+      # App__Servers__5__CertPemFilePath: ${App__Servers__5__CertPemFilePath}
+      # App__Servers__5__KeyPemFilePath: ${App__Servers__5__KeyPemFilePath}
+      # App__Servers__5__EnableProxyProtocolV2: ${App__Servers__5__EnableProxyProtocolV2}
+      # App__Servers__5__MediaOnly: ${App__Servers__5__MediaOnly}
+      RabbitMQ__Connections__Default__HostName: ${RabbitMQ__Connections__Default__HostName}
+      # RabbitMQ__Connections__Default__Port: ${RabbitMQ__Connections__Default__Port}
+      # RabbitMQ__Connections__Default__UserName: ${RabbitMQ__Connections__Default__UserName}
+      # RabbitMQ__Connections__Default__Password: ${RabbitMQ__Connections__Default__Password}
+      # RabbitMQ__EventBus__ClientName: ${RabbitMQ__EventBus__ClientName}
+      # RabbitMQ__EventBus__ExchangeName: ${RabbitMQ__EventBus__ExchangeName}
     depends_on:
       - rabbitmq
       - mongodb
@@ -110,19 +162,19 @@ services:
 
   # ### 2.Seq server
   # seq-server:
-    # image: mytelegram/mytelegram-seq-server:${MyTelegramVersion}
-    # restart: always
-    # networks:
-      # - tg-net
-    # #ports:
-    # #  - "10001:80"
-    # environment:
-      # ConnectionStrings__Default: ${DefaultConnectionStrings}
-      # Serilog__MinimumLevel__Default: ${DefaultLogLevel}
-    # volumes:
-      # - ./data/mytelegram/seq/logs:/data/Logs
-    # depends_on:
-      # - mongodb
+  # image: mytelegram/mytelegram-seq-server:${MyTelegramVersion}
+  # restart: always
+  # networks:
+  # - tg-net
+  # #ports:
+  # #  - "10001:80"
+  # environment:
+  # ConnectionStrings__Default: ${DefaultConnectionStrings}
+  # Serilog__MinimumLevel__Default: ${DefaultLogLevel}
+  # volumes:
+  # - ./data/mytelegram/seq/logs:/data/Logs
+  # depends_on:
+  # - mongodb
 
   ### 3.Auth server
   auth-server:
@@ -131,15 +183,17 @@ services:
     networks:
       - tg-net
     environment:
-       ConnectionStrings__Default: ${DefaultConnectionStrings}
-       RabbitMQ__Connections__Default__HostName: ${RabbitMqConnectionsDefaultHostName}
-       RabbitMQ__Connections__Default__Port: ${RabbitMqConnectionsDefaultPort}
-       RabbitMQ__Connections__Default__UserName: ${RabbitMqConnectionsDefaultUserName}
-       RabbitMQ__Connections__Default__Password: ${RabbitMqConnectionsDefaultPassword}
-       Redis__Configuration: ${RedsConfiguration}
-       Serilog__MinimumLevel__Default: ${DefaultLogLevel}
+      Serilog__MinimumLevel__Default: ${Serilog__MinimumLevel__Default}
+      #App__PrivateKeyFilePath: ${App__PrivateKeyFilePath}
+      RabbitMQ__Connections__Default__HostName: ${RabbitMQ__Connections__Default__HostName}
+      # RabbitMQ__Connections__Default__Port: ${RabbitMQ__Connections__Default__Port}
+      # RabbitMQ__Connections__Default__UserName: ${RabbitMQ__Connections__Default__UserName}
+      # RabbitMQ__Connections__Default__Password: ${RabbitMQ__Connections__Default__Password}
+      # RabbitMQ__EventBus__ClientName: ${RabbitMQ__EventBus__ClientName}
+      # RabbitMQ__EventBus__ExchangeName: ${RabbitMQ__EventBus__ExchangeName}
+      Redis__Configuration: ${Redis__Configuration}
     volumes:
-      - ./data/mytelegram/auth/logs:/data/Logs
+      - ./data/mytelegram/auth/logs:/app/Logs
     depends_on:
       - mongodb
       - rabbitmq
@@ -152,19 +206,25 @@ services:
     networks:
       - tg-net
     environment:
-       ConnectionStrings__Default: ${DefaultConnectionStrings}
-       RabbitMQ__Connections__Default__HostName: ${RabbitMqConnectionsDefaultHostName}
-       RabbitMQ__Connections__Default__Port: ${RabbitMqConnectionsDefaultPort}
-       RabbitMQ__Connections__Default__UserName: ${RabbitMqConnectionsDefaultUserName}
-       RabbitMQ__Connections__Default__Password: ${RabbitMqConnectionsDefaultPassword}
-       Redis__Configuration: ${RedsConfiguration}
-       App__MessengerServerGrpcServiceUrl: ${MessengerServerGrpcServiceUrl}
-       App__IdGeneratorGrpcServiceUrl: ${IdGeneratorGrpcServiceUrl}
-       App__DatabaseName: ${DatabaseName}
-       Serilog__MinimumLevel__Default: ${DefaultLogLevel}
-       App__TempAuthKeyExpirationMinutes: ${TempAuthKeyExpirationMinutes}
+      Serilog__MinimumLevel__Default: ${Serilog__MinimumLevel__Default}
+      ConnectionStrings__Default: ${ConnectionStrings__Default}
+      # App__ThisDcId: ${App__ThisDcId}
+      # App__MediaOnly: ${App__MediaOnly}
+      App__DatabaseName: ${App__DatabaseName}
+      # App__IdGeneratorGrpcServiceUrl: ${App__IdGeneratorGrpcServiceUrl}
+      App__MessengerServerGrpcServiceUrl: ${App__MessengerServerGrpcServiceUrl}
+      # App__DispatchUnknownObjectToMessengerServer: ${App__DispatchUnknownObjectToMessengerServer}
+      # App__TempAuthKeyExpirationMinutes: ${App__TempAuthKeyExpirationMinutes}
+      # App__CommandServerObjectIds: ${App__CommandServerObjectIds}
+      RabbitMQ__Connections__Default__HostName: ${RabbitMQ__Connections__Default__HostName}
+      # RabbitMQ__Connections__Default__Port: ${RabbitMQ__Connections__Default__Port}
+      # RabbitMQ__Connections__Default__UserName: ${RabbitMQ__Connections__Default__UserName}
+      # RabbitMQ__Connections__Default__Password: ${RabbitMQ__Connections__Default__Password}
+      # RabbitMQ__EventBus__ClientName: ${RabbitMQ__EventBus__ClientName}
+      # RabbitMQ__EventBus__ExchangeName: ${RabbitMQ__EventBus__ExchangeName}
+      Redis__Configuration: ${Redis__Configuration}
     volumes:
-      - ./data/mytelegram/session/logs:/data/Logs
+      - ./data/mytelegram/session/logs:/app/Logs
     depends_on:
       - mongodb
       - rabbitmq
@@ -176,14 +236,13 @@ services:
     restart: always
     networks:
       - tg-net
-    #ports:
-    #  - "10002:80"
     environment:
-       ConnectionStrings__Default: ${DefaultConnectionStrings}
-       Serilog__MinimumLevel__Default: ${DefaultLogLevel}
-       App__DatabaseName: ${DatabaseName}
+      Serilog__MinimumLevel__Default: ${Serilog__MinimumLevel__Default}
+      ConnectionStrings__Default: ${ConnectionStrings__Default}
+      App__DatabaseName: ${App__DatabaseName}
+      App__BotDatabaseName: ${App__BotDatabaseName}
     volumes:
-      - ./data/mytelegram/messenger-grpc/logs:/data/Logs
+      - ./data/mytelegram/messenger-grpc-service/logs:/app/Logs
     depends_on:
       - mongodb
 
@@ -193,27 +252,28 @@ services:
     restart: always
     networks:
       - tg-net
-    #ports:
-    #  - "10003:80"
     volumes:
-      - ./data/uploads:/app/uploads
+      - ./data/mytelegram/file/uploads:/app/uploads
       - ./data/mytelegram/file:/app/Logs
     environment:
-       ConnectionStrings__Default: ${DefaultConnectionStrings} 
-       RabbitMQ__Connections__Default__HostName: ${RabbitMqConnectionsDefaultHostName}
-       RabbitMQ__Connections__Default__Port: ${RabbitMqConnectionsDefaultPort}
-       RabbitMQ__Connections__Default__UserName: ${RabbitMqConnectionsDefaultUserName}
-       RabbitMQ__Connections__Default__Password: ${RabbitMqConnectionsDefaultPassword}
-       App__DcOptions__0__IpAddress: ${DcOptions0IpAddress}
-       App__DcOptions__0__Port: ${DcOptions0Port}
-       App__DcOptions__0__Ipv6: ${DcOptions0Ipv6}
-       App__DatabaseName: ${DatabaseName}
-       Serilog__MinimumLevel__Default: ${DefaultLogLevel}
-       Minio__Endpoint: ${MinioEndpoint}
-       Minio__AccessKey: ${MinioAccessKey}
-       Minio__SecretKey: ${MinioSecretKey}
-       Minio__BucketName: ${MinioBucketName}
-       Minio__CreateBucketIfNotExists: ${MinioCreateBucketIfNotExists}
+      Serilog__MinimumLevel__Default: ${Serilog__MinimumLevel__Default}
+      ConnectionStrings__Default: ${ConnectionStrings__Default}
+      App__DatabaseName: ${App__DatabaseName}
+      # App__ThisDcId: ${App__ThisDcId}
+      # App__MediaDcId: ${App__MediaDcId}
+      # App__UploadRootPath: ${App__UploadRootPath}
+      Minio__Endpoint: ${Minio__Endpoint}
+      Minio__AccessKey: ${Minio__AccessKey}
+      Minio__SecretKey: ${Minio__SecretKey}
+      # Minio__BucketName: ${Minio__BucketName}
+      # Minio__CreateBucketIfNotExists: ${Minio__CreateBucketIfNotExists}
+      RabbitMQ__Connections__Default__HostName: ${RabbitMQ__Connections__Default__HostName}
+      # RabbitMQ__Connections__Default__Port: ${RabbitMQ__Connections__Default__Port}
+      # RabbitMQ__Connections__Default__UserName: ${RabbitMQ__Connections__Default__UserName}
+      # RabbitMQ__Connections__Default__Password: ${RabbitMQ__Connections__Default__Password}
+      # RabbitMQ__EventBus__ClientName: ${RabbitMQ__EventBus__ClientName}
+      # RabbitMQ__EventBus__ExchangeName: ${RabbitMQ__EventBus__ExchangeName}
+      Redis__Configuration: ${Redis__Configuration}
     depends_on:
       - mongodb
       - rabbitmq
@@ -225,35 +285,84 @@ services:
     networks:
       - tg-net
     environment:
-       ConnectionStrings__Default: ${DefaultConnectionStrings} 
-       RabbitMQ__Connections__Default__HostName: ${RabbitMqConnectionsDefaultHostName}
-       RabbitMQ__Connections__Default__Port: ${RabbitMqConnectionsDefaultPort}
-       RabbitMQ__Connections__Default__UserName: ${RabbitMqConnectionsDefaultUserName}
-       RabbitMQ__Connections__Default__Password: ${RabbitMqConnectionsDefaultPassword}
-       Redis__Configuration: ${RedsConfiguration}
-       App__FileServerGrpcServiceUrl: ${FileServerGrpcServiceUrl}
-       App__IdGeneratorGrpcServiceUrl: ${IdGeneratorGrpcServiceUrl}
-       App__MessengerServerGrpcServiceUrl: ${MessengerServerGrpcServiceUrl}
-       App__DcOptions__0__IpAddress: ${DcOptions0IpAddress}
-       App__DcOptions__0__Port: ${DcOptions0Port}
-       App__DcOptions__0__Ipv6: ${DcOptions0Ipv6}
-       App__DcOptions__1__IpAddress: ${DcOptions1IpAddress}
-       App__DcOptions__1__Port: ${DcOptions1Port}
-       App__DcOptions__1__Ipv6: ${DcOptions1Ipv6}
-       App__FixedVerifyCode: ${FixedVerifyCode}
-       App__VerificationCodeLength: ${VerificationCodeLength}
-       App__VerificationCodeExpirationSeconds: ${VerificationCodeExpirationSeconds}
-       App__DatabaseName: ${DatabaseName}
-       App__QueryServerEventStoreDatabaseName: ${QueryServerEventStoreDatabaseName}
-       App__QueryServerReadModelDatabaseName: ${QueryServerReadModelDatabaseName}
-       Serilog__MinimumLevel__Default: ${DefaultLogLevel}
-       App__AutoCreateSuperGroup: ${AutoCreateSuperGroup}
-       App__EnableFutureAuthToken: ${EnableFutureAuthToken}
-       App__SetPremiumToTrueAfterUserCreated: ${SetPremiumToTrueAfterUserCreated}
-       App__SendWelcomeMessageAfterUserSignIn: ${SendWelcomeMessageAfterUserSignIn}
-       
+      Serilog__MinimumLevel__Default: ${Serilog__MinimumLevel__Default}
+      ConnectionStrings__Default: ${ConnectionStrings__Default}
+      App__QueryServerEventStoreDatabaseName: ${App__QueryServerEventStoreDatabaseName}
+      App__QueryServerReadModelDatabaseName: ${App__QueryServerReadModelDatabaseName}
+      App__DatabaseName: ${App__DatabaseName}
+      App__BotDatabaseName: ${App__BotDatabaseName}
+      App__FileServerGrpcServiceUrl: ${App__FileServerGrpcServiceUrl}
+      App__FixedVerifyCode: ${App__FixedVerifyCode}
+      App__VerificationCodeLength: ${App__VerificationCodeLength}
+      App__VerificationCodeExpirationSeconds: ${App__VerificationCodeExpirationSeconds}
+      # App__JoinChatDomain: ${App__JoinChatDomain}
+      # App__ChannelGetDifferenceIntervalSeconds: ${App__ChannelGetDifferenceIntervalSeconds}
+      # App__UseInMemoryFilters: ${App__UseInMemoryFilters}
+      # App__IsMediaDc: ${App__IsMediaDc}
+      # App__AutoCreateSuperGroup: ${App__AutoCreateSuperGroup}
+      # App__EnableFutureAuthToken: ${App__EnableFutureAuthToken}
+      # App__SetPremiumToTrueAfterUserCreated: ${App__SetPremiumToTrueAfterUserCreated}
+      # App__SendWelcomeMessageAfterUserSignIn: ${App__SendWelcomeMessageAfterUserSignIn}
+      App__WebRtcConnections__0__Ip: ${App__WebRtcConnections__0__Ip}
+      # App__WebRtcConnections__0__Ipv6: ${App__WebRtcConnections__0__Ipv6}
+      # App__WebRtcConnections__0__Port: ${App__WebRtcConnections__0__Port}
+      # App__WebRtcConnections__0__Turn: ${App__WebRtcConnections__0__Turn}
+      # App__WebRtcConnections__0__Stun: ${App__WebRtcConnections__0__Stun}
+      # App__WebRtcConnections__0__UserName: ${App__WebRtcConnections__0__UserName}
+      # App__WebRtcConnections__0__Password: ${App__WebRtcConnections__0__Password}
+      # App__ThisDcId: ${App__ThisDcId}
+      # App__DcOptions__0__Enabled: ${App__DcOptions__0__Enabled}
+      # App__DcOptions__0__Id: ${App__DcOptions__0__Id}
+      App__DcOptions__0__IpAddress: ${App__DcOptions__0__IpAddress}
+      # App__DcOptions__0__Port: ${App__DcOptions__0__Port}
+      # App__DcOptions__0__TcpoOnly: ${App__DcOptions__0__TcpoOnly}
+      # App__DcOptions__0__ThisPortOnly: ${App__DcOptions__0__ThisPortOnly}
+      # App__DcOptions__0__Ipv6: ${App__DcOptions__0__Ipv6}
+      # App__DcOptions__0__Cdn: ${App__DcOptions__0__Cdn}
+      # App__DcOptions__0__MediaOnly: ${App__DcOptions__0__MediaOnly}
+      # App__DcOptions__0__Static: ${App__DcOptions__0__Static}
+
+      App__DcOptions__1__Enabled: ${App__DcOptions__1__Enabled}
+      # App__DcOptions__1__Id: ${App__DcOptions__1__Id}
+      App__DcOptions__1__IpAddress: ${App__DcOptions__1__IpAddress}
+      App__DcOptions__1__Port: ${App__DcOptions__1__Port}
+      # App__DcOptions__1__TcpoOnly: ${App__DcOptions__1__TcpoOnly}
+      # App__DcOptions__1__ThisPortOnly: ${App__DcOptions__1__ThisPortOnly}
+      # App__DcOptions__1__Ipv6: ${App__DcOptions__1__Ipv6}
+      # App__DcOptions__1__Cdn: ${App__DcOptions__1__Cdn}
+      # App__DcOptions__1__MediaOnly: ${App__DcOptions__1__MediaOnly}
+      # App__DcOptions__1__Static: ${App__DcOptions__1__Static}
+
+      App__DcOptions__2__Enabled: ${App__DcOptions__2__Enabled}
+      # App__DcOptions__2__Id: ${App__DcOptions__2__Id}
+      App__DcOptions__2__IpAddress: ${App__DcOptions__2__IpAddress}
+      # App__DcOptions__2__Port: ${App__DcOptions__2__Port}
+      # App__DcOptions__2__TcpoOnly: ${App__DcOptions__2__TcpoOnly}
+      # App__DcOptions__2__ThisPortOnly: ${App__DcOptions__2__ThisPortOnly}
+      # App__DcOptions__2__Ipv6: ${App__DcOptions__2__Ipv6}
+      # App__DcOptions__2__Cdn: ${App__DcOptions__2__Cdn}
+      # App__DcOptions__2__MediaOnly: ${App__DcOptions__2__MediaOnly}
+      # App__DcOptions__2__Static: ${App__DcOptions__2__Static}
+      
+      App__DcOptions__3__Enabled: ${App__DcOptions__3__Enabled}
+      # App__DcOptions__3__Id: ${App__DcOptions__3__Id}
+      App__DcOptions__3__IpAddress: ${App__DcOptions__3__IpAddress}
+      # App__DcOptions__3__Port: ${App__DcOptions__3__Port}
+      # App__DcOptions__3__TcpoOnly: ${App__DcOptions__3__TcpoOnly}
+      # App__DcOptions__3__ThisPortOnly: ${App__DcOptions__3__ThisPortOnly}
+      # App__DcOptions__3__Ipv6: ${App__DcOptions__3__Ipv6}
+      # App__DcOptions__3__Cdn: ${App__DcOptions__3__Cdn}
+      # App__DcOptions__3__MediaOnly: ${App__DcOptions__3__MediaOnly}
+      # App__DcOptions__3__Static: ${App__DcOptions__3__Static}
+      RabbitMQ__Connections__Default__HostName: ${RabbitMQ__Connections__Default__HostName}
+      # RabbitMQ__Connections__Default__Port: ${RabbitMQ__Connections__Default__Port}
+      # RabbitMQ__Connections__Default__UserName: ${RabbitMQ__Connections__Default__UserName}
+      # RabbitMQ__Connections__Default__Password: ${RabbitMQ__Connections__Default__Password}
+      # RabbitMQ__EventBus__ClientName: ${RabbitMQ__EventBus__ClientName}
+      # RabbitMQ__EventBus__ExchangeName: ${RabbitMQ__EventBus__ExchangeName}
+      Redis__Configuration: ${Redis__Configuration}
     volumes:
-      - ./data/mytelegram/messenger-command-server/logs:/data/Logs
+      - ./data/mytelegram/command-server/logs:/app/Logs
     depends_on:
       - mongodb
       - rabbitmq
@@ -266,61 +375,112 @@ services:
     networks:
       - tg-net
     environment:
-       ConnectionStrings__Default: ${DefaultConnectionStrings} 
-       RabbitMQ__Connections__Default__HostName: ${RabbitMqConnectionsDefaultHostName}
-       RabbitMQ__Connections__Default__Port: ${RabbitMqConnectionsDefaultPort}
-       RabbitMQ__Connections__Default__UserName: ${RabbitMqConnectionsDefaultUserName}
-       RabbitMQ__Connections__Default__Password: ${RabbitMqConnectionsDefaultPassword}
-       Redis__Configuration: ${RedsConfiguration}
-       App__FileServerGrpcServiceUrl: ${FileServerGrpcServiceUrl}
-       App__IdGeneratorGrpcServiceUrl: ${IdGeneratorGrpcServiceUrl}
-       App__MessengerServerGrpcServiceUrl: ${MessengerServerGrpcServiceUrl}
-       App__DcOptions__0__IpAddress: ${DcOptions0IpAddress}
-       App__DcOptions__0__Port: ${DcOptions0Port}
-       App__DcOptions__0__Ipv6: ${DcOptions0Ipv6}
-       App__DcOptions__1__IpAddress: ${DcOptions1IpAddress}
-       App__DcOptions__1__Port: ${DcOptions1Port}
-       App__DcOptions__1__Ipv6: ${DcOptions1Ipv6}
-       App__FixedVerifyCode: ${FixedVerifyCode}
-       App__VerificationCodeLength: ${VerificationCodeLength}
-       App__VerificationCodeExpirationSeconds: ${VerificationCodeExpirationSeconds}
-       App__DatabaseName: ${DatabaseName}
-       App__QueryServerEventStoreDatabaseName: ${QueryServerEventStoreDatabaseName}
-       App__QueryServerReadModelDatabaseName: ${QueryServerReadModelDatabaseName}
-       Serilog__MinimumLevel__Default: ${DefaultLogLevel}
-       App__AutoCreateSuperGroup: ${AutoCreateSuperGroup}
-       App__EnableFutureAuthToken: ${EnableFutureAuthToken}
-       App__SetPremiumToTrueAfterUserCreated: ${SetPremiumToTrueAfterUserCreated}
-       App__SendWelcomeMessageAfterUserSignIn: ${SendWelcomeMessageAfterUserSignIn}
+      Serilog__MinimumLevel__Default: ${Serilog__MinimumLevel__Default}
+      ConnectionStrings__Default: ${ConnectionStrings__Default}
+      App__QueryServerEventStoreDatabaseName: ${App__QueryServerEventStoreDatabaseName}
+      App__QueryServerReadModelDatabaseName: ${App__QueryServerReadModelDatabaseName}
+      App__DatabaseName: ${App__DatabaseName}
+      App__BotDatabaseName: ${App__BotDatabaseName}
+      App__FileServerGrpcServiceUrl: ${App__FileServerGrpcServiceUrl}
+      App__FixedVerifyCode: ${App__FixedVerifyCode}
+      App__VerificationCodeLength: ${App__VerificationCodeLength}
+      App__VerificationCodeExpirationSeconds: ${App__VerificationCodeExpirationSeconds}
+      # App__JoinChatDomain: ${App__JoinChatDomain}
+      # App__ChannelGetDifferenceIntervalSeconds: ${App__ChannelGetDifferenceIntervalSeconds}
+      # App__UseInMemoryFilters: ${App__UseInMemoryFilters}
+      # App__IsMediaDc: ${App__IsMediaDc}
+      # App__AutoCreateSuperGroup: ${App__AutoCreateSuperGroup}
+      # App__EnableFutureAuthToken: ${App__EnableFutureAuthToken}
+      # App__SetPremiumToTrueAfterUserCreated: ${App__SetPremiumToTrueAfterUserCreated}
+      # App__SendWelcomeMessageAfterUserSignIn: ${App__SendWelcomeMessageAfterUserSignIn}
+      App__WebRtcConnections__0__Ip: ${App__WebRtcConnections__0__Ip}
+      # App__WebRtcConnections__0__Ipv6: ${App__WebRtcConnections__0__Ipv6}
+      # App__WebRtcConnections__0__Port: ${App__WebRtcConnections__0__Port}
+      # App__WebRtcConnections__0__Turn: ${App__WebRtcConnections__0__Turn}
+      # App__WebRtcConnections__0__Stun: ${App__WebRtcConnections__0__Stun}
+      # App__WebRtcConnections__0__UserName: ${App__WebRtcConnections__0__UserName}
+      # App__WebRtcConnections__0__Password: ${App__WebRtcConnections__0__Password}
+      # App__ThisDcId: ${App__ThisDcId}
+      # App__DcOptions__0__Enabled: ${App__DcOptions__0__Enabled}
+      # App__DcOptions__0__Id: ${App__DcOptions__0__Id}
+      App__DcOptions__0__IpAddress: ${App__DcOptions__0__IpAddress}
+      App__DcOptions__0__Port: ${App__DcOptions__0__Port}
+      # App__DcOptions__0__TcpoOnly: ${App__DcOptions__0__TcpoOnly}
+      # App__DcOptions__0__ThisPortOnly: ${App__DcOptions__0__ThisPortOnly}
+      # App__DcOptions__0__Ipv6: ${App__DcOptions__0__Ipv6}
+      # App__DcOptions__0__Cdn: ${App__DcOptions__0__Cdn}
+      # App__DcOptions__0__MediaOnly: ${App__DcOptions__0__MediaOnly}
+      # App__DcOptions__0__Static: ${App__DcOptions__0__Static}
+
+      App__DcOptions__1__Enabled: ${App__DcOptions__1__Enabled}
+      # App__DcOptions__1__Id: ${App__DcOptions__1__Id}
+      App__DcOptions__1__IpAddress: ${App__DcOptions__1__IpAddress}
+      App__DcOptions__1__Port: ${App__DcOptions__1__Port}
+      # App__DcOptions__1__TcpoOnly: ${App__DcOptions__1__TcpoOnly}
+      # App__DcOptions__1__ThisPortOnly: ${App__DcOptions__1__ThisPortOnly}
+      # App__DcOptions__1__Ipv6: ${App__DcOptions__1__Ipv6}
+      # App__DcOptions__1__Cdn: ${App__DcOptions__1__Cdn}
+      # App__DcOptions__1__MediaOnly: ${App__DcOptions__1__MediaOnly}
+      # App__DcOptions__1__Static: ${App__DcOptions__1__Static}
+
+      App__DcOptions__2__Enabled: ${App__DcOptions__2__Enabled}
+      # App__DcOptions__2__Id: ${App__DcOptions__2__Id}
+      App__DcOptions__2__IpAddress: ${App__DcOptions__2__IpAddress}
+      App__DcOptions__2__Port: ${App__DcOptions__2__Port}
+      # App__DcOptions__2__TcpoOnly: ${App__DcOptions__2__TcpoOnly}
+      # App__DcOptions__2__ThisPortOnly: ${App__DcOptions__2__ThisPortOnly}
+      # App__DcOptions__2__Ipv6: ${App__DcOptions__2__Ipv6}
+      # App__DcOptions__2__Cdn: ${App__DcOptions__2__Cdn}
+      # App__DcOptions__2__MediaOnly: ${App__DcOptions__2__MediaOnly}
+      # App__DcOptions__2__Static: ${App__DcOptions__2__Static}
+
+      App__DcOptions__3__Enabled: ${App__DcOptions__3__Enabled}
+      # App__DcOptions__3__Id: ${App__DcOptions__3__Id}
+      App__DcOptions__3__IpAddress: ${App__DcOptions__3__IpAddress}
+      # App__DcOptions__3__Port: ${App__DcOptions__3__Port}
+      # App__DcOptions__3__TcpoOnly: ${App__DcOptions__3__TcpoOnly}
+      # App__DcOptions__3__ThisPortOnly: ${App__DcOptions__3__ThisPortOnly}
+      # App__DcOptions__3__Ipv6: ${App__DcOptions__3__Ipv6}
+      # App__DcOptions__3__Cdn: ${App__DcOptions__3__Cdn}
+      # App__DcOptions__3__MediaOnly: ${App__DcOptions__3__MediaOnly}
+      # App__DcOptions__3__Static: ${App__DcOptions__3__Static}
+      RabbitMQ__Connections__Default__HostName: ${RabbitMQ__Connections__Default__HostName}
+      # RabbitMQ__Connections__Default__Port: ${RabbitMQ__Connections__Default__Port}
+      # RabbitMQ__Connections__Default__UserName: ${RabbitMQ__Connections__Default__UserName}
+      # RabbitMQ__Connections__Default__Password: ${RabbitMQ__Connections__Default__Password}
+      # RabbitMQ__EventBus__ClientName: ${RabbitMQ__EventBus__ClientName}
+      # RabbitMQ__EventBus__ExchangeName: ${RabbitMQ__EventBus__ExchangeName}
+      Redis__Configuration: ${Redis__Configuration}
     volumes:
-      - ./data/mytelegram/messenger-query-server/logs:/data/Logs
+      - ./data/mytelegram/query-server/logs:/app/Logs
     depends_on:
       - mongodb
       - rabbitmq
       - redis
 
-### 8.Sms sender
+  ### 8.Sms sender
   sms-sender:
     image: mytelegram/mytelegram-sms-sender:${MyTelegramVersion}
     restart: always
     networks:
       - tg-net
     environment:
-      Serilog__MinimumLevel__Default: ${DefaultLogLevel}
-      RabbitMQ__Connections__Default__HostName: ${RabbitMqConnectionsDefaultHostName}
-      RabbitMQ__Connections__Default__Port: ${RabbitMqConnectionsDefaultPort}
-      RabbitMQ__Connections__Default__UserName: ${RabbitMqConnectionsDefaultUserName}
-      RabbitMQ__Connections__Default__Password: ${RabbitMqConnectionsDefaultPassword}
-      TwilioSms__Enabled: ${TwilioSmsEnabled}
-      TwilioSms__AccountSId: ${TwilioSmsAccountSId}
-      TwilioSms__AuthToken: ${TwilioSmsAuthToken}
-      TwilioSms__FromNumber: ${TwilioSmsFromNumber}
-      VonageSms__Enabled: ${VonageSmsEnabled}
-      VonageSms__BrandName: ${VonageSmsBrandName}
-      VonageSms__ApiKey: ${VonageSmsApiKey}
-      VonageSms__ApiSecret: ${VonageSmsApiSecret}
-
+      Serilog__MinimumLevel__Default: ${Serilog__MinimumLevel__Default}
+      # TwilioSms__Enabled: ${TwilioSms__Enabled}
+      # TwilioSms__AccountSId: ${TwilioSms__AccountSId}
+      # TwilioSms__AuthToken: ${TwilioSms__AuthToken}
+      # TwilioSms__FromNumber: ${TwilioSms__FromNumber}
+      # VonageSms__Enabled: ${VonageSms__Enabled}
+      # VonageSms__BrandName: ${VonageSms__BrandName}
+      # VonageSms__ApiKey: ${VonageSms__ApiKey}
+      # VonageSms__ApiSecret: ${VonageSms__ApiSecret}
+      RabbitMQ__Connections__Default__HostName: ${RabbitMQ__Connections__Default__HostName}
+      # RabbitMQ__Connections__Default__Port: ${RabbitMQ__Connections__Default__Port}
+      # RabbitMQ__Connections__Default__UserName: ${RabbitMQ__Connections__Default__UserName}
+      # RabbitMQ__Connections__Default__Password: ${RabbitMQ__Connections__Default__Password}
+      # RabbitMQ__EventBus__ClientName: ${RabbitMQ__EventBus__ClientName}
+      # RabbitMQ__EventBus__ExchangeName: ${RabbitMQ__EventBus__ExchangeName}
     volumes:
-      - ./data/mytelegram/sms-sender/logs:/data/Logs
+      - ./data/mytelegram/sms-sender/logs:/app/Logs
     depends_on:
       - rabbitmq
