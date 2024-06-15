@@ -8,4 +8,9 @@ public class AppCodeId(string value) : Identity<AppCodeId>(value)
     {
         return NewDeterministic(GuidFactories.Deterministic.Namespaces.Commands, $"{phoneNumber}_{phoneCodeHash}");
     }
+
+    public static AppCodeId CreateEmailAppCodeId(long userId)
+    {
+        return NewDeterministic(GuidFactories.Deterministic.Namespaces.Commands, $"appcode-{userId}");
+    }
 }
