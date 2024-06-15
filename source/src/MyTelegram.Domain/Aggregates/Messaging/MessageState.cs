@@ -13,7 +13,6 @@ public class MessageState : AggregateState<MessageAggregate, MessageId, MessageS
     IApply<InboxMessageHasReadEvent>,
     IApply<ReplyToMessageEvent>,
     IApply<MessageViewsIncrementedEvent>,
-    IApply<DeleteMessagesStartedEvent>,
     IApply<UpdatePinnedMessageStartedEvent>,
     IApply<InboxMessagePinnedUpdatedEvent>,
     IApply<OutboxMessagePinnedUpdatedEvent>,
@@ -26,7 +25,9 @@ public class MessageState : AggregateState<MessageAggregate, MessageId, MessageS
     IApply<ReplyChannelMessageCompletedEvent>,
     IApply<ChannelMessagePinnedEvent>,
     IApply<ChannelMessageDeletedEvent>,
-    IApply<MessageReplyUpdatedEvent>
+    IApply<MessageReplyUpdatedEvent>,
+    IApply<MessageUnpinnedEvent>,
+    IApply<MessagePinnedUpdatedEvent>
 
 {
     public MessageItem MessageItem { get; private set; } = null!;
@@ -206,48 +207,6 @@ public class MessageState : AggregateState<MessageAggregate, MessageId, MessageS
         }
     }
 
-    //private void UpdateReactions(long reactionSenderUserId, List<Reaction>? reactions)
-    //{
-    //    if (reactions == null || reactions.Count == 0)
-    //    {
-    //        if (UserReactions.TryRemove(reactionSenderUserId, out var userReactions))
-    //        {
-    //            // decrement reaction count
-    //            foreach (var userReaction in userReactions)
-    //            {
-    //                var reactionId = userReaction.GetReactionId();
-    //                if (ReactionCounts.TryGetValue(reactionId, out var reaction))
-    //                {
-    //                    reaction.DecrementCount();
-    //                }
-    //            }
-    //        }
-    //    }
-    //    else
-    //    {
-    //        if (UserReactions.TryGetValue(reactionSenderUserId, out var userReactions))
-    //        {
-    //            foreach (var reaction in reactions)
-    //            {
-    //                if (!userReactions.Contains(reaction))
-    //                {
-    //                    userReactions.Add(reaction);
-    //                    var reactionId = reaction.GetReactionId();
-    //                    if (ReactionCounts.TryGetValue(reactionId, out var reactionCount))
-    //                    {
-    //                        reactionCount.IncrementCount();
-    //                    }
-    //                    else
-    //                    {
-    //                        ReactionCounts.TryAdd(reactionId, reaction);
-    //                    }
-    //                    RecentReactions.Put(reaction);
-    //                }
-    //            }
-    //        }
-    //    }
-    //}
-
     public void Apply(SelfMessageDeletedEvent aggregateEvent)
     {
         //throw new NotImplementedException();
@@ -297,8 +256,13 @@ public class MessageState : AggregateState<MessageAggregate, MessageId, MessageS
         }
     }
 
-    public void Apply(DeleteMessagesStartedEvent aggregateEvent)
+    public void Apply(MessageUnpinnedEvent aggregateEvent)
     {
-        //throw new NotImplementedException();
+        Pinned = false;
+    }
+
+    public void Apply(MessagePinnedUpdatedEvent aggregateEvent)
+    {
+        Pinned = aggregateEvent.Pinned;
     }
 }

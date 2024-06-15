@@ -2,12 +2,14 @@
 
 public interface IPushUpdatesReadModel : IReadModel
 {
-    byte[] Data { get; }
-    long ExcludeAuthKeyId { get; set; }
-    string Id { get; }
-    long OnlySendToThisAuthKeyId { get; }
-    long PeerId { get; }
+    long OwnerPeerId { get; }
+    long? ExcludeAuthKeyId { get; set; }
+    long? OnlySendToThisAuthKeyId { get; }
+    int? MessageId { get; }
     int Pts { get; }
-    PtsType PtsType { get; }
+    int Date { get; }
     long SeqNo { get; }
+    byte[] Updates { get; }
+    List<long>? Users { get; }
+    List<long>? Chats { get; }
 }

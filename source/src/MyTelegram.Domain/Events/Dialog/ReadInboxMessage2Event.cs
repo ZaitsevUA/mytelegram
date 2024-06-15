@@ -11,12 +11,6 @@ public class ReadInboxMessage2Event(
     int date)
     : RequestAggregateEvent2<DialogAggregate, DialogId>(requestInfo)
 {
-    //long globalMessageId,
-    //bool isOut, 
-    //GlobalMessageId = globalMessageId;
-    //IsOut = isOut;
-
-    //public long GlobalMessageId { get; }
     public int MaxMessageId { get; } = maxMessageId;
     public int ReadCount { get; } = readCount;
     public int UnreadCount { get; } = unreadCount;
@@ -24,7 +18,4 @@ public class ReadInboxMessage2Event(
     public int Date { get; } = date;
     public long OwnerPeerId { get; } = ownerPeerId;
     public long ReaderUserId { get; } = readerUserId;
-
-    //public bool IsOut { get; }
-
 }

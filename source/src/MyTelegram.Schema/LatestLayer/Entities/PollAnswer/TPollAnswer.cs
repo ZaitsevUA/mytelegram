@@ -7,14 +7,14 @@ namespace MyTelegram.Schema;
 /// A possible answer of a poll
 /// See <a href="https://corefork.telegram.org/constructor/pollAnswer" />
 ///</summary>
-[TlObject(0x6ca9c2e9)]
+[TlObject(0xff16e2ca)]
 public sealed class TPollAnswer : IPollAnswer
 {
-    public uint ConstructorId => 0x6ca9c2e9;
+    public uint ConstructorId => 0xff16e2ca;
     ///<summary>
     /// Textual representation of the answer
     ///</summary>
-    public string Text { get; set; }
+    public MyTelegram.Schema.ITextWithEntities Text { get; set; }
 
     ///<summary>
     /// The param that has to be passed to <a href="https://corefork.telegram.org/method/messages.sendVote">messages.sendVote</a>.
@@ -36,7 +36,7 @@ public sealed class TPollAnswer : IPollAnswer
 
     public void Deserialize(ref SequenceReader<byte> reader)
     {
-        Text = reader.ReadString();
+        Text = reader.Read<MyTelegram.Schema.ITextWithEntities>();
         Option = reader.ReadString();
     }
 }

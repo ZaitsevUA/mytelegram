@@ -1,5 +1,7 @@
 ﻿// ReSharper disable All
 
+using GetSimpleMessageListQuery = MyTelegram.Queries.GetSimpleMessageListQuery;
+
 namespace MyTelegram.Handlers.Messages;
 
 ///<summary>
@@ -17,39 +19,53 @@ namespace MyTelegram.Handlers.Messages;
 /// 400 USER_BANNED_IN_CHANNEL You're banned from sending messages in supergroups/channels.
 /// See <a href="https://corefork.telegram.org/method/messages.updatePinnedMessage" />
 ///</summary>
-internal sealed class UpdatePinnedMessageHandler : RpcResultObjectHandler<MyTelegram.Schema.Messages.RequestUpdatePinnedMessage, MyTelegram.Schema.IUpdates>,
-    Messages.IUpdatePinnedMessageHandler
+internal sealed class UpdatePinnedMessageHandler(
+    ICommandBus commandBus,
+    IPeerHelper peerHelper,
+    IRandomHelper randomHelper,
+    IQueryProcessor queryProcessor,
+    IPtsHelper ptsHelper,
+    IChannelAdminRightsChecker channelAdminRightsChecker,
+    IAccessHashHelper accessHashHelper)
+    : RpcResultObjectHandler<MyTelegram.Schema.Messages.RequestUpdatePinnedMessage, MyTelegram.Schema.IUpdates>,
+        Messages.IUpdatePinnedMessageHandler
 {
-    private readonly ICommandBus _commandBus;
-    private readonly IPeerHelper _peerHelper;
-    private readonly IRandomHelper _randomHelper;
-    private readonly IAccessHashHelper _accessHashHelper;
-    public UpdatePinnedMessageHandler(ICommandBus commandBus,
-        IPeerHelper peerHelper,
-        IRandomHelper randomHelper,
-        IAccessHashHelper accessHashHelper)
-    {
-        _commandBus = commandBus;
-        _peerHelper = peerHelper;
-        _randomHelper = randomHelper;
-        _accessHashHelper = accessHashHelper;
-    }
-
     protected override async Task<IUpdates> HandleCoreAsync(IRequestInput input,
         RequestUpdatePinnedMessage obj)
     {
-        await _accessHashHelper.CheckAccessHashAsync(obj.Peer);
-        var peer = _peerHelper.GetPeer(obj.Peer, input.UserId);
-        var ownerPeerId = peer.PeerType == PeerType.Channel ? peer.PeerId : input.UserId;
-        var command = new StartUpdatePinnedMessageCommand(MessageId.Create(ownerPeerId, obj.Id),
-            input.ToRequestInfo(),
-            !obj.Unpin,
-            obj.Silent,
-            obj.PmOneside,
-            CurrentDate,
-            _randomHelper.NextLong(),
-            new TMessageActionPinMessage().ToBytes().ToHexString());
-        await _commandBus.PublishAsync(command, CancellationToken.None);
+        await accessHashHelper.CheckAccessHashAsync(obj.Peer);
+        var peer = peerHelper.GetPeer(obj.Peer, input.UserId);
+        if (peer.PeerType == PeerType.Channel)
+        {
+            var channelReadModel = await queryProcessor.ProcessAsync(new GetChannelByIdQuery(peer.PeerId));
+            if (channelReadModel!.DefaultBannedRights?.PinMessages ?? true)
+            {
+                await channelAdminRightsChecker.CheckAdminRightAsync(peer.PeerId, input.UserId,
+                    rights => rights.AdminRights.PinMessages, RpcErrors.RpcErrors400.ChatAdminRequired);
+            }
+        }
+
+        var messageItems = await queryProcessor.ProcessAsync(
+            new GetSimpleMessageListQuery(input.UserId, peer, [obj.Id], null, !obj.PmOneside, MyTelegramServerDomainConsts.UnPinAllMessagesDefaultPageSize));
+
+        if (!messageItems.Any())
+        {
+            RpcErrors.RpcErrors400.MessageIdInvalid.ThrowRpcError();
+        }
+
+        var command =
+            new StartUpdatePinnedMessagesCommand(TempId.New, input.ToRequestInfo(), messageItems, peer, !obj.Unpin, obj.PmOneside);
+        await commandBus.PublishAsync(command);
+        //var ownerPeerId = peer.PeerType == PeerType.Channel ? peer.PeerId : input.UserId;
+        //var command = new StartUpdatePinnedMessageCommand(MessageId.Create(ownerPeerId, obj.Id),
+        //    input.ToRequestInfo(),
+        //    !obj.Unpin,
+        //    obj.Silent,
+        //    obj.PmOneside,
+        //    CurrentDate,
+        //    _randomHelper.NextLong(),
+        //    new TMessageActionPinMessage().ToBytes().ToHexString());
+        //await _commandBus.PublishAsync(command);
         return null!;
     }
 }

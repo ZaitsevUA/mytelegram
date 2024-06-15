@@ -55,7 +55,7 @@ public class GetMessageOutput(
     public IReadOnlyCollection<IChatReadModel> ChatList { get; init; } = chatList;
     public IReadOnlyCollection<IContactReadModel> ContactList { get; init; } = contactList;
     public IReadOnlyCollection<long> JoinedChannelIdList { get; init; } = joinedChannelIdList;
-    public IReadOnlyCollection<IMessageReadModel> MessageList { get; init; } = messageList;
+    public IReadOnlyCollection<IMessageReadModel> MessageList { get; set; } = messageList;
     public IReadOnlyCollection<IPrivacyReadModel> PrivacyList { get; init; } = privacyList;
     public IReadOnlyCollection<IUserReadModel> UserList { get; init; } = userList;
     public IReadOnlyCollection<IPollReadModel>? PollList { get; init; } = pollList;

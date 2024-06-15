@@ -28,7 +28,7 @@ public class
                 .WhereIf(query.Offset?.LoadType == LoadType.Forward, p => p.MessageId > query.Offset!.FromId)
                 .WhereIf(query.Offset?.MaxId > 0, p => p.MessageId < query.Offset!.MaxId)
                 .WhereIf(query.Pts > 0, p => p.Pts > query.Pts)
-                .WhereIf(query.Peer != null,
+                .WhereIf(query.Peer != null && query.Peer.PeerType != PeerType.Empty,
                     p => p.ToPeerType == query.Peer!.PeerType && p.ToPeerId == query.Peer.PeerId)
                 .WhereIf(query.ReplyToMsgId > 0, p => p.ReplyToMsgId == query.ReplyToMsgId)
             ;

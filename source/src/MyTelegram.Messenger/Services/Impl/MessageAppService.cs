@@ -9,12 +9,9 @@ public class MessageAppService(
     IPhotoAppService photoAppService,
     IPrivacyAppService privacyAppService,
     IOffsetHelper offsetHelper,
-    IAccessHashHelper accessHashHelper,
     IIdGenerator idGenerator)
     : BaseAppService, IMessageAppService
 {
-    private readonly IAccessHashHelper _accessHashHelper = accessHashHelper;
-
     public async Task<GetMessageOutput> GetChannelDifferenceAsync(GetDifferenceInput input)
     {
         return await GetMessagesInternalAsync(new GetMessagesQuery(input.OwnerPeerId,
@@ -84,18 +81,6 @@ public class MessageAppService(
         }
     }
 
-    //private async Task CheckAccessHashAsync(SendMessageInput input)
-    //{
-    //    if (input.ToPeer.PeerType == PeerType.User || input.ToPeer.PeerType == PeerType.Channel)
-    //    {
-    //        await _accessHashHelper.CheckAccessHashAsync(input.ToPeer);
-    //    }
-
-    //    if (input.SendAs != null)
-    //    {
-    //        await _accessHashHelper.CheckAccessHashAsync(input.SendAs);
-    //    }
-    //}
     private async Task CheckSendAsAsync(SendMessageInput input)
     {
         if (input.SendAs != null)
@@ -124,23 +109,6 @@ public class MessageAppService(
                         RpcErrors.RpcErrors400.SendAsPeerInvalid.ThrowRpcError();
                     }
 
-                    //var channelReadModel =
-                    //    await _queryProcessor.ProcessAsync(new GetChannelByIdQuery(input.SendAs.PeerId));
-                    //if (channelReadModel == null)
-                    //{
-                    //    RpcErrors.RpcErrors400.SendAsPeerInvalid.ThrowRpcError();
-                    //}
-
-                    //if (channelReadModel!.CreatorId != input.RequestInfo.UserId)
-                    //{
-                    //    RpcErrors.RpcErrors400.SendAsPeerInvalid.ThrowRpcError();
-                    //}
-
-                    //if (channelReadModel.LinkedChatId != input.SendAs.PeerId || channelReadModel.ChannelId != input.SendAs.PeerId)
-                    //{
-                    //    RpcErrors.RpcErrors400.SendAsPeerInvalid.ThrowRpcError();
-                    //}
-
                     break;
             }
         }
@@ -163,7 +131,7 @@ public class MessageAppService(
             }
         }
 
-        var bannedDefaultRights = channelReadModel.DefaultBannedRights ?? ChatBannedRights.Default;
+        var bannedDefaultRights = channelReadModel.DefaultBannedRights ?? ChatBannedRights.CreateDefaultBannedRights();
         if (bannedDefaultRights.SendMessages)
         {
             RpcErrors.RpcErrors403.ChatWriteForbidden.ThrowRpcError();
@@ -175,7 +143,27 @@ public class MessageAppService(
 
         if (channelMemberReadModel == null)
         {
-            RpcErrors.RpcErrors400.ChannelPrivate.ThrowRpcError();
+            RpcErrors.RpcErrors403.ChatGuestSendForbidden.ThrowRpcError();
+        }
+
+        if (channelMemberReadModel!.BannedRights != 0)
+        {
+            var memberBannedRights =
+                ChatBannedRights.FromValue(channelMemberReadModel.BannedRights, channelMemberReadModel.UntilDate);
+            if (!string.IsNullOrEmpty(input.Message))
+            {
+                if (memberBannedRights.SendMessages)
+                {
+                    RpcErrors.RpcErrors400.UserBannedInChannel.ThrowRpcError();
+                }
+            }
+            if (input.Media != null)
+            {
+                if (memberBannedRights.SendMedia)
+                {
+                    RpcErrors.RpcErrors400.UserBannedInChannel.ThrowRpcError();
+                }
+            }
         }
 
         return channelReadModel;
@@ -210,18 +198,18 @@ public class MessageAppService(
             }
         }
 
-        //if (mentionedUserNames.Count > 0)
-        //{
-        //    var mentionedUsers =
-        //        await _queryProcessor.ProcessAsync(new GetUserNameListByNamesQuery(mentionedUserNames, PeerType.User));
-        //    mentionedUserIds.AddRange(mentionedUsers.Select(p => p.PeerId).Distinct().ToList());
+        if (mentionedUserNames.Count > 0)
+        {
+            var mentionedUsers =
+                await queryProcessor.ProcessAsync(new GetUserNameListByNamesQuery(mentionedUserNames, PeerType.User));
+            mentionedUserIds.AddRange(mentionedUsers.Select(p => p.PeerId).Distinct().ToList());
 
-        //    entities ??= new TVector<IMessageEntity>();
-        //    foreach (var messageEntityMention in mentions)
-        //    {
-        //        entities.Add(messageEntityMention);
-        //    }
-        //}
+            entities ??= new TVector<IMessageEntity>();
+            foreach (var messageEntityMention in mentions)
+            {
+                entities.Add(messageEntityMention);
+            }
+        }
 
         return (mentionedUserIds, entities);
     }
@@ -316,6 +304,52 @@ public class MessageAppService(
         await commandBus.PublishAsync(command);
     }
 
+    //public async Task SendMessageAsync2(SendMessageInput input)
+    //{
+    //    await CheckAccessHashAsync(input);
+    //    await CheckBlockedAsync(input);
+    //    await CheckChannelBannedRightsAsync(input);
+
+    //    var ownerPeerId = input.ToPeer.PeerType == PeerType.Channel ? input.ToPeer.PeerId : input.SenderPeerId;
+
+    //    var item = await GetMessageEntitiesAsync(input);
+
+    //    var date = CurrentDate;
+    //    //var aggregateId = MessageId.Create(ownerPeerId, outboxMessageId);
+    //    var aggregateId = MessageId.CreateWithRandomId(ownerPeerId, input.RandomId);
+    //    var messageItem = new MessageItem(
+    //        input.ToPeer with { PeerId = ownerPeerId },
+    //        input.ToPeer,
+    //        new Peer(PeerType.User, input.SenderPeerId),
+    //        0,
+    //        input.Message,
+    //        date,
+    //        input.RandomId,
+    //        true,
+    //        input.SendMessageType,
+    //        (MessageType)input.SendMessageType,
+    //        MessageSubType.Normal,
+    //        input.ReplyToMsgId,
+    //        input.MessageActionData,
+    //        MessageActionType.None,
+    //        item.entities.ToBytes(),
+    //        input.Media,
+    //        input.GroupId,
+    //        pollId: input.PollId,
+    //        replyMarkup: input.ReplyMarkup,
+    //        topMsgId: input.TopMsgId
+    //    );
+
+    //    var command = new StartSendMessageCommand(aggregateId,
+    //        input.RequestInfo with { RequestId = Guid.NewGuid() },
+    //        messageItem,
+    //        item.mentionedUserIds,
+    //        input.ClearDraft,
+    //        input.GroupItemCount);
+
+    //    await _commandBus.PublishAsync(command, default);
+    //}
+
     private (List<TMessageEntityMention> mentions, List<string> userNameList) GetMentions(string message)
     {
         var pattern = "@(\\w{4,40})";
@@ -381,7 +415,6 @@ public class MessageAppService(
                             break;
                     }
 
-
                     break;
                 case MessageActionType.ChatDeleteUser:
                     var deletedUserId = messageReadModel.MessageActionData!.ToBytes()
@@ -422,6 +455,7 @@ public class MessageAppService(
 
         var contactList = await queryProcessor
                 .ProcessAsync(new GetContactListQuery(query.SelfUserId, userIdList));
+
         var photoIds = new List<long>();
         photoIds.AddRange(chatList.Select(p => p.PhotoId ?? 0));
         photoIds.AddRange(channelList.Select(p => p.PhotoId ?? 0));
@@ -465,6 +499,8 @@ public class MessageAppService(
                 .ProcessAsync(new GetChosenVoteAnswersQuery(pollIdList, query.SelfUserId));
         }
 
+        //var channelPostIdList=messageList.Where(p=>p.Post)
+
         return new GetMessageOutput(channelList,
             channelMemberList,
             chatList,
@@ -483,10 +519,5 @@ public class MessageAppService(
             query.Limit,
             query.Offset
         );
-    }
-
-    private Task<GetMessageOutput> GetMessagesInternalAsync(GetMessagesQuery query)
-    {
-        return GetMessagesInternalAsync(query, null, null);
     }
 }

@@ -39,6 +39,7 @@ public static class ObjectMapperExtensions
 
         if (givenTypeInfo.IsGenericType && givenType.GetGenericTypeDefinition() == genericType)
         {
+            //result.AddIfNotContains(givenType);
             if (!result.Contains(givenType))
             {
                 result.Add(givenType);

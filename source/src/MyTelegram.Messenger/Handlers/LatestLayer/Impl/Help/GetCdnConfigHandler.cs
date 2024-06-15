@@ -12,6 +12,9 @@ internal sealed class GetCdnConfigHandler : RpcResultObjectHandler<MyTelegram.Sc
     protected override Task<MyTelegram.Schema.ICdnConfig> HandleCoreAsync(IRequestInput input,
         MyTelegram.Schema.Help.RequestGetCdnConfig obj)
     {
-        throw new NotImplementedException();
+        return Task.FromResult<MyTelegram.Schema.ICdnConfig>(new TCdnConfig
+        {
+            PublicKeys = []
+        });
     }
 }

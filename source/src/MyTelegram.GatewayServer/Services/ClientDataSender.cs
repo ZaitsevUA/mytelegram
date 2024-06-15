@@ -63,7 +63,7 @@ public class ClientDataSender(
             case ClientType.Tcp:
                 await clientData.ConnectionContext!.Transport.Output.WriteAsync(encodedBytes);
                 await clientData.ConnectionContext!.Transport.Output.FlushAsync();
-                
+
                 break;
 
             case ClientType.WebSocket:

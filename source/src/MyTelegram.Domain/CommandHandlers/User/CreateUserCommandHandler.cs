@@ -14,7 +14,8 @@ public class CreateUserCommandHandler : CommandHandler<UserAggregate, UserId, Cr
             command.FirstName,
             command.LastName,
             command.UserName,
-            command.Bot);
+            command.Bot
+            );
         return Task.CompletedTask;
     }
 }

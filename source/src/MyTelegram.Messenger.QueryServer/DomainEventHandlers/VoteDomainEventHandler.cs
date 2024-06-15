@@ -32,13 +32,13 @@ public class VoteDomainEventHandler(
             await SendRpcMessageToClientAsync(domainEvent.AggregateEvent.RequestInfo, selfUpdates)
          ;
 
-            await SendMessageToPeerAsync(new Peer(PeerType.User, domainEvent.AggregateEvent.RequestInfo.UserId),
+            await PushMessageToPeerAsync(new Peer(PeerType.User, domainEvent.AggregateEvent.RequestInfo.UserId),
                 selfUpdates,
                 domainEvent.AggregateEvent.RequestInfo.AuthKeyId);
 
             // 
             var updatesForMember = layeredService.Converter.ToPollUpdates(pollReadModel, Array.Empty<string>());
-            await SendMessageToPeerAsync(domainEvent.AggregateEvent.ToPeer,
+            await PushMessageToPeerAsync(domainEvent.AggregateEvent.ToPeer,
                 updatesForMember,
                 excludeAuthKeyId: domainEvent.AggregateEvent.RequestInfo.AuthKeyId);
         }

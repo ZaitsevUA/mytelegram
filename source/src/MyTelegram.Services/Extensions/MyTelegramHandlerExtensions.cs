@@ -30,6 +30,7 @@ namespace MyTelegram.Services.Extensions
             services.AddSingleton<IInvokeAfterMsgProcessor, InvokeAfterMsgProcessor>();
             services.AddSystemTextJson();
 
+            services.AddSingleton(typeof(ICacheHelper<,>),typeof(CacheHelper<,>));
             return services;
         }
 

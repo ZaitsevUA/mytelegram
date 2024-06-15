@@ -7,10 +7,10 @@ namespace MyTelegram.Schema;
 /// Full info about a <a href="https://corefork.telegram.org/api/channel#channels">channel</a>, <a href="https://corefork.telegram.org/api/channel#supergroups">supergroup</a> or <a href="https://corefork.telegram.org/api/channel#gigagroups">gigagroup</a>.
 /// See <a href="https://corefork.telegram.org/constructor/channelFull" />
 ///</summary>
-[TlObject(0x44c054a7)]
+[TlObject(0xbbab348d)]
 public sealed class TChannelFull : MyTelegram.Schema.IChatFull, ILayeredChannelFull
 {
-    public uint ConstructorId => 0x44c054a7;
+    public uint ConstructorId => 0xbbab348d;
     ///<summary>
     /// Flags, see <a href="https://corefork.telegram.org/mtproto/TL-combinators#conditional-fields">TL conditional fields</a>
     ///</summary>
@@ -290,6 +290,7 @@ public sealed class TChannelFull : MyTelegram.Schema.IChatFull, ILayeredChannelF
     /// See <a href="https://corefork.telegram.org/type/ChatReactions" />
     ///</summary>
     public MyTelegram.Schema.IChatReactions? AvailableReactions { get; set; }
+    public int? ReactionsLimit { get; set; }
 
     ///<summary>
     /// Channel <a href="https://corefork.telegram.org/api/stories">stories</a>
@@ -350,6 +351,7 @@ public sealed class TChannelFull : MyTelegram.Schema.IChatFull, ILayeredChannelF
         if (RecentRequesters?.Count > 0) { Flags[28] = true; }
         if (DefaultSendAs != null) { Flags[29] = true; }
         if (AvailableReactions != null) { Flags[30] = true; }
+        if (/*ReactionsLimit != 0 && */ReactionsLimit.HasValue) { Flags2[13] = true; }
         if (Stories != null) { Flags2[4] = true; }
         if (Wallpaper != null) { Flags2[7] = true; }
         if (/*BoostsApplied != 0 && */BoostsApplied.HasValue) { Flags2[8] = true; }
@@ -398,6 +400,7 @@ public sealed class TChannelFull : MyTelegram.Schema.IChatFull, ILayeredChannelF
         if (Flags[28]) { writer.Write(RecentRequesters); }
         if (Flags[29]) { writer.Write(DefaultSendAs); }
         if (Flags[30]) { writer.Write(AvailableReactions); }
+        if (Flags2[13]) { writer.Write(ReactionsLimit.Value); }
         if (Flags2[4]) { writer.Write(Stories); }
         if (Flags2[7]) { writer.Write(Wallpaper); }
         if (Flags2[8]) { writer.Write(BoostsApplied.Value); }
@@ -460,6 +463,7 @@ public sealed class TChannelFull : MyTelegram.Schema.IChatFull, ILayeredChannelF
         if (Flags[28]) { RecentRequesters = reader.Read<TVector<long>>(); }
         if (Flags[29]) { DefaultSendAs = reader.Read<MyTelegram.Schema.IPeer>(); }
         if (Flags[30]) { AvailableReactions = reader.Read<MyTelegram.Schema.IChatReactions>(); }
+        if (Flags2[13]) { ReactionsLimit = reader.ReadInt32(); }
         if (Flags2[4]) { Stories = reader.Read<MyTelegram.Schema.IPeerStories>(); }
         if (Flags2[7]) { Wallpaper = reader.Read<MyTelegram.Schema.IWallPaper>(); }
         if (Flags2[8]) { BoostsApplied = reader.ReadInt32(); }

@@ -4,7 +4,7 @@ public class UserProfilePhotoUploadedEvent(
     RequestInfo requestInfo,
     long photoId,
     bool fallback,
-    VideoSizeEmojiMarkup? videoEmojiMarkup)
+    IVideoSize? videoEmojiMarkup)
     : RequestAggregateEvent2<UserAggregate, UserId>(requestInfo)
 {
     //public bool HasVideo { get; }
@@ -24,5 +24,5 @@ public class UserProfilePhotoUploadedEvent(
 
     //public long UserId { get; }
     //public UserItem UserItem { get; }
-    public VideoSizeEmojiMarkup? VideoEmojiMarkup { get; } = videoEmojiMarkup;
+    public IVideoSize? VideoEmojiMarkup { get; } = videoEmojiMarkup;
 }

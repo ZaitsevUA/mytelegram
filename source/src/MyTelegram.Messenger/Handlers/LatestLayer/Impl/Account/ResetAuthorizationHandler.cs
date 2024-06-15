@@ -10,12 +10,35 @@ namespace MyTelegram.Handlers.Account;
 /// 400 HASH_INVALID The provided hash is invalid.
 /// See <a href="https://corefork.telegram.org/method/account.resetAuthorization" />
 ///</summary>
-internal sealed class ResetAuthorizationHandler : RpcResultObjectHandler<MyTelegram.Schema.Account.RequestResetAuthorization, IBool>,
-    Account.IResetAuthorizationHandler
+internal sealed class ResetAuthorizationHandler(
+    ICommandBus commandBus,
+    IQueryProcessor queryProcessor,
+    IObjectMessageSender messageSender,
+    ILogger<ResetAuthorizationHandler> logger,
+    IEventBus eventBus)
+    : RpcResultObjectHandler<MyTelegram.Schema.Account.RequestResetAuthorization, IBool>,
+        Account.IResetAuthorizationHandler
+
 {
-    protected override Task<IBool> HandleCoreAsync(IRequestInput input,
+    private readonly ICommandBus _commandBus = commandBus;
+
+    //private readonly IMessageSender _messageSender;
+    private readonly IObjectMessageSender _messageSender = messageSender;
+
+    protected override async Task<IBool> HandleCoreAsync(IRequestInput input,
         MyTelegram.Schema.Account.RequestResetAuthorization obj)
     {
-        throw new NotImplementedException();
+        var deviceReadModel = await queryProcessor
+            .ProcessAsync(new GetDeviceByHashQuery(input.UserId, obj.Hash));
+        if (deviceReadModel != null)
+        {
+            await eventBus.PublishAsync(new UnRegisterAuthKeyEvent(deviceReadModel.PermAuthKeyId));
+        }
+        else
+        {
+            logger.LogWarning("Can not find device,userId={UserId},hash={Hash}", input.UserId, obj.Hash);
+        }
+
+        return new TBoolTrue();
     }
 }

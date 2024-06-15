@@ -26,7 +26,7 @@ public class OtherDomainEventHandler(
         ISubscribeSynchronousTo<SignInSaga, SignInSagaId, SignInSuccessEvent>,
         ISubscribeSynchronousTo<SignInSaga, SignInSagaId, SignUpRequiredEvent>,
         //ISubscribeSynchronousTo<AppCodeAggregate, AppCodeId, SignUpRequiredEvent>,
-        ISubscribeSynchronousTo<UpdatePinnedMessageSaga, UpdatePinnedMessageSagaId, UpdatePinnedMessageCompletedEvent>,
+        //ISubscribeSynchronousTo<UpdatePinnedMessageSaga, UpdatePinnedMessageSagaId, UpdatePinnedMessageCompletedEvent>,
         //ISubscribeSynchronousTo<DeleteMessageSaga, DeleteMessageSagaId, DeleteMessagesCompletedEvent>,
         //ISubscribeSynchronousTo<DeleteMessageSaga2, DeleteMessageSaga2Id, DeleteMessagesCompletedEvent2>,
         ISubscribeSynchronousTo<ClearHistorySaga, ClearHistorySagaId, ClearSingleUserHistoryCompletedEvent>,
@@ -34,7 +34,10 @@ public class OtherDomainEventHandler(
         ISubscribeSynchronousTo<PeerNotifySettingsAggregate, PeerNotifySettingsId, PeerNotifySettingsUpdatedEvent>,
         ISubscribeSynchronousTo<UserAggregate, UserId, UserGlobalPrivacySettingsChangedEvent>,
         ISubscribeSynchronousTo<PinForwardedChannelMessageSaga, PinForwardedChannelMessageSagaId,
-            PinChannelMessagePtsIncrementedEvent>
+            PinChannelMessagePtsIncrementedEvent>,
+        ISubscribeSynchronousTo<UpdatePinnedMessageSaga, UpdatePinnedMessageSagaId, UpdateSavedMessagesPinnedCompletedEvent>//,
+        //ISubscribeSynchronousTo<UnpinAllMessagesSaga, UnpinAllMessagesSagaId, UnpinAllMessagesCompletedSagaEvent>,
+        //ISubscribeSynchronousTo<UnpinAllMessagesSaga, UnpinAllMessagesSagaId, UnpinAllParticipantMessagesCompletedSagaEvent>
 
 //,
 //ISubscribeSynchronousTo<DeleteMessagesSaga4, DeleteMessagesSaga4Id, DeleteSelfMessagesCompletedEvent4>,
@@ -366,6 +369,7 @@ public class OtherDomainEventHandler(
 
         //else
         {
+
             await PushUpdatesToPeerAsync(
                 domainEvent.AggregateEvent.ToPeer.PeerType == PeerType.Channel
                     ? new Peer(PeerType.Channel, domainEvent.AggregateEvent.OwnerPeerId)
@@ -477,6 +481,36 @@ public class OtherDomainEventHandler(
             Date = DateTime.UtcNow.ToTimestamp(),
         };
 
-        return SendMessageToPeerAsync(domainEvent.AggregateEvent.ChannelId.ToChannelPeer(), updateShort);
+        return PushMessageToPeerAsync(domainEvent.AggregateEvent.ChannelId.ToChannelPeer(), updateShort);
     }
+
+    public async Task HandleAsync(IDomainEvent<UpdatePinnedMessageSaga, UpdatePinnedMessageSagaId, UpdateSavedMessagesPinnedCompletedEvent> domainEvent, CancellationToken cancellationToken)
+    {
+        var updatePinnedMessages = new TUpdatePinnedMessages
+        {
+            Pinned = domainEvent.AggregateEvent.Pinned,
+            Peer = new TPeerUser
+            {
+                UserId = domainEvent.AggregateEvent.RequestInfo.UserId
+            },
+            Messages = new TVector<int>(domainEvent.AggregateEvent.MessageIds),
+            Pts = domainEvent.AggregateEvent.Pts,
+            PtsCount = 1
+        };
+        var updates = new TUpdates
+        {
+            Updates = new TVector<IUpdate>(updatePinnedMessages),
+            Users = new(),
+            Chats = new(),
+            Date = DateTime.UtcNow.ToTimestamp(),
+        };
+        await SendRpcMessageToClientAsync(domainEvent.AggregateEvent.RequestInfo, updates,
+            pts: domainEvent.AggregateEvent.Pts);
+
+        await PushUpdatesToPeerAsync(domainEvent.AggregateEvent.RequestInfo.UserId.ToUserPeer(), updates,
+            domainEvent.AggregateEvent.RequestInfo.PermAuthKeyId, pts: domainEvent.AggregateEvent.Pts);
+
+    }
+
+    
 }

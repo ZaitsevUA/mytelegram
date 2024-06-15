@@ -1,4 +1,5 @@
 ﻿namespace MyTelegram.Messenger.TLObjectConverters.Mappers.PeerNotifySetting;
+
 public class PeerNotifySettingMapper : ILayeredMapper,
     IObjectMapper<PeerNotifySettings, TPeerNotifySettings>
 {

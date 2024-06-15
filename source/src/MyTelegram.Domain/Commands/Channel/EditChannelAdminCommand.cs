@@ -7,6 +7,7 @@ public class EditChannelAdminCommand(
     bool canEdit,
     long userId,
     bool isBot,
+    bool isChannelMember,
     ChatAdminRights adminRights,
     string rank,
     int date)
@@ -19,4 +20,5 @@ public class EditChannelAdminCommand(
     public int Date { get; } = date;
     public long UserId { get; } = userId;
     public bool IsBot { get; } = isBot;
+    public bool IsChannelMember { get; } = isChannelMember;
 }

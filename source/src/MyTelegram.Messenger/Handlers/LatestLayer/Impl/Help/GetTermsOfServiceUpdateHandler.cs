@@ -2,10 +2,10 @@
 
 namespace MyTelegram.Handlers.Help;
 
-///<summary>
-/// Look for updates of telegram's terms of service
-/// See <a href="https://corefork.telegram.org/method/help.getTermsOfServiceUpdate" />
-///</summary>
+/// <summary>
+///     Look for updates of telegram's terms of service
+///     See <a href="https://corefork.telegram.org/method/help.getTermsOfServiceUpdate" />
+/// </summary>
 internal sealed class GetTermsOfServiceUpdateHandler : RpcResultObjectHandler<MyTelegram.Schema.Help.RequestGetTermsOfServiceUpdate, MyTelegram.Schema.Help.ITermsOfServiceUpdate>,
     Help.IGetTermsOfServiceUpdateHandler
 {

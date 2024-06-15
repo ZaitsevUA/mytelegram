@@ -51,22 +51,29 @@ internal sealed class EditPhotoHandler : RpcResultObjectHandler<MyTelegram.Schem
             throw new NotImplementedException();
         }
 
+        ////var photo=await _mediaHelper.SavePhotoAsync(input.ReqMsgId,obj)
+        //var channelId = obj.Channel switch
+        //{
+        //    TInputChannel inputChannel => inputChannel.ChannelId,
+        //    _ => throw new ArgumentOutOfRangeException(nameof(obj.Channel))
+        //};
+
         long fileId = 0;
         var parts = 0;
         var md5 = string.Empty;
         var name = string.Empty;
         var hasVideo = false;
         double? videoStartTs = 0;
+        IVideoSize? videoSize = null;
         switch (obj.Photo)
         {
             case Schema.TInputChatUploadedPhoto inputChatUploadedPhoto1:
                 {
+                    var file = inputChatUploadedPhoto1.File ?? inputChatUploadedPhoto1.Video;
+                    if (file != null)
                     {
-                        var file = inputChatUploadedPhoto1.File ?? inputChatUploadedPhoto1.Video;
-                        if (file == null)
-                        {
-                            RpcErrors.RpcErrors400.PhotoInvalid.ThrowRpcError();
-                        }
+                        //ThrowHelper.ThrowUserFriendlyException("PHOTO_INVALID");
+                        //RpcErrors.RpcErrors400.PhotoInvalid.ThrowRpcError();
 
                         fileId = file!.Id;
                         parts = file.Parts;
@@ -83,11 +90,13 @@ internal sealed class EditPhotoHandler : RpcResultObjectHandler<MyTelegram.Schem
                             default:
                                 throw new ArgumentOutOfRangeException(nameof(file));
                         }
-
                     }
+
+                    videoSize = inputChatUploadedPhoto1.VideoEmojiMarkup;
                 }
                 break;
             case TInputChatPhoto inputChatPhoto:
+                //photo=await _mediaHelper.SavePhotoAsync(input.ReqMsgId,inputChatPhoto.)
                 switch (inputChatPhoto.Id)
                 {
                     case TInputPhoto inputPhoto:
@@ -107,19 +116,20 @@ internal sealed class EditPhotoHandler : RpcResultObjectHandler<MyTelegram.Schem
         }
 
         IPhoto photo = new TPhotoEmpty();
+
         long? photoId = null;
-        if (fileId != 0)
-        {
         var r = await _mediaHelper.SavePhotoAsync(input.ReqMsgId,
             fileId,
             hasVideo,
             videoStartTs,
             parts,
             name,
-            md5);
-            photoId = r.PhotoId;
-            photo = r.Photo;
-        }
+            md5,
+            videoSize
+        );
+        photoId = r.PhotoId;
+        photo = r.Photo;
+
         var command = new EditChannelPhotoCommand(ChannelId.Create(channelId),
             input.ToRequestInfo(),
             photoId,

@@ -15,7 +15,9 @@ public class UserState : AggregateState<UserAggregate, UserId, UserState>,
     IApply<UserGlobalPrivacySettingsChangedEvent>,
     IApply<UserPremiumStatusChangedEvent>,
     IApply<PersonalChannelUpdatedEvent>,
-    IApply<BirthdayUpdatedEvent>
+    IApply<BirthdayUpdatedEvent>,
+    IApply<UserAboutUpdatedEvent>,
+    IApply<UserFirstNameUpdatedEvent>
 {
     public long AccessHash { get; private set; }
     public string FirstName { get; private set; } = default!;
@@ -161,5 +163,15 @@ public class UserState : AggregateState<UserAggregate, UserId, UserState>,
     public void Apply(BirthdayUpdatedEvent aggregateEvent)
     {
         Birthday = aggregateEvent.Birthday;
+    }
+
+    public void Apply(UserAboutUpdatedEvent aggregateEvent)
+    {
+        
+    }
+
+    public void Apply(UserFirstNameUpdatedEvent aggregateEvent)
+    {
+        FirstName= aggregateEvent.FirstName;
     }
 }

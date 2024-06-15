@@ -79,6 +79,7 @@ public class MongoDbIndexesCreator(
         //await CreateIndexAsync<MessageReadModel>(p => p.ReplyToMsgId);
 
         await CreateIndexAsync<UserReadModel>(p => p.UserId);
+        await CreateIndexAsync<UserReadModel>(p => p.PhoneNumber);
         await CreateIndexAsync<UserReadModel>(p => p.FirstName);
         await CreateIndexAsync<ChannelReadModel>(p => p.ChannelId);
         await CreateIndexAsync<ChannelFullReadModel>(p => p.ChannelId);
@@ -92,6 +93,8 @@ public class MongoDbIndexesCreator(
         await CreateIndexAsync<DeviceReadModel>(p => p.UserId);
         await CreateIndexAsync<DeviceReadModel>(p => p.IsActive);
 
+        await CreateIndexAsync<ContactReadModel>(p => p.SelfUserId);
+        await CreateIndexAsync<ContactReadModel>(p => p.TargetUserId);
         //await CreateIndexAsync<FileReadModel>(p => p.UserId);
         //await CreateIndexAsync<FileReadModel>(p => p.FileId);
         //await CreateIndexAsync<FileReadModel>(p => p.ServerFileId);

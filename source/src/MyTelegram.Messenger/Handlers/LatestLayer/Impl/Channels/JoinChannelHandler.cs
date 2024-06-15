@@ -45,7 +45,8 @@ internal sealed class JoinChannelHandler : RpcResultObjectHandler<MyTelegram.Sch
         if (obj.Channel is TInputChannel inputChannel)
         {
             await _accessHashHelper.CheckAccessHashAsync(inputChannel.ChannelId, inputChannel.AccessHash);
-            var channelReadModel = await _queryProcessor.ProcessAsync(new GetChannelByIdQuery(inputChannel.ChannelId), default);
+            var channelReadModel = await _queryProcessor.ProcessAsync(new GetChannelByIdQuery(inputChannel.ChannelId));
+            channelReadModel.ThrowExceptionIfChannelDeleted();
 
             var userIdList = new[] { input.UserId };
             var command = new StartInviteToChannelCommand(

@@ -51,6 +51,15 @@ public class MySagaAggregateStore(
                 domainEvents = await aggregateStore.UpdateAsync<SetDiscussionGroupSaga, SetDiscussionGroupSagaId>(setDiscussionGroupSagaId, sourceId, updateSaga, cancellationToken);
 
                 break;
+            case UnpinAllMessagesSagaId unPinAllMessagesSagaId:
+                domainEvents = await aggregateStore.UpdateAsync<UnpinAllMessagesSaga, UnpinAllMessagesSagaId>(unPinAllMessagesSagaId, sourceId, updateSaga, cancellationToken);
+                break;
+            case UpdateMessagePinnedSagaId updateMessagePinnedSagaId:
+                domainEvents = await aggregateStore.UpdateAsync<UpdateMessagePinnedSaga, UpdateMessagePinnedSagaId>(updateMessagePinnedSagaId, sourceId, updateSaga, cancellationToken);
+                break;
+            case UpdateMessageReplySagaId updateMessageReplySagaId:
+                domainEvents = await aggregateStore.UpdateAsync<UpdateMessageReplySaga, UpdateMessageReplySagaId>(updateMessageReplySagaId, sourceId, updateSaga, cancellationToken);
+                break;
 
             case DeleteChannelMessagesSagaId deleteChannelMessagesSagaId:
                 domainEvents = await aggregateStore.UpdateAsync<DeleteChannelMessagesSaga, DeleteChannelMessagesSagaId>(deleteChannelMessagesSagaId, sourceId, updateSaga, cancellationToken);

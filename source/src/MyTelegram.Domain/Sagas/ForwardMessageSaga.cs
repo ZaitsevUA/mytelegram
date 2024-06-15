@@ -1,6 +1,5 @@
-﻿using MyTelegram.Domain.Aggregates.Temp;
+﻿namespace MyTelegram.Domain.Sagas;
 
-namespace MyTelegram.Domain.Sagas;
 public class MessageReplyCreatedEvent(long postChannelId, int postMessageId, long channelId, int messageId)
     : AggregateEvent<ForwardMessageSaga, ForwardMessageSagaId>
 {
@@ -34,8 +33,10 @@ public class ForwardMessageSaga : MyInMemoryAggregateSaga<ForwardMessageSaga, Fo
             Emit(new MessageReplyCreatedEvent(domainEvent.AggregateEvent.OriginalMessageItem.ToPeer.PeerId, domainEvent.AggregateEvent.OriginalMessageItem.MessageId, _state.ToPeer.PeerId, outMessageId));
             PinForwardedChannelMessage(_state.ToPeer.PeerId, outMessageId);
         }
+
         await HandleForwardCompletedAsync();
     }
+
     private void PinForwardedChannelMessage(long channelId, int messageId)
     {
         var command = new PinChannelMessageCommand(MessageId.Create(channelId, messageId), _state.RequestInfo);
@@ -109,24 +110,19 @@ public class ForwardMessageSaga : MyInMemoryAggregateSaga<ForwardMessageSaga, Fo
             reply = aggregateEvent.OriginalMessageItem.Reply;
             postChannelId = aggregateEvent.OriginalMessageItem.ToPeer.PeerId;
             postMessageId = aggregateEvent.OriginalMessageItem.MessageId;
-            //senderPeer=new Peer(PeerType.Channel,_state.)
         }
-        // TODO:Set fromName
         var fwdHeader = new MessageFwdHeader(
             false,
             false,
             fromId,
             null,
             channelPost,
-            //aggregateEvent.PostAuthor,
             null,
-            //aggregateEvent.Date,
             DateTime.UtcNow.ToTimestamp(),
             savedFromPeer,
             savedFromMsgId, null, null, null, null, _state.ForwardFromLinkedChannel);
 
         outMessageId = await _idGenerator.NextIdAsync(IdType.MessageId, ownerPeerId);
-        //var aggregateId = MessageId.CreateWithRandomId(ownerPeerId, aggregateEvent.RandomId);
         var aggregateId = MessageId.Create(ownerPeerId, outMessageId);
 
 
@@ -135,7 +131,6 @@ public class ForwardMessageSaga : MyInMemoryAggregateSaga<ForwardMessageSaga, Fo
             : senderPeer;
         var toPeer = _state.ToPeer;
         var item = aggregateEvent.OriginalMessageItem;
-
         var command = new CreateOutboxMessageCommand(aggregateId, aggregateEvent.RequestInfo,
             new MessageItem(
                 ownerPeer,
@@ -150,7 +145,6 @@ public class ForwardMessageSaga : MyInMemoryAggregateSaga<ForwardMessageSaga, Fo
                 SendMessageType.Text,
                 MessageType.Text,
                 MessageSubType.ForwardMessage,
-                //replyToMsgId: item.ReplyToMsgId,
                 InputReplyTo: item.InputReplyTo,
                 Entities: item.Entities,
                 Media: item.Media,
@@ -166,6 +160,9 @@ public class ForwardMessageSaga : MyInMemoryAggregateSaga<ForwardMessageSaga, Fo
         );
 
         Publish(command);
+
         return outMessageId;
     }
+
+
 }

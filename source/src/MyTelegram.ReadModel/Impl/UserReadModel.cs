@@ -5,6 +5,7 @@ public class UserReadModel : IUserReadModel,
     IAmReadModelFor<UserAggregate, UserId, UserProfileUpdatedEvent>,
     IAmReadModelFor<MessageAggregate, MessageId, OutboxMessagePinnedUpdatedEvent>,
     IAmReadModelFor<MessageAggregate, MessageId, InboxMessagePinnedUpdatedEvent>,
+    IAmReadModelFor<MessageAggregate, MessageId, MessagePinnedUpdatedEvent>,
     IAmReadModelFor<UserAggregate, UserId, UserSupportHasSetEvent>,
     IAmReadModelFor<UserAggregate, UserId, UserVerifiedHasSetEvent>,
     IAmReadModelFor<UserAggregate, UserId, UserNameUpdatedEvent>,
@@ -14,7 +15,9 @@ public class UserReadModel : IUserReadModel,
     IAmReadModelFor<UserAggregate,UserId,UserGlobalPrivacySettingsChangedEvent>,
     IAmReadModelFor<UserAggregate, UserId, UserPremiumStatusChangedEvent>,
     IAmReadModelFor<UserAggregate, UserId, PersonalChannelUpdatedEvent>,
-    IAmReadModelFor<UserAggregate, UserId, BirthdayUpdatedEvent>
+    IAmReadModelFor<UserAggregate, UserId, BirthdayUpdatedEvent>,
+    IAmReadModelFor<UserAggregate, UserId, UserAboutUpdatedEvent>,
+    IAmReadModelFor<UserAggregate, UserId, UserFirstNameUpdatedEvent>
 {
     public virtual string? About { get; private set; }
     public virtual long AccessHash { get; private set; }
@@ -28,8 +31,8 @@ public class UserReadModel : IUserReadModel,
     public virtual string? LastName { get; private set; }
     public virtual DateTime LastUpdateDate { get; private set; }
     public virtual string PhoneNumber { get; private set; } = null!;
-    public virtual int PinnedMsgId { get; private set; }
-    public virtual List<int> PinnedMsgIdList { get; protected set; } = new();
+    public virtual int? PinnedMsgId { get; private set; }
+    public virtual List<int> PinnedMsgIdList { get; protected set; } = [];
     public virtual byte[]? ProfilePhoto { get; private set; }
     public virtual bool SensitiveCanChange { get; private set; }
     public virtual bool SensitiveEnabled { get; private set; }
@@ -44,7 +47,7 @@ public class UserReadModel : IUserReadModel,
     public string? Email { get; private set; }
     public long? EmojiStatusDocumentId { get; private set; }
     public int? EmojiStatusValidUntil { get; private set; }
-    public List<long> RecentEmojiStatuses { get; private set; }
+    public List<long> RecentEmojiStatuses { get; private set; } = [];
     public VideoSizeEmojiMarkup? VideoEmojiMarkup { get; private set; }
     public long? ProfilePhotoId { get; private set; }
     public long? PersonalPhotoId { get; private set; }
@@ -227,6 +230,26 @@ public class UserReadModel : IUserReadModel,
     public Task ApplyAsync(IReadModelContext context, IDomainEvent<UserAggregate, UserId, BirthdayUpdatedEvent> domainEvent, CancellationToken cancellationToken)
     {
         Birthday = domainEvent.AggregateEvent.Birthday;
+
+        return Task.CompletedTask;
+    }
+    public Task ApplyAsync(IReadModelContext context, IDomainEvent<MessageAggregate, MessageId, MessagePinnedUpdatedEvent> domainEvent, CancellationToken cancellationToken)
+    {
+        UpdatePinnedMsgId(domainEvent.AggregateEvent.MessageId, domainEvent.AggregateEvent.Pinned);
+
+        return Task.CompletedTask;
+    }
+
+    public Task ApplyAsync(IReadModelContext context, IDomainEvent<UserAggregate, UserId, UserAboutUpdatedEvent> domainEvent, CancellationToken cancellationToken)
+    {
+        About = domainEvent.AggregateEvent.About;
+
+        return Task.CompletedTask;
+    }
+
+    public Task ApplyAsync(IReadModelContext context, IDomainEvent<UserAggregate, UserId, UserFirstNameUpdatedEvent> domainEvent, CancellationToken cancellationToken)
+    {
+        FirstName = domainEvent.AggregateEvent.FirstName;
 
         return Task.CompletedTask;
     }

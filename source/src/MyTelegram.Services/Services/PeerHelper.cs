@@ -21,7 +21,7 @@ public class PeerHelper : IPeerHelper //, ISingletonDependency
         //}
 
         //throw new BadRequestException("CHANNEL_INVALID");
-        //ThrowHelper.ThrowUserFriendlyException("CHANNEL_INVALID");
+        ////ThrowHelper.ThrowUserFriendlyException("CHANNEL_INVALID");
     }
 
     [return: NotNullIfNotNull(nameof(peer))]
@@ -40,9 +40,9 @@ public class PeerHelper : IPeerHelper //, ISingletonDependency
         //        peerId = inputPeerChannel.ChannelId;
         //        accessHash = inputPeerChannel.AccessHash;
         //        break;
-                //case TInputPeerChannelFromMessage inputPeerChannelFromMessage:
-                //    peerType = PeerType.Channel;
-                //    peerId = inputPeerChannelFromMessage.ChannelId;
+        //        //case TInputPeerChannelFromMessage inputPeerChannelFromMessage:
+        //        //    peerType = PeerType.Channel;
+        //        //    peerId = inputPeerChannelFromMessage.ChannelId;
 
         //        break;
         //    case TInputPeerChat inputPeerChat:
@@ -62,8 +62,8 @@ public class PeerHelper : IPeerHelper //, ISingletonDependency
         //        peerId = inputPeerUser.UserId;
         //        accessHash = inputPeerUser.AccessHash;
         //        break;
-            //case TInputPeerUserFromMessage inputPeerUserFromMessage:
-            //break;
+        //    //case TInputPeerUserFromMessage inputPeerUserFromMessage:
+        //    //break;
         //    default:
         //        throw new NotSupportedException(peer.GetType().Name);
         //}
@@ -108,7 +108,7 @@ public class PeerHelper : IPeerHelper //, ISingletonDependency
 
     public bool IsChannelPeer(long peerId)
     {
-        return peerId is >= MyTelegramServerDomainConsts.ChannelInitId and < MyTelegramServerDomainConsts.BotUserInitId;
+        return peerId >= MyTelegramServerDomainConsts.ChannelInitId;
     }
 
     public IPeer ToPeer(Peer peer)
@@ -140,11 +140,8 @@ public class PeerHelper : IPeerHelper //, ISingletonDependency
         var peerType = peerId switch
         {
             < MyTelegramServerDomainConsts.ChatIdInitId => PeerType.User,
-            >= MyTelegramServerDomainConsts.ChatIdInitId and < MyTelegramServerDomainConsts.ChannelInitId => PeerType
-                .Chat,
-            >= MyTelegramServerDomainConsts.ChannelInitId and < MyTelegramServerDomainConsts.BotUserInitId =>
-                PeerType.Channel,
-            >= MyTelegramServerDomainConsts.BotUserInitId => PeerType.User
+            >= MyTelegramServerDomainConsts.ChatIdInitId and < MyTelegramServerDomainConsts.ChannelInitId => PeerType.Chat,
+            >= MyTelegramServerDomainConsts.ChannelInitId => PeerType.Channel
         };
 
         return peerType;

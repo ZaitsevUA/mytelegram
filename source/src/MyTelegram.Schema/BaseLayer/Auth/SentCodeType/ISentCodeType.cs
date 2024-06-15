@@ -15,6 +15,8 @@ namespace MyTelegram.Schema.Auth;
 [JsonDerivedType(typeof(TSentCodeTypeSetUpEmailRequired), nameof(TSentCodeTypeSetUpEmailRequired))]
 [JsonDerivedType(typeof(TSentCodeTypeFragmentSms), nameof(TSentCodeTypeFragmentSms))]
 [JsonDerivedType(typeof(TSentCodeTypeFirebaseSms), nameof(TSentCodeTypeFirebaseSms))]
+[JsonDerivedType(typeof(TSentCodeTypeSmsWord), nameof(TSentCodeTypeSmsWord))]
+[JsonDerivedType(typeof(TSentCodeTypeSmsPhrase), nameof(TSentCodeTypeSmsPhrase))]
 public interface ISentCodeType : IObject
 {
 

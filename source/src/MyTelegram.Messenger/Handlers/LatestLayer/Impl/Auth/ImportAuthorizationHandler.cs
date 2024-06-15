@@ -51,10 +51,15 @@ internal sealed class ImportAuthorizationHandler : RpcResultObjectHandler<MyTele
         {
             if (userId != obj.Id)
             {
-                RpcErrors.RpcErrors400.AuthBytesInvalid.ThrowRpcError();
+                RpcErrors.RpcErrors400.UserIdInvalid.ThrowRpcError();
             }
 
-            var userReadModel = await _queryProcessor.ProcessAsync(new GetUserByIdQuery(userId), default);
+            var userReadModel = await _queryProcessor.ProcessAsync(new GetUserByIdQuery(userId));
+            if (userReadModel == null)
+            {
+                RpcErrors.RpcErrors400.UserIdInvalid.ThrowRpcError();
+            }
+
             await _eventBus.PublishAsync(new BindUidToSessionEvent(userReadModel!.UserId, input.AuthKeyId, input.PermAuthKeyId));
 
             await _cacheManager.RemoveAsync(key);

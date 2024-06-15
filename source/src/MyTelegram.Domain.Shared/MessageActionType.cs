@@ -1,6 +1,4 @@
-﻿// ReSharper disable once CheckNamespace
-
-namespace MyTelegram;
+﻿namespace MyTelegram;
 
 public enum MessageActionType
 {
@@ -34,5 +32,5 @@ public enum MessageActionType
     SetMessagesTtl,
     ChannelAddUser,
     ForumTopicCreated,
-    ForumTopicEdited,
+    ForumTopicEdited
 }

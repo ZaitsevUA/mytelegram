@@ -7,10 +7,10 @@ namespace MyTelegram.Schema;
 /// Poll
 /// See <a href="https://corefork.telegram.org/constructor/poll" />
 ///</summary>
-[TlObject(0x86e18161)]
+[TlObject(0x58747131)]
 public sealed class TPoll : IPoll
 {
-    public uint ConstructorId => 0x86e18161;
+    public uint ConstructorId => 0x58747131;
     ///<summary>
     /// ID of the poll
     ///</summary>
@@ -47,8 +47,9 @@ public sealed class TPoll : IPoll
 
     ///<summary>
     /// The question of the poll
+    /// See <a href="https://corefork.telegram.org/type/TextWithEntities" />
     ///</summary>
-    public string Question { get; set; }
+    public MyTelegram.Schema.ITextWithEntities Question { get; set; }
 
     ///<summary>
     /// The possible answers, vote using <a href="https://corefork.telegram.org/method/messages.sendVote">messages.sendVote</a>.
@@ -95,7 +96,7 @@ public sealed class TPoll : IPoll
         if (Flags[1]) { PublicVoters = true; }
         if (Flags[2]) { MultipleChoice = true; }
         if (Flags[3]) { Quiz = true; }
-        Question = reader.ReadString();
+        Question = reader.Read<MyTelegram.Schema.ITextWithEntities>();
         Answers = reader.Read<TVector<MyTelegram.Schema.IPollAnswer>>();
         if (Flags[4]) { ClosePeriod = reader.ReadInt32(); }
         if (Flags[5]) { CloseDate = reader.ReadInt32(); }

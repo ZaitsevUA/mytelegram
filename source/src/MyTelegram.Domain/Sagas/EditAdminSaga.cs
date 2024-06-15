@@ -10,7 +10,7 @@ public class EditAdminSaga(
         ISagaContext sagaContext,
         CancellationToken cancellationToken)
     {
-        if (domainEvent.AggregateEvent.IsBot && domainEvent.AggregateEvent.IsNewAdmin)
+        if (!domainEvent.AggregateEvent.IsBot && domainEvent.AggregateEvent.IsChannelMember)
         {
             var command = new CreateChannelMemberCommand(
                 ChannelMemberId.Create(domainEvent.AggregateEvent.ChannelId, domainEvent.AggregateEvent.UserId),

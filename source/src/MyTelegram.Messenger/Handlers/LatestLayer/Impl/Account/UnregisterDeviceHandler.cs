@@ -12,9 +12,23 @@ namespace MyTelegram.Handlers.Account;
 internal sealed class UnregisterDeviceHandler : RpcResultObjectHandler<MyTelegram.Schema.Account.RequestUnregisterDevice, IBool>,
     Account.IUnregisterDeviceHandler
 {
-    protected override Task<IBool> HandleCoreAsync(IRequestInput input,
-        MyTelegram.Schema.Account.RequestUnregisterDevice obj)
+    private readonly ICommandBus _commandBus;
+
+    public UnregisterDeviceHandler(ICommandBus commandBus)
     {
-        throw new NotImplementedException();
+        _commandBus = commandBus;
+    }
+
+    protected override async Task<IBool> HandleCoreAsync(IRequestInput input,
+        RequestUnregisterDevice obj)
+    {
+        var command = new UnRegisterDeviceCommand(PushDeviceId.Create(obj.Token),
+            input.ToRequestInfo(),
+            obj.TokenType,
+            obj.Token,
+            obj.OtherUids.ToList());
+        await _commandBus.PublishAsync(command, CancellationToken.None);
+
+        return new TBoolTrue();
     }
 }

@@ -1,4 +1,6 @@
-﻿namespace MyTelegram.Domain.Aggregates.Channel;
+﻿using EventFlow.Aggregates;
+
+namespace MyTelegram.Domain.Aggregates.Channel;
 
 public class ChannelMemberState : AggregateState<ChannelMemberAggregate, ChannelMemberId, ChannelMemberState>,
     IApply<ChannelMemberCreatedEvent>,
@@ -14,7 +16,7 @@ public class ChannelMemberState : AggregateState<ChannelMemberAggregate, Channel
     public bool Kicked { get; private set; }
     public long KickedBy { get; private set; }
     public bool Left { get; private set; }
-
+    public bool IsBot { get; private set; }
     public void Apply(ChannelCreatorCreatedEvent aggregateEvent)
     {
     }
@@ -23,9 +25,9 @@ public class ChannelMemberState : AggregateState<ChannelMemberAggregate, Channel
     {
         BannedRights = aggregateEvent.BannedRights;
         Kicked = aggregateEvent.Kicked;
-        KickedBy = aggregateEvent.KickedBy;
+        KickedBy= aggregateEvent.KickedBy;
         Left = aggregateEvent.Left;
-        Banned = aggregateEvent.Banned;
+        Banned= aggregateEvent.Banned;
     }
 
     public void Apply(ChannelMemberCreatedEvent aggregateEvent)
@@ -34,6 +36,7 @@ public class ChannelMemberState : AggregateState<ChannelMemberAggregate, Channel
         KickedBy = 0;
         Left = false;
         Banned = false;
+        IsBot= aggregateEvent.IsBot;
 
         BannedRights = null;
     }
@@ -45,5 +48,15 @@ public class ChannelMemberState : AggregateState<ChannelMemberAggregate, Channel
     public void Apply(ChannelMemberLeftEvent aggregateEvent)
     {
         Left = true;
+    }
+
+    public void LoadSnapshot(ChannelMemberSnapshot snapshot)
+    {
+        BannedRights = snapshot.BannedRights;
+        Kicked = snapshot.Kicked;
+        KickedBy = snapshot.KickedBy;
+        Left = snapshot.Left;
+        Banned = snapshot.Banned;
+        IsBot= snapshot.IsBot;
     }
 }

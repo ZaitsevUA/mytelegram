@@ -43,6 +43,7 @@ internal sealed class ReadHistoryHandler : RpcResultObjectHandler<MyTelegram.Sch
                 PtsCount = 0
             };
         }
+
         var peer = _peerHelper.GetPeer(obj.Peer, input.UserId);
         var messageReadModel =
             await _queryProcessor.ProcessAsync(

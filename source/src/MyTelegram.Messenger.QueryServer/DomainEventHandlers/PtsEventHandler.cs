@@ -30,9 +30,10 @@ public class PtsEventHandler(
             PinChannelMessagePtsIncrementedEvent>,
         ISubscribeSynchronousTo<MessageAggregate, MessageId, MessageReplyUpdatedEvent>,
         ISubscribeSynchronousTo<DeleteReplyMessagesSaga, DeleteReplyMessagesSagaId,
-            DeleteReplyMessagePtsIncrementedEvent>
+            DeleteReplyMessagePtsIncrementedEvent>,
+        ISubscribeSynchronousTo<UnpinAllMessagesSaga, UnpinAllMessagesSagaId, MessageUnpinnedSagaEvent>,
+        ISubscribeSynchronousTo<UpdateMessagePinnedSaga, UpdateMessagePinnedSagaId, MessagePinnedUpdatedSagaEvent>
 {
-    private readonly ICommandBus _commandBus = commandBus;
     private readonly IPeerHelper _peerHelper = peerHelper;
 
     public async Task HandleAsync(
@@ -283,5 +284,15 @@ public class PtsEventHandler(
     {
         return UpdateQtsForAuthKeyIdAsync(domainEvent.AggregateEvent.PeerId, domainEvent.AggregateEvent.PermAuthKeyId,
             domainEvent.AggregateEvent.Qts, domainEvent.AggregateEvent.GlobalSeqNo);
+    }
+    public Task HandleAsync(IDomainEvent<UnpinAllMessagesSaga, UnpinAllMessagesSagaId, MessageUnpinnedSagaEvent> domainEvent, CancellationToken cancellationToken)
+    {
+        ptsHelper.IncrementPtsAsync(domainEvent.AggregateEvent.OwnerPeerId, domainEvent.AggregateEvent.Pts);
+        return Task.CompletedTask;
+    }
+    public Task HandleAsync(IDomainEvent<UpdateMessagePinnedSaga, UpdateMessagePinnedSagaId, MessagePinnedUpdatedSagaEvent> domainEvent, CancellationToken cancellationToken)
+    {
+        ptsHelper.IncrementPtsAsync(domainEvent.AggregateEvent.OwnerPeerId, domainEvent.AggregateEvent.Pts);
+        return Task.CompletedTask;
     }
 }

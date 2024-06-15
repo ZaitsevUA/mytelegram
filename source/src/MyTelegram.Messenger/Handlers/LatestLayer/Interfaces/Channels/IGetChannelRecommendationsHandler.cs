@@ -6,3 +6,7 @@ namespace MyTelegram.Handlers.Channels;
 public interface IGetChannelRecommendationsHandler : IObjectHandler
 {
 }
+
+public interface IGetChannelRecommendationsHandler2 : IObjectHandler
+{
+}

@@ -10,19 +10,6 @@ public class PeerNotifySettingsAggregate : SnapshotAggregateRoot<PeerNotifySetti
         Register(_state);
     }
 
-    protected override Task<PeerNotifySettingsSnapshot> CreateSnapshotAsync(CancellationToken cancellationToken)
-    {
-        return Task.FromResult(new PeerNotifySettingsSnapshot(_state.PeerNotifySettings));
-    }
-
-    protected override Task LoadSnapshotAsync(PeerNotifySettingsSnapshot snapshot,
-        ISnapshotMetadata metadata,
-        CancellationToken cancellationToken)
-    {
-        _state.LoadSnapshot(snapshot);
-        return Task.CompletedTask;
-    }
-
     public void UpdatePeerNotifySettings(RequestInfo requestInfo,
         long ownerPeerId,
         PeerType peerType,
@@ -39,4 +26,16 @@ public class PeerNotifySettingsAggregate : SnapshotAggregateRoot<PeerNotifySetti
             new ValueObjects.PeerNotifySettings(showPreviews, silent, muteUntil, sound)));
     }
 
+    protected override Task<PeerNotifySettingsSnapshot> CreateSnapshotAsync(CancellationToken cancellationToken)
+    {
+        return Task.FromResult(new PeerNotifySettingsSnapshot(_state.PeerNotifySettings));
+    }
+
+    protected override Task LoadSnapshotAsync(PeerNotifySettingsSnapshot snapshot,
+        ISnapshotMetadata metadata,
+        CancellationToken cancellationToken)
+    {
+        _state.LoadSnapshot(snapshot);
+        return Task.CompletedTask;
+    }
 }

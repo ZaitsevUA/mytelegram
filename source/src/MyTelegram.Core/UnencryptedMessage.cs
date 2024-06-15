@@ -6,6 +6,7 @@ public record UnencryptedMessage(
     long AuthKeyId,
     string ClientIp,
     string ConnectionId,
+    ConnectionType ConnectionType,
     //ReadOnlyMemory<byte> MessageData,
     byte[] MessageData,
     int MessageDataLength,

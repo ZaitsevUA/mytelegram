@@ -7,20 +7,10 @@ namespace MyTelegram.Schema;
 /// See <a href="https://corefork.telegram.org/constructor/EmojiGroup" />
 ///</summary>
 [JsonDerivedType(typeof(TEmojiGroup), nameof(TEmojiGroup))]
+[JsonDerivedType(typeof(TEmojiGroupGreeting), nameof(TEmojiGroupGreeting))]
+[JsonDerivedType(typeof(TEmojiGroupPremium), nameof(TEmojiGroupPremium))]
 public interface IEmojiGroup : IObject
 {
-    ///<summary>
-    /// Category name, i.e. "Animals", "Flags", "Faces" and so on...
-    ///</summary>
     string Title { get; set; }
-
-    ///<summary>
-    /// A single custom emoji used as preview for the category.
-    ///</summary>
     long IconEmojiId { get; set; }
-
-    ///<summary>
-    /// A list of UTF-8 emojis, matching the category.
-    ///</summary>
-    TVector<string> Emoticons { get; set; }
 }

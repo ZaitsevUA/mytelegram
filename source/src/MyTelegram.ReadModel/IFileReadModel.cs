@@ -6,7 +6,7 @@ public interface IFileReadModel : IReadModel
     byte[]? Attributes { get; }
     int Date { get; }
     long FileId { get; }
-    Guid FileReference { get; }
+    Guid? FileReference { get; }
     string Id { get; }
     int LocalId { get; }
     string? Md5CheckSum { get; }

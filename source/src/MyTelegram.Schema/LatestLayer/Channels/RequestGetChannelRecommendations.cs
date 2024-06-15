@@ -10,10 +10,50 @@ namespace MyTelegram.Schema.Channels;
 /// 400 CHANNEL_INVALID The provided channel is invalid.
 /// See <a href="https://corefork.telegram.org/method/channels.getChannelRecommendations" />
 ///</summary>
-[TlObject(0x83b70d97)]
+[TlObject(0x25a71742)]
 public sealed class RequestGetChannelRecommendations : IRequest<MyTelegram.Schema.Messages.IChats>
 {
+    public uint ConstructorId => 0x25a71742;
+    public BitArray Flags { get; set; } = new BitArray(32);
+
+    ///<summary>
+    /// The method will return channels related to the passed <code>channel</code>.
+    /// See <a href="https://corefork.telegram.org/type/InputChannel" />
+    ///</summary>
+    public MyTelegram.Schema.IInputChannel? Channel { get; set; }
+
+    public void ComputeFlag()
+    {
+        if (Channel != null) { Flags[0] = true; }
+    }
+
+    public void Serialize(IBufferWriter<byte> writer)
+    {
+        ComputeFlag();
+        writer.Write(ConstructorId);
+        writer.Write(Flags);
+        if (Flags[0]) { writer.Write(Channel); }
+    }
+
+    public void Deserialize(ref SequenceReader<byte> reader)
+    {
+        Flags = reader.ReadBitArray();
+        if (Flags[0]) { Channel = reader.Read<MyTelegram.Schema.IInputChannel>(); }
+    }
+}
+
+///<summary>
+/// Obtain a list of similarly themed public channels, selected based on similarities in their <strong>subscriber bases</strong>.
+/// <para>Possible errors</para>
+/// Code Type Description
+/// 400 CHANNEL_INVALID The provided channel is invalid.
+/// See <a href="https://corefork.telegram.org/method/channels.getChannelRecommendations" />
+///</summary>
+[TlObject(0x83b70d97)]
+public sealed class RequestGetChannelRecommendations2 : IRequest<MyTelegram.Schema.Messages.IChats>
+{
     public uint ConstructorId => 0x83b70d97;
+
     ///<summary>
     /// The method will return channels related to the passed <code>channel</code>.
     /// See <a href="https://corefork.telegram.org/type/InputChannel" />
@@ -22,7 +62,6 @@ public sealed class RequestGetChannelRecommendations : IRequest<MyTelegram.Schem
 
     public void ComputeFlag()
     {
-
     }
 
     public void Serialize(IBufferWriter<byte> writer)

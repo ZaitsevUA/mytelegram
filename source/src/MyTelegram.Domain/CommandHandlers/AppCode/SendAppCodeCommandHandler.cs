@@ -10,7 +10,6 @@ public class SendAppCodeCommandHandler : CommandHandler<AppCodeAggregate, AppCod
             command.UserId,
             command.PhoneNumber,
             command.Code,
-            command.Expire,
             command.PhoneCodeHash,
             command.CreationTime);
         return Task.CompletedTask;

@@ -71,6 +71,7 @@ public interface IUserFull : IObject
     bool ContactRequirePremium { get; set; }
     bool ReadDatesPrivate { get; set; }
     BitArray Flags2 { get; set; }
+    bool SponsoredEnabled { get; set; }
 
     ///<summary>
     /// User ID

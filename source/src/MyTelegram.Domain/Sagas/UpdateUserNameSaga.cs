@@ -51,23 +51,23 @@ public class UpdateUserNameSaga(UpdateUserNameSagaId id)
         switch (domainEvent.AggregateEvent.PeerType)
         {
             case PeerType.User:
-                {
-                    var command = new UpdateUserNameCommand(UserId.Create(domainEvent.AggregateEvent.PeerId),
-                        domainEvent.AggregateEvent.RequestInfo,
-                        domainEvent.AggregateEvent.UserName
-                    );
-                    Publish(command);
-                }
+            {
+                var command = new UpdateUserNameCommand(UserId.Create(domainEvent.AggregateEvent.PeerId),
+                    domainEvent.AggregateEvent.RequestInfo,
+                    domainEvent.AggregateEvent.UserName
+                );
+                Publish(command);
+            }
                 break;
             case PeerType.Channel:
-                {
-                    var command = new UpdateChannelUserNameCommand(ChannelId.Create(domainEvent.AggregateEvent.PeerId),
-                        domainEvent.AggregateEvent.RequestInfo,
-                        domainEvent.AggregateEvent.PeerId,
-                        domainEvent.AggregateEvent.UserName
-                    );
-                    Publish(command);
-                }
+            {
+                var command = new UpdateChannelUserNameCommand(ChannelId.Create(domainEvent.AggregateEvent.PeerId),
+                    domainEvent.AggregateEvent.RequestInfo,
+                    domainEvent.AggregateEvent.PeerId,
+                    domainEvent.AggregateEvent.UserName
+                );
+                Publish(command);
+            }
                 break;
         }
 

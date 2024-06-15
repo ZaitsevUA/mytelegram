@@ -84,6 +84,7 @@ public sealed class TUserFull : IUserFull
     public bool ContactRequirePremium { get; set; }
     public bool ReadDatesPrivate { get; set; }
     public BitArray Flags2 { get; set; } = new BitArray(32);
+    public bool SponsoredEnabled { get; set; }
 
     ///<summary>
     /// User ID
@@ -213,6 +214,7 @@ public sealed class TUserFull : IUserFull
         if (WallpaperOverridden) { Flags[28] = true; }
         if (ContactRequirePremium) { Flags[29] = true; }
         if (ReadDatesPrivate) { Flags[30] = true; }
+        if (SponsoredEnabled) { Flags2[7] = true; }
         if (About != null) { Flags[1] = true; }
         if (PersonalPhoto != null) { Flags[21] = true; }
         if (ProfilePhoto != null) { Flags[2] = true; }
@@ -290,6 +292,7 @@ public sealed class TUserFull : IUserFull
         if (Flags[29]) { ContactRequirePremium = true; }
         if (Flags[30]) { ReadDatesPrivate = true; }
         Flags2 = reader.ReadBitArray();
+        if (Flags2[7]) { SponsoredEnabled = true; }
         Id = reader.ReadInt64();
         if (Flags[1]) { About = reader.ReadString(); }
         Settings = reader.Read<MyTelegram.Schema.IPeerSettings>();

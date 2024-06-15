@@ -1,11 +1,11 @@
 ﻿namespace MyTelegram.Messenger.Services.Impl;
 
-public class PeerSettingsAppService(IQueryProcessor queryProcessor) : IPeerSettingsAppService //, ISingletonDependency
+public class PeerSettingsAppService(IQueryProcessor queryProcessor, IPeerHelper peerHelper) : IPeerSettingsAppService //, ISingletonDependency
 {
     public async Task<PeerSettings> GetAsync(long userId,
         Peer peer)
     {
-        if (userId == peer.PeerId)
+        if (userId == peer.PeerId || peerHelper.IsBotUser(userId))
         {
             return new PeerSettings();
         }
@@ -42,7 +42,7 @@ public class PeerSettingsAppService(IQueryProcessor queryProcessor) : IPeerSetti
 
     public Task<IPeerSettingsReadModel?> GetPeerSettingsAsync(long userId, long peerId)
     {
-        if (userId == peerId)
+        if (userId == peerId || peerHelper.IsBotUser(peerId))
         {
             return Task.FromResult<IPeerSettingsReadModel?>(null);
         }

@@ -35,7 +35,8 @@ ISagaIsStartedBy<MessageAggregate, MessageId, OutboxMessageEditedEvent>,
             domainEvent.AggregateEvent.EditDate,
             domainEvent.AggregateEvent.InboxItems?.Count ?? 0,
             domainEvent.AggregateEvent.Entities,
-            domainEvent.AggregateEvent.Media
+            domainEvent.AggregateEvent.Media,
+            domainEvent.AggregateEvent.ReplyMarkup
         ));
 
         await HandleEditOutboxCompletedAsync(domainEvent.AggregateEvent.OldMessageItem.OwnerPeer.PeerId);
@@ -57,7 +58,8 @@ ISagaIsStartedBy<MessageAggregate, MessageId, OutboxMessageEditedEvent>,
                     aggregateEvent.NewMessage,
                     aggregateEvent.EditDate,
                     aggregateEvent.Entities,
-                    aggregateEvent.Media
+                    aggregateEvent.Media,
+                    aggregateEvent.ReplyMarkup
                 );
                 Publish(command);
             }
@@ -88,6 +90,7 @@ ISagaIsStartedBy<MessageAggregate, MessageId, OutboxMessageEditedEvent>,
             toPeer,
             _state.Entities,
             _state.Media,
+            _state.ReplyMarkup,
             _state.OldMessageItem.FwdHeader
             ));
     }
@@ -107,6 +110,7 @@ ISagaIsStartedBy<MessageAggregate, MessageId, OutboxMessageEditedEvent>,
             item.ToPeer,
             _state.Entities,
             _state.Media,
+            _state.ReplyMarkup,
             _state.OldMessageItem.FwdHeader,
             _state.OldMessageItem.Reply
             ));

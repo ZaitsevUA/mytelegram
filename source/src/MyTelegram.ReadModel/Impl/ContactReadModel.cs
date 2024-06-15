@@ -1,7 +1,4 @@
-﻿using MyTelegram.Domain.Aggregates.Contact;
-using MyTelegram.Domain.Events.Contact;
-
-namespace MyTelegram.ReadModel.Impl;
+﻿namespace MyTelegram.ReadModel.Impl;
 
 public class ContactReadModel : IContactReadModel,
     IAmReadModelFor<ContactAggregate, ContactId, ContactAddedEvent>,
@@ -46,6 +43,7 @@ public class ContactReadModel : IContactReadModel,
 
         return Task.CompletedTask;
     }
+
     public Task ApplyAsync(IReadModelContext context, IDomainEvent<ContactAggregate, ContactId, ContactCreatedEvent> domainEvent, CancellationToken cancellationToken)
     {
         Id = domainEvent.AggregateIdentity.Value;
@@ -54,6 +52,7 @@ public class ContactReadModel : IContactReadModel,
         Phone = domainEvent.AggregateEvent.Phone;
         FirstName = domainEvent.AggregateEvent.FirstName;
         LastName = domainEvent.AggregateEvent.LastName;
+
         return Task.CompletedTask;
     }
 }

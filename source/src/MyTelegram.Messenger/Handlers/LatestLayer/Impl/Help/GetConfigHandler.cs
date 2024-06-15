@@ -28,7 +28,7 @@ internal sealed class GetConfigHandler : RpcResultObjectHandler<MyTelegram.Schem
     {
         //todo: desktop and app returns different config
         var r = _layeredService.GetConverter(input.Layer)
-            .ToConfig(_options.DcOptions, _options.ThisDcId, _dataCenterHelper.GetMediaDcId());
+            .ToConfig(_options.DcOptions.Where(p => p.Enabled).ToList(), _options.ThisDcId, _dataCenterHelper.GetMediaDcId());
         return Task.FromResult(r);
     }
 }

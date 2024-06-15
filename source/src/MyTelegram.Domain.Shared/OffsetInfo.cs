@@ -1,6 +1,4 @@
-﻿// ReSharper disable once CheckNamespace
-
-namespace MyTelegram;
+﻿namespace MyTelegram;
 
 public class OffsetInfo
 {

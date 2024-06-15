@@ -49,7 +49,8 @@ public class MtpMessageEncoder(
         UnencryptedMessageResponse message,
         Span<byte> encodedBytes)
     {
-        var messageIdBytes = BitConverter.GetBytes(messageIdHelper.GenerateMessageId());
+        var messageId = messageIdHelper.GenerateMessageId();
+        var messageIdBytes = BitConverter.GetBytes(messageId);
         var messageDataLengthBytes = BitConverter.GetBytes(message.Data.Length);
         var totalCount = EncodeToProtocolAbridgedBytesCore(encodedBytes,
             DefaultAuthKeyIdBytes,
@@ -57,7 +58,10 @@ public class MtpMessageEncoder(
             messageDataLengthBytes,
             message.Data);
 
-        aesHelper.Ctr128Encrypt(encodedBytes[..totalCount], d.ReceiveKey, d.ReceiveCtrState);
+        if (d.ObfuscationEnabled)
+        {
+        	aesHelper.Ctr128Encrypt(encodedBytes[..totalCount], d.ReceiveKey, d.ReceiveCtrState);
+        }
 
         return totalCount;
     }

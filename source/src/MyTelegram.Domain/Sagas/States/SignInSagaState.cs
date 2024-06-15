@@ -1,8 +1,8 @@
 ﻿namespace MyTelegram.Domain.Sagas.States;
 
 public class SignInSagaState : AggregateState<SignInSaga, SignInSagaId, SignInSagaState>,
-    IApply<SignInStartedEvent>,
-    IApply<SignUpRequiredEvent>
+        IApply<SignInStartedEvent>,
+        IApply<SignUpRequiredEvent>
 {
     public RequestInfo RequestInfo { get; private set; } = default!;
 

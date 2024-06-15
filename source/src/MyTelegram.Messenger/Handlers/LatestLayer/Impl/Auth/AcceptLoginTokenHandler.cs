@@ -12,16 +12,11 @@ namespace MyTelegram.Handlers.Auth;
 /// 400 AUTH_TOKEN_INVALIDX The specified auth token is invalid.
 /// See <a href="https://corefork.telegram.org/method/auth.acceptLoginToken" />
 ///</summary>
-internal sealed class AcceptLoginTokenHandler : RpcResultObjectHandler<MyTelegram.Schema.Auth.RequestAcceptLoginToken, MyTelegram.Schema.IAuthorization>,
-    Auth.IAcceptLoginTokenHandler
+internal sealed class AcceptLoginTokenHandler(
+    ICommandBus commandBus)
+    : RpcResultObjectHandler<MyTelegram.Schema.Auth.RequestAcceptLoginToken, MyTelegram.Schema.IAuthorization>,
+        Auth.IAcceptLoginTokenHandler
 {
-    private readonly ICommandBus _commandBus;
-
-    public AcceptLoginTokenHandler(ICommandBus commandBus)
-    {
-        _commandBus = commandBus;
-    }
-
     protected override async Task<MyTelegram.Schema.IAuthorization> HandleCoreAsync(IRequestInput input,
         RequestAcceptLoginToken obj)
     {
@@ -29,7 +24,7 @@ internal sealed class AcceptLoginTokenHandler : RpcResultObjectHandler<MyTelegra
             input.ToRequestInfo(),
             input.UserId,
             obj.Token);
-        await _commandBus.PublishAsync(command, default);
+        await commandBus.PublishAsync(command);
 
         return null!;
     }

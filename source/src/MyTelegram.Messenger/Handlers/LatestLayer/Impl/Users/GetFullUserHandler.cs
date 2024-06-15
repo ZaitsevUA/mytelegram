@@ -13,41 +13,32 @@ namespace MyTelegram.Handlers.Users;
 /// 400 USER_ID_INVALID The provided user ID is invalid.
 /// See <a href="https://corefork.telegram.org/method/users.getFullUser" />
 ///</summary>
-internal sealed class GetFullUserHandler : RpcResultObjectHandler<MyTelegram.Schema.Users.RequestGetFullUser, MyTelegram.Schema.Users.IUserFull>,
-    Users.IGetFullUserHandler
+internal sealed class GetFullUserHandler(
+    IPeerHelper peerHelper,
+    IQueryProcessor queryProcessor,
+    IBlockCacheAppService blockCacheAppService,
+    ILayeredService<IUserConverter> layeredUserService,
+    IAccessHashHelper accessHashHelper,
+    IPeerSettingsAppService peerSettingsAppService,
+    IPhotoAppService photoAppService,
+    IPrivacyAppService privacyAppService)
+    : RpcResultObjectHandler<MyTelegram.Schema.Users.RequestGetFullUser,
+            MyTelegram.Schema.Users.IUserFull>,
+        Users.IGetFullUserHandler
 {
-    private readonly IPeerHelper _peerHelper;
-    private readonly IQueryProcessor _queryProcessor;
     //private readonly ITlUserConverter _userConverter;
-    private readonly ILayeredService<IUserConverter> _layeredUserService;
-    private readonly IAccessHashHelper _accessHashHelper;
-    private readonly IPeerSettingsAppService _peerSettingsAppService;
-    private readonly IPhotoAppService _photoAppService;
-    private readonly IPrivacyAppService _privacyAppService;
-
-    public GetFullUserHandler(IPeerHelper peerHelper,
-        IQueryProcessor queryProcessor,
-        ILayeredService<IUserConverter> layeredUserService,
-        IAccessHashHelper accessHashHelper, IPeerSettingsAppService peerSettingsAppService, IPhotoAppService photoAppService, IPrivacyAppService privacyAppService)
-    {
-        _peerHelper = peerHelper;
-        _queryProcessor = queryProcessor;
-        _layeredUserService = layeredUserService;
-        _accessHashHelper = accessHashHelper;
-        _peerSettingsAppService = peerSettingsAppService;
-        _photoAppService = photoAppService;
-        _privacyAppService = privacyAppService;
-    }
 
     protected override async Task<MyTelegram.Schema.Users.IUserFull> HandleCoreAsync(IRequestInput input,
         MyTelegram.Schema.Users.RequestGetFullUser obj)
     {
-        await _accessHashHelper.CheckAccessHashAsync(obj.Id);
+        await accessHashHelper.CheckAccessHashAsync(obj.Id);
+
         var userId = input.UserId;
         //var userId = await GetUserIdAsync(input);
-        var targetPeer = _peerHelper.GetPeer(obj.Id, userId);
+        var targetPeer = peerHelper.GetPeer(obj.Id, userId);
+
         //var targetUserId = UserId.Create(targetPeer.PeerId);
-        var user = await _queryProcessor.ProcessAsync(new GetUserByIdQuery(targetPeer.PeerId), CancellationToken.None);
+        var user = await queryProcessor.ProcessAsync(new GetUserByIdQuery(targetPeer.PeerId));
         if (user == null)
         {
             //ThrowHelper.ThrowUserFriendlyException("USER_ID_INVALID");
@@ -55,7 +46,7 @@ internal sealed class GetFullUserHandler : RpcResultObjectHandler<MyTelegram.Sch
         }
 
         var contactReadModels =
-            await _queryProcessor.ProcessAsync(
+            await queryProcessor.ProcessAsync(
                 new GetContactListBySelfIdAndTargetUserIdQuery(input.UserId, targetPeer.PeerId));
 
         //var contactReadModel = await _queryProcessor
@@ -78,25 +69,29 @@ internal sealed class GetFullUserHandler : RpcResultObjectHandler<MyTelegram.Sch
             contactType = ContactType.Mutual;
         }
 
-        var privacies = await _privacyAppService.GetPrivacyListAsync(user!.UserId);
+        var privacies = await privacyAppService.GetPrivacyListAsync(user!.UserId);
 
 
         IBotReadModel? bot = null;
-        
-        var peerNotifySettingsId = PeerNotifySettingsId.Create(userId, targetPeer.PeerType, targetPeer.PeerId);
-        var peerNotifySettings =
-            await _queryProcessor.ProcessAsync(new GetPeerNotifySettingsByIdQuery(peerNotifySettingsId),
-                CancellationToken.None);
-        var peerSettings = await _peerSettingsAppService.GetPeerSettingsAsync(input.UserId, targetPeer.PeerId);
-        var photos = await _photoAppService.GetPhotosAsync(user, contactReadModel);
+        IDocumentReadModel? botDescriptionDocumentReadModel = null;
+        IPhotoReadModel? botDescriptionPhotoReadModel = null;
 
-        return await _layeredUserService.GetConverter(input.Layer).ToUserFullAsync(
+        var peerNotifySettingsId = PeerNotifySettingsId.Create(userId, targetPeer.PeerType, targetPeer.PeerId);
+
+        var peerNotifySettings =
+            await queryProcessor.ProcessAsync(new GetPeerNotifySettingsByIdQuery(peerNotifySettingsId));
+        var peerSettings = await peerSettingsAppService.GetPeerSettingsAsync(input.UserId, targetPeer.PeerId);
+        var photos = await photoAppService.GetPhotosAsync(user, contactReadModel);
+
+        return await layeredUserService.GetConverter(input.Layer).ToUserFullAsync(
             userId,
             user,
             peerNotifySettings,
             peerSettings,
             photos,
             bot,
+            botDescriptionDocumentReadModel,
+            botDescriptionPhotoReadModel,
             contactReadModel,
             contactType,
             privacies);

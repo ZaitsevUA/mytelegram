@@ -53,13 +53,14 @@ internal sealed class GetMessagesHandler : RpcResultObjectHandler<MyTelegram.Sch
                 idList.Add(inputMessageId.Id);
             }
         }
+
         var dto = await _messageAppService
             .GetMessagesAsync(
                 new GetMessagesInput(input.UserId,
-                        channelId,
-                        idList,
-                        new Peer(PeerType.Channel, channelId))
-                    { Limit = 50 });
+                    channelId,
+                    idList,
+                    new Peer(PeerType.Channel, channelId))
+                { Limit = 50 });
 
         //return _rpcResultProcessor.ToMessages(dto, input.Layer);
         return _layeredService.GetConverter(input.Layer).ToMessages(dto, input.Layer);

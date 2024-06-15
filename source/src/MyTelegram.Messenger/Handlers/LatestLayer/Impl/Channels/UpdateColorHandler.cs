@@ -17,6 +17,7 @@ internal sealed class UpdateColorHandler : RpcResultObjectHandler<MyTelegram.Sch
         _peerHelper = peerHelper;
         _accessHashHelper = accessHashHelper;
     }
+
     protected override async Task<MyTelegram.Schema.IUpdates> HandleCoreAsync(IRequestInput input,
         MyTelegram.Schema.Channels.RequestUpdateColor obj)
     {
@@ -26,6 +27,7 @@ internal sealed class UpdateColorHandler : RpcResultObjectHandler<MyTelegram.Sch
         var color = new PeerColor(obj.Color, obj.BackgroundEmojiId);
         var command = new UpdateChannelColorCommand(ChannelId.Create(channel.PeerId), input.ToRequestInfo(), color, obj.BackgroundEmojiId, obj.ForProfile);
         await _commandBus.PublishAsync(command, default);
+
         return null!;
     }
 }

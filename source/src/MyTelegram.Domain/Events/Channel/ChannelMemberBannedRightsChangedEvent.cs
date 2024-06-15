@@ -5,6 +5,7 @@ public class ChannelMemberBannedRightsChangedEvent(
     long adminId,
     long channelId,
     long memberUserId,
+    bool isBot,
     bool kicked,
     long kickedBy,
     bool left,
@@ -18,6 +19,7 @@ public class ChannelMemberBannedRightsChangedEvent(
     public ChatBannedRights BannedRights { get; } = bannedRights;
     public long ChannelId { get; } = channelId;
     public long MemberUserId { get; } = memberUserId;
+    public bool IsBot { get; } = isBot;
     public bool Kicked { get; } = kicked;
     public long KickedBy { get; } = kickedBy;
     public bool Left { get; } = left;

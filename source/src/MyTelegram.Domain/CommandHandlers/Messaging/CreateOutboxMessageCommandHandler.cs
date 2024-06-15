@@ -14,7 +14,7 @@ public class CreateOutboxMessageCommandHandler : CommandHandler<MessageAggregate
             command.GroupItemCount,
             command.LinkedChannelId,
             command.ChatMembers
-        );
+            );
         return Task.CompletedTask;
     }
 }

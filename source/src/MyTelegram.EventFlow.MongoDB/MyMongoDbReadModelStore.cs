@@ -100,7 +100,6 @@ public class MyMongoDbReadModelStore<TReadModel, TDbContext>(
                 cacheEntry =>
                 {
                     cacheEntry.SlidingExpiration = TimeSpan.FromDays(3);
-                    // Console.WriteLine($"Get from db to cache:{id}");
                     return base.GetAsync(id, cancellationToken);
                 });
 

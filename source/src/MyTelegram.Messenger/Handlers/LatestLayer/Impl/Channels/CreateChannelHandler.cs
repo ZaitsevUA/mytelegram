@@ -16,7 +16,7 @@ namespace MyTelegram.Handlers.Channels;
 /// See <a href="https://corefork.telegram.org/method/channels.createChannel" />
 ///</summary>
 internal sealed class CreateChannelHandler : RpcResultObjectHandler<MyTelegram.Schema.Channels.RequestCreateChannel, MyTelegram.Schema.IUpdates>,
-    Channels.ICreateChannelHandler
+    Channels.ICreateChannelHandler //, IShouldCacheRequest
 {
     private readonly ICommandBus _commandBus;
     private readonly IIdGenerator _idGenerator;
@@ -65,6 +65,7 @@ internal sealed class CreateChannelHandler : RpcResultObjectHandler<MyTelegram.S
         );
         await _commandBus.PublishAsync(command, CancellationToken.None);
 
+        // send message services to channel
         return null!;
     }
 }

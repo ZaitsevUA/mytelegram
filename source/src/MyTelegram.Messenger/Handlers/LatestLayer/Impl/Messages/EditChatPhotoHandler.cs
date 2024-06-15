@@ -33,6 +33,7 @@ internal sealed class EditChatPhotoHandler : RpcResultObjectHandler<MyTelegram.S
     protected override async Task<IUpdates> HandleCoreAsync(IRequestInput input,
         RequestEditChatPhoto obj)
     {
+        //var photo=await _mediaHelper.SavePhotoAsync(input.ReqMsgId,obj)
         var chatId = obj.ChatId;
         long fileId = 0;
         var parts = 0;
@@ -40,16 +41,16 @@ internal sealed class EditChatPhotoHandler : RpcResultObjectHandler<MyTelegram.S
         var name = string.Empty;
         var hasVideo = false;
         double? videoStartTs = 0;
+        IVideoSize? videoSize = null;
         switch (obj.Photo)
         {
             case Schema.TInputChatUploadedPhoto inputChatUploadedPhoto:
                 {
+                    var file = inputChatUploadedPhoto.File ?? inputChatUploadedPhoto.Video;
+                    if (file != null)
                     {
-                        var file = inputChatUploadedPhoto.File ?? inputChatUploadedPhoto.Video;
-                        if (file == null)
-                        {
-                            RpcErrors.RpcErrors400.PhotoInvalid.ThrowRpcError();
-                        }
+                        //ThrowHelper.ThrowUserFriendlyException("PHOTO_INVALID");
+                        //RpcErrors.RpcErrors400.PhotoInvalid.ThrowRpcError();
 
                         fileId = file!.Id;
                         parts = file.Parts;
@@ -67,9 +68,12 @@ internal sealed class EditChatPhotoHandler : RpcResultObjectHandler<MyTelegram.S
                                 throw new ArgumentOutOfRangeException(nameof(file));
                         }
                     }
+
+                    videoSize = inputChatUploadedPhoto.VideoEmojiMarkup;
                 }
                 break;
             case TInputChatPhoto inputChatPhoto:
+                //photo=await _mediaHelper.SavePhotoAsync(input.ReqMsgId,inputChatPhoto.)
                 switch (inputChatPhoto.Id)
                 {
                     case TInputPhoto inputPhoto:
@@ -80,6 +84,7 @@ internal sealed class EditChatPhotoHandler : RpcResultObjectHandler<MyTelegram.S
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
+
                 break;
             case TInputChatPhotoEmpty:
                 break;
@@ -93,7 +98,9 @@ internal sealed class EditChatPhotoHandler : RpcResultObjectHandler<MyTelegram.S
             videoStartTs,
             parts,
             name,
-            md5);
+            md5,
+            videoSize
+            );
         var command = new EditChatPhotoCommand(ChatId.Create(chatId),
             input.ToRequestInfo(),
             fileId,

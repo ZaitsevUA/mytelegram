@@ -41,7 +41,6 @@ public class InviteToChannelSaga :
                 _state.MaxMessageId
             );
             Publish(createDialogCommand);
-
         }
 
         await HandleInviteToChannelCompletedAsync();

@@ -9,8 +9,7 @@
     <Description>MyTelegram Chat/Channel grpc services</Description>
   </PropertyGroup>
 
-  <PropertyGroup>
-    <!--<InvariantGlobalization>true</InvariantGlobalization>-->
+  <PropertyGroup><!--<InvariantGlobalization>true</InvariantGlobalization>-->
     <!--<DebuggerSupport>false</DebuggerSupport>
     <EnableUnsafeUTF7Encoding>false</EnableUnsafeUTF7Encoding>
     <EventSourceSupport>false</EventSourceSupport>
@@ -24,6 +23,8 @@
     <PublishSingleFile>true</PublishSingleFile>
 
     <IlcOptimizationPreference>Size</IlcOptimizationPreference>-->
+  
+    <DockerfileContext>..\..</DockerfileContext>
   </PropertyGroup>
 
   <ItemGroup>

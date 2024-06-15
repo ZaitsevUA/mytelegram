@@ -19,4 +19,5 @@ public class ClientData : IClientData
     public int SkipCount { get; set; }
     public long Seq { get; set; }
     public Channel<MyTelegram.MTProto.EncryptedMessageResponse> ResponseQueue { get; set; } = Channel.CreateUnbounded<MyTelegram.MTProto.EncryptedMessageResponse>();
+    public ConnectionType ConnectionType { get; set; }
 }

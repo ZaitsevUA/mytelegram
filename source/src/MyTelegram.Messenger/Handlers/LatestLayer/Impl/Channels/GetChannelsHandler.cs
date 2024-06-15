@@ -52,8 +52,8 @@ internal sealed class GetChannelsHandler : RpcResultObjectHandler<MyTelegram.Sch
                 input.UserId,
                 channelReadModels,
                 photoReadModels,
-                Array.Empty<long>(),
-                Array.Empty<IChannelMemberReadModel>());
+                  Array.Empty<long>(),
+                  Array.Empty<IChannelMemberReadModel>());
             return new TChats
             {
                 Chats = new TVector<IChat>(chats)

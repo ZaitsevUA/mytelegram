@@ -1,25 +1,23 @@
 ﻿using HWT;
-using MyTelegram.Core;
+using Timeout = HWT.Timeout;
 
 namespace MyTelegram.Services.Services;
-
-public class ScheduleAppService(IRandomHelper randomHelper) : IScheduleAppService //, ISingletonDependency
+public interface IScheduleAppService
 {
+    Task<Timeout> ExecuteAsync(Action action, TimeSpan timeSpan);
+}
+
+public class ScheduleAppService : IScheduleAppService
+{
+
     private readonly HashedWheelTimer _timer = new(TimeSpan.FromMilliseconds(100),
         100000,
         0);
 
-    public long Execute(Action action,
-        TimeSpan timeSpan)
+    public Task<Timeout> ExecuteAsync(Action action, TimeSpan timeSpan)
     {
-        _timer.NewTimeout(new ActionTimeTask(action), timeSpan);
-        return randomHelper.NextLong();
-    }
+        var timeout = _timer.NewTimeout(new ActionTimeTask(action), timeSpan);
 
-    public Task ExecuteAsync(Action action,
-        TimeSpan timeSpan)
-    {
-        _timer.NewTimeout(new ActionTimeTask(action), timeSpan);
-        return Task.CompletedTask;
+        return Task.FromResult(timeout);
     }
 }

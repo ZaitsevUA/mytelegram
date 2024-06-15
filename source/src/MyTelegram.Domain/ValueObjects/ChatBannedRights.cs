@@ -2,8 +2,14 @@
 
 public class ChatBannedRights : ValueObject
 {
-    public static readonly ChatBannedRights Default = new(false, false, false, false, false, false, false, false, false,
-        true, true, true, true, false, false, false, false, false, false, false, int.MaxValue);
+    //public static readonly ChatBannedRights Default = new(false, false, false, false, false, false, false, false, false,
+    //    true, true, true, true, false, false, false, false, false, false, false, int.MaxValue);
+
+    public static ChatBannedRights CreateDefaultBannedRights()
+    {
+        return new(false, false, false, false, false, false, false, false, false,
+            true, true, true, true, false, false, false, false, false, false, false, int.MaxValue);
+    }
 
     //private BitArray _flags = new(32);
 
@@ -12,14 +18,14 @@ public class ChatBannedRights : ValueObject
     //    _flags = flags;
     //}
 
-    public ChatBannedRights()
-    {
-        ChangeInfo = true;
-        InviteUsers = true;
-        PinMessages = true;
-        ManageTopics = true;
-        UntilDate = int.MaxValue;
-    }
+    //public ChatBannedRights()
+    //{
+    //    ChangeInfo = true;
+    //    InviteUsers = true;
+    //    PinMessages = true;
+    //    ManageTopics = true;
+    //    UntilDate = int.MaxValue;
+    //}
 
     public ChatBannedRights(
         bool viewMessages,

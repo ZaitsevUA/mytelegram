@@ -421,3 +421,14 @@ public record GetMessageItemListToBeDeletedQuery(long OwnerPeerId, List<int> Mes
 public record GetMessageItemListToBeDeletedQuery2(long OwnerPeerId, long ToPeerId, int MaxId, int Limit, bool Revoke)
     : IQuery<IReadOnlyCollection<MessageItemToBeDeleted>>;
 public record GetPhoneCallHistoryToBeDeletedQuery(long UserId, int Limit, bool Revoke) : IQuery<IReadOnlyCollection<MessageItemToBeDeleted>>;
+public record GetPinnedMessageListQuery(long RequestUserId, Peer ToPeer, bool IncludeOtherParticipantMessages, int Limit) : IQuery<IReadOnlyCollection<SimpleMessageItem>>;
+public record GetSimpleMessageListQuery(long OwnerPeerId, Peer ToPeer,List<int>? MessageIds, bool? Pinned, bool IncludeOtherParticipantMessages, int Limit) : IQuery<IReadOnlyCollection<SimpleMessageItem>>;
+public record GetBotByIdQuery(long BotUserId) : IQuery<IBotReadModel?>;
+//public record GetBotCallbackAnswerQuery(long PeerId, long QueryId) : IQuery<IBotCallbackAnswerReadModel?>;
+public record GetBotByUserNameQuery(long OwnerUserId, string UserName) : IQuery<IBotReadModel?>;
+public record GetBotsCountQuery(long OwnerUserId) : IQuery<int>;
+public record GetMaxBotUserIdQuery() : IQuery<long>;
+public record GetMyBotQuery(long OwnerUserId, long BotUserId) : IQuery<IBotReadModel?>;
+public record GetMyBotsQuery(long OwnerUserId) : IQuery<IReadOnlyCollection<IBotReadModel>>;
+public record GetBotListQuery(List<long> BotUserIds):IQuery<IReadOnlyCollection<IBotReadModel>>;
+public record GetPushDevicesQuery(long UserId) : IQuery<IReadOnlyCollection<IPushDeviceReadModel>>;

@@ -15,7 +15,7 @@ public class PushDeviceReadModel : IPushDeviceReadModel,
         Id = domainEvent.AggregateIdentity.Value;
 
         UserId = domainEvent.AggregateEvent.UserId;
-        AuthKeyId = domainEvent.AggregateEvent.AuthKeyId;
+        PermAuthKeyId = domainEvent.AggregateEvent.PermAuthKeyId;
 
         TokenType = domainEvent.AggregateEvent.TokenType;
         Token = domainEvent.AggregateEvent.Token;
@@ -37,7 +37,7 @@ public class PushDeviceReadModel : IPushDeviceReadModel,
     public virtual string Id { get; private set; } = null!;
 
     public virtual long UserId { get; private set; }
-    public virtual long AuthKeyId { get; private set; }
+    public virtual long PermAuthKeyId { get; private set; }
 
     // Device token type.
     //      Possible values:

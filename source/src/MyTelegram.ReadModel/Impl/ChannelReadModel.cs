@@ -21,7 +21,10 @@ public class ChannelReadModel : IChannelReadModel,
 
     IAmReadModelFor<DeleteChannelMessagesSaga,DeleteChannelMessagesSagaId, DeleteChannelMessagesCompletedEvent>,
     IAmReadModelFor<DeleteChannelMessagesSaga,DeleteChannelMessagesSagaId, DeleteChannelHistoryCompletedEvent>,
-    IAmReadModelFor<DeleteReplyMessagesSaga, DeleteReplyMessagesSagaId, DeleteReplyMessagesCompletedEvent>
+    IAmReadModelFor<DeleteReplyMessagesSaga, DeleteReplyMessagesSagaId, DeleteReplyMessagesCompletedEvent>,
+    IAmReadModelFor<ChannelAggregate, ChannelId, ChannelDeletedEvent>,
+    IAmReadModelFor<ChannelMemberAggregate, ChannelMemberId, ChannelMemberCreatedEvent>,
+    IAmReadModelFor<ChannelAggregate,ChannelId, ChannelParticipantCountChangedEvent>
     //IAmReadModelFor<ChannelAggregate, ChannelId, ChannelAvailableReactionsChangedEvent>
 
 {
@@ -30,6 +33,7 @@ public class ChannelReadModel : IChannelReadModel,
     public string? Address { get; private set; }
     //public ChatAdminRights AdminRights { get; private set; }
     public virtual List<ChatAdmin> AdminList { get; protected set; } = new();
+    public List<long> Bots { get; private set; } = new();
 
     public bool Broadcast { get; private set; }
     public long ChannelId { get; private set; }
@@ -64,6 +68,7 @@ public class ChannelReadModel : IChannelReadModel,
     public long? BackgroundEmojiId { get; private set; }
     public int? Level { get; private set; }
     public bool HasLink { get; private set; }
+    public bool IsDeleted { get; private set; }
 
     //public ReactionType ReactionType { get; private set; }
     //public bool AllowCustomReaction { get; private set; }
@@ -235,11 +240,19 @@ public class ChannelReadModel : IChannelReadModel,
     {
         if (domainEvent.AggregateEvent.BannedRights.ViewMessages)
         {
-            ParticipantsCount--;
+            //ParticipantsCount--;
+            if (domainEvent.AggregateEvent.IsBot)
+            {
+                Bots.Remove(domainEvent.AggregateEvent.MemberUserId);
+            }
         }
         else if (domainEvent.AggregateEvent.RemovedFromKicked)
         {
             ParticipantsCount++;
+            if (domainEvent.AggregateEvent.IsBot)
+            {
+                Bots.Add(domainEvent.AggregateEvent.MemberUserId);
+            }
         }
 
         return Task.CompletedTask;
@@ -250,6 +263,10 @@ public class ChannelReadModel : IChannelReadModel,
         CancellationToken cancellationToken)
     {
         ParticipantsCount--;
+        if (domainEvent.AggregateEvent.IsBot)
+        {
+            Bots.Remove(domainEvent.AggregateEvent.MemberUserId);
+        }
         return Task.CompletedTask;
     }
 
@@ -281,6 +298,10 @@ public class ChannelReadModel : IChannelReadModel,
             ParticipantsCount++;
         }
 
+        if (domainEvent.AggregateEvent.IsBot)
+        {
+            Bots.Add(domainEvent.AggregateEvent.MemberUserId);
+        }
         return Task.CompletedTask;
     }
 
@@ -341,6 +362,29 @@ public class ChannelReadModel : IChannelReadModel,
         {
             TopMessageId = domainEvent.AggregateEvent.NewTopMessageId;
         }
+
+        return Task.CompletedTask;
+    }
+    public Task ApplyAsync(IReadModelContext context, IDomainEvent<ChannelAggregate, ChannelId, ChannelDeletedEvent> domainEvent, CancellationToken cancellationToken)
+    {
+        IsDeleted = true;
+
+        return Task.CompletedTask;
+    }
+
+    public Task ApplyAsync(IReadModelContext context, IDomainEvent<ChannelMemberAggregate, ChannelMemberId, ChannelMemberCreatedEvent> domainEvent, CancellationToken cancellationToken)
+    {
+        if (domainEvent.AggregateEvent.IsBot)
+        {
+            Bots.Add(domainEvent.AggregateEvent.UserId);
+        }
+
+        return Task.CompletedTask;
+    }
+
+    public Task ApplyAsync(IReadModelContext context, IDomainEvent<ChannelAggregate, ChannelId, ChannelParticipantCountChangedEvent> domainEvent, CancellationToken cancellationToken)
+    {
+        ParticipantsCount = domainEvent.AggregateEvent.NewParticipantCount;
 
         return Task.CompletedTask;
     }

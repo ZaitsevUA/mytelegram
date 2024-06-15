@@ -25,7 +25,9 @@ public class MessageReadModel : IMessageReadModel,
     IAmReadModelFor<MessageAggregate, MessageId, ChannelMessagePinnedEvent>,
     IAmReadModelFor<MessageAggregate, MessageId, MessageReplyUpdatedEvent>,
     IAmReadModelFor<MessageAggregate, MessageId, ChannelMessageDeletedEvent>,
-    IAmReadModelFor<SendMessageSaga, SendMessageSagaId, PostChannelIdUpdatedEvent>
+    IAmReadModelFor<SendMessageSaga, SendMessageSagaId, PostChannelIdUpdatedEvent>,
+    IAmReadModelFor<MessageAggregate,MessageId, MessageUnpinnedEvent>,
+    IAmReadModelFor<MessageAggregate,MessageId, MessagePinnedUpdatedEvent>
 {
     public int Date { get; private set; }
     public int? EditDate { get; private set; }
@@ -368,4 +370,17 @@ public class MessageReadModel : IMessageReadModel,
 
         return Task.CompletedTask;
     }
-}
+    public Task ApplyAsync(IReadModelContext context, IDomainEvent<MessageAggregate, MessageId, MessageUnpinnedEvent> domainEvent, CancellationToken cancellationToken)
+    {
+        Pinned = false;
+
+        return Task.CompletedTask;
+    }
+
+    public Task ApplyAsync(IReadModelContext context, IDomainEvent<MessageAggregate, MessageId, MessagePinnedUpdatedEvent> domainEvent, CancellationToken cancellationToken)
+    {
+        Pinned = domainEvent.AggregateEvent.Pinned;
+
+        return Task.CompletedTask;
+    }
+    }

@@ -13,7 +13,9 @@ public class OutboxMessageCreatedEvent(
 {
     public MessageItem OutboxMessageItem { get; } = outboxMessageItem;
     public List<long>? MentionedUserIds { get; } = mentionedUserIds;
+
     public List<ReplyToMsgItem>? ReplyToMsgItems { get; } = replyToMsgItems;
+
     public bool ClearDraft { get; } = clearDraft;
     public int GroupItemCount { get; } = groupItemCount;
     public long? LinkedChannelId { get; } = linkedChannelId;

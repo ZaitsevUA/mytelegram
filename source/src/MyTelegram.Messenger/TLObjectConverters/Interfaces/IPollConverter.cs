@@ -7,6 +7,7 @@ public interface IPollConverter : ILayeredConverter
 
     IUpdates ToSelfPollUpdates(IPollReadModel pollReadModel,
         IList<string> chosenOptions);
+
     IUpdates ToPollUpdates(IPollReadModel pollReadModel,
         IList<string> chosenOptions);
 }

@@ -47,8 +47,8 @@ internal sealed class GetPollResultsHandler : RpcResultObjectHandler<MyTelegram.
             RpcErrors.RpcErrors400.MessageIdInvalid.ThrowRpcError();
         }
         var pollAnswers = await _queryProcessor
-                .ProcessAsync(new GetPollAnswerVotersQuery(pollId.Value, input.UserId), default)
-            ;
+            .ProcessAsync(new GetPollAnswerVotersQuery(pollId.Value, input.UserId), default)
+     ;
         var updates = _layeredService.GetConverter(input.Layer).ToPollUpdates(pollReadModel!,
             pollAnswers?.Select(p => p.Option).ToArray() ?? Array.Empty<string>());
 

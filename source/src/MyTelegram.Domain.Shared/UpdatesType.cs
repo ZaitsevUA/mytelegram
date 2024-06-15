@@ -3,13 +3,14 @@
 public enum UpdatesType
 {
     Unknown,
+
     /// <summary>
-    /// TUpdates
+    ///     TUpdates
     /// </summary>
     Updates,
 
     /// <summary>
-    /// Other IUpdates(TUpdateShort,TUpdateShortChatMessage,TUpdateShortMessage,TUpdateShortSentMessage)
+    ///     Other IUpdates(TUpdateShort,TUpdateShortChatMessage,TUpdateShortMessage,TUpdateShortSentMessage)
     /// </summary>
     NewMessages,
     NewEncryptedMessages,

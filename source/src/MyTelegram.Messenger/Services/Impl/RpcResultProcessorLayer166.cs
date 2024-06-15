@@ -17,7 +17,6 @@ public class RpcResultProcessorLayer166(
         var peerList = output.UserList.Select(p => (IPeer)new TPeerUser { UserId = p.UserId }).ToList();
         peerList.AddRange(output.MyChannelList.Select(p => (IPeer)new TPeerChannel { ChannelId = p.ChannelId }));
         var otherPeerList = output.ChannelList.Select(p => (IPeer)new TPeerChannel { ChannelId = p.ChannelId });
-        //var chatList = ToChannelList(output.ChannelList, output.SelfUserId);
         var myChannelList = layeredChatService.GetConverter(layer).ToChannelList(
             output.SelfUserId,
             output.MyChannelList,

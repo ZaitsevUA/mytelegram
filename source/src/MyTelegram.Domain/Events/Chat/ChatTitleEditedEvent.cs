@@ -13,4 +13,3 @@ public class ChatTitleEditedEvent(
     public long RandomId { get; } = randomId;
     public string Title { get; } = title;
 }
-

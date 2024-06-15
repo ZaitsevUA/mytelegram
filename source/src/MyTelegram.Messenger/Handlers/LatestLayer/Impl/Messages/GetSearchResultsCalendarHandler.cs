@@ -20,7 +20,8 @@ internal sealed class GetSearchResultsCalendarHandler : RpcResultObjectHandler<M
         {
             Chats = new(),
             Messages = new(),
-            Periods = new()
+            Periods = new(),
+            Users = new()
         });
     }
 }

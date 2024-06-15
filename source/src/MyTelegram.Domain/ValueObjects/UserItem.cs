@@ -9,18 +9,6 @@ public class UserItem(
     string? userName)
     : ValueObject
 {
-    //// required for native aot serialization
-    //public UserItem()
-    //{
-
-    //}
-
-    //[Newtonsoft.Json.JsonConstructor]
-    //[JsonConstructor]
-    //,
-    //byte[]? profilePhoto
-    //ProfilePhoto = profilePhoto;
-
     public long AccessHash { get; init; } = accessHash;
     public string FirstName { get; init; } = firstName;
     public string? LastName { get; init; } = lastName;

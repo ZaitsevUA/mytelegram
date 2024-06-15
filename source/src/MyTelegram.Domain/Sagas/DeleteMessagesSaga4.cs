@@ -133,7 +133,7 @@ public class
             domainEvent.AggregateEvent.MessageId,
             domainEvent.AggregateEvent.ToPeer.PeerType,
             domainEvent.AggregateEvent.ToPeer.PeerId), pts));
-        HandleDeleteMessagesCompleted(pts);
+        HandleDeleteMessagesCompleted();
     }
 
     //public async Task HandleAsync(IDomainEvent<MessageAggregate, MessageId, OutboxMessageDeletedEvent> domainEvent, ISagaContext sagaContext, CancellationToken cancellationToken)
@@ -162,7 +162,7 @@ public class
         }
     }
 
-    private void HandleDeleteMessagesCompleted(int pts)
+    private void HandleDeleteMessagesCompleted()
     {
         if (_state.DeletedCount == _state.TotalCount)
         {
@@ -185,6 +185,7 @@ public class
             {
                 var userId = kv.Key;
                 var item = kv.Value;
+                var pts = item.Pts;
                 if (userId == _state.RequestInfo.UserId)
                 {
                     if (_state.IsDeleteHistory)

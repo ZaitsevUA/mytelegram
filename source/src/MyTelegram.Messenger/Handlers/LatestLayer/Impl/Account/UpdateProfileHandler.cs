@@ -30,7 +30,7 @@ internal sealed class UpdateProfileHandler : RpcResultObjectHandler<MyTelegram.S
             obj.FirstName,
             obj.LastName,
             obj.About);
-        await _commandBus.PublishAsync(command, CancellationToken.None);
+        await _commandBus.PublishAsync(command);
 
         return null!;
     }

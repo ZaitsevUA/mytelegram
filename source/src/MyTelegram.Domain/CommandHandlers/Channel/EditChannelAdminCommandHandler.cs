@@ -11,6 +11,7 @@ public class EditChannelAdminCommandHandler : CommandHandler<ChannelAggregate, C
             command.CanEdit,
             command.UserId,
             command.IsBot,
+            command.IsChannelMember,
             command.AdminRights,
             command.Rank,
             command.Date);

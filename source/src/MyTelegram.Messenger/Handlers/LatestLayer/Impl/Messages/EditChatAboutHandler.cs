@@ -39,25 +39,25 @@ internal sealed class EditChatAboutHandler : RpcResultObjectHandler<MyTelegram.S
         switch (peer.PeerType)
         {
             case PeerType.Channel:
-            {
-                if (obj.Peer is TInputPeerChannel inputChannel)
                 {
-                    await _accessHashHelper.CheckAccessHashAsync(inputChannel.ChannelId, inputChannel.AccessHash);
-                }
+                    if (obj.Peer is TInputPeerChannel inputChannel)
+                    {
+                        await _accessHashHelper.CheckAccessHashAsync(inputChannel.ChannelId, inputChannel.AccessHash);
+                    }
 
-                var command =
-                    new EditChannelAboutCommand(ChannelId.Create(peer.PeerId), input.ToRequestInfo(), input.UserId, obj.About);
-                await _commandBus.PublishAsync(command, CancellationToken.None);
-                //return new TBoolTrue();
-                return null!;
-            }
+                    var command =
+                        new EditChannelAboutCommand(ChannelId.Create(peer.PeerId), input.ToRequestInfo(), input.UserId, obj.About);
+                    await _commandBus.PublishAsync(command, CancellationToken.None);
+                    //return new TBoolTrue();
+                    return null!;
+                }
             case PeerType.Chat:
-            {
-                var command =
-                    new EditChatAboutCommand(ChatId.Create(peer.PeerId), input.ToRequestInfo(), input.UserId, obj.About);
-                await _commandBus.PublishAsync(command, CancellationToken.None);
-                return null!;
-            }
+                {
+                    var command =
+                        new EditChatAboutCommand(ChatId.Create(peer.PeerId), input.ToRequestInfo(), input.UserId, obj.About);
+                    await _commandBus.PublishAsync(command, CancellationToken.None);
+                    return null!;
+                }
         }
 
         throw new NotImplementedException();

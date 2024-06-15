@@ -1,5 +1,5 @@
 ﻿using MyTelegram.Domain.Aggregates.Temp;
-using MyTelegram.Domain.Commands.Messaging;
+using MyTelegram.Domain.Commands.Temp;
 using MyTelegram.Schema.Extensions;
 
 namespace MyTelegram.Domain.Sagas;
@@ -55,15 +55,15 @@ public class SendMessageSaga : MyInMemoryAggregateSaga<SendMessageSaga, SendMess
 
     private void CreateMentions(List<long>? mentionedUserIds, int messageId)
     {
-        //if (mentionedUserIds?.Count > 0)
-        //{
-        //    foreach (var mentionedUserId in mentionedUserIds)
-        //    {
-        //        var command = new CreateMentionCommand(DialogId.Create(mentionedUserId, _state.MessageItem.ToPeer),
-        //            mentionedUserId, /*_state.MessageItem.ToPeer.PeerId,*/ messageId);
-        //        Publish(command);
-        //    }
-        //}
+        if (mentionedUserIds?.Count > 0)
+        {
+            foreach (var mentionedUserId in mentionedUserIds)
+            {
+                //var command = new CreateMentionCommand(DialogId.Create(mentionedUserId, _state.MessageItem.ToPeer),
+                //    mentionedUserId, /*_state.MessageItem.ToPeer.PeerId,*/ messageId);
+                //Publish(command);
+            }
+        }
     }
 
     public Task HandleAsync(IDomainEvent<MessageAggregate, MessageId, InboxMessageCreatedEvent> domainEvent, ISagaContext sagaContext, CancellationToken cancellationToken)
@@ -161,7 +161,6 @@ public class SendMessageSaga : MyInMemoryAggregateSaga<SendMessageSaga, SendMess
             pts
         );
         Publish(command);
-
         if (_state.MessageItem.ToPeer.PeerType == PeerType.Channel)
         {
             SetChannelPts(_state.MessageItem.ToPeer.PeerId, pts, _state.MessageItem.MessageId);
@@ -218,7 +217,6 @@ public class SendMessageSaga : MyInMemoryAggregateSaga<SendMessageSaga, SendMess
         );
         Publish(command);
     }
-
 
     private void ReplyToMessage(long ownerPeerId, int messageId, int repliesPts, int maxMessageId)
     {

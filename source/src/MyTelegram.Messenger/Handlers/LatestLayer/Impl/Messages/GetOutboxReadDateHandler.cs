@@ -46,7 +46,7 @@ internal sealed class GetOutboxReadDateHandler : RpcResultObjectHandler<MyTelegr
         var diff = CurrentDate - date;
         if (diff > MyTelegramServerDomainConsts.ChatReadMarkExpirePeriod)
         {
-            RpcErrors.RpcErrors400.MsgTooOld.ThrowRpcError();
+            RpcErrors.RpcErrors403.MessageTooOld.ThrowRpcError();
         }
 
         return new TOutboxReadDate

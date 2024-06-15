@@ -1,6 +1,4 @@
-﻿// ReSharper disable once CheckNamespace
-
-namespace MyTelegram;
+﻿namespace MyTelegram;
 
 public enum LoadType
 {
@@ -10,11 +8,4 @@ public enum LoadType
     AroundMessage,
     AroundDate,
     LimitIs1
-}
-
-public enum ReactionType
-{
-    ReactionNone,
-    ReactionAll,
-    ReactionSome,
 }

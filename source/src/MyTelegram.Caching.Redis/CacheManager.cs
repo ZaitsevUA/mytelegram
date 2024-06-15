@@ -31,8 +31,7 @@ public class CacheManager<TCacheItem>(
             {
                 continue;
             }
-
-            cachedDict.Add(key, cacheItem);
+            cachedDict.TryAdd(key, cacheItem);
         }
 
         return cachedDict;

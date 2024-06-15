@@ -73,7 +73,7 @@ public class DialogDomainEventHandler(
             Date = DateTime.UtcNow.ToTimestamp(),
         };
 
-        await SendMessageToPeerAsync(new Peer(PeerType.User, requestInfo.UserId), updates, requestInfo.AuthKeyId)
+        await PushMessageToPeerAsync(new Peer(PeerType.User, requestInfo.UserId), updates, requestInfo.AuthKeyId)
      ;
     }
 }

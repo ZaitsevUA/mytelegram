@@ -35,22 +35,26 @@ public class PtsReadModel : IPtsReadModel,
         PeerId = domainEvent.AggregateEvent.PeerId;
         Pts = domainEvent.AggregateEvent.NewPts;
         Date = domainEvent.AggregateEvent.Date;
-        
+
         UnreadCount += domainEvent.AggregateEvent.ChangedUnreadCount;
 
 
         return Task.CompletedTask;
     }
+
     public Task ApplyAsync(IReadModelContext context, IDomainEvent<PtsAggregate, PtsId, QtsUpdatedEvent> domainEvent, CancellationToken cancellationToken)
     {
         if (Qts >= domainEvent.AggregateEvent.NewQts)
         {
             return Task.CompletedTask;
         }
+
         Id = PtsId.Create(domainEvent.AggregateEvent.PeerId).Value;
         PeerId = domainEvent.AggregateEvent.PeerId;
         Qts = domainEvent.AggregateEvent.NewQts;
         Date = domainEvent.AggregateEvent.Date;
+
+
         return Task.CompletedTask;
     }
 }

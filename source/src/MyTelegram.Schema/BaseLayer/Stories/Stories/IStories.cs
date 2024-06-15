@@ -9,6 +9,8 @@ namespace MyTelegram.Schema.Stories;
 [JsonDerivedType(typeof(TStories), nameof(TStories))]
 public interface IStories : IObject
 {
+    BitArray Flags { get; set; }
+
     ///<summary>
     /// Total number of stories that can be fetched
     ///</summary>
@@ -19,6 +21,7 @@ public interface IStories : IObject
     /// See <a href="https://corefork.telegram.org/type/StoryItem" />
     ///</summary>
     TVector<MyTelegram.Schema.IStoryItem> Stories { get; set; }
+    TVector<int>? PinnedToTop { get; set; }
 
     ///<summary>
     /// Mentioned chats

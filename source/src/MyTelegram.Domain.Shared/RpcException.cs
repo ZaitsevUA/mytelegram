@@ -2,8 +2,6 @@
 
 public class RpcException : Exception
 {
-    public RpcError RpcError { get; }
-
     public RpcException(RpcError rpcError) : base(rpcError.Message)
     {
         RpcError = rpcError;
@@ -18,4 +16,6 @@ public class RpcException : Exception
     {
         RpcError = rpcError;
     }
+
+    public RpcError RpcError { get; }
 }

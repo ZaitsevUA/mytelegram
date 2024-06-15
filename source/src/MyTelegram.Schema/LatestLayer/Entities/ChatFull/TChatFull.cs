@@ -7,10 +7,10 @@ namespace MyTelegram.Schema;
 /// Full info about a <a href="https://corefork.telegram.org/api/channel#basic-groups">basic group</a>.
 /// See <a href="https://corefork.telegram.org/constructor/chatFull" />
 ///</summary>
-[TlObject(0xc9d31138)]
+[TlObject(0x2633421b)]
 public sealed class TChatFull : MyTelegram.Schema.IChatFull, ILayeredChatFull
 {
-    public uint ConstructorId => 0xc9d31138;
+    public uint ConstructorId => 0x2633421b;
     ///<summary>
     /// Flags, see <a href="https://corefork.telegram.org/mtproto/TL-combinators#conditional-fields">TL conditional fields</a>
     ///</summary>
@@ -120,6 +120,7 @@ public sealed class TChatFull : MyTelegram.Schema.IChatFull, ILayeredChatFull
     /// See <a href="https://corefork.telegram.org/type/ChatReactions" />
     ///</summary>
     public MyTelegram.Schema.IChatReactions? AvailableReactions { get; set; }
+    public int? ReactionsLimit { get; set; }
 
     public void ComputeFlag()
     {
@@ -138,6 +139,7 @@ public sealed class TChatFull : MyTelegram.Schema.IChatFull, ILayeredChatFull
         if (/*RequestsPending != 0 && */RequestsPending.HasValue) { Flags[17] = true; }
         if (RecentRequesters?.Count > 0) { Flags[17] = true; }
         if (AvailableReactions != null) { Flags[18] = true; }
+        if (/*ReactionsLimit != 0 && */ReactionsLimit.HasValue) { Flags[20] = true; }
     }
 
     public void Serialize(IBufferWriter<byte> writer)
@@ -161,6 +163,7 @@ public sealed class TChatFull : MyTelegram.Schema.IChatFull, ILayeredChatFull
         if (Flags[17]) { writer.Write(RequestsPending.Value); }
         if (Flags[17]) { writer.Write(RecentRequesters); }
         if (Flags[18]) { writer.Write(AvailableReactions); }
+        if (Flags[20]) { writer.Write(ReactionsLimit.Value); }
     }
 
     public void Deserialize(ref SequenceReader<byte> reader)
@@ -185,5 +188,6 @@ public sealed class TChatFull : MyTelegram.Schema.IChatFull, ILayeredChatFull
         if (Flags[17]) { RequestsPending = reader.ReadInt32(); }
         if (Flags[17]) { RecentRequesters = reader.Read<TVector<long>>(); }
         if (Flags[18]) { AvailableReactions = reader.Read<MyTelegram.Schema.IChatReactions>(); }
+        if (Flags[20]) { ReactionsLimit = reader.ReadInt32(); }
     }
 }

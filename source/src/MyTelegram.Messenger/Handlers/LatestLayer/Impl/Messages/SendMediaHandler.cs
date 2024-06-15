@@ -186,11 +186,12 @@ internal sealed class SendMediaHandler : RpcResultObjectHandler<MyTelegram.Schem
             poll.MultipleChoice,
             poll.Quiz,
             inputMediaPoll.Poll.PublicVoters,
-            poll.Question,
-            poll.Answers.Select(p => new PollAnswer(p.Text, p.Option)).ToList(),
+            poll.Question.Text,
+            poll.Answers.Select(p => new PollAnswer(p.Text.Text, p.Option,p.Text.Entities.ToBytes())).ToList(),
             inputMediaPoll.CorrectAnswers?.ToList(),
             inputMediaPoll.Solution,
-            inputMediaPoll.SolutionEntities.ToBytes()
+            inputMediaPoll.SolutionEntities.ToBytes(),
+            poll.Question.Entities.ToBytes()
         );
         await _commandBus.PublishAsync(command, default);
     }

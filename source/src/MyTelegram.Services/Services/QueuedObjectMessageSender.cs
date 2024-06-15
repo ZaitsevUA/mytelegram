@@ -27,31 +27,31 @@ public class QueuedObjectMessageSender(
         return Task.CompletedTask;
     }
 
-    public Task PushSessionMessageToPeerAsync<TData>(Peer peer,
-        TData data,
-        long? excludeAuthKeyId = null,
-        long? excludeUserId = null,
-        long? onlySendToUserId = null,
-        long? onlySendToThisAuthKeyId = null,
-        int pts = 0,
-        int? qts = null,
-        long globalSeqNo = 0,
-        LayeredData<TData>? layeredData = null) where TData : IObject
-    {
-        sessionMessageQueueProcessor.Enqueue(new LayeredPushMessageCreatedIntegrationEvent((int)peer.PeerType,
-                peer.PeerId,
-                data.ToBytes(),
-                excludeAuthKeyId,
-                excludeUserId,
-                onlySendToUserId,
-                onlySendToThisAuthKeyId,
-                pts,
-                qts,
-                globalSeqNo,
-                new LayeredData<byte[]>(layeredData?.DataWithLayer?.ToDictionary(k => k.Key, v => v.Value.ToBytes()))),
-            peer.PeerId);
-        return Task.CompletedTask;
-    }
+    //public Task PushSessionMessageToPeerAsync<TData>(Peer peer,
+    //    TData data,
+    //    long? excludeAuthKeyId = null,
+    //    long? excludeUserId = null,
+    //    long? onlySendToUserId = null,
+    //    long? onlySendToThisAuthKeyId = null,
+    //    int pts = 0,
+    //    int? qts = null,
+    //    long globalSeqNo = 0,
+    //    LayeredData<TData>? layeredData = null) where TData : IObject
+    //{
+    //    sessionMessageQueueProcessor.Enqueue(new LayeredPushMessageCreatedIntegrationEvent((int)peer.PeerType,
+    //            peer.PeerId,
+    //            data.ToBytes(),
+    //            excludeAuthKeyId,
+    //            excludeUserId,
+    //            onlySendToUserId,
+    //            onlySendToThisAuthKeyId,
+    //            pts,
+    //            qts,
+    //            globalSeqNo,
+    //            new LayeredData<byte[]>(layeredData?.DataWithLayer?.ToDictionary(k => k.Key, v => v.Value.ToBytes()))),
+    //        peer.PeerId);
+    //    return Task.CompletedTask;
+    //}
 
     public Task PushMessageToPeerAsync<TData>(Peer peer,
         TData data,
@@ -61,7 +61,10 @@ public class QueuedObjectMessageSender(
         long? onlySendToThisAuthKeyId = null,
         int pts = 0,
         int? qts = null,
-        long globalSeqNo = 0, LayeredData<TData>? layeredData = null) where TData : IObject
+        long globalSeqNo = 0,
+        LayeredData<TData>? layeredData = null,
+        PushData? pushData = null
+        ) where TData : IObject
     {
         sessionMessageQueueProcessor.Enqueue(new LayeredPushMessageCreatedIntegrationEvent((int)peer.PeerType,
                 peer.PeerId,
@@ -73,7 +76,8 @@ public class QueuedObjectMessageSender(
                 pts,
                 qts,
                 globalSeqNo,
-                new LayeredData<byte[]>(layeredData?.DataWithLayer?.ToDictionary(k => k.Key, v => v.Value.ToBytes()))
+                new LayeredData<byte[]>(layeredData?.DataWithLayer?.ToDictionary(k => k.Key, v => v.Value.ToBytes())),
+                PushData: pushData
             ),
             peer.PeerId);
         return Task.CompletedTask;
@@ -89,7 +93,9 @@ public class QueuedObjectMessageSender(
         int? qts = null,
         long globalSeqNo = 0,
         LayeredData<TData>? layeredData = null,
-        TExtraData? extraData = default) where TData : IObject
+        TExtraData? extraData = default,
+        PushData? pushData = null
+        ) where TData : IObject
     {
         if (extraData == null)
         {
@@ -102,7 +108,9 @@ public class QueuedObjectMessageSender(
                 pts,
                 qts,
                 globalSeqNo,
-                layeredData);
+                layeredData,
+                pushData
+                );
         }
 
         sessionMessageQueueProcessor.Enqueue(new LayeredPushMessageCreatedIntegrationEvent<TExtraData>(
@@ -117,7 +125,8 @@ public class QueuedObjectMessageSender(
                 qts,
                 globalSeqNo,
                 new LayeredData<byte[]>(layeredData?.DataWithLayer?.ToDictionary(k => k.Key, v => v.Value.ToBytes())),
-                extraData
+                extraData,
+                pushData
             ),
             peer.PeerId);
         return Task.CompletedTask;

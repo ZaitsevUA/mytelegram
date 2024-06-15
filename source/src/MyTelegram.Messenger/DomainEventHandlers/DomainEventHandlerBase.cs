@@ -21,16 +21,13 @@ public abstract class DomainEventHandlerBase(
     protected async Task PushUpdatesToChannelMemberAsync(
         Peer senderPeer,
         Peer channelPeer,
-        //IEnumerable<Peer> messageReceivePeerList,
         IUpdates updates,
         long? excludeAuthKeyId = null,
         long? excludeUserId = null,
         long? onlySendToUserId = null,
         long? onlySendToThisAuthKeyId = null,
-        //PtsType ptsType = PtsType.Unknown,
         UpdatesType updatesType = UpdatesType.Updates,
         int pts = 0,
-        //int? messageId = null,
         bool skipSaveUpdates = false,
         LayeredData<IUpdates>? layeredData = null)
     {
@@ -39,7 +36,6 @@ public abstract class DomainEventHandlerBase(
         {
             globalSeqNo = await SavePushUpdatesAsync(
                channelPeer.PeerId,
-               //channelPeer.PeerId,
                updates,
                pts,
                excludeAuthKeyId,
@@ -71,14 +67,11 @@ public abstract class DomainEventHandlerBase(
         long? onlySendToUserId = null,
         long? onlySendToThisAuthKeyId = null,
         int pts = 0,
-        //PtsType ptsType = PtsType.Unknown,
         UpdatesType updatesType = UpdatesType.Updates,
         LayeredData<IUpdates>? layeredData = null)
     {
         var globalSeqNo = await SavePushUpdatesAsync(
-            //channelMemberPeer.PeerId,
             channelId,
-            //channelId,
             updates,
             pts,
             excludeAuthKeyId,
@@ -99,19 +92,17 @@ public abstract class DomainEventHandlerBase(
     }
 
     protected async Task PushUpdatesToPeerAsync(Peer toPeer,
-        //long? channelId,
         IUpdates updates,
         long? excludeAuthKeyId = null,
         long? excludeUserId = null,
         long? onlySendToUserId = null,
         long? onlySendToThisAuthKeyId = null,
         int pts = 0,
-        //PtsType ptsType = PtsType.Unknown,
         UpdatesType updatesType = UpdatesType.Updates,
-        //IMessage? newMessage = null,
         LayeredData<IUpdates>? layeredData = null,
         long? senderUserId = null,
-        bool skipSaveUpdates = false
+        bool skipSaveUpdates = false,
+        PushData? pushData = null
         )
     {
         long globalSeqNo = 0;
@@ -134,7 +125,6 @@ public abstract class DomainEventHandlerBase(
         {
             globalSeqNo = await SavePushUpdatesAsync(
                 toPeer.PeerId,
-                //channelId,
                 updates,
                 pts,
                 excludeAuthKeyId,
@@ -155,15 +145,13 @@ public abstract class DomainEventHandlerBase(
             onlySendToThisAuthKeyId,
             pts,
             globalSeqNo: globalSeqNo,
-            layeredData: layeredData);
-
-        // Console.WriteLine($"##################### push to {toPeer} globalSeqNo={globalSeqNo}");
-        //return globalSeqNo;
+            layeredData: layeredData,
+            pushData: pushData
+        );
     }
 
     protected async Task ReplyRpcResultToSenderAsync(
         RequestInfo requestInfo,
-        //long reqMsgId,
         Peer toPeer,
         IUpdates updates,
         int groupItemCount,
@@ -189,48 +177,6 @@ public abstract class DomainEventHandlerBase(
         }
     }
 
-    //protected async Task<long> SavePushUpdatesAsync(
-    //    long ownerPeerId,
-    //    //long? channelId,
-    //    IUpdate[]? updates,
-    //    long? excludeAuthKeyId, long? excludeUserId, long? onlySendToThisAuthKeyId,
-    //    UpdatesType updatesType,
-    //    int pts, int? messageId,
-    //    int date,
-    //    //long seqNo,
-    //    List<long>? users,
-    //    List<long>? chats
-    //    )
-    //{
-    //    //if (pts == 0)
-    //    //{
-    //    //    return 0;
-    //    //}
-
-    //    List<long>? userIds = users;
-    //    List<long>? chatIds = chats;
-    //    var globalSeqNo = await _idGenerator.NextLongIdAsync(IdType.GlobalSeqNo);
-
-    //    var command = new CreateUpdatesCommand(UpdatesId.New,
-    //        ownerPeerId,
-    //        //channelId,
-    //        excludeAuthKeyId,
-    //        excludeUserId,
-    //        onlySendToThisAuthKeyId,
-    //        updatesType,
-    //        pts,
-    //        messageId,
-    //        date,
-    //        //seqNo,
-    //        globalSeqNo,
-    //        (updates?.Length > 0) ? new TVector<IUpdate>(updates).ToBytes() : null,
-    //        userIds,
-    //        chatIds
-    //        );
-    //    await _commandBus.PublishAsync(command, default);
-    //    return globalSeqNo;
-    //}
-
     protected async Task<long> SavePushUpdatesAsync(
         long ownerPeerId,
         //long? channelId,
@@ -240,9 +186,6 @@ public abstract class DomainEventHandlerBase(
         long? excludeUserId = null,
         long? onlySendToUserId = null,
         long? onlySendToThisAuthKeyId = null,
-        //UpdatesType updatesType,
-        //int date, 
-        //long seqNo,
         List<long>? users = null,
         List<long>? chats = null,
         UpdatesType updatesType = UpdatesType.Updates,
@@ -321,24 +264,9 @@ public abstract class DomainEventHandlerBase(
             commandBus.PublishAsync(command, default);
         });
         return globalSeqNo;
-
-        //return SavePushUpdatesAsync(ownerPeerId,
-        //    //channelId,
-        //    allUpdates,
-        //    excludeAuthKeyId,
-        //    excludeUserId,
-        //    onlySendToThisAuthKeyId,
-        //    updatesType,
-        //    pts,
-        //    messageId,
-        //    date,
-        //    //seqNo,
-        //    users,
-        //    chats
-        //    );
     }
 
-    protected async Task SendMessageToPeerAsync<TData>(
+    protected async Task PushMessageToPeerAsync<TData>(
         Peer toPeer,
         TData data,
         long? excludeAuthKeyId = null,
@@ -346,10 +274,10 @@ public abstract class DomainEventHandlerBase(
         long? onlySendToUserId = null,
         long? onlySendToThisAuthKeyId = null,
         int pts = 0,
-        //PtsType ptsType = PtsType.Unknown,
         UpdatesType updatesType = UpdatesType.Updates,
         LayeredData<TData>? layeredData = null,
-        long channelId = 0
+        long channelId = 0,
+        PushData? pushData = null
         ) where TData : IObject
     {
         var globalSeqNo = 0L;
@@ -375,20 +303,23 @@ public abstract class DomainEventHandlerBase(
             onlySendToThisAuthKeyId,
             pts,
             globalSeqNo: globalSeqNo,
-            layeredData: layeredData);
+            layeredData: layeredData,
+            pushData: pushData
+            );
     }
 
-    protected async Task SendMessageToPeerAsync<TData, TExtraData>(Peer toPeer,
+    protected async Task PushMessageToPeerAsync<TData, TExtraData>(Peer toPeer,
         TData data,
         long? excludeAuthKeyId = null,
         long? excludeUserId = null,
         long? onlySendToUserId = null,
         long? onlySendToThisAuthKeyId = null,
         int pts = 0,
-        //PtsType ptsType = PtsType.Unknown,
-        //int? messageId = null,
         UpdatesType updatesType = UpdatesType.Updates,
-        LayeredData<TData>? layeredData = null, TExtraData? extraData = default) where TData : IObject
+        LayeredData<TData>? layeredData = null,
+        TExtraData? extraData = default,
+        PushData? pushData = null
+        ) where TData : IObject
     {
         var globalSeqNo = 0L;
 
@@ -416,11 +347,12 @@ public abstract class DomainEventHandlerBase(
             pts,
             globalSeqNo: globalSeqNo,
             layeredData: layeredData,
-            extraData: extraData
+            extraData: extraData,
+            pushData: pushData
             );
     }
 
-    protected Task SendMessageToAuthKeyIdAsync<TData>(Peer toPeer, TData data, long authKeyId, int? qts = null, UpdatesType updatesType = UpdatesType.Updates)
+    protected Task PushMessageToAuthKeyIdAsync<TData>(Peer toPeer, TData data, long authKeyId, int? qts = null, UpdatesType updatesType = UpdatesType.Updates)
         where TData : IObject
     {
         return objectMessageSender.PushMessageToPeerAsync(toPeer, data, onlySendToThisAuthKeyId: authKeyId, qts: qts);

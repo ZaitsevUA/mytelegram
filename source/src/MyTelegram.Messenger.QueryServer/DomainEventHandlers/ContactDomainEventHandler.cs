@@ -1,10 +1,9 @@
-﻿using MyTelegram.Messenger.DomainEventHandlers;
-using MyTelegram.Messenger.Services.Caching;
+﻿using MyTelegram.Messenger.Services.Caching;
 using MyTelegram.Messenger.Services.Interfaces;
 using MyTelegram.Messenger.TLObjectConverters.Interfaces;
-using MyTelegram.Schema.Contacts;
 using MyTelegram.Services.TLObjectConverters;
 using TPeerSettings = MyTelegram.Schema.TPeerSettings;
+using TPhoto = MyTelegram.Schema.Photos.TPhoto;
 
 namespace MyTelegram.Messenger.QueryServer.DomainEventHandlers;
 
@@ -18,8 +17,7 @@ public class ContactDomainEventHandler(
     ILayeredService<IUserConverter> layeredUserService,
     IPhotoAppService photoAppService,
     ILayeredService<IPhotoConverter> layeredPhotoService,
-    IPrivacyAppService privacyAppService,
-    IPeerSettingsAppService peerSettingsAppService)
+    IPrivacyAppService privacyAppService)
     : DomainEventHandlerBase(objectMessageSender,
             commandBus,
             idGenerator,
@@ -30,13 +28,11 @@ public class ContactDomainEventHandler(
         ISubscribeSynchronousTo<ImportContactsSaga, ImportContactsSagaId, ImportContactsCompletedEvent>,
         ISubscribeSynchronousTo<ContactAggregate, ContactId, ContactProfilePhotoChangedEvent>
 {
-    private readonly IPeerSettingsAppService _peerSettingsAppService = peerSettingsAppService;
-
     public async Task HandleAsync(IDomainEvent<ContactAggregate, ContactId, ContactAddedEvent> domainEvent,
         CancellationToken cancellationToken)
     {
         var targetUser =
-            await queryProcessor.ProcessAsync(new GetUserByIdQuery(domainEvent.AggregateEvent.TargetUserId), default);
+            await queryProcessor.ProcessAsync(new GetUserByIdQuery(domainEvent.AggregateEvent.TargetUserId), cancellationToken);
         var photos = await photoAppService.GetPhotosAsync(targetUser);
         var privacies = await privacyAppService.GetPrivacyListAsync(domainEvent.AggregateEvent.TargetUserId);
         var tUser = layeredUserService.GetConverter(domainEvent.AggregateEvent.RequestInfo.Layer)
@@ -64,11 +60,11 @@ public class ContactDomainEventHandler(
         CancellationToken cancellationToken)
     {
         var targetUser =
-            await queryProcessor.ProcessAsync(new GetUserByIdQuery(domainEvent.AggregateEvent.TargetUid), default);
+            await queryProcessor.ProcessAsync(new GetUserByIdQuery(domainEvent.AggregateEvent.TargetUid), cancellationToken);
         var photos = await photoAppService.GetPhotosAsync(targetUser);
-        var privacies = await privacyAppService.GetPrivacyListAsync(domainEvent.AggregateEvent.TargetUid);
+        var privacyList = await privacyAppService.GetPrivacyListAsync(domainEvent.AggregateEvent.TargetUid);
         var tUser = layeredUserService.GetConverter(domainEvent.AggregateEvent.RequestInfo.Layer)
-            .ToUser(domainEvent.AggregateEvent.RequestInfo.UserId, targetUser!, photos, null, privacies);
+            .ToUser(domainEvent.AggregateEvent.RequestInfo.UserId, targetUser!, photos, null, privacyList);
 
         var r = new TUpdates
         {
@@ -82,6 +78,34 @@ public class ContactDomainEventHandler(
             }),
             Users = new TVector<IUser>(tUser)
         };
+        await SendRpcMessageToClientAsync(domainEvent.AggregateEvent.RequestInfo, r);
+    }
+
+    public async Task HandleAsync(
+        IDomainEvent<ContactAggregate, ContactId, ContactProfilePhotoChangedEvent> domainEvent,
+        CancellationToken cancellationToken)
+    {
+        var userReadModel =
+            await queryProcessor.ProcessAsync(new GetUserByIdQuery(domainEvent.AggregateEvent.TargetUserId),
+                cancellationToken);
+        var privacyList = await privacyAppService.GetPrivacyListAsync(domainEvent.AggregateEvent.TargetUserId);
+        var photoReadModels = await photoAppService.GetPhotosAsync(userReadModel);
+        var photoReadModel = await photoAppService.GetPhotoAsync(domainEvent.AggregateEvent.PhotoId);
+        var contactReadModel =
+            await queryProcessor.ProcessAsync(
+                new GetContactQuery(domainEvent.AggregateEvent.RequestInfo.UserId,
+                    domainEvent.AggregateEvent.TargetUserId), cancellationToken);
+
+        var user = layeredUserService.GetConverter(domainEvent.AggregateEvent.RequestInfo.Layer)
+            .ToUser(domainEvent.AggregateEvent.SelfUserId, userReadModel!, photoReadModels, contactReadModel,
+                privacyList);
+        var r = new TPhoto
+        {
+            Users = new TVector<IUser>(user),
+            Photo = layeredPhotoService.GetConverter(domainEvent.AggregateEvent.RequestInfo.Layer)
+                .ToPhoto(photoReadModel)
+        };
+
         await SendRpcMessageToClientAsync(domainEvent.AggregateEvent.RequestInfo, r);
     }
 
@@ -118,6 +142,7 @@ public class ContactDomainEventHandler(
             Users = new TVector<IUser>(userList)
         };
         await SendRpcMessageToClientAsync(domainEvent.AggregateEvent.RequestInfo, r);
+
         var updates = new List<IUpdate>();
         foreach (var userId in userIds)
         {
@@ -125,39 +150,19 @@ public class ContactDomainEventHandler(
             {
                 Peer = new TPeerUser
                 {
-                    UserId = userId,
+                    UserId = userId
                 },
                 Settings = new TPeerSettings()
             };
             updates.Add(updatePeerSettings);
         }
-        await SendMessageToPeerAsync(domainEvent.AggregateEvent.RequestInfo.UserId.ToUserPeer(), new TUpdates
+
+        await PushMessageToPeerAsync(domainEvent.AggregateEvent.RequestInfo.UserId.ToUserPeer(), new TUpdates
         {
             Updates = new TVector<IUpdate>(updates),
-            Users = new(userList),
-            Chats = new(),
+            Users = new TVector<IUser>(userList),
+            Chats = new TVector<IChat>(),
             Date = DateTime.Now.ToTimestamp()
         });
-    }
-
-    public async Task HandleAsync(IDomainEvent<ContactAggregate, ContactId, ContactProfilePhotoChangedEvent> domainEvent, CancellationToken cancellationToken)
-    {
-        var userReadModel =
-            await queryProcessor.ProcessAsync(new GetUserByIdQuery(domainEvent.AggregateEvent.TargetUserId), cancellationToken);
-        var privacyList = await privacyAppService.GetPrivacyListAsync(domainEvent.AggregateEvent.TargetUserId);
-        var photoReadModels = await photoAppService.GetPhotosAsync(userReadModel);
-        var photoReadModel = await photoAppService.GetPhotoAsync(domainEvent.AggregateEvent.PhotoId);
-        var contactReadModel =
-            await queryProcessor.ProcessAsync(new GetContactQuery(domainEvent.AggregateEvent.RequestInfo.UserId, domainEvent.AggregateEvent.TargetUserId), cancellationToken);
-
-        var user = layeredUserService.GetConverter(domainEvent.AggregateEvent.RequestInfo.Layer)
-            .ToUser(domainEvent.AggregateEvent.SelfUserId, userReadModel!, photoReadModels, contactReadModel, privacyList);
-        var r = new MyTelegram.Schema.Photos.TPhoto
-        {
-            Users = new(user),
-            Photo = layeredPhotoService.GetConverter(domainEvent.AggregateEvent.RequestInfo.Layer).ToPhoto(photoReadModel)
-        };
-
-        await SendRpcMessageToClientAsync(domainEvent.AggregateEvent.RequestInfo, r);
     }
 }

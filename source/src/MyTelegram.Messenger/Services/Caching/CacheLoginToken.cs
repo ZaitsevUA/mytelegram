@@ -2,4 +2,3 @@
 
 public record CacheLoginToken(long AuthKeyId,
     long UserId);
-

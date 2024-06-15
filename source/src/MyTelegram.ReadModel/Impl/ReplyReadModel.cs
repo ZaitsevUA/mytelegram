@@ -1,6 +1,4 @@
-﻿using MyTelegram.Schema;
-
-namespace MyTelegram.ReadModel.Impl
+﻿namespace MyTelegram.ReadModel.Impl
 {
     public class ReplyReadModel : IReplyReadModel,
     //IAmReadModelFor<SendMessageSaga, SendMessageSagaId, ReplyToChannelMessageCompletedEvent2>

@@ -17,6 +17,7 @@ public class EncryptedMessageParser : IEncryptedMessageParser
             msgKey.ToArray(),
             encryptedData.ToArray(),
             string.Empty,
+            0,
             string.Empty,
             Guid.NewGuid(),DateTimeOffset.UtcNow.ToUnixTimeMilliseconds());
     }

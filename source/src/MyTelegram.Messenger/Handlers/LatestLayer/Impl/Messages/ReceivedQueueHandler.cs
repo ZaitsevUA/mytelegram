@@ -17,6 +17,6 @@ internal sealed class ReceivedQueueHandler : RpcResultObjectHandler<MyTelegram.S
     protected override Task<TVector<long>> HandleCoreAsync(IRequestInput input,
         MyTelegram.Schema.Messages.RequestReceivedQueue obj)
     {
-        throw new NotImplementedException();
+        return Task.FromResult(new TVector<long>());
     }
 }

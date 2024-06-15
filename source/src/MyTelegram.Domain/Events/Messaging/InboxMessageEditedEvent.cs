@@ -9,6 +9,7 @@ public class InboxMessageEditedEvent(
     int editDate,
     Peer toPeer,
     byte[]? media,
+    byte[]? replyMarkup,
     List<ReactionCount>? reactions,
     List<Reaction>? recentReactions)
     : RequestAggregateEvent2<MessageAggregate, MessageId>(requestInfo)
@@ -18,6 +19,7 @@ public class InboxMessageEditedEvent(
     public int EditDate { get; } = editDate;
     public long InboxOwnerPeerId { get; } = inboxOwnerPeerId;
     public byte[]? Media { get; } = media;
+    public byte[]? ReplyMarkup { get; } = replyMarkup;
     public List<ReactionCount>? Reactions { get; } = reactions;
     public List<Reaction>? RecentReactions { get; } = recentReactions;
 

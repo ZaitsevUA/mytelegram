@@ -1,6 +1,6 @@
 # MyTelegram
 
-[![API Layer](https://img.shields.io/badge/API_Layer-177-blueviolet)](https://corefork.telegram.org/methods)
+[![API Layer](https://img.shields.io/badge/API_Layer-179-blueviolet)](https://corefork.telegram.org/methods)
 [![MTProto](https://img.shields.io/badge/MTProto_Protocol-2.0-green)](https://corefork.telegram.org/mtproto/)
 [![Support Chat](https://img.shields.io/badge/Chat_with_us-on_Telegram-0088cc)](https://t.me/+S-aNBoRvCRpPyXrR)
 
@@ -8,7 +8,7 @@ MyTelegram is telegram server side api implementation written in c#,support priv
 
 ## Features
 
-- API Layer: **`177`**
+- API Layer: **`179`**
 - [MTProto transports](https://corefork.telegram.org/mtproto/mtproto-transports): **`Abridged`**,**`Intermediate`**
 - Private chat
 - Group chat
@@ -25,7 +25,7 @@ MyTelegram is telegram server side api implementation written in c#,support priv
 ## Build MyTelegram Server
 
 1. Install [.NET SDK 8.0](https://dotnet.microsoft.com/en-us/download/dotnet/8.0)
-2. Run `build/build.ps1` ([PowerShell7+](https://github.com/PowerShell/PowerShell))
+2. Run `build/build.ps1` or `build/build.sh`
 3. Build output folder is `out/{version}`
 
 ## Build docker images
@@ -47,6 +47,7 @@ build\docker\5.build-gateway-server.sh
 1. Download docker-compose configuration files
    ```
    https://raw.githubusercontent.com/loyldg/mytelegram/dev/docker/compose/docker-compose.yml
+
    https://raw.githubusercontent.com/loyldg/mytelegram/dev/docker/compose/.env
    ```
 2. Replace `192.168.1.100` with your own server IP in `.env`
@@ -55,17 +56,6 @@ build\docker\5.build-gateway-server.sh
    Linux: docker compose up
    Windows: docker-compose --env-file .env up 
    ```
-
-- ### Run MyTelegram manually
-
-1. Download mytelegram server from [https://github.com/loyldg/mytelegram/releases](https://github.com/loyldg/mytelegram/releases)
-2. Install Redis
-3. Install MongoDB
-4. Intall RabbitMQ
-5. Install Minio
-6. Replace `192.168.1.100` with your own server IP in `start-all.bat`
-7. Run `start-all.bat`
-8. Run telegram client 
 4. Default verification code is `22222`
 
 ## MyTelegram clients

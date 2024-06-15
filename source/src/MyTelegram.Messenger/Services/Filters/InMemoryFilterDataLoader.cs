@@ -6,7 +6,10 @@ public class InMemoryFilterDataLoader(
     ILogger<InMemoryFilterDataLoader> logger)
     : IInMemoryFilterDataLoader
 {
+    //private readonly IBloomFilter _bloomFilter;
     private readonly int _pageSize = 1000;
+    //IBloomFilter bloomFilter,
+    //_bloomFilter = bloomFilter;
 
     public async Task LoadAllFilterDataAsync()
     {
@@ -21,11 +24,11 @@ public class InMemoryFilterDataLoader(
             hasMoreData = userNameList.Count == _pageSize;
             count += userNameList.Count;
             foreach (var userName in userNameList)
-            {
-                await cuckooFilter.AddAsync(Encoding.UTF8.GetBytes($"{MyTelegramServerDomainConsts.UserNameCuckooFilterKey}_{userName}"));
-            }
+                await cuckooFilter.AddAsync(
+                    Encoding.UTF8.GetBytes($"{MyTelegramServerDomainConsts.UserNameCuckooFilterKey}_{userName}"));
             skip += _pageSize;
         }
+
         logger.LogInformation("Load userName list ok,count={Count}", count);
     }
 }

@@ -10,6 +10,19 @@ public class UserAggregate : MyInMemorySnapshotAggregateRoot<UserAggregate, User
         Register(_state);
     }
 
+
+    public void UpdateAbout(string? about)
+    {
+        Specs.AggregateIsCreated.ThrowDomainErrorIfNotSatisfied(this);
+        Emit(new UserAboutUpdatedEvent(_state.UserId, about));
+    }
+
+    public void UpdateFirstName(string firstName)
+    {
+        Specs.AggregateIsCreated.ThrowDomainErrorIfNotSatisfied(this);
+        Emit(new UserFirstNameUpdatedEvent(_state.UserId, firstName));
+    }
+
     public void UpdateBirthday(Birthday? birthday)
     {
         Specs.AggregateIsCreated.ThrowDomainErrorIfNotSatisfied(this);
@@ -137,19 +150,13 @@ public class UserAggregate : MyInMemorySnapshotAggregateRoot<UserAggregate, User
     public void UploadProfilePhoto(RequestInfo requestInfo,
         long photoId,
         bool fallback,
-        //byte[]? photo,
-        VideoSizeEmojiMarkup? videoEmojiMarkup /*, bool hasVideo, double videoStartTs*/)
+        IVideoSize? videoEmojiMarkup
+        )
     {
         Specs.AggregateIsCreated.ThrowDomainErrorIfNotSatisfied(this);
         Emit(new UserProfilePhotoUploadedEvent(requestInfo,
             photoId,
             fallback,
-            //new UserItem(_state.UserId,
-            //    _state.AccessHash,
-            //    _state.PhoneNumber,
-            //    _state.FirstName,
-            //    _state.LastName,
-            //    _state.UserName),
             videoEmojiMarkup
             /*, hasVideo, videoStartTs*/));
     }

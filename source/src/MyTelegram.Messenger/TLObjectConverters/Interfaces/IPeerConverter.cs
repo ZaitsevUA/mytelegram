@@ -11,5 +11,5 @@ public interface IPeerConverter : ILayeredConverter
         IChat? channel
         //IChannelReadModel? channelReadModel,
         //IChatReadModel? chatReadModel
-        );
+    );
 }

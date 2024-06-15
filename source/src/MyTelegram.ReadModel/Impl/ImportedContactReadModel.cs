@@ -8,7 +8,7 @@ public class ImportedContactReadModel : IImportedContactReadModel,
     public virtual string? LastName { get; private set; }
     public virtual string Phone { get; private set; } = null!;
     public virtual long SelfUserId { get; private set; }
-    public virtual long TargetUid { get; private set; }
+    public virtual long TargetUserId { get; private set; }
     public virtual long? Version { get; set; }
 
     public Task ApplyAsync(IReadModelContext context,
@@ -17,7 +17,7 @@ public class ImportedContactReadModel : IImportedContactReadModel,
     {
         Id = domainEvent.AggregateIdentity.Value;
         SelfUserId = domainEvent.AggregateEvent.SelfUserId;
-        TargetUid = domainEvent.AggregateEvent.PhoneContact.UserId;
+        TargetUserId = domainEvent.AggregateEvent.PhoneContact.UserId;
         Phone = domainEvent.AggregateEvent.PhoneContact.Phone;
         FirstName = domainEvent.AggregateEvent.PhoneContact.FirstName;
         LastName = domainEvent.AggregateEvent.PhoneContact.LastName;

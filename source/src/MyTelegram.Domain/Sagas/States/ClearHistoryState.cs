@@ -3,8 +3,6 @@
 public class ClearHistoryState : AggregateState<ClearHistorySaga, ClearHistorySagaId, ClearHistoryState>,
     IApply<ClearHistorySagaStartedEvent>,
     IApply<ClearSingleUserHistoryCompletedEvent>,
-    //IApply<ClearHistorySagaParticipantHistoryClearedEvent>,
-    //IApply<ClearHistorySagaGroupChatHistoryClearStartedEvent>,
     IApply<ClearHistoryPtsIncrementedEvent>,
     IInMemoryAggregate
 {
@@ -15,15 +13,12 @@ public class ClearHistoryState : AggregateState<ClearHistorySaga, ClearHistorySa
 
     public Dictionary<long, List<int>> OwnerToMessageIdList { get; private set; } = default!;
 
-    //public int DeletedCount { get; private set; }
     public Dictionary<long, int> PeerToPts { get; private set; } = default!;
     public long RandomId { get; private set; }
     public bool Revoke { get; private set; }
     public Peer ToPeer { get; private set; } = default!;
-
-    //public int ParticipantHistoryCount { get; private set; }
-    //public int DeletedParticipantHistoryCount { get; private set; }
     public int TotalCountToBeDelete { get; private set; }
+
 
     public void Apply(ClearHistoryPtsIncrementedEvent aggregateEvent)
     {
@@ -68,7 +63,6 @@ public class ClearHistoryState : AggregateState<ClearHistorySaga, ClearHistorySa
 
     public void Apply(ClearSingleUserHistoryCompletedEvent aggregateEvent)
     {
-        //throw new NotImplementedException();
     }
 
     public bool IsCompleted()

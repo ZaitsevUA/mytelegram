@@ -31,7 +31,7 @@ public class ChatState : AggregateState<ChatAggregate, ChatId, ChatState>,
     public long CreatorId { get; private set; }
 
     public ChatBannedRights? DefaultBannedRights { get; private set; }
-    public static ChatBannedRights InitRights { get; } = ChatBannedRights.Default;
+    public static ChatBannedRights InitRights { get; } = ChatBannedRights.CreateDefaultBannedRights();
 
     public long LatestDeletedMemberUid { get; private set; }
     public int LatestSenderMessageId { get; private set; }

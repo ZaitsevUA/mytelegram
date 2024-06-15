@@ -13,18 +13,16 @@ public class UserConverterLatest(
     IBlockCacheAppService blockCacheAppService,
     ILayeredService<IPhotoConverter> layeredPhotoService,
     ILayeredService<IPeerSettingsConverter> layeredPeerSettingsConverter,
+    ILayeredService<IDocumentConverter> layeredDocumentService,
     ILayeredService<IPeerNotifySettingsConverter> layeredPeerNotifySettingsService)
     : UserConverterBase, IUserConverterLatest
 {
-    private readonly IPrivacyHelper _privacyHelper = privacyHelper;
     private IPhotoConverter? _photoConverter;
-
-    //ITlPhotoConverterLayer143 photoConverter,
-    //_layeredPhotoService = layeredPhotoService;
-
     public override int Layer => Layers.LayerLatest;
     protected IObjectMapper ObjectMapper { get; } = objectMapper;
 
+    //ITlPhotoConverterLayer143 photoConverter,
+    //_layeredPhotoService = layeredPhotoService;
     public virtual IUser ToUser(SignInSuccessEvent aggregateEvent)
     {
         return ObjectMapper.Map<SignInSuccessEvent, TUser>(aggregateEvent);
@@ -75,6 +73,8 @@ public class UserConverterLatest(
         IPeerSettingsReadModel? peerSettingsReadModel = null,
         IReadOnlyCollection<IPhotoReadModel>? photos = null,
         IBotReadModel? bot = null,
+        IDocumentReadModel? botDescriptionDocumentReadModel = null,
+        IPhotoReadModel? botDescriptionPhotoReadModel = null,
         IContactReadModel? contactReadModel = null,
         ContactType? contactType = null,
         IReadOnlyCollection<IPrivacyReadModel>? privacies = null
@@ -118,7 +118,7 @@ public class UserConverterLatest(
     }
 
     public IList<ILayeredUser> ToUserList(
-        long selfUserId,
+            long selfUserId,
         IReadOnlyCollection<IUserReadModel> userList,
         IReadOnlyCollection<IPhotoReadModel>? photos = null,
         IReadOnlyCollection<IContactReadModel>? contactList = null,
@@ -150,7 +150,6 @@ public class UserConverterLatest(
             Users = new TVector<IUser>(user)
         };
     }
-
     protected virtual void ApplyProfilePhotoPrivacyToUserFull(
         //long selfUserId,
         //IPrivacyReadModel privacy,
@@ -206,7 +205,7 @@ public class UserConverterLatest(
         var phoneCallAvailable = !isOfficialUserId &&
                                  !user.Bot &&
                                  user.UserId != selfUserId
-                                 ;
+            ;
         //var isBlocked = await _blockCacheAppService.IsBlockedAsync(selfUserId, user.UserId);
         var fullUser = new Schema.TUserFull
         {
@@ -217,18 +216,20 @@ public class UserConverterLatest(
             PhoneCallsAvailable = phoneCallAvailable,
             VideoCallsAvailable = phoneCallAvailable,
             PhoneCallsPrivate = isOfficialUserId,
-            PinnedMsgId = user.PinnedMsgId,
+            //PinnedMsgId = pinnedMsgId,
             //ProfilePhoto = user.ProfilePhoto.ToTObject<Schema.IPhoto>() ?? new TPhotoEmpty(),
             Settings = new TPeerSettings(),
             ProfilePhoto = GetPhotoConverter().ToPhoto(photos?.FirstOrDefault(p => p.PhotoId == user.ProfilePhotoId)),
             FallbackPhoto = GetPhotoConverter().ToPhoto(photos?.FirstOrDefault(p => p.PhotoId == user.FallbackPhotoId)),
             ReadDatesPrivate = user.GlobalPrivacySettings?.HideReadMarks ?? false,
-            Birthday = user.Birthday != null ? new TBirthday
-            {
-                Day = user.Birthday.Day,
-                Month = user.Birthday.Month,
-                Year = user.Birthday.Year,
-            } : null,
+            Birthday = user.Birthday != null
+                ? new TBirthday
+                {
+                    Day = user.Birthday.Day,
+                    Month = user.Birthday.Month,
+                    Year = user.Birthday.Year
+                }
+                : null
             //BusinessIntro = new TBusinessIntro
             //{
             //    Description = "test description",
@@ -247,7 +248,7 @@ public class UserConverterLatest(
     }
 
     protected virtual void SetContactPersonalProfilePhoto(IContactReadModel? contactReadModel, ILayeredUser layeredUser,
-                                IReadOnlyCollection<IPhotoReadModel>? photos, Schema.IUserFull? userFull = null)
+        IReadOnlyCollection<IPhotoReadModel>? photos, Schema.IUserFull? userFull = null)
     {
         if (contactReadModel != null)
         {
@@ -275,10 +276,11 @@ public class UserConverterLatest(
             }
         }
     }
+
     protected void SetUserStatusAndPhoto(ILayeredUser user,
         IPhotoReadModel? profilePhoto = null
-    //byte[]? profilePhoto
-    //IUserProfilePhoto? profilePhoto
+        //byte[]? profilePhoto
+        //IUserProfilePhoto? profilePhoto
     )
     {
         user.Status = userStatusCacheAppService.GetUserStatus(user.Id);
@@ -296,7 +298,7 @@ public class UserConverterLatest(
     }
 
     private void ApplyPrivacyToUser(
-                    long selfUserId,
+        long selfUserId,
         IPhotoReadModel? fallbackPhotoReadModel,
         ILayeredUser user,
         IReadOnlyCollection<IPrivacyReadModel> privacies

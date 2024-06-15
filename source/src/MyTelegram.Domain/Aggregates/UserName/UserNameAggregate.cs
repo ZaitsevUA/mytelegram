@@ -16,7 +16,7 @@ public class UserNameAggregate : SnapshotAggregateRoot<UserNameAggregate, UserNa
 
     public void Create(long userId, string userName)
     {
-        if (userName.Length > 32 || userName.Length < 5)
+        if (userName.Length > MyTelegramServerDomainConsts.UsernameMaxLength || userName.Length < MyTelegramServerDomainConsts.UsernameMinLength)
         {
             RpcErrors.RpcErrors400.UsernameInvalid.ThrowRpcError();
         }
@@ -42,9 +42,9 @@ public class UserNameAggregate : SnapshotAggregateRoot<UserNameAggregate, UserNa
         long selfUserId,
         PeerType peerType,
         long peerId,
-        string userName)
+        string userName )
     {
-        if (userName.Length > 32 || userName.Length < 5)
+         if (userName.Length > MyTelegramServerDomainConsts.UsernameMaxLength || userName.Length < MyTelegramServerDomainConsts.UsernameMinLength)
         {
             //ThrowHelper.ThrowUserFriendlyException(RpcErrorMessages.UserNameInvalid);
             RpcErrors.RpcErrors400.UsernameInvalid.ThrowRpcError();

@@ -4,6 +4,7 @@ namespace MyTelegram.Domain.Aggregates.Channel;
 
 public class ChannelState : AggregateState<ChannelAggregate, ChannelId, ChannelState>,
     IApply<ChannelCreatedEvent>,
+    //IApply<ChannelInviteExportedEvent>,
     IApply<StartSendChannelMessageEvent>,
     IApply<StartInviteToChannelEvent>,
     IApply<IncrementParticipantCountEvent>,
@@ -20,11 +21,16 @@ public class ChannelState : AggregateState<ChannelAggregate, ChannelId, ChannelS
     IApply<ChannelPhotoEditedEvent>,
     IApply<ChannelUserNameChangedEvent>,
     IApply<CheckChannelStateCompletedEvent>,
-    IApply<DeleteParticipantHistoryStartedEvent>,
-    IApply<ChannelColorUpdatedEvent>,
+    //IApply<DeleteParticipantHistoryStartedEvent>,
+    //IApply<ChannelInviteEditedEvent>,
+    //IApply<ChannelInviteDeletedEvent>,
+    //IApply<ChatInviteImportedEvent>,
     IApply<ChatJoinRequestHiddenEvent>,
+    IApply<ChannelColorUpdatedEvent>,
     IApply<ChatInviteRequestPendingUpdatedEvent>,
-    IApply<LinkedChannelChangedEvent>
+    IApply<LinkedChannelChangedEvent>,
+    IApply<ChannelDeletedEvent>,
+    IApply<ChannelParticipantCountChangedEvent>
 {
     //private List<ChatAdmin> _adminList = new();
     //public IReadOnlyList<ChatAdmin> AdminList => _adminList.AsReadOnly();
@@ -33,13 +39,15 @@ public class ChannelState : AggregateState<ChannelAggregate, ChannelId, ChannelS
     public ConcurrentDictionary<long, ChatAdmin> ChatAdmins { get; private set; } = new();
 
     //private List<long> _botUidList = new();
-    public static ChatBannedRights InitRights => ChatBannedRights.Default;
+    public static ChatBannedRights InitRights => ChatBannedRights.CreateDefaultBannedRights();
+
     //public List<long> BotUidList { get; private set; } = new();
     public List<long> BotUserIdList { get; private set; } = new();
 
     public bool Broadcast { get; private set; }
     public long ChannelId { get; private set; }
-
+    public long AccessHash { get; private set; }
+    public string Title { get; private set; } = default!;
     public long CreatorId { get; private set; }
 
     public ChatBannedRights? DefaultBannedRights { get; private set; }
@@ -64,15 +72,21 @@ public class ChannelState : AggregateState<ChannelAggregate, ChannelId, ChannelS
     public long? MigratedFromChatId { get; private set; }
     public int? MigratedMaxId { get; private set; }
     public bool NoForwards { get; private set; }
+
     public bool IsFirstChatInviteCreated { get; private set; }
+
     //public HashSet<long> RecentRequesters { get; private set; } = new();
     public int? RequestsPending { get; private set; }
-    public List<long>? RecentRequesters { get; private set; } = new(MyTelegramServerDomainConsts.ChatInviteRecentRequesterMaxCount);
+
+    public List<long>? RecentRequesters { get; private set; } =
+        new(MyTelegramServerDomainConsts.ChatInviteRecentRequesterMaxCount);
 
     public bool SignatureEnabled { get; private set; }
     public int ParticipantCount { get; private set; }
     public PeerColor? Color { get; private set; }
     public bool HasLink { get; private set; }
+    public bool IsDeleted { get; private set; }
+
     public void Apply(ChannelAboutEditedEvent aggregateEvent)
     {
     }
@@ -108,9 +122,16 @@ public class ChannelState : AggregateState<ChannelAggregate, ChannelId, ChannelS
         }
     }
 
+    public void Apply(ChannelColorUpdatedEvent aggregateEvent)
+    {
+        Color = aggregateEvent.Color;
+    }
+
     public void Apply(ChannelCreatedEvent aggregateEvent)
     {
         ChannelId = aggregateEvent.ChannelId;
+        AccessHash = aggregateEvent.AccessHash;
+        Title = aggregateEvent.Title;
         CreatorId = aggregateEvent.CreatorId;
         Broadcast = aggregateEvent.Broadcast;
         TtlPeriod = aggregateEvent.TtlPeriod;
@@ -119,12 +140,28 @@ public class ChannelState : AggregateState<ChannelAggregate, ChannelId, ChannelS
         MigratedMaxId = aggregateEvent.MigratedMaxId;
         ParticipantCount = 1;
 
-        ChatAdmins.TryAdd(CreatorId, new ChatAdmin(CreatorId, true, CreatorId, ChatAdminRights.GetCreatorRights(), string.Empty));
+        ChatAdmins.TryAdd(CreatorId,
+            new ChatAdmin(CreatorId, true, CreatorId, ChatAdminRights.GetCreatorRights(), string.Empty));
     }
 
     public void Apply(ChannelDefaultBannedRightsEditedEvent aggregateEvent)
     {
         DefaultBannedRights = aggregateEvent.DefaultBannedRights;
+    }
+
+    public void Apply(ChannelDeletedEvent aggregateEvent)
+    {
+        IsDeleted = true;
+    }
+
+    //public void Apply(DeleteParticipantHistoryStartedEvent aggregateEvent)
+    //{
+    //    //throw new NotImplementedException();
+    //}
+
+    public void Apply(ChannelParticipantCountChangedEvent aggregateEvent)
+    {
+        ParticipantCount = aggregateEvent.NewParticipantCount;
     }
 
     public void Apply(ChannelPhotoEditedEvent aggregateEvent)
@@ -142,6 +179,34 @@ public class ChannelState : AggregateState<ChannelAggregate, ChannelId, ChannelS
         UserName = aggregateEvent.UserName;
     }
 
+    public void Apply(ChatInviteRequestPendingUpdatedEvent aggregateEvent)
+    {
+        RequestsPending = aggregateEvent.RequestsPending;
+        RecentRequesters = aggregateEvent.RecentRequesters;
+    }
+
+    //public void Apply(ChannelInviteEditedEvent aggregateEvent)
+    //{
+    //    //throw new NotImplementedException();
+    //}
+
+    //public void Apply(ChannelInviteDeletedEvent aggregateEvent)
+    //{
+    //    //throw new NotImplementedException();
+    //}
+
+    //public void Apply(ChatInviteImportedEvent aggregateEvent)
+    //{
+    //    RequestsPending = aggregateEvent.RequestsPending;
+    //    RecentRequesters = aggregateEvent.RecentRequesters;
+    //}
+
+    public void Apply(ChatJoinRequestHiddenEvent aggregateEvent)
+    {
+        RequestsPending = aggregateEvent.RequestsPending;
+        RecentRequesters = aggregateEvent.RecentRequesters;
+    }
+
     public void Apply(CheckChannelStateCompletedEvent aggregateEvent)
     {
         LatestNoneBotSenderPeerId = aggregateEvent.SenderPeerId;
@@ -150,10 +215,25 @@ public class ChannelState : AggregateState<ChannelAggregate, ChannelId, ChannelS
         LastSendDate = aggregateEvent.Date;
     }
 
+    public void Apply(DiscussionGroupUpdatedEvent aggregateEvent)
+    {
+        LinkedChannelId = aggregateEvent.GroupChannelId;
+    }
+
+    //public void Apply(ChannelInviteExportedEvent aggregateEvent)
+    //{
+    //    IsFirstChatInviteCreated = true;
+    //}
 
     public void Apply(IncrementParticipantCountEvent aggregateEvent)
     {
         ParticipantCount = aggregateEvent.NewParticipantCount;
+    }
+
+    public void Apply(LinkedChannelChangedEvent aggregateEvent)
+    {
+        LinkedChannelId = aggregateEvent.LinkedChannelId;
+        HasLink = aggregateEvent.LinkedChannelId.HasValue;
     }
 
     public void Apply(NewMsgIdPinnedEvent aggregateEvent)
@@ -172,11 +252,6 @@ public class ChannelState : AggregateState<ChannelAggregate, ChannelId, ChannelS
 
     public void Apply(SetChannelPtsEvent aggregateEvent)
     {
-    }
-
-    public void Apply(DiscussionGroupUpdatedEvent aggregateEvent)
-    {
-        LinkedChannelId = aggregateEvent.GroupChannelId;
     }
 
     public void Apply(SlowModeChangedEvent aggregateEvent)
@@ -233,6 +308,8 @@ public class ChannelState : AggregateState<ChannelAggregate, ChannelId, ChannelS
     public void LoadFromSnapshot(ChannelSnapshot snapshot)
     {
         ChannelId = snapshot.ChannelId;
+        AccessHash = snapshot.AccessHash;
+        Title = snapshot.Title;
         Broadcast = snapshot.Broadcast;
         CreatorId = snapshot.CreatorUid;
         MaxMessageId = snapshot.MaxMessageId;
@@ -257,7 +334,7 @@ public class ChannelState : AggregateState<ChannelAggregate, ChannelId, ChannelS
         NoForwards = snapshot.NoForwards;
         IsFirstChatInviteCreated = snapshot.IsFirstChatInviteCreated;
 
-        ChatAdmins = new();
+        ChatAdmins = new ConcurrentDictionary<long, ChatAdmin>();
         foreach (var chatAdmin in snapshot.AdminList)
         {
             ChatAdmins.TryAdd(chatAdmin.UserId, chatAdmin);
@@ -270,34 +347,6 @@ public class ChannelState : AggregateState<ChannelAggregate, ChannelId, ChannelS
         ParticipantCount = snapshot.ParticipantCount;
         Color = snapshot.Color;
         HasLink = snapshot.HasLink;
-    }
-
-    public void Apply(DeleteParticipantHistoryStartedEvent aggregateEvent)
-    {
-        //throw new NotImplementedException();
-    }
-
-
-    public void Apply(ChannelColorUpdatedEvent aggregateEvent)
-    {
-        Color = aggregateEvent.Color;
-    }
-
-    public void Apply(ChatJoinRequestHiddenEvent aggregateEvent)
-    {
-        RequestsPending = aggregateEvent.RequestsPending;
-        RecentRequesters = aggregateEvent.RecentRequesters;
-    }
-
-    public void Apply(ChatInviteRequestPendingUpdatedEvent aggregateEvent)
-    {
-        RequestsPending = aggregateEvent.RequestsPending;
-        RecentRequesters = aggregateEvent.RecentRequesters;
-    }
-
-    public void Apply(LinkedChannelChangedEvent aggregateEvent)
-    {
-        LinkedChannelId = aggregateEvent.LinkedChannelId;
-        HasLink = aggregateEvent.LinkedChannelId.HasValue;
+        IsDeleted = snapshot.IsDeleted;
     }
 }

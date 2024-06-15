@@ -4,6 +4,7 @@ public class PeerNotifySettingsConverterLatest(IObjectMapper objectMapper) : IPe
 {
     public virtual int Layer => Layers.LayerLatest;
     public int RequestLayer { get; set; }
+
     public IPeerNotifySettings ToPeerNotifySettings(IPeerNotifySettingsReadModel? readModel)
     {
         return ToPeerNotifySettings(readModel?.NotifySettings);
@@ -13,7 +14,7 @@ public class PeerNotifySettingsConverterLatest(IObjectMapper objectMapper) : IPe
     {
         var settings =
             objectMapper.Map<PeerNotifySettings, TPeerNotifySettings>(peerNotifySettings ??
-                                                                       PeerNotifySettings.DefaultSettings);
+                                                                      PeerNotifySettings.DefaultSettings);
         settings.IosSound = new TNotificationSoundDefault();
         settings.AndroidSound = new TNotificationSoundLocal
         {

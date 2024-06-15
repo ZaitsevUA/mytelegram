@@ -59,6 +59,8 @@ public class CustomObjectMapper : ILayeredMapper,
         destination.MediaOnly = source.MediaOnly;
         destination.Secret = source.Secret;
         destination.Static = source.Static;
+        destination.TcpoOnly = source.TcpoOnly;
+        destination.ThisPortOnly = source.ThisPortOnly;
 
         return destination;
     }
@@ -162,6 +164,10 @@ public class CustomObjectMapper : ILayeredMapper,
         return destination;
     }
 
+    TWebAuthorization? IObjectMapper<IDeviceReadModel, TWebAuthorization>.Map(IDeviceReadModel source)
+    {
+        return Map(source, new TWebAuthorization());
+    }
 
 
     public FileItem Map(IFileReadModel source)
@@ -413,11 +419,6 @@ public class CustomObjectMapper : ILayeredMapper,
         destination.Password = source.Password;
 
         return destination;
-    }
-
-    TWebAuthorization? IObjectMapper<IDeviceReadModel, TWebAuthorization>.Map(IDeviceReadModel source)
-    {
-        return Map(source, new TWebAuthorization());
     }
 
     public TChatInviteExported? Map(ChatInviteCreatedEvent source)

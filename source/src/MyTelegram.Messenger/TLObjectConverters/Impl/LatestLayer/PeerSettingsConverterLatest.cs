@@ -3,7 +3,7 @@ using TPeerSettings = MyTelegram.Schema.TPeerSettings;
 
 namespace MyTelegram.Messenger.TLObjectConverters.Impl.LatestLayer;
 
-public class PeerSettingsConverterLatest(IObjectMapper objectMapper) : IPeerSettingsConverterLatest
+public class PeerSettingsConverterLatest(IObjectMapper objectMapper, IPeerHelper peerHelper) : IPeerSettingsConverterLatest
 {
     public int Layer => Layers.LayerLatest;
     public int RequestLayer { get; set; }
@@ -11,7 +11,7 @@ public class PeerSettingsConverterLatest(IObjectMapper objectMapper) : IPeerSett
     public virtual IPeerSettings ToPeerSettings(long selfUserId, long targetUserId, IPeerSettingsReadModel? readModel,
         ContactType? contactType)
     {
-        if (targetUserId == MyTelegramServerDomainConsts.OfficialUserId || selfUserId == targetUserId)
+        if (targetUserId == MyTelegramServerDomainConsts.OfficialUserId || selfUserId == targetUserId || peerHelper.IsBotUser(targetUserId))
         {
             return new TPeerSettings();
         }

@@ -89,7 +89,6 @@ public static class MyTelegramMessengerServerExtensions
 
         services.AddSingleton<IResponseCacheAppService, ResponseCacheAppService>();
         services.AddSingleton<IUserStatusCacheAppService, UserStatusCacheAppService>();
-        services.AddSingleton<ILoginTokenCacheAppService, LoginTokenCacheAppService>();
 
         //services.AddSingleton<ISrpHelper, SrpHelper>();
         services.AddSingleton<IPrivacyHelper, PrivacyHelper>();
@@ -132,6 +131,8 @@ public static class MyTelegramMessengerServerExtensions
         //services.AddTransient<IReadModelCacheStrategy, MyTelegramReadModelCacheStrategy>();
         services.AddSingleton<IBlockCacheAppService, BlockCacheAppService>();
         services.AddSingleton<IChannelAdminRightsChecker, ChannelAdminRightsChecker>();
+        services.AddSingleton<IVerificationCodeGenerator, VerificationCodeGenerator>();
+
 
         return services;
     }

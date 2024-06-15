@@ -69,6 +69,7 @@ internal sealed class GetParticipantHandler : RpcResultObjectHandler<MyTelegram.
 
             var channelReadModel = await _queryProcessor
                 .ProcessAsync(new GetChannelByIdQuery(inputChannel.ChannelId), default);
+            channelReadModel.ThrowExceptionIfChannelDeleted();
 
             var contactReadModel = await _queryProcessor
                 .ProcessAsync(new GetContactQuery(input.UserId, peer.PeerId), default);
@@ -79,7 +80,6 @@ internal sealed class GetParticipantHandler : RpcResultObjectHandler<MyTelegram.
                 .ToUser(input.UserId, userReadModel, photos, contactReadModel, privacies: privacies);
 
             var photoReadModel = await _photoAppService.GetPhotoAsync(channelReadModel.PhotoId);
-
             var r = _layeredService.GetConverter(input.Layer).ToChannelParticipant(
                 input.UserId,
                 channelReadModel,

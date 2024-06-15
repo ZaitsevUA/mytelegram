@@ -1,25 +1,28 @@
-﻿using MyTelegram.Domain.Events.Poll;
-
-namespace MyTelegram.ReadModel.Impl;
+﻿namespace MyTelegram.ReadModel.Impl;
 
 public class PollReadModel : IPollReadModel,
     IAmReadModelFor<PollAggregate, PollId, PollCreatedEvent>,
     IAmReadModelFor<PollAggregate, PollId, VoteSucceededEvent>,
     IAmReadModelFor<PollAggregate, PollId, PollClosedEvent>
 {
+    public IReadOnlyCollection<PollAnswer> Answers { get; private set; } = default!;
+    public IReadOnlyCollection<PollAnswerVoter>? AnswerVoters { get; private set; }
+    public bool Closed { get; private set; }
+    public int? CloseDate { get; private set; }
+    public int? ClosePeriod { get; private set; }
+    public IReadOnlyCollection<string>? CorrectAnswers { get; private set; }
     public virtual string Id { get; private set; } = null!;
+    public bool MultipleChoice { get; private set; }
+    public long PollId { get; private set; }
+    public bool PublicVoters { get; private set; }
+    public string Question { get; private set; } = default!;
+    public byte[]? QuestionEntities { get; private set; }
+    public bool Quiz { get; private set; }
+    public string? Solution { get; private set; }
+    public byte[]? SolutionEntities { get; private set; }
+    public long ToPeerId { get; private set; }
+    public int TotalVoters { get; private set; }
     public virtual long? Version { get; set; }
-
-    public Task ApplyAsync(IReadModelContext context,
-        IDomainEvent<PollAggregate, PollId, PollClosedEvent> domainEvent,
-        CancellationToken cancellationToken)
-    {
-        Closed = true;
-        CloseDate = domainEvent.AggregateEvent.CloseDate;
-
-        return Task.CompletedTask;
-    }
-
     public Task ApplyAsync(IReadModelContext context,
         IDomainEvent<PollAggregate, PollId, PollCreatedEvent> domainEvent,
         CancellationToken cancellationToken)
@@ -35,6 +38,7 @@ public class PollReadModel : IPollReadModel,
         CorrectAnswers = domainEvent.AggregateEvent.CorrectAnswers;
         Solution = domainEvent.AggregateEvent.Solution;
         SolutionEntities = domainEvent.AggregateEvent.SolutionEntities;
+        QuestionEntities= domainEvent.AggregateEvent.QuestionEntities;
 
         return Task.CompletedTask;
     }
@@ -56,19 +60,13 @@ public class PollReadModel : IPollReadModel,
         return Task.CompletedTask;
     }
 
-    public long ToPeerId { get; private set; }
-    public long PollId { get; private set; }
-    public bool MultipleChoice { get; private set; }
-    public bool Quiz { get; private set; }
-    public bool PublicVoters { get; private set; }
-    public string Question { get; private set; } = null!;
-    public IReadOnlyCollection<PollAnswer> Answers { get; private set; } = null!;
-    public IReadOnlyCollection<string>? CorrectAnswers { get; private set; }
-    public string? Solution { get; private set; }
-    public byte[]? SolutionEntities { get; private set; }
-    public bool Closed { get; private set; }
-    public int? CloseDate { get; private set; }
-    public int? ClosePeriod { get; } = null!;
-    public int TotalVoters { get; private set; }
-    public IReadOnlyCollection<PollAnswerVoter>? AnswerVoters { get; private set; }
+    public Task ApplyAsync(IReadModelContext context,
+        IDomainEvent<PollAggregate, PollId, PollClosedEvent> domainEvent,
+        CancellationToken cancellationToken)
+    {
+        Closed = true;
+        CloseDate = domainEvent.AggregateEvent.CloseDate;
+
+        return Task.CompletedTask;
+    }
 }

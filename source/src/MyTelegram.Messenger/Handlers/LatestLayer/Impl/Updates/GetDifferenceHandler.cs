@@ -152,6 +152,7 @@ internal sealed class GetDifferenceHandler : RpcResultObjectHandler<MyTelegram.S
 
             //Console.WriteLine($"[{input.UserId}]Add channelMaxGlobalSeqNo to cache:{channelMaxGlobalSeqNo}");
         }
+        dto.MessageList = dto.MessageList.OrderBy(p => p.MessageId).ToList();
         var r = _layeredService.GetConverter(input.Layer).ToDifference(dto, ptsReadModel, cachedPts, limit, allUpdateList, new List<IChat>(), encryptedMessages);
         //_logger.LogInformation("GetDifference:{UserId},updates count={Count},channelUpdates count={ChannelUpdatesCount},Data={@Data},channelUpdates count={ChannelUpdatesCount}", input.UserId, updatesReadModels.Count, channelUpdatesReadModels.Count, r, channelUpdatesReadModels.Count);
         return r;

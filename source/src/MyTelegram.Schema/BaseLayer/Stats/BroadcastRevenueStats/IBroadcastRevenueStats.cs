@@ -10,8 +10,6 @@ public interface IBroadcastRevenueStats : IObject
 {
     MyTelegram.Schema.IStatsGraph TopHoursGraph { get; set; }
     MyTelegram.Schema.IStatsGraph RevenueGraph { get; set; }
-    long CurrentBalance { get; set; }
-    long AvailableBalance { get; set; }
-    long OverallRevenue { get; set; }
+    MyTelegram.Schema.IBroadcastRevenueBalances Balances { get; set; }
     double UsdRate { get; set; }
 }

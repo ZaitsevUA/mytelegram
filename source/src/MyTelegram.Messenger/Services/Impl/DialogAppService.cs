@@ -29,7 +29,6 @@ public class DialogAppService(
             var dialog = await queryProcessor.ProcessAsync(new GetDialogByIdQuery(dialogId));
             offsetDate = dialog?.CreationTime;
         }
-
         var query = new GetDialogsQuery(input.OwnerId,
             input.Pinned,
             offsetDate,
@@ -41,11 +40,6 @@ public class DialogAppService(
         {
             dialogList = dialogList.OrderBy(p => p.PinnedOrder).ToList();
         }
-
-        //var peerNotifySettingsIdList = dialogList
-        //    .Select(p => PeerNotifySettingsId.Create(p.OwnerId, p.ToPeerType, p.ToPeerId)).ToList();
-        //var peerNotifySettingsList = await QueryProcessor
-        //    .ProcessAsync(new GetPeerNotifySettingsListQuery(peerNotifySettingsIdList), CancellationToken.None);
 
         var channelIdList = dialogList.Where(p => p.ToPeerType == PeerType.Channel).Select(p => p.ToPeerId)
             .ToList();

@@ -15,5 +15,7 @@ public interface IMediaHelper
         double? videoStartTs,
         int parts,
         string name,
-        string md5);
+        string md5,
+        IVideoSize? videoEmojiMarkup = null
+        );
 }

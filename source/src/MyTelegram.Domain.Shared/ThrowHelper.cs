@@ -6,4 +6,4 @@ public class ThrowHelper
     {
         throw new RpcException(rpcError);
     }
-}   
+}

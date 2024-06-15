@@ -610,7 +610,7 @@ public class ChatConverterLatest(
 
     protected virtual IChatBannedRights ToChatBannedRights(ChatBannedRights? rights)
     {
-        return ObjectMapper.Map<ChatBannedRights, TChatBannedRights>(rights ?? ChatBannedRights.Default);
+        return ObjectMapper.Map<ChatBannedRights, TChatBannedRights>(rights ?? ChatBannedRights.CreateDefaultBannedRights());
     }
 
     protected virtual Schema.IChannelParticipant ToChatParticipantAdmin(long selfUserId,
@@ -692,7 +692,7 @@ public class ChatConverterLatest(
                 channelMemberReadModel.UntilDate));
         if (channelMemberReadModel.Kicked ||
             (channelMemberReadModel.BannedRights != 0 &&
-             channelMemberReadModel.BannedRights != ChatBannedRights.Default.ToIntValue() &&
+             channelMemberReadModel.BannedRights != ChatBannedRights.CreateDefaultBannedRights().ToIntValue() &&
              !channelMemberReadModel.Left))
         {
             return new TChannelParticipantBanned

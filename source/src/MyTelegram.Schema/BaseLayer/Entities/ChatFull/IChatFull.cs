@@ -35,4 +35,6 @@ public interface IChatFull : IObject
     /// <a href="https://corefork.telegram.org/api/folders#peer-folders">Peer folder ID, for more info click here</a>
     ///</summary>
     int? FolderId { get; set; }
+
+    TVector<MyTelegram.Schema.IBotInfo> BotInfo { get; set; }
 }

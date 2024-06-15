@@ -13,8 +13,21 @@ public class TempAggregate(TempId id) : AggregateRoot<TempAggregate, TempId>(id)
     IApply<SetChannelDiscussionGroupStartedEvent>,
     IApply<DeleteReplyMessagesStartedEvent>,
     IApply<ForwardMessagesStartedEvent>,
-    IApply<PinForwardedChannelMessageStartedEvent>
+    IApply<PinForwardedChannelMessageStartedEvent>,
+    IApply<UnpinAllMessagesStartedEvent>,
+    IApply<UpdateMessagePinnedStartedEvent>
 {
+    public void StartUpdatePinnedMessages(RequestInfo requestInfo, IReadOnlyCollection<SimpleMessageItem> messageItems,
+        Peer toPeer, bool pinned, bool pmOneSide)
+    {
+        Emit(new UpdateMessagePinnedStartedEvent(requestInfo, messageItems, toPeer, pinned, pmOneSide));
+    }
+
+    public void StartUnpinAllMessages(RequestInfo requestInfo, IReadOnlyCollection<SimpleMessageItem> messageItems, Peer toPeer)
+    {
+        Emit(new UnpinAllMessagesStartedEvent(requestInfo, messageItems, toPeer));
+    }
+
     public void StartForwardMessages(RequestInfo requestInfo, bool silent, bool background, bool withMyScore, bool dropAuthor,
         bool dropMediaCaptions, bool noForwards, Peer fromPeer, Peer toPeer,
         List<int> messageIds, List<long> randomIds, int? scheduleDate, Peer? sendAs, bool forwardFromLinkedChannel)
@@ -100,6 +113,16 @@ public class TempAggregate(TempId id) : AggregateRoot<TempAggregate, TempId>(id)
     }
 
     public void Apply(PinForwardedChannelMessageStartedEvent aggregateEvent)
+    {
+
+    }
+
+    public void Apply(UnpinAllMessagesStartedEvent aggregateEvent)
+    {
+
+    }
+
+    public void Apply(UpdateMessagePinnedStartedEvent aggregateEvent)
     {
 
     }

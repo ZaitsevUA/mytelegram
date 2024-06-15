@@ -7,15 +7,8 @@ public class OutboxAlreadyReadEvent(
     Peer toPeer)
     : RequestAggregateEvent2<DialogAggregate, DialogId>(requestInfo)
 {
-    //long senderMsgId,
-    //SenderMsgId = senderMsgId; 
-
     public int NewMaxMessageId { get; } = newMaxMessageId;
     public Peer ToPeer { get; } = toPeer;
 
     public int OldMaxMessageId { get; } = oldMaxMessageId;
-
-    //public long SenderMsgId { get; } 
-
-
 }

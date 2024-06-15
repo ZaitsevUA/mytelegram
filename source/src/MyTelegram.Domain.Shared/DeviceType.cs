@@ -1,6 +1,4 @@
-﻿// ReSharper disable once CheckNamespace
-
-namespace MyTelegram;
+﻿namespace MyTelegram;
 
 public enum DeviceType
 {
@@ -9,5 +7,6 @@ public enum DeviceType
     Android,
     Ios,
     WebA,
-    WebK
+    WebK,
+    TdLib
 }

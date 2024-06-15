@@ -16,6 +16,7 @@ public class UnencryptedMessageParser : IUnencryptedMessageParser
         return new UnencryptedMessage(authKeyId,
             string.Empty,
             string.Empty,
+            0,
             messageData.ToArray(),
             messageDataLength,
             messageId,

@@ -12,7 +12,7 @@ public interface IPollAnswer : IObject
     ///<summary>
     /// Textual representation of the answer
     ///</summary>
-    string Text { get; set; }
+    MyTelegram.Schema.ITextWithEntities Text { get; set; }
 
     ///<summary>
     /// The param that has to be passed to <a href="https://corefork.telegram.org/method/messages.sendVote">messages.sendVote</a>.

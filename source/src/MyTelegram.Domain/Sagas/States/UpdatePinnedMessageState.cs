@@ -7,7 +7,8 @@ public class UpdatePinnedMessageState :
     IApply<UpdateInboxPinnedCompletedEvent>,
     IApply<UpdatePinnedCompletedEvent>,
     IApply<UpdatePinnedBoxPtsCompletedEvent>,
-    IApply<UpdatePinnedMessageCompletedEvent>
+    IApply<UpdatePinnedMessageCompletedEvent>,
+    IApply<UpdateSavedMessagesPinnedCompletedEvent>
 {
     public Dictionary<long, PinnedMsgItem> UpdatePinItems = new();
     public RequestInfo RequestInfo { get; private set; } = default!;
@@ -22,14 +23,12 @@ public class UpdatePinnedMessageState :
     public int PinnedMsgId { get; private set; }
     public bool PmOneSide { get; private set; }
     public long RandomId { get; private set; }
-    // public bool ReceiveOutboxPinnedUpdated { get; private set; }
     public int ReplyToMsgId { get; private set; }
-
     public int SenderMessageId { get; private set; }
     public long SenderPeerId { get; private set; }
     public bool Silent { get; private set; }
     public long StartUpdatePinnedOwnerPeerId { get; private set; }
-    public Peer ToPeer { get; private set; } = default!;
+    public Peer? ToPeer { get; private set; }
     public int UpdatedInboxCount { get; private set; }
 
     public void Apply(UpdateInboxPinnedCompletedEvent aggregateEvent)
@@ -41,20 +40,17 @@ public class UpdatePinnedMessageState :
 
     public void Apply(UpdateOutboxPinnedCompletedEvent aggregateEvent)
     {
-        //throw new NotImplementedException();
         UpdatePinItems.TryAdd(aggregateEvent.OwnerPeerId,
             new PinnedMsgItem(aggregateEvent.OwnerPeerId, aggregateEvent.MessageId, aggregateEvent.ToPeer.PeerId));
     }
 
     public void Apply(UpdatePinnedMessageCompletedEvent aggregateEvent)
     {
-        //throw new NotImplementedException();
     }
 
     public void Apply(UpdatePinnedBoxPtsCompletedEvent aggregateEvent)
     {
-        //throw new NotImplementedException();
-        if (ToPeer.PeerType == PeerType.Channel)
+        if (ToPeer is { PeerType: PeerType.Channel })
         {
             UpdatedInboxCount++;
         }
@@ -62,7 +58,6 @@ public class UpdatePinnedMessageState :
 
     public void Apply(UpdatePinnedCompletedEvent aggregateEvent)
     {
-        //throw new NotImplementedException();
     }
 
     public void Apply(UpdatePinnedMessageSagaStartedEvent aggregateEvent)
@@ -95,5 +90,10 @@ public class UpdatePinnedMessageState :
         }
 
         return default;
+    }
+
+    public void Apply(UpdateSavedMessagesPinnedCompletedEvent aggregateEvent)
+    {
+        //throw new NotImplementedException();
     }
 }

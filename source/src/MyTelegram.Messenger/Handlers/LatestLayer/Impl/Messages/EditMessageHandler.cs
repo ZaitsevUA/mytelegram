@@ -108,6 +108,7 @@ internal sealed class EditMessageHandler : RpcResultObjectHandler<MyTelegram.Sch
             obj.Entities.ToBytes(),
             CurrentDate,
             mediaBytes,
+            obj.ReplyMarkup.ToBytes(),
             chatReadModel?.ChatMembers.Select(p => p.UserId).ToList()
         );
         await _commandBus.PublishAsync(command, default);

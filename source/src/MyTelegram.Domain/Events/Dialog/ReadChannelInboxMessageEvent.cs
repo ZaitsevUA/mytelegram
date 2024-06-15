@@ -9,13 +9,10 @@ public class ReadChannelInboxMessageEvent(
     int? topMsgId)
     : RequestAggregateEvent2<DialogAggregate, DialogId>(requestInfo)
 {
-    //MessageBoxId = messageBoxId;
-
     public long ChannelId { get; } = channelId;
     public int MaxId { get; } = maxId;
     public long SenderUserId { get; } = senderUserId;
     public int? TopMsgId { get; } = topMsgId;
 
     public long ReaderUserId { get; } = readerUserId;
-    //public string MessageBoxId { get; }
 }

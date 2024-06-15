@@ -11,6 +11,7 @@ public class PtsReadModelLocator : IPtsReadModelLocator
             case TempPtsIncrementedEvent tempPtsIncrementedEvent:
                 ownerPeerId = tempPtsIncrementedEvent.OwnerPeerId;
                 break;
+
             case PtsGlobalSeqNoUpdatedEvent ptsGlobalSeqNoUpdatedEvent:
                 ownerPeerId = ptsGlobalSeqNoUpdatedEvent.PeerId;
                 break;
@@ -41,53 +42,12 @@ public class PtsReadModelLocator : IPtsReadModelLocator
             case ClearSingleUserHistoryCompletedEvent clearSingleUserHistoryCompletedEvent:
                 ownerPeerId = clearSingleUserHistoryCompletedEvent.DeletedBoxItem.OwnerPeerId;
                 break;
-
-            //case SendOutboxMessageSuccessEvent sendOutboxMessageSuccessEvent:
-            //    ownerPeerId = sendOutboxMessageSuccessEvent.OwnerPeerId;
-            //    break;
-            //case ReceiveInboxMessageSuccessEvent receiveInboxMessageSuccessEvent:
-            //    ownerPeerId = receiveInboxMessageSuccessEvent.OwnerPeerId;
-            //    break;
             case UserCreatedEvent userCreatedEvent:
                 ownerPeerId = userCreatedEvent.UserId;
                 break;
-            //case OutboxCreatedEvent outboxCreatedEvent:
-            //    ownerPeerId = outboxCreatedEvent.OwnerPeerId;
-            //    break;
-            //case InboxCreatedEvent inboxCreatedEvent:
-            //    ownerPeerId = inboxCreatedEvent.OwnerPeerId;
-            //    break;
-            //case ReadInboxMessage2Event readInboxMessage2Event:
-            //    ownerPeerId = readInboxMessage2Event.OwnerPeerId;
-            //    break;
-            //case OutboxMessageHasReadEvent outboxMessageHasReadEvent:
-            //    ownerPeerId = outboxMessageHasReadEvent.OwnerPeerId;
-            //    break;
-            //case MessageDeletedEvent messageDeletedEvent:
-            //    ownerPeerId = messageDeletedEvent.OwnerPeerId;
-            //    break;
-            //case OtherPartyMessageDeletedEvent otherPartyMessageDeletedEvent:
-            //    ownerPeerId = otherPartyMessageDeletedEvent.OwnerPeerId;
-            //    break;
-            //case OutboxEditedEvent outboxEditedEvent:
-            //    ownerPeerId = outboxEditedEvent.OwnerPeerId;
-            //    break;
-            //case InboxEditedEvent inboxEditedEvent:
-            //    ownerPeerId = inboxEditedEvent.InboxOwnerPeerId;
-            //    break;
-            //case HistoryClearedEvent historyClearedEvent:
-            //    ownerPeerId = historyClearedEvent.OwnerPeerId;
-            //    break;
-            //case ParticipantHistoryClearedEvent participantHistoryClearedEvent:
-            //    ownerPeerId = participantHistoryClearedEvent.OwnerPeerId;
-            //    break;
             case UpdatePinnedBoxPtsCompletedEvent updatePinnedBoxPtsCompletedEvent:
                 ownerPeerId = updatePinnedBoxPtsCompletedEvent.PeerId;
                 break;
-            //case EncryptedInboxCreatedEvent encryptedInboxCreatedEvent:
-            //    ownerPeerId = encryptedInboxCreatedEvent.SenderPeerId; // increment self qts
-            //    break;
-
             case ChannelCreatedEvent channelCreatedEvent:
                 ownerPeerId = channelCreatedEvent.ChannelId;
                 break;

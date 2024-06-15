@@ -20,7 +20,6 @@ public class LanguageManager : ILanguageManager
         {
             return;
         }
-
         var files = Directory.GetFiles(languageFilePath, "*");
         foreach (var file in files)
         {
@@ -107,8 +106,7 @@ public class LanguageManager : ILanguageManager
         {
             langDict.TryAdd(langPack, languageItems);
         }
-
-        return languageItems;
+		return languageItems;
     }
 
     private List<LangItem> GetXmlLanguagePacks(string fileName)

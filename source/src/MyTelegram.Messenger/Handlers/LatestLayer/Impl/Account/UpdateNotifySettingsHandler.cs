@@ -16,9 +16,41 @@ namespace MyTelegram.Handlers.Account;
 internal sealed class UpdateNotifySettingsHandler : RpcResultObjectHandler<MyTelegram.Schema.Account.RequestUpdateNotifySettings, IBool>,
     Account.IUpdateNotifySettingsHandler
 {
-    protected override Task<IBool> HandleCoreAsync(IRequestInput input,
-        MyTelegram.Schema.Account.RequestUpdateNotifySettings obj)
+    private readonly ICommandBus _commandBus;
+    private readonly IPeerHelper _peerHelper;
+
+    public UpdateNotifySettingsHandler(ICommandBus commandBus,
+        IPeerHelper peerHelper)
     {
+        _commandBus = commandBus;
+        _peerHelper = peerHelper;
+    }
+
+    protected override async Task<IBool> HandleCoreAsync(IRequestInput input,
+        RequestUpdateNotifySettings obj)
+    {
+        if (obj.Peer is TInputNotifyPeer inputNotifyPeer)
+        {
+            var userId = input.UserId;
+            var targetPeer = _peerHelper.GetPeer(inputNotifyPeer.Peer, userId);
+            var aggregateId = PeerNotifySettingsId.Create(userId, targetPeer.PeerType, targetPeer.PeerId);
+            var updatePeerNotifySettingsCommand = new UpdatePeerNotifySettingsCommand(aggregateId,
+                input.ToRequestInfo(), 
+                input.UserId,
+                targetPeer.PeerType,
+                targetPeer.PeerId,
+                obj.Settings.ShowPreviews,
+                obj.Settings.Silent,
+                obj.Settings.MuteUntil,
+                string.Empty
+                //obj.Settings.Sound
+            );
+            await _commandBus.PublishAsync(updatePeerNotifySettingsCommand, CancellationToken.None)
+         ;
+            return null!;
+            //return new TBoolTrue();
+        }
+
         throw new NotImplementedException();
     }
 }
