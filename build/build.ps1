@@ -1,14 +1,17 @@
-$version="0.20.420"
+$version=Get-Content "./version.txt"
+$date = Get-Date -Format "Mdd"
+$version = $version+$date
+
 $currentDir=(Get-Item .).FullName
 $parentFolder=(Get-Item $currentDir).Parent
-$outputRootFolder=Join-Path $parentFolder "out" $version 
+$outputRootFolder=Join-Path $parentFolder "out/local" $version 
 $sourceRootFolder=Join-Path $parentFolder "./source/src"
 
-$gatewayServerOutputFolder=Join-Path $outputRootFolder "gateway"
-$messengerCommandServerOutputFolder=Join-Path $outputRootFolder "messenger-command"
-$messengerQueryServerOutputFolder=Join-Path $outputRootFolder "messenger-query"
-$messengerGrpcServiceOutputFolder=Join-Path $outputRootFolder "messenger-grpc-service"
-$smsSenderOutputFolder=Join-Path $outputRootFolder "sms-sender"
+$gatewayOutputFolder=Join-Path $outputRootFolder "gateway"
+$messengerProCommandOutputFolder=Join-Path $outputRootFolder "command-server"
+$messengerProQueryOutputFolder=Join-Path $outputRootFolder "query-server"
+$messengerGrpcOutputFolder=Join-Path $outputRootFolder "messenger-grpc"
+$smsOutputFolder=Join-Path $outputRootFolder "sms"
 
 Write-Output "Current dir:$currentDir"
 Write-Output "OutputFolder is:$outputRootFolder"
@@ -20,19 +23,19 @@ function CreateFolderIfNotExists([System.String] $folder){
     }
 }
 
-function Build-Server([System.String]$srcFolder,[System.String] $outputFolder) {   
-	$sourceFolder = Join-Path $sourceRootFolder $srcFolder
+function Build-Server([System.String]$srcFolder,[System.String] $outputFolder) {
+    $sourceFolder=Join-Path $sourceRootFolder $srcFolder
     dotnet publish $sourceFolder -c Release -o $outputFolder
-    Get-ChildItem -Path $outputFolder *.pdb | ForEach-Object { Remove-Item -Path $_.FullName }
 }
 
 # Set-Location ../source/
 #dotnet restore ./MyTelegram.sln
-Build-Server "./MyTelegram.GatewayServer" $gatewayServerOutputFolder
-Build-Server "./MyTelegram.Messenger.CommandServer" $messengerCommandServerOutputFolder
-Build-Server "./MyTelegram.Messenger.QueryServer" $messengerQueryServerOutputFolder
-Build-Server "./MyTelegram.MessengerServer.GrpcService" $messengerGrpcServiceOutputFolder
-Build-Server "./MyTelegram.SmsSender" $smsSenderOutputFolder
+Build-Server "./MyTelegram.GatewayServer" $gatewayOutputFolder
+Build-Server "./MyTelegram.Messenger.CommandServer" $messengerProCommandOutputFolder
+Build-Server "./MyTelegram.Messenger.QueryServer" $messengerProQueryOutputFolder
+Build-Server "./MyTelegram.MessengerServer.GrpcService" $messengerGrpcOutputFolder
+Build-Server "./MyTelegram.SmsSender" $smsOutputFolder
+
 Set-Location $currentDir
 
 
