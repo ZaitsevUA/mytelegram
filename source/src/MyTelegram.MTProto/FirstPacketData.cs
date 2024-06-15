@@ -8,4 +8,5 @@ public class FirstPacketData
     public CtrState ReceiveState { get; set; } = default!;
     public byte[] SendKey { get; set; } = default!;
     public CtrState SendState { get; set; } = default!;
+    public int ProtocolBufferLength { get; set; }
 }

@@ -19,14 +19,8 @@ public class MtpMessageParser(
         Span<byte> firstPacket = stackalloc byte[length];
         buffer.Slice(0, length).CopyTo(firstPacket);
 
-        ProcessFirstUnencryptedPacket(firstPacket, d);
-
-        buffer = buffer.Length switch
-        {
-            UnObfuscationFirstPacketLength => buffer.Slice(4),
-            >= ConnectionStartPrefixSize => buffer.Slice(ConnectionStartPrefixSize),
-            _ => buffer
-        };
+        var firstPackData = ProcessFirstUnencryptedPacket(firstPacket, d);
+        buffer = buffer.Slice(firstPackData.ProtocolBufferLength);
     }
 
     public bool TryParse(ref ReadOnlySequence<byte> buffer,
@@ -196,7 +190,7 @@ public class MtpMessageParser(
         };
     }
 
-    public void ProcessFirstUnencryptedPacket(ReadOnlySpan<byte> buffer,
+    public FirstPacketData ProcessFirstUnencryptedPacket(ReadOnlySpan<byte> buffer,
         IClientData d)
     {
         var data = firstPacketParser.Parse(buffer);
@@ -208,6 +202,8 @@ public class MtpMessageParser(
         d.SendKey = data.SendKey;
         d.ReceiveKey = data.ReceiveKey;
         d.ReceiveCtrState = data.ReceiveState;
+
+        return data;
     }
 
     private bool TryParseData(ref ReadOnlySequence<byte> buffer,
