@@ -18,7 +18,7 @@ internal sealed class CheckUsernameHandler(IQueryProcessor queryProcessor)
     protected override async Task<IBool> HandleCoreAsync(IRequestInput input,
         MyTelegram.Schema.Account.RequestCheckUsername obj)
     {
-        var userNameReadModel = await queryProcessor.ProcessAsync(new GetUserNameByNameQuery(obj.Username));
+        var userNameReadModel = await queryProcessor.ProcessAsync(new GetUserNameByNameQuery(obj.Username.ToLower()));
         if (userNameReadModel == null)
         {
             return new TBoolTrue();

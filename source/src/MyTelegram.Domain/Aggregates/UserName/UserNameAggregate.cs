@@ -16,20 +16,21 @@ public class UserNameAggregate : SnapshotAggregateRoot<UserNameAggregate, UserNa
 
     public void Create(long userId, string userName)
     {
-        if (userName.Length > MyTelegramServerDomainConsts.UsernameMaxLength || userName.Length < MyTelegramServerDomainConsts.UsernameMinLength)
+        var lowerUserName = userName.ToLower();
+        if (lowerUserName.Length > MyTelegramServerDomainConsts.UsernameMaxLength || lowerUserName.Length < MyTelegramServerDomainConsts.UsernameMinLength)
         {
             RpcErrors.RpcErrors400.UsernameInvalid.ThrowRpcError();
         }
 
         if (IsNew)
         {
-            Emit(new UserNameCreatedEvent(userId, userName));
+            Emit(new UserNameCreatedEvent(userId, lowerUserName));
         }
         else
         {
             if (_state.IsDeleted)
             {
-                Emit(new UserNameCreatedEvent(userId, userName));
+                Emit(new UserNameCreatedEvent(userId, lowerUserName));
             }
             else
             {
@@ -42,9 +43,10 @@ public class UserNameAggregate : SnapshotAggregateRoot<UserNameAggregate, UserNa
         long selfUserId,
         PeerType peerType,
         long peerId,
-        string userName )
+        string userName)
     {
-         if (userName.Length > MyTelegramServerDomainConsts.UsernameMaxLength || userName.Length < MyTelegramServerDomainConsts.UsernameMinLength)
+        var lowerUserName = userName.ToLower();
+        if (lowerUserName.Length > MyTelegramServerDomainConsts.UsernameMaxLength || lowerUserName.Length < MyTelegramServerDomainConsts.UsernameMinLength)
         {
             //ThrowHelper.ThrowUserFriendlyException(RpcErrorMessages.UserNameInvalid);
             RpcErrors.RpcErrors400.UsernameInvalid.ThrowRpcError();
@@ -54,7 +56,7 @@ public class UserNameAggregate : SnapshotAggregateRoot<UserNameAggregate, UserNa
         {
             Emit(new SetUserNameSuccessEvent(requestInfo,
                 selfUserId,
-                userName,
+                lowerUserName,
                 peerType,
                 peerId));
         }
@@ -64,7 +66,7 @@ public class UserNameAggregate : SnapshotAggregateRoot<UserNameAggregate, UserNa
             {
                 Emit(new SetUserNameSuccessEvent(requestInfo,
                     selfUserId,
-                    userName,
+                    lowerUserName,
                     peerType,
                     peerId));
             }

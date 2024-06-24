@@ -49,7 +49,7 @@ internal sealed class CheckUsernameHandler : RpcResultObjectHandler<MyTelegram.S
         }
 
         var item = await _queryProcessor
-            .ProcessAsync(new GetUserNameByIdQuery(obj.Username));
+            .ProcessAsync(new GetUserNameByIdQuery(obj.Username.ToLower()));
         if (item == null)
         {
             return new TBoolTrue();
