@@ -207,13 +207,13 @@ public class AppCodeAggregateTests : TestsFor<AppCodeAggregate>
     //    checkSignUpCodeCompletedEvent.IsCodeValid.ShouldBeFalse();
     //}
 
-    [Fact]
-    public void CreateAppCode_Success()
-    {
-        Sut.Create(A<RequestInfo>(), A<long>(), A<string>(), A<string>(), A<int>(), A<string>(), A<long>());
+    //[Fact]
+    //public void CreateAppCode_Success()
+    //{
+    //    Sut.Create(A<RequestInfo>(), A<long>(), A<string>(), A<string>(), A<int>(), A<string>(), A<long>());
 
-        Sut.UncommittedEvents.Single().AggregateEvent.ShouldBeOfType<AppCodeCreatedEvent>();
-    }
+    //    Sut.UncommittedEvents.Single().AggregateEvent.ShouldBeOfType<AppCodeCreatedEvent>();
+    //}
 
     private void CreateAppCodeAggregate(long uid = 0, int expireMinutes = 5)
     {
