@@ -7,6 +7,7 @@ $parentFolder=(Get-Item $currentDir).Parent
 $outputRootFolder=Join-Path $parentFolder "out/local" $version 
 $sourceRootFolder=Join-Path $parentFolder "./source/src"
 
+$authServerOutputFolder=Join-Path $outputRootFolder "auth"
 $gatewayOutputFolder=Join-Path $outputRootFolder "gateway"
 $messengerProCommandOutputFolder=Join-Path $outputRootFolder "command-server"
 $messengerProQueryOutputFolder=Join-Path $outputRootFolder "query-server"
@@ -30,6 +31,7 @@ function Build-Server([System.String]$srcFolder,[System.String] $outputFolder) {
 
 # Set-Location ../source/
 #dotnet restore ./MyTelegram.sln
+Build-Server "./MyTelegram.AuthServer" $authServerOutputFolder
 Build-Server "./MyTelegram.GatewayServer" $gatewayOutputFolder
 Build-Server "./MyTelegram.Messenger.CommandServer" $messengerProCommandOutputFolder
 Build-Server "./MyTelegram.Messenger.QueryServer" $messengerProQueryOutputFolder

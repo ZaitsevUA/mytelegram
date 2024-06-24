@@ -1,7 +1,51 @@
-﻿namespace MyTelegram.Core;
+﻿using System.Numerics;
+
+namespace MyTelegram.Core;
 
 public static class Extensions
 {
+    public static byte[] ToBytes256(this byte[] data)
+    {
+        if (data.Length == 256)
+        {
+            return data;
+        }
+
+        if (data.Length > 256)
+        {
+            throw new ArgumentException("Data length must be less than 256");
+        }
+
+        var newData = new byte[256];
+        data.CopyTo(newData, 256 - data.Length);
+
+        return newData;
+    }
+
+    public static BigInteger ToBigEndianBigInteger(this byte[] data)
+    {
+        return new BigInteger(data, true, true);
+    }
+
+    public static string ToBase64Url(this Span<byte> buffer)
+    {
+        return Convert.ToBase64String(buffer).ToBase64Url();
+    }
+
+
+    public static string ToBase64Url(this byte[] buffer)
+    {
+        return Convert.ToBase64String(buffer).ToBase64Url();
+    }
+
+    public static string ToBase64Url(this string base64Data)
+    {
+        return base64Data
+            .Replace("=", string.Empty)
+            .Replace("/", "_")
+            .Replace("+", "-");
+    }
+
     private static byte[] HexToBytes(string hex)
     {
         var text = hex.Replace(" ", string.Empty).Replace("\r\n", string.Empty).Replace("\n", string.Empty);
@@ -28,6 +72,17 @@ public static class Extensions
     {
         return HexToBytes(hex);
     }
+
+    public static string RemoveRsaKeyFormat(this string key)
+    {
+        return key
+            .Replace("-----BEGIN RSA PRIVATE KEY-----", "").Replace("-----END RSA PRIVATE KEY-----", "")
+            .Replace("-----BEGIN RSA PUBLIC KEY-----", "").Replace("-----END RSA PUBLIC KEY-----", "")
+            .Replace("-----BEGIN PRIVATE KEY-----", "").Replace("-----END PRIVATE KEY-----", "")
+            .Replace("-----BEGIN PUBLIC KEY-----", "").Replace("-----END PUBLIC KEY-----", "")
+            .Replace(Environment.NewLine, "");
+    }
+
 
     public static string ToHexString(this byte[] buffer)
     {

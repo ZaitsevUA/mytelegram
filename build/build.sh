@@ -8,6 +8,7 @@ parentFolder=$(dirname "$currentDir")
 outputRootFolder="$parentFolder/out/local/$version"
 sourceRootFolder="$parentFolder/source/src"
 
+authServerOutputFolder="$outputRootFolder/auth"
 gatewayOutputFolder="$outputRootFolder/gateway"
 messengerProCommandOutputFolder="$outputRootFolder/command-server"
 messengerProQueryOutputFolder="$outputRootFolder/query-server"
@@ -32,6 +33,7 @@ Build-Server() {
     dotnet publish "$sourceFolder" -c Release -o "$outputFolder"
 }
 
+Build-Server "./MyTelegram.AuthServer" "$authServerOutputFolder"
 Build-Server "./MyTelegram.GatewayServer" "$gatewayOutputFolder"
 Build-Server "./MyTelegram.Messenger.CommandServer" "$messengerProCommandOutputFolder"
 Build-Server "./MyTelegram.Messenger.QueryServer" "$messengerProQueryOutputFolder"

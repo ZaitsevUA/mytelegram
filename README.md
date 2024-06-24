@@ -38,6 +38,7 @@ build\docker\2.build-messenger-query-server.sh
 build\docker\3.build-messenger-server-grpcservice.sh
 build\docker\4.build-sms-sender.sh
 build\docker\5.build-gateway-server.sh
+build\docker\6.build-auth-server.sh
 ```
 
 ## Run MyTelegram server

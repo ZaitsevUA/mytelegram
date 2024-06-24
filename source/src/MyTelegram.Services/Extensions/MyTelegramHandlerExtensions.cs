@@ -31,6 +31,8 @@ namespace MyTelegram.Services.Extensions
             services.AddSystemTextJson();
 
             services.AddSingleton(typeof(ICacheHelper<,>),typeof(CacheHelper<,>));
+            services.AddSingleton<IMtpHelper, MtpHelper>();
+
             return services;
         }
 
