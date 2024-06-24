@@ -8,6 +8,7 @@ public class CreateChannelSagaState : AggregateState<CreateChannelSaga, CreateCh
     public long RandomId { get; private set; }
     public bool MigratedFromChat { get; private set; }
     public bool AutoCreateFromChat { get; private set; }
+    public bool Broadcast { get; private set; }
     public void Apply(CreateChannelSagaStartedEvent aggregateEvent)
     {
         RequestInfo = aggregateEvent.RequestInfo;
@@ -15,5 +16,6 @@ public class CreateChannelSagaState : AggregateState<CreateChannelSaga, CreateCh
         RandomId = aggregateEvent.RandomId;
         MigratedFromChat = aggregateEvent.MigratedFromChat;
         AutoCreateFromChat = aggregateEvent.AutoCreateFromChat;
+        Broadcast = aggregateEvent.Broadcast;
     }
 }

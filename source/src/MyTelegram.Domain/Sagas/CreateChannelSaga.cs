@@ -45,7 +45,8 @@ public class CreateChannelSaga :
             subType,
             null,
             _state.MessageActionData,
-            MessageActionType.ChannelCreate
+            MessageActionType.ChannelCreate,
+            Post: _state.Broadcast
         );
         var command = new CreateOutboxMessageCommand(aggregateId, _state.RequestInfo, messageItem);
 
@@ -59,6 +60,7 @@ public class CreateChannelSaga :
         CancellationToken cancellationToken)
     {
         Emit(new CreateChannelSagaStartedEvent(domainEvent.AggregateEvent.RequestInfo,
+            domainEvent.AggregateEvent.Broadcast,
             domainEvent.AggregateEvent.MessageActionData, domainEvent.AggregateEvent.RandomId,
             domainEvent.AggregateEvent.MigratedFromChat,
             domainEvent.AggregateEvent.AutoCreateFromChat
