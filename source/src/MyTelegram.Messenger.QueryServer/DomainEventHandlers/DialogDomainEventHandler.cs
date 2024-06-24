@@ -1,4 +1,5 @@
 ﻿using MyTelegram.Messenger.Services.Caching;
+using MyTelegram.Services.Extensions;
 
 namespace MyTelegram.Messenger.QueryServer.DomainEventHandlers;
 
@@ -17,7 +18,8 @@ public class DialogDomainEventHandler(
         ISubscribeSynchronousTo<DialogAggregate, DialogId, ChannelHistoryClearedEvent>,
         ISubscribeSynchronousTo<DialogAggregate, DialogId, DialogPinChangedEvent>,
         ISubscribeSynchronousTo<DialogFilterAggregate, DialogFilterId, DialogFilterUpdatedEvent>,
-        ISubscribeSynchronousTo<DialogFilterAggregate, DialogFilterId, DialogFilterDeletedEvent>
+        ISubscribeSynchronousTo<DialogFilterAggregate, DialogFilterId, DialogFilterDeletedEvent>,
+        ISubscribeSynchronousTo<EditPeerFoldersSaga, EditPeerFoldersSagaId, EditPeerFoldersCompletedSagaEvent>
 
 {
     public async Task HandleAsync(IDomainEvent<DialogAggregate, DialogId, ChannelHistoryClearedEvent> domainEvent,
@@ -75,5 +77,30 @@ public class DialogDomainEventHandler(
 
         await PushMessageToPeerAsync(new Peer(PeerType.User, requestInfo.UserId), updates, requestInfo.AuthKeyId)
      ;
+    }
+    public Task HandleAsync(IDomainEvent<EditPeerFoldersSaga, EditPeerFoldersSagaId, EditPeerFoldersCompletedSagaEvent> domainEvent, CancellationToken cancellationToken)
+    {
+        var folderPeers = new TVector<IFolderPeer>(domainEvent.AggregateEvent.FolderPeers.Select(p => new TFolderPeer
+        {
+            FolderId = p.FolderId,
+            Peer = p.Peer.ToPeer()
+        }));
+
+        var updateFolderPeers = new TUpdateFolderPeers
+        {
+            FolderPeers = folderPeers,
+            Pts = domainEvent.AggregateEvent.Pts,
+            PtsCount = domainEvent.AggregateEvent.PtsCount
+        };
+
+        var updates = new TUpdates
+        {
+            Updates = new TVector<IUpdate>(updateFolderPeers),
+            Users = [],
+            Chats = [],
+            Date = DateTime.UtcNow.ToTimestamp(),
+        };
+
+        return SendRpcMessageToClientAsync(domainEvent.AggregateEvent.RequestInfo, updates);
     }
 }

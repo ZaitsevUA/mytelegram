@@ -22,7 +22,8 @@ public class DialogState : AggregateState<DialogAggregate, DialogId, DialogState
     IApply<ReadInboxMaxIdUpdatedEvent>,
     IApply<ReadOutboxMaxIdUpdatedEvent>,
     IApply<TopMessageIdUpdatedEvent>,
-    IApply<DialogUpdatedEvent>
+    IApply<DialogUpdatedEvent>,
+    IApply<DialogFolderUpdatedEvent>
 {
     public int ChannelHistoryMinId { get; private set; }
 
@@ -36,6 +37,7 @@ public class DialogState : AggregateState<DialogAggregate, DialogId, DialogState
     public int UnreadCount { get; private set; }
     public bool UnreadMark { get; private set; }
     public int UnreadMentionsCount { get; private set; }
+    public int? FolderId { get; private set; }
 
     public void Apply(ChannelHistoryClearedEvent aggregateEvent)
     {
@@ -177,6 +179,7 @@ public class DialogState : AggregateState<DialogAggregate, DialogId, DialogState
         ChannelHistoryMinId = snapshot.ChannelHistoryMinId;
         Draft = snapshot.Draft;
         UnreadMentionsCount= snapshot.UnreadMentionsCount;
+		FolderId = snapshot.FolderId;
     }
 
     public void Apply(DialogUpdatedEvent aggregateEvent)
@@ -184,5 +187,10 @@ public class DialogState : AggregateState<DialogAggregate, DialogId, DialogState
         TopMessage = aggregateEvent.TopMessageId;
         OwnerId = aggregateEvent.OwnerUserId;
         ToPeer=aggregateEvent.ToPeer;
+    }
+
+    public void Apply(DialogFolderUpdatedEvent aggregateEvent)
+    {
+        FolderId = aggregateEvent.FolderId;
     }
 }

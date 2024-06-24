@@ -11,12 +11,16 @@ namespace MyTelegram.Handlers.Folders;
 /// 400 FOLDER_ID_INVALID Invalid folder ID.
 /// See <a href="https://corefork.telegram.org/method/folders.editPeerFolders" />
 ///</summary>
-internal sealed class EditPeerFoldersHandler : RpcResultObjectHandler<MyTelegram.Schema.Folders.RequestEditPeerFolders, MyTelegram.Schema.IUpdates>,
+internal sealed class EditPeerFoldersHandler(ICommandBus commandBus) : RpcResultObjectHandler<MyTelegram.Schema.Folders.RequestEditPeerFolders, MyTelegram.Schema.IUpdates>,
     Folders.IEditPeerFoldersHandler
 {
-    protected override Task<MyTelegram.Schema.IUpdates> HandleCoreAsync(IRequestInput input,
+    protected override async  Task<MyTelegram.Schema.IUpdates> HandleCoreAsync(IRequestInput input,
         MyTelegram.Schema.Folders.RequestEditPeerFolders obj)
     {
-        throw new NotImplementedException();
+        var command = new StartEditPeerFoldersCommand(TempId.New, input.ToRequestInfo(), obj.FolderPeers);
+
+        await commandBus.PublishAsync(command);
+
+        return null!;
     }
 }

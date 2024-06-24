@@ -34,22 +34,6 @@ internal sealed class GetDialogsHandler : RpcResultObjectHandler<MyTelegram.Sche
     protected override async Task<IDialogs> HandleCoreAsync(IRequestInput input,
         RequestGetDialogs obj)
     {
-        // Archived Folders
-        if (obj.FolderId == 1)
-        {
-            return new TDialogs
-            {
-                Chats = new(),
-                Dialogs = new(),
-                Messages = new(),
-                Users = new()
-            };
-            //return new TDialogsNotModified
-            //{
-            //    Count = 0,
-            //};
-        }
-
         await _accessHashHelper.CheckAccessHashAsync(obj.OffsetPeer);
 
         var userId = input.UserId;

@@ -9,6 +9,11 @@ public class DialogAggregate : MyInMemorySnapshotAggregateRoot<DialogAggregate, 
         Register(_state);
     }
 
+    public void UpdateDialogFolder(RequestInfo requestInfo, int? folder)
+    {
+        Specs.AggregateIsCreated.ThrowDomainErrorIfNotSatisfied(this);
+        Emit(new DialogFolderUpdatedEvent(requestInfo, _state.OwnerId, _state.ToPeer, folder));
+    }
     public void UpdateDialog(long ownerUserId, Peer toPeer, int topMessageId, int pts)
     {
         Emit(new DialogUpdatedEvent(ownerUserId, toPeer, topMessageId, pts));
@@ -263,7 +268,8 @@ public class DialogAggregate : MyInMemorySnapshotAggregateRoot<DialogAggregate, 
             _state.Pinned,
             _state.ChannelHistoryMinId,
             _state.Draft,
-            _state.UnreadMentionsCount
+            _state.UnreadMentionsCount,
+            _state.FolderId
         ));
     }
 

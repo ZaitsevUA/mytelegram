@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 
 namespace MyTelegram.Messenger.NativeAot;
 
-// Generation time:2024-06-14 05:04:55Z
+// Generation time:2024-06-24 06:40:41Z
 // MyTelegram.Domain
 [JsonSerializable(typeof(MyTelegram.Domain.Aggregates.AppCode.AppCodeSnapshot))]
 [JsonSerializable(typeof(MyTelegram.Domain.Aggregates.Channel.ChannelMemberSnapshot))]
@@ -101,6 +101,7 @@ namespace MyTelegram.Messenger.NativeAot;
 [JsonSerializable(typeof(MyTelegram.Domain.Events.Dialog.DialogCreatedEvent))]
 [JsonSerializable(typeof(MyTelegram.Domain.Events.Dialog.DialogFilterDeletedEvent))]
 [JsonSerializable(typeof(MyTelegram.Domain.Events.Dialog.DialogFilterUpdatedEvent))]
+[JsonSerializable(typeof(MyTelegram.Domain.Events.Dialog.DialogFolderUpdatedEvent))]
 [JsonSerializable(typeof(MyTelegram.Domain.Events.Dialog.DialogMsgIdPinnedEvent))]
 [JsonSerializable(typeof(MyTelegram.Domain.Events.Dialog.DialogPinChangedEvent))]
 [JsonSerializable(typeof(MyTelegram.Domain.Events.Dialog.DialogUnreadMarkChangedEvent))]
@@ -179,6 +180,7 @@ namespace MyTelegram.Messenger.NativeAot;
 [JsonSerializable(typeof(MyTelegram.Domain.Events.Temp.DeleteMessagesStartedEvent))]
 [JsonSerializable(typeof(MyTelegram.Domain.Events.Temp.DeleteParticipantHistoryStartedEvent))]
 [JsonSerializable(typeof(MyTelegram.Domain.Events.Temp.DeleteReplyMessagesStartedEvent))]
+[JsonSerializable(typeof(MyTelegram.Domain.Events.Temp.EditPeerFoldersStartedEvent))]
 [JsonSerializable(typeof(MyTelegram.Domain.Events.Temp.ForwardMessagesStartedEvent))]
 [JsonSerializable(typeof(MyTelegram.Domain.Events.Temp.PinForwardedChannelMessageStartedEvent))]
 [JsonSerializable(typeof(MyTelegram.Domain.Events.Temp.SetChannelDiscussionGroupStartedEvent))]
@@ -217,6 +219,10 @@ namespace MyTelegram.Messenger.NativeAot;
 [JsonSerializable(typeof(MyTelegram.Domain.Sagas.DeleteSelfHistoryCompletedEvent4))]
 [JsonSerializable(typeof(MyTelegram.Domain.Sagas.DeleteSelfMessagesCompletedEvent4))]
 [JsonSerializable(typeof(MyTelegram.Domain.Sagas.DiscussionGroupUpdatedSagaEvent))]
+[JsonSerializable(typeof(MyTelegram.Domain.Sagas.EditPeerFoldersCompletedSagaEvent))]
+[JsonSerializable(typeof(MyTelegram.Domain.Sagas.EditPeerFoldersPeerFolderUpdatedSagaEvent))]
+[JsonSerializable(typeof(MyTelegram.Domain.Sagas.EditPeerFoldersPtsIncrementedSagaEvent))]
+[JsonSerializable(typeof(MyTelegram.Domain.Sagas.EditPeerFoldersStartedSagaEvent))]
 [JsonSerializable(typeof(MyTelegram.Domain.Sagas.MessageDeletedSagaEvent))]
 [JsonSerializable(typeof(MyTelegram.Domain.Sagas.MessagePinnedUpdatedSagaEvent))]
 [JsonSerializable(typeof(MyTelegram.Domain.Sagas.MessageReplyCreatedEvent))]

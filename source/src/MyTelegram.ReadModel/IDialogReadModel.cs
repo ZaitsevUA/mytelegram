@@ -30,4 +30,5 @@ public interface IDialogReadModel : IReadModel
     int? TtlPeriod { get; }
     int UnreadMentionsCount { get; }
     int UnreadReactionsCount { get; }
+    int? FolderId { get; }
 }

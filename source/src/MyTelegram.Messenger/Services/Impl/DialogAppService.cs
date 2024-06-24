@@ -34,7 +34,9 @@ public class DialogAppService(
             offsetDate,
             offset,
             input.Limit,
-            input.PeerIdList);
+            input.PeerIdList,
+            input.FolderId
+            );
         var dialogList = await queryProcessor.ProcessAsync(query);
         if (input.Pinned == true)
         {

@@ -104,9 +104,12 @@ public record GetDialogsQuery(
     DateTime? OffsetDate,
     OffsetInfo Offset,
     int Limit,
-    List<long>? PeerIdList)
+    List<long>? PeerIdList,
+    int? FolderId
+    )
     : IQuery<IReadOnlyCollection<IDialogReadModel>>;
 
+public record GetDialogsByFolderIdQuery(long OwnerUserId, int FolderId) : IQuery<IReadOnlyCollection<Peer>>;
 public record GetDiscussionMessageQuery(
     bool GetDiscussionMessageFromPostChannel,
     long SavedFromPeerId,
