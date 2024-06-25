@@ -60,10 +60,13 @@ public class MessageConverterLatest(
                 //    fromId = null;
                 //}
 
-                if (item.ToPeer.PeerType == PeerType.Channel && item.Post)
+                    if (item.ToPeer.PeerType == PeerType.Channel)
                 {
+                        if (item.Post || item.MessageSubType == MessageSubType.CreateChannel)
+                        {
                     fromId = null;
                 }
+                    }
 
                 var m = new TMessageService
                 {
@@ -217,8 +220,12 @@ public class MessageConverterLatest(
                     var fromId = peerHelper.ToPeer(PeerType.User, readModel.SenderPeerId);
                     if (readModel is { ToPeerType: PeerType.Channel, Post: true } &&
                         readModel.MessageActionType != MessageActionType.ChatAddUser)
+                    if (readModel.ToPeerType == PeerType.Channel)
                     {
-                        fromId = null;
+                        if (readModel.Post || readModel.MessageActionType == MessageActionType.ChannelCreate)
+                        {
+                            fromId = null;
+                        }
                     }
 
                     var m = new TMessageService
