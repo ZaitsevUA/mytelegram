@@ -635,7 +635,7 @@ public class MessageDomainEventHandler(
     {
         var updates = updatesLayeredService.Converter.ToUpdatePinnedMessageUpdates(aggregateEvent);
 
-        await PushUpdatesToPeerAsync(aggregateEvent.MessageItem.OwnerPeer,
+        return PushUpdatesToPeerAsync(aggregateEvent.MessageItem.OwnerPeer,
             updates,
             pts: aggregateEvent.Pts);
     }
@@ -654,7 +654,7 @@ public class MessageDomainEventHandler(
             var channelUpdates = updatesLayeredService.Converter.ToUpdatePinnedMessageServiceUpdates(aggregateEvent);
             if (channelUpdates is TUpdates tUpdates)
             {
-                var user = await GetUserAsync(aggregateEvent.RequestInfo.UserId, 0);
+                var user = await GetUserAsync(aggregateEvent.RequestInfo.UserId);
                 tUpdates.Users.Add(user);
             }
 
