@@ -48,31 +48,48 @@ namespace MyTelegram.Handlers.Messages;
 /// 400 YOU_BLOCKED_USER You blocked this user.
 /// See <a href="https://corefork.telegram.org/method/messages.forwardMessages" />
 ///</summary>
-internal sealed class ForwardMessagesHandler : RpcResultObjectHandler<MyTelegram.Schema.Messages.RequestForwardMessages, MyTelegram.Schema.IUpdates>,
-    Messages.IForwardMessagesHandler
+internal sealed class ForwardMessagesHandler(
+    ICommandBus commandBus,
+    IPeerHelper peerHelper,
+    IChannelAdminRightsChecker channelAdminRightsChecker,
+    IQueryProcessor queryProcessor,
+    IMessageAppService messageAppService,
+    IAccessHashHelper accessHashHelper)
+    : RpcResultObjectHandler<MyTelegram.Schema.Messages.RequestForwardMessages, MyTelegram.Schema.IUpdates>,
+        Messages.IForwardMessagesHandler
 {
-    private readonly ICommandBus _commandBus;
-    private readonly IPeerHelper _peerHelper;
-    private readonly IAccessHashHelper _accessHashHelper;
-    public ForwardMessagesHandler(ICommandBus commandBus,
-        IPeerHelper peerHelper,
-        IAccessHashHelper accessHashHelper)
-    {
-        _commandBus = commandBus;
-        _peerHelper = peerHelper;
-        _accessHashHelper = accessHashHelper;
-    }
-
     protected override async Task<IUpdates> HandleCoreAsync(IRequestInput input,
         RequestForwardMessages obj)
     {
-        await _accessHashHelper.CheckAccessHashAsync(obj.FromPeer);
-        await _accessHashHelper.CheckAccessHashAsync(obj.ToPeer);
-        await _accessHashHelper.CheckAccessHashAsync(obj.SendAs);
+        await accessHashHelper.CheckAccessHashAsync(obj.FromPeer);
+        await accessHashHelper.CheckAccessHashAsync(obj.ToPeer);
+        await accessHashHelper.CheckAccessHashAsync(obj.SendAs);
 
-        var fromPeer = _peerHelper.GetPeer(obj.FromPeer, input.UserId);
-        var toPeer = _peerHelper.GetPeer(obj.ToPeer, input.UserId);
-        var sendAs = _peerHelper.GetPeer(obj.SendAs);
+        var fromPeer = peerHelper.GetPeer(obj.FromPeer, input.UserId);
+        var toPeer = peerHelper.GetPeer(obj.ToPeer, input.UserId);
+        var sendAs = peerHelper.GetPeer(obj.SendAs);
+        var post = false;
+        if (toPeer.PeerType == PeerType.Channel)
+        {
+            await messageAppService.CheckSendAsync(input.UserId, toPeer, sendAs);
+            //await channelAdminRightsChecker.CheckAdminRightAsync(toPeer.PeerId, input.UserId,
+            //    rights => rights.AdminRights.PostMessages, RpcErrors.RpcErrors400.ChatAdminRequired);
+
+            var channelReadModel = await queryProcessor.ProcessAsync(new GetChannelByIdQuery(toPeer.PeerId));
+            post = channelReadModel!.Broadcast;
+
+            var admin = channelReadModel.AdminList.FirstOrDefault(p => p.UserId == input.UserId);
+            if (admin == null || !admin.AdminRights.PostMessages)
+            {
+                RpcErrors.RpcErrors403.ChatWriteForbidden.ThrowRpcError();
+            }
+
+            var bannedDefaultRights = channelReadModel.DefaultBannedRights ?? ChatBannedRights.CreateDefaultBannedRights();
+            if (bannedDefaultRights.SendMessages)
+            {
+                RpcErrors.RpcErrors403.ChatWriteForbidden.ThrowRpcError();
+            }
+        }
 
         var command = new StartForwardMessagesCommand(TempId.New,
             input.ToRequestInfo(),
@@ -88,9 +105,10 @@ internal sealed class ForwardMessagesHandler : RpcResultObjectHandler<MyTelegram
             obj.RandomId.ToList(),
             obj.ScheduleDate,
             sendAs,
-            false
+            false,
+            post
             );
-        await _commandBus.PublishAsync(command);
+        await commandBus.PublishAsync(command);
         return null!;
     }
 }

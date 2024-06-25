@@ -30,7 +30,8 @@ public class
             MessageSubType.EditChannelPhoto,
             null,
             domainEvent.AggregateEvent.MessageActionData,
-            MessageActionType.ChatEditPhoto
+            MessageActionType.ChatEditPhoto,
+            Post: domainEvent.AggregateEvent.Broadcast
         );
         var command = new CreateOutboxMessageCommand(aggregateId,
             domainEvent.AggregateEvent.RequestInfo,

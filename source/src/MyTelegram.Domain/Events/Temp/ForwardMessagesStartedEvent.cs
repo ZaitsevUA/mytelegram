@@ -14,7 +14,9 @@ public class ForwardMessagesStartedEvent(
     List<long> randomIds,
     int? scheduleDate,
     Peer? sendAs,
-    bool forwardFromLinkedChannel)
+    bool forwardFromLinkedChannel,
+    bool post
+    )
     : RequestAggregateEvent2<TempAggregate, TempId>(requestInfo)
 {
     public bool Silent { get; } = silent;
@@ -30,4 +32,5 @@ public class ForwardMessagesStartedEvent(
     public int? ScheduleDate { get; } = scheduleDate;
     public Peer? SendAs { get; } = sendAs;
     public bool ForwardFromLinkedChannel { get; } = forwardFromLinkedChannel;
+    public bool Post { get; } = post;
 }

@@ -12,7 +12,7 @@ public class MessageAggregate : SnapshotAggregateRoot<MessageAggregate, MessageI
     public void UpdateMessagePinned(RequestInfo requestInfo, bool pinned)
     {
         Specs.AggregateIsCreated.ThrowDomainErrorIfNotSatisfied(this);
-        Emit(new MessagePinnedUpdatedEvent(requestInfo, _state.MessageItem.OwnerPeer.PeerId, _state.MessageItem.MessageId, pinned, _state.MessageItem.ToPeer));
+        Emit(new MessagePinnedUpdatedEvent(requestInfo, _state.MessageItem.OwnerPeer.PeerId, _state.MessageItem.MessageId, pinned, _state.MessageItem.ToPeer, _state.MessageItem.Post));
     }
 
     public void UnpinMessage(RequestInfo requestInfo)
@@ -371,7 +371,8 @@ public class MessageAggregate : SnapshotAggregateRoot<MessageAggregate, MessageI
             item.SenderPeer.PeerId,
             _state.SenderMessageId,
             item.ToPeer,
-            _state.Pts
+            _state.Pts,
+            _state.MessageItem.Post
         ));
     }
 

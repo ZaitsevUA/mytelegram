@@ -7,7 +7,7 @@ public class StartForwardMessagesCommandHandler : CommandHandler<TempAggregate, 
         aggregate.StartForwardMessages(command.RequestInfo, command.Silent, command.Background, command.WithMyScore,
             command.DropAuthor, command.DropMediaCaptions, command.NoForwards, command.FromPeer, command.ToPeer,
             command.MessageIds, command.RandomIds, command.ScheduleDate, command.SendAs,
-            command.ForwardFromLinkedChannel);
+            command.ForwardFromLinkedChannel, command.Post);
         return Task.CompletedTask;
     }
 }

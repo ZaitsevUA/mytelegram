@@ -44,7 +44,7 @@ public class MessageDomainEventHandler(
         return PushUpdatesToPeerAsync(toPeer,
             updates,
             pts: domainEvent.AggregateEvent.Pts,
-            updatesType: UpdatesType.NewMessages,
+            updatesType: UpdatesType.Updates,
             layeredData: layeredData
         );
     }
@@ -69,7 +69,7 @@ public class MessageDomainEventHandler(
             updates,
             domainEvent.AggregateEvent.RequestInfo.AuthKeyId,
             pts: domainEvent.AggregateEvent.Pts,
-            updatesType: UpdatesType.NewMessages,
+            updatesType: UpdatesType.Updates,
             layeredData: layeredData);
 
         // Channel message shares the same message,edit out message should notify channel member
@@ -264,7 +264,6 @@ public class MessageDomainEventHandler(
         if (chatEventCacheHelper.TryRemoveStartInviteToChannelEvent(aggregateEvent.MessageItem.ToPeer.PeerId,
                 out var startInviteToChannelEvent))
         {
-            var channelId = aggregateEvent.MessageItem.ToPeer.PeerId;
             var item = aggregateEvent.MessageItem;
             var channelReadModel = await queryProcessor
                 .ProcessAsync(new GetChannelByIdQuery(item.ToPeer.PeerId));
@@ -281,49 +280,29 @@ public class MessageDomainEventHandler(
                 MissingInvitees = new TVector<IMissingInvitee>()
             };
 
-            var layeredData = updatesLayeredService.GetLayeredData(c =>
-                c.ToInviteToChannelUpdates(aggregateEvent, startInviteToChannelEvent, channelReadModel!, true));
-
             await SendRpcMessageToClientAsync(aggregateEvent.RequestInfo,
                 invitedUsers,
                 item.SenderPeer.PeerId);
-            // notify self other devices
-            await PushUpdatesToChannelSingleMemberAsync(
-                channelId,
-                item.SenderPeer,
-                updates,
-                aggregateEvent.RequestInfo.AuthKeyId,
-                onlySendToUserId: aggregateEvent.RequestInfo.UserId,
-                layeredData: layeredData);
 
             var updatesForChannelMember = updatesLayeredService.Converter.ToInviteToChannelUpdates(aggregateEvent,
                 startInviteToChannelEvent,
                 channelReadModel!,
-                false);
-            var layeredUpdatesForChannelMember = updatesLayeredService.GetLayeredData(c =>
-                c.ToInviteToChannelUpdates(aggregateEvent,
-                    startInviteToChannelEvent,
-                    channelReadModel!,
-                    false));
+                false
+            );
 
-            foreach (var channelMemberUserId in startInviteToChannelEvent.MemberUidList)
+            foreach (var memberUserId in startInviteToChannelEvent.MemberUidList)
             {
-                await PushUpdatesToChannelSingleMemberAsync(channelId, new Peer(PeerType.User, channelMemberUserId),
-                    updatesForChannelMember,
-                    onlySendToUserId: channelMemberUserId,
-                    pts: aggregateEvent.Pts,
-                    layeredData: layeredUpdatesForChannelMember
-                );
+                await PushUpdatesToChannelSingleMemberAsync(item.ToPeer.PeerId, memberUserId.ToUserPeer(),
+                    updatesForChannelMember);
             }
 
-            // notify channel members
             await PushUpdatesToChannelMemberAsync(
                 item.SenderPeer,
                 item.ToPeer,
                 updatesForChannelMember,
                 excludeUserId: item.SenderPeer.PeerId,
-                pts: aggregateEvent.Pts,
-                layeredData: layeredUpdatesForChannelMember);
+                pts: aggregateEvent.Pts);
+
         }
     }
 
@@ -581,7 +560,7 @@ public class MessageDomainEventHandler(
                 globalSeqNo)
             ;
 
-        if (aggregateEvent.RequestInfo.ReqMsgId == 0 || item.MessageSubType == MessageSubType.ForwardMessage)
+        if (aggregateEvent.RequestInfo.ReqMsgId == 0 /*|| item.MessageSubType == MessageSubType.ForwardMessage*/)
         {
             await PushUpdatesToPeerAsync(new Peer(PeerType.User, aggregateEvent.RequestInfo.UserId),
                 selfUpdates,
@@ -655,37 +634,27 @@ public class MessageDomainEventHandler(
     private Task HandleUpdatePinnedMessageAsync(ReceiveInboxMessageCompletedEvent aggregateEvent)
     {
         var updates = updatesLayeredService.Converter.ToUpdatePinnedMessageUpdates(aggregateEvent);
-        var layeredData = updatesLayeredService.GetLayeredData(c => c.ToUpdatePinnedMessageUpdates(aggregateEvent));
-        return PushUpdatesToPeerAsync(aggregateEvent.MessageItem.OwnerPeer,
+
+        await PushUpdatesToPeerAsync(aggregateEvent.MessageItem.OwnerPeer,
             updates,
-            pts: aggregateEvent.Pts,
-            layeredData: layeredData);
+            pts: aggregateEvent.Pts);
     }
 
     private async Task HandleUpdatePinnedMessageAsync(SendOutboxMessageCompletedEvent aggregateEvent)
     {
         var updates = updatesLayeredService.GetConverter(aggregateEvent.RequestInfo.Layer)
             .ToUpdatePinnedMessageUpdates(aggregateEvent);
-        await SendRpcMessageToClientAsync(aggregateEvent.RequestInfo,
-            updates,
-            aggregateEvent.MessageItem.SenderPeer.PeerId,
-            aggregateEvent.Pts,
-            aggregateEvent.MessageItem.ToPeer.PeerType
-        );
 
-        var layeredUpdates = updatesLayeredService.GetLayeredData(c => c.ToUpdatePinnedMessageUpdates(aggregateEvent));
         await PushUpdatesToPeerAsync(aggregateEvent.MessageItem.SenderPeer,
             updates,
-            aggregateEvent.RequestInfo.AuthKeyId,
-            pts: aggregateEvent.Pts,
-            layeredData: layeredUpdates);
+            pts: aggregateEvent.Pts);
 
         if (aggregateEvent.MessageItem.ToPeer.PeerType == PeerType.Channel)
         {
             var channelUpdates = updatesLayeredService.Converter.ToUpdatePinnedMessageServiceUpdates(aggregateEvent);
             if (channelUpdates is TUpdates tUpdates)
             {
-                var user = await GetUserAsync(aggregateEvent.RequestInfo.UserId);
+                var user = await GetUserAsync(aggregateEvent.RequestInfo.UserId, 0);
                 tUpdates.Users.Add(user);
             }
 

@@ -74,7 +74,7 @@ public class UpdateMessagePinDomainEventHandler(
         }
 
         await PushUpdatesToPeerAsync(toPeer, updates,
-            domainEvent.AggregateEvent.RequestInfo.PermAuthKeyId, domainEvent.AggregateEvent.Pts);
+            domainEvent.AggregateEvent.RequestInfo.PermAuthKeyId, pts: domainEvent.AggregateEvent.Pts);
     }
 
     public Task HandleAsync(IDomainEvent<UnpinAllMessagesSaga, UnpinAllMessagesSagaId, UnpinAllParticipantMessagesCompletedSagaEvent> domainEvent, CancellationToken cancellationToken)

@@ -3,6 +3,7 @@
 public class ChannelPhotoEditedEvent(
     RequestInfo requestInfo,
     long channelId,
+    bool broadcast,
     long? photoId,
     string messageActionData,
     long randomId)
@@ -12,6 +13,7 @@ public class ChannelPhotoEditedEvent(
     //Photo = photo;
 
     public long ChannelId { get; } = channelId;
+    public bool Broadcast { get; } = broadcast;
     public long? PhotoId { get; } = photoId;
 
     public string MessageActionData { get; } = messageActionData;

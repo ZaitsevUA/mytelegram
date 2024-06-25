@@ -12,7 +12,9 @@ public class OutboxMessagePinnedUpdatedEvent(
     long senderPeerId,
     int senderMessageId,
     Peer toPeer,
-    int pts)
+    int pts,
+    bool post
+    )
     : RequestAggregateEvent2<MessageAggregate, MessageId>(requestInfo)
 {
     //long channelId,
@@ -29,6 +31,7 @@ public class OutboxMessagePinnedUpdatedEvent(
     public bool Pinned { get; } = pinned;
     public bool PmOneSide { get; } = pmOneSide;
     public int Pts { get; } = pts;
+    public bool Post { get; } = post;
     public int SenderMessageId { get; } = senderMessageId;
     public Peer ToPeer { get; } = toPeer;
     public long SenderPeerId { get; } = senderPeerId;

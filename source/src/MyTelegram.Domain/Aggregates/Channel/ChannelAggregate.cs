@@ -214,10 +214,12 @@ public class ChannelAggregate : MyInMemorySnapshotAggregateRoot<ChannelAggregate
 
         Emit(new ChannelPhotoEditedEvent(requestInfo,
             _state.ChannelId,
+            _state.Broadcast,
             //photo,
             photoId,
             messageActionData,
-            randomId));
+            randomId
+            ));
     }
 
     public void EditTitle(RequestInfo requestInfo,
@@ -235,9 +237,11 @@ public class ChannelAggregate : MyInMemorySnapshotAggregateRoot<ChannelAggregate
 
         Emit(new ChannelTitleEditedEvent(requestInfo,
             _state.ChannelId,
+            _state.Broadcast,
             title,
             messageActionData,
-            randomId));
+            randomId
+            ));
     }
 
     public void HideChatJoinRequest(RequestInfo requestInfo, long userId, bool approved)

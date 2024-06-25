@@ -30,7 +30,7 @@ public class UpdatePinnedMessageState :
     public long StartUpdatePinnedOwnerPeerId { get; private set; }
     public Peer? ToPeer { get; private set; }
     public int UpdatedInboxCount { get; private set; }
-
+    public bool Post { get; private set; }
     public void Apply(UpdateInboxPinnedCompletedEvent aggregateEvent)
     {
         UpdatedInboxCount++;
@@ -40,6 +40,7 @@ public class UpdatePinnedMessageState :
 
     public void Apply(UpdateOutboxPinnedCompletedEvent aggregateEvent)
     {
+        Post = aggregateEvent.Post;
         UpdatePinItems.TryAdd(aggregateEvent.OwnerPeerId,
             new PinnedMsgItem(aggregateEvent.OwnerPeerId, aggregateEvent.MessageId, aggregateEvent.ToPeer.PeerId));
     }

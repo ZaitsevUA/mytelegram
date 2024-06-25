@@ -213,7 +213,8 @@ public class SendMessageSaga : MyInMemoryAggregateSaga<SendMessageSaga, SendMess
             [Random.Shared.NextInt64()],
             null,
             _state.MessageItem.SendAs,
-            true
+            true,
+            false
         );
         Publish(command);
     }

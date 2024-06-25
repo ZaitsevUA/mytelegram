@@ -50,7 +50,8 @@ public class ForwardMessageSaga : MyInMemoryAggregateSaga<ForwardMessageSaga, Fo
             domainEvent.AggregateEvent.ToPeer,
             domainEvent.AggregateEvent.MessageIds,
             domainEvent.AggregateEvent.RandomIds,
-            domainEvent.AggregateEvent.ForwardFromLinkedChannel
+            domainEvent.AggregateEvent.ForwardFromLinkedChannel,
+            domainEvent.AggregateEvent.Post
         ));
         ForwardMessage(domainEvent.AggregateEvent);
         return Task.CompletedTask;
@@ -155,7 +156,8 @@ public class ForwardMessageSaga : MyInMemoryAggregateSaga<ForwardMessageSaga, Fo
                 Reply: reply,
                 IsForwardFromChannelPost: _state.ForwardFromLinkedChannel,
                 PostChannelId: postChannelId,
-                PostMessageId: postMessageId
+                PostMessageId: postMessageId,
+                Post: _state.Post
             )
         );
 

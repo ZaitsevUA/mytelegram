@@ -10,4 +10,5 @@ public interface IMessageAppService
     Task<GetMessageOutput> SearchGlobalAsync(SearchGlobalInput input);
     Task SendMessageAsync(SendMessageInput input);
     Task<GetMessageOutput> GetRepliesAsync(GetRepliesInput input);
+    Task CheckSendAsync(long requestUserId, Peer toPeer, Peer? sendAs);
 }

@@ -123,7 +123,7 @@ public class UpdateMessagePinnedSaga : MyInMemoryAggregateSaga<UpdateMessagePinn
         Emit(new MessagePinnedUpdatedSagaEvent(domainEvent.AggregateEvent.OwnerPeerId,
             domainEvent.AggregateEvent.MessageId, pts));
 
-        await HandleUpdateMessagePinnedCompletedAsync();
+        await HandleUpdateMessagePinnedCompletedAsync(domainEvent.AggregateEvent.Post);
     }
 
     public Task HandleAsync(IDomainEvent<TempAggregate, TempId, UpdateMessagePinnedStartedEvent> domainEvent,
@@ -145,7 +145,7 @@ public class UpdateMessagePinnedSaga : MyInMemoryAggregateSaga<UpdateMessagePinn
         return Task.CompletedTask;
     }
 
-    private async Task HandleUpdateMessagePinnedCompletedAsync()
+    private async Task HandleUpdateMessagePinnedCompletedAsync(bool post)
     {
         if (_state.UpdatedCount == _state.TotalCount)
         {
@@ -190,7 +190,7 @@ public class UpdateMessagePinnedSaga : MyInMemoryAggregateSaga<UpdateMessagePinn
                 //}
             }
 
-            if ( _state is { Pinned: true, PmOneSide: false })
+            if (_state is { Pinned: true, PmOneSide: false })
             {
                 // if pinned=true messageIds.Count==1
                 ReplyToMsgItem? replyToMsgItem = null;
@@ -214,7 +214,7 @@ public class UpdateMessagePinnedSaga : MyInMemoryAggregateSaga<UpdateMessagePinn
                     {
                         return;
                     }
-                    await SendServiceMessageToTargetPeerAsync(item.MessageIds.First(), replyToMsgItem);
+                    await SendServiceMessageToTargetPeerAsync(item.MessageIds.First(), replyToMsgItem, post);
                 }
             }
 
@@ -230,7 +230,7 @@ public class UpdateMessagePinnedSaga : MyInMemoryAggregateSaga<UpdateMessagePinn
         }
     }
 
-    private async Task SendServiceMessageToTargetPeerAsync(int replyToMsgId, ReplyToMsgItem? replyToMsgItem)
+    private async Task SendServiceMessageToTargetPeerAsync(int replyToMsgId, ReplyToMsgItem? replyToMsgItem, bool post)
     {
         var ownerPeerId = _state.RequestInfo.UserId;
         if (_state.ToPeer.PeerType == PeerType.Channel)
@@ -267,7 +267,8 @@ public class UpdateMessagePinnedSaga : MyInMemoryAggregateSaga<UpdateMessagePinn
                 {
                     ReplyToMsgId = replyToMsgId
                 },
-                MessageActionType: MessageActionType.PinMessage
+                MessageActionType: MessageActionType.PinMessage,
+                Post: post
             ),
             replyToMsgItems: replyToMsgItems
             );

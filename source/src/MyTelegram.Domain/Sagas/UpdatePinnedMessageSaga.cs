@@ -34,7 +34,9 @@ public class UpdatePinnedMessageSaga : MyInMemoryAggregateSaga<UpdatePinnedMessa
     {
         Emit(new UpdateOutboxPinnedCompletedEvent(domainEvent.AggregateEvent.OwnerPeerId,
             domainEvent.AggregateEvent.MessageId,
-            domainEvent.AggregateEvent.ToPeer));
+            domainEvent.AggregateEvent.ToPeer,
+            domainEvent.AggregateEvent.Post
+            ));
         await IncrementPtsAsync(domainEvent.AggregateEvent.OwnerPeerId);
         var aggregateEvent = domainEvent.AggregateEvent;
 
@@ -173,7 +175,8 @@ public class UpdatePinnedMessageSaga : MyInMemoryAggregateSaga<UpdatePinnedMessa
                         {
                             ReplyToMsgId = _state.ReplyToMsgId
                         },
-                        MessageActionType: MessageActionType.PinMessage
+                        MessageActionType: MessageActionType.PinMessage,
+                        Post: _state.Post
                         ));
 
                 Publish(command);

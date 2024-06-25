@@ -81,20 +81,20 @@ public class MessageAppService(
         }
     }
 
-    private async Task CheckSendAsAsync(SendMessageInput input)
+    public async Task CheckSendAsync(long requestUserId, Peer toPeer, Peer? sendAs)
     {
-        if (input.SendAs != null)
+        if (sendAs != null)
         {
-            if (input.ToPeer.PeerType != PeerType.Channel)
+            if (toPeer.PeerType != PeerType.Channel)
             {
                 RpcErrors.RpcErrors400.SendAsPeerInvalid.ThrowRpcError();
             }
 
-            switch (input.SendAs.PeerType)
+            switch (sendAs.PeerType)
             {
                 case PeerType.User:
                 case PeerType.Self:
-                    if (input.SendAs.PeerId != input.RequestInfo.UserId)
+                    if (sendAs.PeerId != requestUserId)
                     {
                         RpcErrors.RpcErrors400.SendAsPeerInvalid.ThrowRpcError();
                     }
@@ -103,7 +103,7 @@ public class MessageAppService(
                 case PeerType.Channel:
 
                     var sendAsPeerId =
-                        await queryProcessor.ProcessAsync(new GetSendAsPeerIdQuery(input.RequestInfo.UserId, input.SendAs.PeerId));
+                        await queryProcessor.ProcessAsync(new GetSendAsPeerIdQuery(requestUserId, sendAs.PeerId));
                     if (sendAsPeerId == null)
                     {
                         RpcErrors.RpcErrors400.SendAsPeerInvalid.ThrowRpcError();
@@ -112,6 +112,11 @@ public class MessageAppService(
                     break;
             }
         }
+    }
+
+    private Task CheckSendAsAsync(SendMessageInput input)
+    {
+        return CheckSendAsync(input.RequestInfo.UserId, input.ToPeer, input.SendAs);
     }
 
     private async Task<IChannelReadModel?> CheckChannelBannedRightsAsync(SendMessageInput input)
