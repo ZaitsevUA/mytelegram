@@ -16,28 +16,18 @@ namespace MyTelegram.Handlers.Auth;
 /// 400 PHONE_NUMBER_OCCUPIED The phone number is already in use.
 /// See <a href="https://corefork.telegram.org/method/auth.signUp" />
 ///</summary>
-internal sealed class SignUpHandler : RpcResultObjectHandler<MyTelegram.Schema.Auth.RequestSignUp, MyTelegram.Schema.Auth.IAuthorization>,
-    Auth.ISignUpHandler
+internal sealed class SignUpHandler(
+    ICommandBus commandBus,
+    IRandomHelper randomHelper,
+    IQueryProcessor queryProcessor)
+    : RpcResultObjectHandler<MyTelegram.Schema.Auth.RequestSignUp, MyTelegram.Schema.Auth.IAuthorization>,
+        Auth.ISignUpHandler
 {
-    private readonly ICommandBus _commandBus;
-    private readonly IQueryProcessor _queryProcessor;
-    private readonly IRandomHelper _randomHelper;
-
-    public SignUpHandler(
-        ICommandBus commandBus,
-        IRandomHelper randomHelper,
-        IQueryProcessor queryProcessor)
-    {
-        _commandBus = commandBus;
-        _randomHelper = randomHelper;
-        _queryProcessor = queryProcessor;
-    }
-
     protected override async Task<MyTelegram.Schema.Auth.IAuthorization> HandleCoreAsync(IRequestInput input,
         RequestSignUp obj)
     {
         var phoneNumber = obj.PhoneNumber.ToPhoneNumber();
-        var userReadModel = await _queryProcessor
+        var userReadModel = await queryProcessor
             .ProcessAsync(new GetUserByPhoneNumberQuery(phoneNumber), default)
      ;
         var userId = userReadModel?.UserId ?? 0;
@@ -46,12 +36,12 @@ internal sealed class SignUpHandler : RpcResultObjectHandler<MyTelegram.Schema.A
             input.ToRequestInfo(),
             obj.PhoneCodeHash,
             userId,
-            _randomHelper.NextLong(),
+            randomHelper.NextLong(),
             phoneNumber,
             obj.FirstName,
             obj.LastName);
 
-        await _commandBus.PublishAsync(command, CancellationToken.None);
+        await commandBus.PublishAsync(command);
 
         return null!;
     }

@@ -7,10 +7,7 @@ public class AppCodeState : AggregateState<AppCodeAggregate, AppCodeId, AppCodeS
     IApply<AppCodeCheckFailedEvent>,
     IApply<CheckSignUpCodeCompletedEvent>,
     IApply<CheckSignInCodeCompletedEvent>,
-    IApply<EmailCodeCreatedEvent>,
-    IApply<CheckAppCodeCompletedEvent>,
-    IApply<CheckPasswordConfirmEmailCodeCompletedEvent>,
-    IApply<CheckRecoverPasswordCodeCompletedEvent>
+    IApply<CheckAppCodeCompletedEvent>
 
 {
     public bool Canceled { get; private set; }
@@ -20,9 +17,12 @@ public class AppCodeState : AggregateState<AppCodeAggregate, AppCodeId, AppCodeS
     public int FailedCount { get; private set; }
     public DateTime LastEmailCodeSendDate { get; private set; }
     public DateTime LastSmsCodeSendDate { get; private set; }
+    public string? PhoneNumber { get; private set; }
     public string PhoneCodeHash { get; private set; } = default!;
     public int TodaySentCount { get; private set; }
     public int TotalSentCount { get; private set; }
+    public AppCodeType AppCodeType { get; private set; }
+    public long UserId { get; private set; }
     public void Apply(AppCodeCanceledEvent aggregateEvent)
     {
         Canceled = true;
@@ -35,6 +35,7 @@ public class AppCodeState : AggregateState<AppCodeAggregate, AppCodeId, AppCodeS
 
     public void Apply(AppCodeCreatedEvent aggregateEvent)
     {
+        PhoneNumber = aggregateEvent.PhoneNumber;
         PhoneCodeHash = aggregateEvent.PhoneCodeHash;
         Code = aggregateEvent.Code;
         Expire = aggregateEvent.Expire;
@@ -61,41 +62,7 @@ public class AppCodeState : AggregateState<AppCodeAggregate, AppCodeId, AppCodeS
     {
     }
 
-    public void Apply(EmailCodeCreatedEvent aggregateEvent)
-    {
-        Code = aggregateEvent.Code;
-        Email = aggregateEvent.Email;
-        Expire = aggregateEvent.Expire;
-        LastEmailCodeSendDate = DateTime.UtcNow;
-        FailedCount = 0;
-        if (LastEmailCodeSendDate.Date == DateTime.UtcNow.Date)
-        {
-            TodaySentCount++;
-        }
-        else
-        {
-            TodaySentCount = 1;
-            TotalSentCount++;
-        }
-    }
-
     public void Apply(CheckAppCodeCompletedEvent aggregateEvent)
-    {
-        if (!aggregateEvent.IsValidCode)
-        {
-            FailedCount++;
-        }
-    }
-
-    public void Apply(CheckPasswordConfirmEmailCodeCompletedEvent aggregateEvent)
-    {
-        if (!aggregateEvent.IsValidCode)
-        {
-            FailedCount++;
-        }
-    }
-
-    public void Apply(CheckRecoverPasswordCodeCompletedEvent aggregateEvent)
     {
         if (!aggregateEvent.IsValidCode)
         {
@@ -105,14 +72,17 @@ public class AppCodeState : AggregateState<AppCodeAggregate, AppCodeId, AppCodeS
 
     public void LoadSnapshot(AppCodeSnapshot snapshot)
     {
-        Expire= snapshot.Expire;
-        FailedCount= snapshot.FailedCount;
-        PhoneCodeHash= snapshot.PhoneCodeHash;
+        UserId = snapshot.UserId;
+        Expire = snapshot.Expire;
+        FailedCount = snapshot.FailedCount;
+        PhoneNumber = snapshot.PhoneNumber;
+        PhoneCodeHash = snapshot.PhoneCodeHash;
         Code = snapshot.Code;
-        Email= snapshot.Email;
-        LastSmsCodeSendDate= snapshot.LastSmsCodeSendDate;
-        LastEmailCodeSendDate= snapshot.LastEmailCodeSendDate;
-        TotalSentCount= snapshot.TotalSentCount;
-        TodaySentCount= snapshot.TodaySentCount;
+        Email = snapshot.Email;
+        LastSmsCodeSendDate = snapshot.LastSmsCodeSendDate;
+        LastEmailCodeSendDate = snapshot.LastEmailCodeSendDate;
+        TotalSentCount = snapshot.TotalSentCount;
+        TodaySentCount = snapshot.TodaySentCount;
+        AppCodeType = snapshot.AppCodeType;
     }
 }
