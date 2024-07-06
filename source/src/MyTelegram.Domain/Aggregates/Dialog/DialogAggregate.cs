@@ -237,11 +237,13 @@ public class DialogAggregate : MyInMemorySnapshotAggregateRoot<DialogAggregate, 
         Emit(new UpdateReadChannelOutboxEvent(requestInfo, _state.OwnerId, _state.ToPeer.PeerId, maxId));
     }
 
-    public void UpdateReadInboxMaxId(RequestInfo requestInfo, int maxId, long senderUserId, int senderMessageId)
+    public void UpdateReadInboxMaxId(RequestInfo requestInfo, int maxId, long senderUserId, int senderMessageId, int unreadCount)
     {
         Specs.AggregateIsCreated.ThrowDomainErrorIfNotSatisfied(this);
         Emit(new ReadInboxMaxIdUpdatedEvent(requestInfo, _state.OwnerId, _state.ToPeer.PeerId, maxId, senderUserId,
-            senderMessageId));
+            senderMessageId,
+            unreadCount
+            ));
     }
 
     public void UpdateReadOutboxMaxId(RequestInfo requestInfo, int maxId)

@@ -5,6 +5,15 @@ namespace MyTelegram.Services.Extensions;
 
 public static class Extension
 {
+    public static TRpcError ToRpcError(this RpcError rpcError)
+    {
+        return new TRpcError
+        {
+            ErrorCode = rpcError.ErrorCode,
+            ErrorMessage = rpcError.Message
+        };
+    }
+
     public static Peer ToChannelPeer(this IInputChannel channel)
     {
         if (channel is TInputChannel inputChannel)

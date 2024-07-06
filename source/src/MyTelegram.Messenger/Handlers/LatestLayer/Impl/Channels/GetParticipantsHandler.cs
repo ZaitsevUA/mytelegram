@@ -136,11 +136,15 @@ internal sealed class GetParticipantsHandler : RpcResultObjectHandler<MyTelegram
             }
 
             var channelMemberReadModels = query == null ? Array.Empty<IChannelMemberReadModel>() : await _queryProcessor
-                .ProcessAsync(query,
-                    default);
-            //var selfChannelMember = channelMemberReadModels.FirstOrDefault(p => p.UserId == input.UserId);
+                .ProcessAsync(query);
 
             var userIdList = channelMemberReadModels.Select(p => p.UserId).ToList();
+            var selfChannelMember = channelMemberReadModels.FirstOrDefault(p => p.UserId == input.UserId);
+            if (selfChannelMember != null)
+            {
+                userIdList.Add(selfChannelMember.InviterId);
+            }
+
             var userReadModels = await _queryProcessor
                 .ProcessAsync(new GetUsersByUidListQuery(userIdList), default);
             var contactReadModels = await _queryProcessor
@@ -151,6 +155,41 @@ internal sealed class GetParticipantsHandler : RpcResultObjectHandler<MyTelegram
             var users = _layeredUserService.GetConverter(input.Layer)
                 .ToUserList(input.UserId, userReadModels, photos, contactReadModels, privacies);
             var chatPhoto = await _photoAppService.GetPhotoAsync(channelReadModel.PhotoId);
+
+            var creatorId = channelReadModel.CreatorId;
+            if (channelReadModel.Broadcast || (channelReadModel.HasLink && input.UserId != creatorId))
+            {
+                if (chatAdminReadModels?.Any() ?? false)
+                {
+                    var newAdminList = chatAdminReadModels.ToList();
+                    newAdminList.RemoveAll(p => p.UserId == creatorId);
+                    chatAdminReadModels = newAdminList;
+                }
+
+                if (channelMemberReadModels.Any())
+                {
+                    var newChannelMemberReadModels = channelMemberReadModels.ToList();
+                    newChannelMemberReadModels.RemoveAll(p => p.UserId == creatorId);
+                    channelMemberReadModels = newChannelMemberReadModels;
+                }
+
+                if (users.Any())
+                {
+                    var newUsers = users.ToList();
+                    newUsers.RemoveAll(p => p.Id == creatorId);
+                    users = newUsers;
+                }
+            }
+
+            if ((!chatAdminReadModels?.Any() ?? false) && !channelMemberReadModels.Any())
+            {
+                return new TChannelParticipants
+                {
+                    Chats = [],
+                    Participants = [],
+                    Users = [],
+                };
+            }
 
             return _layeredService.GetConverter(input.Layer).ToChannelParticipants(
                 input.UserId,

@@ -6,7 +6,9 @@ public class ReadInboxMaxIdUpdatedEvent(
     long toPeerId,
     int readInboxMaxId,
     long senderUserId,
-    int senderMessageId)
+    int senderMessageId,
+    int unreadCount
+    )
     : RequestAggregateEvent2<DialogAggregate, DialogId>(requestInfo)
 {
     public long OwnerUserId { get; } = ownerUserId;
@@ -14,4 +16,5 @@ public class ReadInboxMaxIdUpdatedEvent(
     public int ReadInboxMaxId { get; } = readInboxMaxId;
     public long SenderUserId { get; } = senderUserId;
     public int SenderMessageId { get; } = senderMessageId;
+    public int UnreadCount { get; } = unreadCount;
 }

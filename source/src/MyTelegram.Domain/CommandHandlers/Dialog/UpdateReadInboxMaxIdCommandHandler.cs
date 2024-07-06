@@ -4,7 +4,7 @@ public class UpdateReadInboxMaxIdCommandHandler : CommandHandler<DialogAggregate
 {
     public override Task ExecuteAsync(DialogAggregate aggregate, UpdateReadInboxMaxIdCommand command, CancellationToken cancellationToken)
     {
-        aggregate.UpdateReadInboxMaxId(command.RequestInfo, command.MaxId, command.SenderUserId, command.SenderMessageId);
+        aggregate.UpdateReadInboxMaxId(command.RequestInfo, command.MaxId, command.SenderUserId, command.SenderMessageId, command.UnreadCount);
 
         return Task.CompletedTask;
     }

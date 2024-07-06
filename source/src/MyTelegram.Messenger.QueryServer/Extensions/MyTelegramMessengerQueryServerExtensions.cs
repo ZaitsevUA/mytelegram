@@ -140,7 +140,7 @@ public static class MyTelegramMessengerQueryServerExtensions
         //services.AddTransient<IReadModelUpdateStrategy, QueryServerReadModelUpdateStrategy>();
         //services.AddTransient<IReadModelUpdateManager, MyTelegramQueryServerReadModelUpdateManager>();
 
-        services.AddSingleton(typeof(ICommandExecutor<,,>), typeof(CommandExecutor<,,>));
+        services.AddSingleton(typeof(IQueuedCommandExecutor<,,>), typeof(QueuedCommandExecutor<,,>));
 
         services.AddSystemTextJson(options =>
         {

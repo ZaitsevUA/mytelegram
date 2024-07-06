@@ -29,8 +29,9 @@ internal sealed class GetContactsHandler : RpcResultObjectHandler<MyTelegram.Sch
         var contactReadModels = await _queryProcessor
             .ProcessAsync(new GetContactsByUserIdQuery(input.UserId), CancellationToken.None);
         var userIdList = contactReadModels.Select(p => p.TargetUserId).ToList();
+        userIdList.Add(input.UserId);
         var userReadModels = await _queryProcessor
-            .ProcessAsync(new GetUsersByUidListQuery(userIdList), CancellationToken.None);
+            .ProcessAsync(new GetUsersByUidListQuery(userIdList));
         var privacies = await _privacyAppService.GetPrivacyListAsync(userIdList);
         var photos = await _photoAppService.GetPhotosAsync(userReadModels,contactReadModels);
         var userList = _layeredUserService.GetConverter(input.Layer).ToUserList(input.UserId, userReadModels, photos, contactReadModels, privacies);

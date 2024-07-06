@@ -51,7 +51,7 @@ public class UpdateMessagePinDomainEventHandler(
             );
 
         return PushUpdatesToPeerAsync(domainEvent.AggregateEvent.OwnerPeerId.ToUserPeer(), updates,
-            domainEvent.AggregateEvent.Pts);
+           pts: domainEvent.AggregateEvent.Pts);
     }
 
     public async Task HandleAsync(IDomainEvent<UnpinAllMessagesSaga, UnpinAllMessagesSagaId, UnpinAllMessagesCompletedSagaEvent> domainEvent, CancellationToken cancellationToken)

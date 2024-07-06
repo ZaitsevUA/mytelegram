@@ -32,6 +32,7 @@ namespace MyTelegram.Services.Extensions
 
             services.AddSingleton(typeof(ICacheHelper<,>),typeof(CacheHelper<,>));
             services.AddSingleton<IMtpHelper, MtpHelper>();
+            services.AddSingleton(typeof(IQueuedCommandExecutor<,,>), typeof(QueuedCommandExecutor<,,>));
 
             return services;
         }

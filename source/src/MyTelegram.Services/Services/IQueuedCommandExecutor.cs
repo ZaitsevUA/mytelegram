@@ -1,9 +1,11 @@
-﻿using EventFlow.Aggregates.ExecutionResults;
+﻿using EventFlow.Aggregates;
+using EventFlow.Aggregates.ExecutionResults;
 using EventFlow.Commands;
+using EventFlow.Core;
 
-namespace MyTelegram.Messenger.QueryServer.Services;
+namespace MyTelegram.Services.Services;
 
-public interface ICommandExecutor<out TAggregate, in TIdentity, TExecutionResult>
+public interface IQueuedCommandExecutor<out TAggregate, in TIdentity, TExecutionResult>
     where TAggregate : IAggregateRoot<TIdentity>
     where TIdentity : IIdentity
     where TExecutionResult : IExecutionResult

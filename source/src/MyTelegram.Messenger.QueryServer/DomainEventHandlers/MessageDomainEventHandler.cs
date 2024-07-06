@@ -148,12 +148,12 @@ public class MessageDomainEventHandler(
         return (channelReadModel, photoReadModel);
     }
 
-    private async Task<IUser> GetUserAsync(long userId)
+    private async Task<IUser> GetUserAsync(long userId, long selfUserId)
     {
         var userReadModel = await queryProcessor.ProcessAsync(new GetUserByIdQuery(userId));
         var photos = await photoAppService.GetPhotosAsync(userReadModel);
         var privacyList = await privacyAppService.GetPrivacyListAsync(userId);
-        return userLayeredService.Converter.ToUser(0, userReadModel!, photos, privacies: privacyList);
+        return userLayeredService.Converter.ToUser(selfUserId, userReadModel!, photos, privacies: privacyList);
     }
 
     private async Task HandleCreateChannelAsync(SendOutboxMessageCompletedEvent aggregateEvent)
@@ -654,7 +654,7 @@ public class MessageDomainEventHandler(
             var channelUpdates = updatesLayeredService.Converter.ToUpdatePinnedMessageServiceUpdates(aggregateEvent);
             if (channelUpdates is TUpdates tUpdates)
             {
-                var user = await GetUserAsync(aggregateEvent.RequestInfo.UserId);
+                var user = await GetUserAsync(aggregateEvent.RequestInfo.UserId, 0);
                 tUpdates.Users.Add(user);
             }
 

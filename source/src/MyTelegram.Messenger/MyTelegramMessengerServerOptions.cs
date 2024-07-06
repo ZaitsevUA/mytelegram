@@ -28,4 +28,12 @@ public class MyTelegramMessengerServerOptions
     public bool EnableFutureAuthToken { get; set; }
     public bool SetPremiumToTrueAfterUserCreated { get; set; }
     public bool SendWelcomeMessageAfterUserSignIn { get; set; }
+    public bool SetupPasswordRequired { get; set; }
+    public bool EnableEmailLogin { get; set; }
+
+    [RegularExpression("^([\\d]{6})|(\\s*)$")]
+    public string? FixedEmailVerificationCode { get; set; }
+
+    public long? SupportUserId { get; set; }
+    public bool CheckPhoneNumberFormat { get; set; }
 }

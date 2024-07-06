@@ -47,7 +47,7 @@ internal sealed class ImportAuthorizationHandler : RpcResultObjectHandler<MyTele
         var cacheKey = MyCacheKey.With("authorizations", key);
         var userIdText = await _cacheManager.GetAsync(cacheKey);
 
-        if (int.TryParse(userIdText, out var userId))
+        if (long.TryParse(userIdText, out var userId))
         {
             if (userId != obj.Id)
             {

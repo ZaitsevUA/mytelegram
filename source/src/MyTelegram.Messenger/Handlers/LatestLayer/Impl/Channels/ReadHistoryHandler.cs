@@ -46,7 +46,8 @@ internal sealed class ReadHistoryHandler : RpcResultObjectHandler<MyTelegram.Sch
                 new GetDialogByIdQuery(DialogId.Create(input.UserId, inputChannel.ChannelId.ToChannelPeer())));
             if (dialogReadModel == null)
             {
-                RpcErrors.RpcErrors400.ChannelIdInvalid.ThrowRpcError();
+                //RpcErrors.RpcErrors400.ChannelIdInvalid.ThrowRpcError();
+                return new TBoolTrue();
             }
 
             if (dialogReadModel!.ReadInboxMaxId >= obj.MaxId)
@@ -64,6 +65,7 @@ internal sealed class ReadHistoryHandler : RpcResultObjectHandler<MyTelegram.Sch
             return null!;
         }
 
-        throw new NotImplementedException();
+        return new TBoolTrue();
+        //throw new NotImplementedException();
     }
 }

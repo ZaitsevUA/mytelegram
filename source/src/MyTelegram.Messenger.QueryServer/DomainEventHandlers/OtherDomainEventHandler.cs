@@ -2,6 +2,7 @@
 using MyTelegram.Domain.Events.PeerNotifySettings;
 using MyTelegram.Messenger.Services.Caching;
 using MyTelegram.Messenger.TLObjectConverters.Interfaces;
+using MyTelegram.Services.Extensions;
 using MyTelegram.Services.TLObjectConverters;
 
 namespace MyTelegram.Messenger.QueryServer.DomainEventHandlers;
@@ -292,7 +293,9 @@ public class OtherDomainEventHandler(
         CancellationToken cancellationToken)
     {
         var tempAuthKeyId = domainEvent.AggregateEvent.TempAuthKeyId;
-        await eventBus.PublishAsync(new UserSignInSuccessEvent(tempAuthKeyId,
+        await eventBus.PublishAsync(new UserSignInSuccessEvent(
+                domainEvent.AggregateEvent.RequestInfo.ReqMsgId,
+                tempAuthKeyId,
                 domainEvent.AggregateEvent.PermAuthKeyId,
                 domainEvent.AggregateEvent.UserId,
                 domainEvent.AggregateEvent.HasPassword ? PasswordState.WaitingForVerify : PasswordState.None))
@@ -310,13 +313,12 @@ public class OtherDomainEventHandler(
         {
             //throw new BadRequestException("SESSION_PASSWORD_NEEDED");
             //ThrowHelper.ThrowUserFriendlyException("SESSION_PASSWORD_NEEDED");
-            var rpcError = new TRpcError
-            {
-                ErrorCode = MyTelegramServerDomainConsts.BadRequestErrorCode,
-                ErrorMessage = "SESSION_PASSWORD_NEEDED"
-            };
-            await SendRpcMessageToClientAsync(domainEvent.AggregateEvent.RequestInfo, rpcError)
-         ;
+            //var rpcError = new TRpcError
+            //{
+            //    ErrorCode = MyTelegramServerDomainConsts.BadRequestErrorCode,
+            //    ErrorMessage = RpcErrors.RpcErrors401.SessionPasswordNeeded.Message,
+
+            await SendRpcMessageToClientAsync(domainEvent.AggregateEvent.RequestInfo, RpcErrors.RpcErrors401.SessionPasswordNeeded.ToRpcError());
             return;
         }
 
@@ -473,7 +475,7 @@ public class OtherDomainEventHandler(
             Update = new TUpdatePinnedChannelMessages
             {
                 ChannelId = domainEvent.AggregateEvent.ChannelId,
-                Messages = new TVector<int> { domainEvent.AggregateEvent.MessageId },
+                Messages = [domainEvent.AggregateEvent.MessageId],
                 Pinned = true,
                 Pts = domainEvent.AggregateEvent.Pts,
                 PtsCount = 1

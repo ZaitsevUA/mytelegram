@@ -9,7 +9,7 @@ public class PtsEventHandler(
     ICommandBus commandBus,
     IPeerHelper peerHelper,
     IIdGenerator idGenerator,
-    ICommandExecutor<PtsAggregate, PtsId, IExecutionResult> ptsCommandExecutor)
+    IQueuedCommandExecutor<PtsAggregate, PtsId, IExecutionResult> ptsCommandExecutor)
     :
         ISubscribeSynchronousTo<UpdatePinnedMessageSaga, UpdatePinnedMessageSagaId, UpdatePinnedBoxPtsCompletedEvent>,
         //ISubscribeSynchronousTo<MessageSaga, MessageSagaId, Domain.Events.Messaging.SendOutboxMessageCompletedEvent>,

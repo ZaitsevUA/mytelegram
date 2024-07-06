@@ -12,6 +12,9 @@ internal sealed class GetSupportNameHandler : RpcResultObjectHandler<MyTelegram.
     protected override Task<MyTelegram.Schema.Help.ISupportName> HandleCoreAsync(IRequestInput input,
         MyTelegram.Schema.Help.RequestGetSupportName obj)
     {
-        throw new NotImplementedException();
+        return Task.FromResult<MyTelegram.Schema.Help.ISupportName>(new TSupportName
+        {
+            Name = "MyTelegram Support"
+        });
     }
 }

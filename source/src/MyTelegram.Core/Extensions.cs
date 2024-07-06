@@ -4,6 +4,11 @@ namespace MyTelegram.Core;
 
 public static class Extensions
 {
+    public static long ToInt64(this ulong value)
+    {
+        return BitConverter.ToInt64(BitConverter.GetBytes(value));
+    }
+
     public static byte[] ToBytes256(this byte[] data)
     {
         if (data.Length == 256)

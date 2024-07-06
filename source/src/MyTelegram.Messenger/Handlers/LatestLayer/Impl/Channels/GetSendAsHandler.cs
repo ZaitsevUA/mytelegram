@@ -11,47 +11,49 @@ namespace MyTelegram.Handlers.Channels;
 /// 400 PEER_ID_INVALID The provided peer id is invalid.
 /// See <a href="https://corefork.telegram.org/method/channels.getSendAs" />
 ///</summary>
-internal sealed class GetSendAsHandler : RpcResultObjectHandler<MyTelegram.Schema.Channels.RequestGetSendAs, MyTelegram.Schema.Channels.ISendAsPeers>,
-    Channels.IGetSendAsHandler
+internal sealed class GetSendAsHandler(
+    IQueryProcessor queryProcessor,
+    ILayeredService<IChatConverter> layeredChatService,
+    ILayeredService<IUserConverter> layeredUserService,
+    ILayeredService<ISendAsPeerConverter> layeredSendAsPeerService,
+    IAccessHashHelper accessHashHelper,
+    IPhotoAppService photoAppService)
+    : RpcResultObjectHandler<MyTelegram.Schema.Channels.RequestGetSendAs, MyTelegram.Schema.Channels.ISendAsPeers>,
+        Channels.IGetSendAsHandler
 {
-    private readonly IQueryProcessor _queryProcessor;
-    private readonly ILayeredService<IChatConverter> _layeredChatService;
-    private readonly ILayeredService<IUserConverter> _layeredUserService;
-    private readonly ILayeredService<ISendAsPeerConverter> _layeredSendAsPeerService;
-    private readonly IAccessHashHelper _accessHashHelper;
-    private readonly IPhotoAppService _photoAppService;
-    public GetSendAsHandler(
-        IQueryProcessor queryProcessor,
-        ILayeredService<IChatConverter> layeredChatService,
-        ILayeredService<IUserConverter> layeredUserService,
-        ILayeredService<ISendAsPeerConverter> layeredSendAsPeerService,
-        IAccessHashHelper accessHashHelper, IPhotoAppService photoAppService)
-    {
-        _queryProcessor = queryProcessor;
-        _layeredChatService = layeredChatService;
-        _layeredUserService = layeredUserService;
-        _layeredSendAsPeerService = layeredSendAsPeerService;
-        _accessHashHelper = accessHashHelper;
-        _photoAppService = photoAppService;
-    }
-
     protected override async Task<MyTelegram.Schema.Channels.ISendAsPeers> HandleCoreAsync(IRequestInput input,
         MyTelegram.Schema.Channels.RequestGetSendAs obj)
     {
         if (obj.Peer is TInputPeerChannel inputPeerChannel)
         {
-            await _accessHashHelper.CheckAccessHashAsync(inputPeerChannel.ChannelId, inputPeerChannel.AccessHash);
-            var channelReadModels = await _queryProcessor.ProcessAsync(new GetSendAsQuery(inputPeerChannel.ChannelId));
+            await accessHashHelper.CheckAccessHashAsync(inputPeerChannel.ChannelId, inputPeerChannel.AccessHash);
+            var channelReadModels = await queryProcessor.ProcessAsync(new GetSendAsQuery(inputPeerChannel.ChannelId));
             if (channelReadModels.Any(p => p.CreatorId != input.UserId))
             {
-                return _layeredSendAsPeerService.GetConverter(input.Layer).ToSendAsPeers(Array.Empty<IChat>());
+                var userReadModel = await queryProcessor.ProcessAsync(new GetUserByIdQuery(input.UserId));
+                var userPhotoReadModels = await photoAppService.GetPhotosAsync(userReadModel);
+                var user = layeredUserService.GetConverter(input.Layer)
+                    .ToUser(input.UserId, userReadModel!, userPhotoReadModels);
+
+                return new TSendAsPeers
+                {
+                    Chats = [],
+                    Peers = new TVector<ISendAsPeer>([new TSendAsPeer
+                    {
+                        Peer=new TPeerUser
+                        {
+                            UserId=input.UserId,
+                        }
+                    }]),
+                    Users = new TVector<IUser>([user])
+                };
             }
 
-            var photoReadModels = await _photoAppService.GetPhotosAsync(channelReadModels);
-            var channels = _layeredChatService.GetConverter(input.Layer).ToChannelList(input.UserId, channelReadModels,
+            var photoReadModels = await photoAppService.GetPhotosAsync(channelReadModels);
+            var channels = layeredChatService.GetConverter(input.Layer).ToChannelList(input.UserId, channelReadModels,
                 photoReadModels, Array.Empty<long>(), Array.Empty<IChannelMemberReadModel>(), false);
 
-            return _layeredSendAsPeerService.GetConverter(input.Layer).ToSendAsPeers(channels);
+            return layeredSendAsPeerService.GetConverter(input.Layer).ToSendAsPeers(channels);
         }
 
         throw new NotImplementedException();

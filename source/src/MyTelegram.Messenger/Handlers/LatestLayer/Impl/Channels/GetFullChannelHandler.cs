@@ -96,8 +96,11 @@ internal sealed class GetFullChannelHandler(
                 if (linkedChannelReadModel != null)
                 {
                     var linkedChannelPhotoReadModel = await photoAppService.GetPhotoAsync(linkedChannelReadModel.PhotoId);
+                    var linkedChannelMemberReadModel =
+                     await queryProcessor.ProcessAsync(
+                            new GetChannelMemberByUserIdQuery(linkedChannelReadModel.ChannelId, input.UserId));
                     var linkedChannel = layeredService.GetConverter(input.Layer).ToChannel(input.UserId,
-                        linkedChannelReadModel, linkedChannelPhotoReadModel, null, false);
+                        linkedChannelReadModel, linkedChannelPhotoReadModel, linkedChannelMemberReadModel, linkedChannelMemberReadModel == null || linkedChannelMemberReadModel.Left);
 
                     r.Chats.Add(linkedChannel);
                 }

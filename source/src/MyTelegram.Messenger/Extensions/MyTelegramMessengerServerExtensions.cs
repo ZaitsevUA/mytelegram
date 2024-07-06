@@ -131,8 +131,8 @@ public static class MyTelegramMessengerServerExtensions
         //services.AddTransient<IReadModelCacheStrategy, MyTelegramReadModelCacheStrategy>();
         services.AddSingleton<IBlockCacheAppService, BlockCacheAppService>();
         services.AddSingleton<IChannelAdminRightsChecker, ChannelAdminRightsChecker>();
-        services.AddSingleton<IVerificationCodeGenerator, VerificationCodeGenerator>();
-
+        services.AddTransient<IVerificationCodeGenerator, VerificationCodeGenerator>();
+        services.AddSingleton<ICountryHelper, CountryHelper>();
 
         return services;
     }
