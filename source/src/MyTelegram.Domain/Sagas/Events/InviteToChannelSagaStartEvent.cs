@@ -12,7 +12,9 @@ public class InviteToChannelSagaStartEvent(
     int channelHistoryMinId,
     long randomId,
     string messageActionData,
-    bool broadcast)
+    bool broadcast,
+    bool hasLink
+    )
     : RequestAggregateEvent2<InviteToChannelSaga, InviteToChannelSagaId>(requestInfo),
         IHasCorrelationId
 {
@@ -25,6 +27,7 @@ public class InviteToChannelSagaStartEvent(
     public IReadOnlyList<long>? PrivacyRestrictedUserId { get; } = privacyRestrictedUserId;
     public string MessageActionData { get; } = messageActionData;
     public bool Broadcast { get; } = broadcast;
+    public bool HasLink { get; } = hasLink;
     public long RandomId { get; } = randomId;
     public int TotalCount { get; } = totalCount;
 }

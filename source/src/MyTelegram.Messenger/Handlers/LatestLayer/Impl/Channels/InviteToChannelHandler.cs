@@ -92,17 +92,17 @@ internal sealed class InviteToChannelHandler : RpcResultObjectHandler<MyTelegram
                 });
             userIdList.RemoveAll(privacyRestrictedUserIdList.Contains);
 
-            // all selected users are rejected to be added to chat or channel
-            if (userIdList.Count == 0)
+            var inviterUserId = input.UserId;
+            if (channelReadModel!.Broadcast || channelReadModel.HasLink)
             {
-
+                inviterUserId = MyTelegramServerDomainConsts.GroupAnonymousBotUserId;
             }
 
             var command = new StartInviteToChannelCommand(
                 ChannelId.Create(inputChannel.ChannelId),
                 input.ToRequestInfo(),
                 inputChannel.ChannelId,
-                input.UserId,
+                inviterUserId,
                 channelReadModel!.TopMessageId,
                 userIdList,
                 privacyRestrictedUserIdList,

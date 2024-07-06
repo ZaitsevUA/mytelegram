@@ -12,7 +12,9 @@ public class StartInviteToChannelEvent(
     int channelHistoryMinId,
     long randomId,
     string messageActionData,
-    bool broadcast)
+    bool broadcast,
+    bool hasLink
+    )
     : RequestAggregateEvent2<ChannelAggregate, ChannelId>(requestInfo)
 {
     //bool isBot,
@@ -27,6 +29,7 @@ public class StartInviteToChannelEvent(
     public IReadOnlyList<long>? PrivacyRestrictedUserId { get; } = privacyRestrictedUserId;
     public string MessageActionData { get; } = messageActionData;
     public bool Broadcast { get; } = broadcast;
+    public bool HasLink { get; } = hasLink;
     public long RandomId { get; } = randomId;
 
     //public bool IsBot { get; } 

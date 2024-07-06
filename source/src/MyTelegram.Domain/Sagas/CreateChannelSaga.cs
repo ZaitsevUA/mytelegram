@@ -9,7 +9,7 @@ public class CreateChannelSaga :
     private readonly IChatInviteLinkHelper _chatInviteLinkHelper;
     private readonly CreateChannelSagaState _state = new();
 
-    public CreateChannelSaga(CreateChannelSagaId id, IEventStore eventStore, IIdGenerator idGenerator,IChatInviteLinkHelper chatInviteLinkHelper) : base(id,
+    public CreateChannelSaga(CreateChannelSagaId id, IEventStore eventStore, IIdGenerator idGenerator, IChatInviteLinkHelper chatInviteLinkHelper) : base(id,
         eventStore)
     {
         _idGenerator = idGenerator;

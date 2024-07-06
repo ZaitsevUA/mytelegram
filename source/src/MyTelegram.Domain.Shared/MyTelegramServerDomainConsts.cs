@@ -15,6 +15,8 @@ public class MyTelegramServerDomainConsts
     public const int PtsInitId = 1;
 
     public const long OfficialUserId = 777000;
+    public const long GroupAnonymousBotUserId = 568888;
+    public const long DefaultSupportUserId = 569999;
 
     public const long DeletedChannelIdForChannelPost = 777;
 

@@ -23,6 +23,7 @@ public class
     public long RandomId { get; private set; }
     public RequestInfo RequestInfo { get; private set; } = default!;
     public int TotalCount { get; private set; }
+    public bool HasLink { get; private set; }
 
     public void Apply(InviteToChannelSagaMemberCreatedEvent aggregateEvent)
     {
@@ -43,5 +44,6 @@ public class
         MessageActionData = aggregateEvent.MessageActionData;
         ChannelHistoryMinId = aggregateEvent.ChannelHistoryMinId;
         Broadcast = aggregateEvent.Broadcast;
+        HasLink = aggregateEvent.HasLink;
     }
 }

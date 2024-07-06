@@ -8,5 +8,6 @@ public enum AccessHashType
     Photo,
     StickerSet,
     Sticker,
-    WallPaper
+    WallPaper,
+    Theme
 }

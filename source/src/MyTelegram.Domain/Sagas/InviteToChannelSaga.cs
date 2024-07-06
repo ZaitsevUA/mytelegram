@@ -62,7 +62,8 @@ public class InviteToChannelSaga :
             domainEvent.AggregateEvent.ChannelHistoryMinId,
             domainEvent.AggregateEvent.RandomId,
             domainEvent.AggregateEvent.MessageActionData,
-            domainEvent.AggregateEvent.Broadcast
+            domainEvent.AggregateEvent.Broadcast,
+            domainEvent.AggregateEvent.HasLink
         ));
         foreach (var userId in domainEvent.AggregateEvent.MemberUidList)
         {
@@ -88,13 +89,14 @@ public class InviteToChannelSaga :
         if (_state.Completed)
         {
             // send service message to member after invited to super group
-            if (!_state.Broadcast)
+            if (!_state.Broadcast && !_state.HasLink)
             {
                 var ownerPeerId = _state.ChannelId;
                 var outMessageId = await _idGenerator.NextIdAsync(IdType.MessageId, ownerPeerId);
                 var aggregateId = MessageId.Create(ownerPeerId, outMessageId);
                 var ownerPeer = new Peer(PeerType.Channel, ownerPeerId);
                 var senderPeer = new Peer(PeerType.User, _state.InviterId);
+
 
                 var command = new CreateOutboxMessageCommand(
                     aggregateId,
@@ -126,7 +128,9 @@ public class InviteToChannelSaga :
                 _state.InviterId,
                 _state.Broadcast,
                 _state.MemberUidList,
-                _state.PrivacyRestrictedUserId));
+                _state.PrivacyRestrictedUserId,
+                _state.HasLink
+                ));
         }
     }
 }

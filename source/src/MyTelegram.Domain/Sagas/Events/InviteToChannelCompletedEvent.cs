@@ -6,7 +6,9 @@ public class InviteToChannelCompletedEvent(
     long inviterId,
     bool broadcast,
     IReadOnlyList<long> memberUidList,
-    IReadOnlyList<long>? privacyRestrictedUserId)
+    IReadOnlyList<long>? privacyRestrictedUserId,
+    bool hasLink
+    )
     : RequestAggregateEvent2<InviteToChannelSaga, InviteToChannelSagaId>(requestInfo),
         IHasCorrelationId
 {
@@ -15,4 +17,5 @@ public class InviteToChannelCompletedEvent(
     public bool Broadcast { get; } = broadcast;
     public IReadOnlyList<long> MemberUidList { get; } = memberUidList;
     public IReadOnlyList<long>? PrivacyRestrictedUserId { get; } = privacyRestrictedUserId;
+    public bool HasLink { get; } = hasLink;
 }
