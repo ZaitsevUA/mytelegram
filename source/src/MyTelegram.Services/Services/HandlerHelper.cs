@@ -50,7 +50,7 @@ public class HandlerHelper(
     }
     private string GetName(IObject requestData)
     {
-        const int removeCount=7;// "Request".Length
+        const int removeCount = 7;// "Request".Length
         return RemovePrefix(requestData.GetType().Name, removeCount);
     }
 

@@ -89,7 +89,7 @@ public class ExceptionProcessor(
                 var innerException = sagaPublishException.InnerException;
                 errorMessage = innerException switch
                 {
-                    CommandException { InnerException: UserFriendlyException subInnerException } => subInnerException
+                    CommandException { InnerException: RpcException subInnerException } => subInnerException
                         .Message,
                     _ => MyTelegramServerDomainConsts.InternalErrorMessage
                 };

@@ -7,10 +7,10 @@ namespace MyTelegram.Schema;
 /// Represents a message <a href="https://corefork.telegram.org/api/drafts">draft</a>.
 /// See <a href="https://corefork.telegram.org/constructor/draftMessage" />
 ///</summary>
-[TlObject(0x3fccf7ef)]
+[TlObject(0x2d65321f)]
 public sealed class TDraftMessage : IDraftMessage
 {
-    public uint ConstructorId => 0x3fccf7ef;
+    public uint ConstructorId => 0x2d65321f;
     ///<summary>
     /// Flags, see <a href="https://corefork.telegram.org/mtproto/TL-combinators#conditional-fields">TL conditional fields</a>
     ///</summary>
@@ -54,6 +54,7 @@ public sealed class TDraftMessage : IDraftMessage
     /// Date of last update of the draft.
     ///</summary>
     public int Date { get; set; }
+    public long? Effect { get; set; }
 
     public void ComputeFlag()
     {
@@ -62,7 +63,7 @@ public sealed class TDraftMessage : IDraftMessage
         if (ReplyTo != null) { Flags[4] = true; }
         if (Entities?.Count > 0) { Flags[3] = true; }
         if (Media != null) { Flags[5] = true; }
-
+        if (/*Effect != 0 &&*/ Effect.HasValue) { Flags[7] = true; }
     }
 
     public void Serialize(IBufferWriter<byte> writer)
@@ -75,6 +76,7 @@ public sealed class TDraftMessage : IDraftMessage
         if (Flags[3]) { writer.Write(Entities); }
         if (Flags[5]) { writer.Write(Media); }
         writer.Write(Date);
+        if (Flags[7]) { writer.Write(Effect.Value); }
     }
 
     public void Deserialize(ref SequenceReader<byte> reader)
@@ -87,5 +89,6 @@ public sealed class TDraftMessage : IDraftMessage
         if (Flags[3]) { Entities = reader.Read<TVector<MyTelegram.Schema.IMessageEntity>>(); }
         if (Flags[5]) { Media = reader.Read<MyTelegram.Schema.IInputMedia>(); }
         Date = reader.ReadInt32();
+        if (Flags[7]) { Effect = reader.ReadInt64(); }
     }
 }

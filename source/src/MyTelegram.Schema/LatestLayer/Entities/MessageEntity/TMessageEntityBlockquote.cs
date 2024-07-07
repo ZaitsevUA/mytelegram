@@ -7,10 +7,13 @@ namespace MyTelegram.Schema;
 /// Message entity representing a block quote.
 /// See <a href="https://corefork.telegram.org/constructor/messageEntityBlockquote" />
 ///</summary>
-[TlObject(0x20df5d0)]
+[TlObject(0xf1ccaaac)]
 public sealed class TMessageEntityBlockquote : IMessageEntity
 {
-    public uint ConstructorId => 0x20df5d0;
+    public uint ConstructorId => 0xf1ccaaac;
+    public BitArray Flags { get; set; } = new BitArray(32);
+    public bool Collapsed { get; set; }
+
     ///<summary>
     /// Offset of message entity within message (in <a href="https://corefork.telegram.org/api/entities#entity-length">UTF-16 code units</a>)
     ///</summary>
@@ -23,6 +26,7 @@ public sealed class TMessageEntityBlockquote : IMessageEntity
 
     public void ComputeFlag()
     {
+        if (Collapsed) { Flags[0] = true; }
 
     }
 
@@ -30,12 +34,15 @@ public sealed class TMessageEntityBlockquote : IMessageEntity
     {
         ComputeFlag();
         writer.Write(ConstructorId);
+        writer.Write(Flags);
         writer.Write(Offset);
         writer.Write(Length);
     }
 
     public void Deserialize(ref SequenceReader<byte> reader)
     {
+        Flags = reader.ReadBitArray();
+        if (Flags[0]) { Collapsed = true; }
         Offset = reader.ReadInt32();
         Length = reader.ReadInt32();
     }

@@ -4,7 +4,7 @@ public class ReadHistoryOutboxHasReadEvent(
     RequestInfo requestInfo,
     long senderPeerId,
     int senderMessageId)
-    : RequestAggregateEvent2<ReadHistorySaga, ReadHistorySagaId>(requestInfo), IHasCorrelationId
+    : RequestAggregateEvent2<ReadHistorySaga, ReadHistorySagaId>(requestInfo)
 {
     public int SenderMessageId { get; } = senderMessageId;
 

@@ -42,6 +42,12 @@ public class NullEventPersistence : INullEventPersistence
         return Task.FromResult<IReadOnlyCollection<ICommittedDomainEvent>>(Array.Empty<ICommittedDomainEvent>());
     }
 
+    public Task<IReadOnlyCollection<ICommittedDomainEvent>> LoadCommittedEventsAsync(IIdentity id, int fromEventSequenceNumber, int toEventSequenceNumber,
+        CancellationToken cancellationToken)
+    {
+        return Task.FromResult<IReadOnlyCollection<ICommittedDomainEvent>>(Array.Empty<ICommittedDomainEvent>());
+    }
+
     public Task DeleteEventsAsync(IIdentity id, CancellationToken cancellationToken)
     {
         return Task.CompletedTask;

@@ -9,10 +9,13 @@ namespace MyTelegram.Schema;
 [JsonDerivedType(typeof(TWebViewResultUrl), nameof(TWebViewResultUrl))]
 public interface IWebViewResult : IObject
 {
+    BitArray Flags { get; set; }
+    bool Fullsize { get; set; }
+
     ///<summary>
     /// Webview session ID
     ///</summary>
-    long QueryId { get; set; }
+    long? QueryId { get; set; }
 
     ///<summary>
     /// Webview URL to open

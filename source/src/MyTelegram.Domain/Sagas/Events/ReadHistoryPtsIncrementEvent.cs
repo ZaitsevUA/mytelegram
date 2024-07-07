@@ -7,7 +7,7 @@ public class ReadHistoryPtsIncrementEvent(
     int readCount,
     int unreadCount,
     PtsChangeReason reason)
-    : RequestAggregateEvent2<ReadHistorySaga, ReadHistorySagaId>(requestInfo), IHasCorrelationId
+    : RequestAggregateEvent2<ReadHistorySaga, ReadHistorySagaId>(requestInfo)
 {
     public long PeerId { get; } = peerId;
     public int Pts { get; } = pts;

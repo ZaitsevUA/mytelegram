@@ -11,7 +11,9 @@ public class QtsAckedCommandHandler : CommandHandler<PtsAggregate, PtsId, QtsAck
             command.MsgId,
             command.Qts,
             command.GlobalSeqNo,
-            command.ToPeer);
+            command.ToPeer,
+            command.IsFromGetDifference
+            );
         return Task.CompletedTask;
     }
 }

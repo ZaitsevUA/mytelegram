@@ -16,7 +16,14 @@ internal sealed class GetSupportHandler(IQueryProcessor queryProcessor,
     protected async override Task<MyTelegram.Schema.Help.ISupport> HandleCoreAsync(IRequestInput input,
         MyTelegram.Schema.Help.RequestGetSupport obj)
     {
-        var supportUserId = options.CurrentValue.SupportUserId ?? MyTelegramServerDomainConsts.DefaultSupportUserId;
+        var supportUserId = MyTelegramServerDomainConsts.DefaultSupportUserId;
+        if (!string.IsNullOrEmpty(options.CurrentValue.SupportUserId))
+        {
+            if (!long.TryParse(options.CurrentValue.SupportUserId, out supportUserId))
+            {
+                supportUserId = MyTelegramServerDomainConsts.DefaultSupportUserId;
+            }
+        }
         var userReadModel = await queryProcessor.ProcessAsync(new GetUserByIdQuery(supportUserId));
 
         if (userReadModel == null)

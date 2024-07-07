@@ -170,7 +170,8 @@ internal sealed class SendMediaHandler : RpcResultObjectHandler<MyTelegram.Schem
             messageType: _mediaHelper.GeMessageType(media),
             pollId: pollId,
             topMsgId: topMsgId,
-            sendAs: _peerHelper.GetPeer(obj.SendAs, input.UserId)
+            sendAs: _peerHelper.GetPeer(obj.SendAs, input.UserId),
+            effect: obj.Effect
         );
         await _messageAppService.SendMessageAsync(sendMessageInput);
 
@@ -187,7 +188,7 @@ internal sealed class SendMediaHandler : RpcResultObjectHandler<MyTelegram.Schem
             poll.Quiz,
             inputMediaPoll.Poll.PublicVoters,
             poll.Question.Text,
-            poll.Answers.Select(p => new PollAnswer(p.Text.Text, p.Option,p.Text.Entities.ToBytes())).ToList(),
+            poll.Answers.Select(p => new PollAnswer(p.Text.Text, p.Option, p.Text.Entities.ToBytes())).ToList(),
             inputMediaPoll.CorrectAnswers?.ToList(),
             inputMediaPoll.Solution,
             inputMediaPoll.SolutionEntities.ToBytes(),

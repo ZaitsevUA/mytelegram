@@ -9,8 +9,7 @@ public class InviteToChannelCompletedEvent(
     IReadOnlyList<long>? privacyRestrictedUserId,
     bool hasLink
     )
-    : RequestAggregateEvent2<InviteToChannelSaga, InviteToChannelSagaId>(requestInfo),
-        IHasCorrelationId
+    : RequestAggregateEvent2<InviteToChannelSaga, InviteToChannelSagaId>(requestInfo)
 {
     public long ChannelId { get; } = channelId;
     public long InviterId { get; } = inviterId;

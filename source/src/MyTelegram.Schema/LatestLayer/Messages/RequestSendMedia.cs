@@ -87,10 +87,10 @@ namespace MyTelegram.Schema.Messages;
 /// 400 YOU_BLOCKED_USER You blocked this user.
 /// See <a href="https://corefork.telegram.org/method/messages.sendMedia" />
 ///</summary>
-[TlObject(0x7bd66041)]
+[TlObject(0x7852834e)]
 public sealed class RequestSendMedia : IRequest<MyTelegram.Schema.IUpdates>
 {
-    public uint ConstructorId => 0x7bd66041;
+    public uint ConstructorId => 0x7852834e;
     ///<summary>
     /// Flags, see <a href="https://corefork.telegram.org/mtproto/TL-combinators#conditional-fields">TL conditional fields</a>
     ///</summary>
@@ -182,6 +182,7 @@ public sealed class RequestSendMedia : IRequest<MyTelegram.Schema.IUpdates>
     ///</summary>
     public MyTelegram.Schema.IInputPeer? SendAs { get; set; }
     public MyTelegram.Schema.IInputQuickReplyShortcut? QuickReplyShortcut { get; set; }
+    public long? Effect { get; set; }
 
     public void ComputeFlag()
     {
@@ -197,6 +198,7 @@ public sealed class RequestSendMedia : IRequest<MyTelegram.Schema.IUpdates>
         if (/*ScheduleDate != 0 && */ScheduleDate.HasValue) { Flags[10] = true; }
         if (SendAs != null) { Flags[13] = true; }
         if (QuickReplyShortcut != null) { Flags[17] = true; }
+        if (/*Effect != 0 &&*/ Effect.HasValue) { Flags[18] = true; }
     }
 
     public void Serialize(IBufferWriter<byte> writer)
@@ -214,6 +216,7 @@ public sealed class RequestSendMedia : IRequest<MyTelegram.Schema.IUpdates>
         if (Flags[10]) { writer.Write(ScheduleDate.Value); }
         if (Flags[13]) { writer.Write(SendAs); }
         if (Flags[17]) { writer.Write(QuickReplyShortcut); }
+        if (Flags[18]) { writer.Write(Effect.Value); }
     }
 
     public void Deserialize(ref SequenceReader<byte> reader)
@@ -235,5 +238,6 @@ public sealed class RequestSendMedia : IRequest<MyTelegram.Schema.IUpdates>
         if (Flags[10]) { ScheduleDate = reader.ReadInt32(); }
         if (Flags[13]) { SendAs = reader.Read<MyTelegram.Schema.IInputPeer>(); }
         if (Flags[17]) { QuickReplyShortcut = reader.Read<MyTelegram.Schema.IInputQuickReplyShortcut>(); }
+        if (Flags[18]) { Effect = reader.ReadInt64(); }
     }
 }

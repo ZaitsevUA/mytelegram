@@ -1,8 +1,11 @@
-﻿namespace MyTelegram.Messenger.Services.Caching;
+﻿using GetPtsByPermAuthKeyIdQuery = MyTelegram.Queries.GetPtsByPermAuthKeyIdQuery;
 
-public class PtsHelper : IPtsHelper
+namespace MyTelegram.Messenger.Services.Caching;
+
+public class PtsHelper(IQueryProcessor queryProcessor) : IPtsHelper
 {
     private readonly ConcurrentDictionary<long, PtsCacheItem> _ownerToPtsDict = new();
+    private readonly ConcurrentDictionary<long, PtsCacheItem> _permAuthKeyIdToPtsDict = new();
 
     public int GetCachedPts(long ownerId)
     {
@@ -12,6 +15,84 @@ public class PtsHelper : IPtsHelper
         }
 
         return MyTelegramServerDomainConsts.PtsInitId;
+    }
+
+    public async Task<PtsCacheItem> GetPtsForUserAsync(long userId)
+    {
+        if (!_ownerToPtsDict.TryGetValue(userId, out var ptsCacheItem))
+        {
+            var ptsReadModel = await queryProcessor.ProcessAsync(new GetPtsByPeerIdQuery(userId));
+            if (ptsReadModel != null)
+            {
+                ptsCacheItem = new PtsCacheItem(ptsReadModel.PeerId, ptsReadModel.Pts, ptsReadModel.Qts,
+                    ptsReadModel.Date);
+            }
+            else
+            {
+                ptsCacheItem = new PtsCacheItem(userId, date: DateTime.UtcNow.ToTimestamp());
+            }
+
+            _ownerToPtsDict.TryAdd(userId, ptsCacheItem);
+        }
+
+        return ptsCacheItem;
+    }
+
+    public async Task<PtsCacheItem> GetPtsForAuthKeyIdAsync(long userId, long permAuthKeyId)
+    {
+        if (!_permAuthKeyIdToPtsDict.TryGetValue(permAuthKeyId, out var ptsCacheItem))
+        {
+            var ptsForAuthKeyIdReadModel =
+                await queryProcessor.ProcessAsync(new GetPtsByPermAuthKeyIdQuery(userId, permAuthKeyId));
+            if (ptsForAuthKeyIdReadModel != null)
+            {
+                ptsCacheItem = new PtsCacheItem(ptsForAuthKeyIdReadModel.PeerId, ptsForAuthKeyIdReadModel.Pts,
+                    ptsForAuthKeyIdReadModel.Qts);
+            }
+            else
+            {
+                ptsCacheItem = new PtsCacheItem(userId);
+            }
+            _permAuthKeyIdToPtsDict.TryAdd(permAuthKeyId, ptsCacheItem);
+        }
+
+        return ptsCacheItem;
+    }
+
+    public async Task<bool> UpdatePtsForAuthKeyIdAsync(long userId, long permAuthKeyId, int pts, bool forceUpdate)
+    {
+        if (!_permAuthKeyIdToPtsDict.TryGetValue(permAuthKeyId, out var ptsCacheItem))
+        {
+            var ptsForAuthKeyIdReadModel =
+                await queryProcessor.ProcessAsync(new GetPtsByPermAuthKeyIdQuery(userId, permAuthKeyId));
+            if (ptsForAuthKeyIdReadModel != null)
+            {
+                ptsCacheItem = new PtsCacheItem(ptsForAuthKeyIdReadModel.PeerId, ptsForAuthKeyIdReadModel.Pts,
+                    ptsForAuthKeyIdReadModel.Qts);
+            }
+            else
+            {
+                ptsCacheItem = new PtsCacheItem(userId);
+            }
+
+            _permAuthKeyIdToPtsDict.TryAdd(permAuthKeyId, ptsCacheItem);
+        }
+
+        if (ptsCacheItem.Pts + 1 == pts || forceUpdate)
+        {
+            var ptsCount = pts - ptsCacheItem.Pts;
+            if (ptsCount > 0)
+            {
+                ptsCacheItem.AddPts(ptsCount);
+                return true;
+            }
+        }
+        else
+        {
+            // Console.WriteLine($"Current pts is:{ptsCacheItem.Pts} newPts:{pts}");
+        }
+
+        return false;
     }
 
     public Task<int> IncrementPtsAsync(long ownerId, int currentPts, int ptsCount = 1, long permAuthKeyId = 0, int newUnreadCount = 0)

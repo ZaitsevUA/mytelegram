@@ -49,7 +49,7 @@ public class UpdateMessagePinDomainEventHandler(
             domainEvent.AggregateEvent.MessageIds, domainEvent.AggregateEvent.ToPeer,
             domainEvent.AggregateEvent.Pinned
             );
-
+        // Console.WriteLine($"################################ Push update pinned message:{domainEvent.AggregateEvent.OwnerPeerId},pts={domainEvent.AggregateEvent.Pts}");
         return PushUpdatesToPeerAsync(domainEvent.AggregateEvent.OwnerPeerId.ToUserPeer(), updates,
            pts: domainEvent.AggregateEvent.Pts);
     }
@@ -124,9 +124,11 @@ public class UpdateMessagePinDomainEventHandler(
     private IUpdates CreateUpdates(int pts, int ptsCount, List<int> messageIds, Peer toPeer, bool pinned)
     {
         var update = CreateUpdate(pts, ptsCount, messageIds, toPeer, pinned);
-        var updates = new TUpdateShort
+        var updates = new TUpdates()
         {
-            Update = update,
+            Updates = new TVector<IUpdate>(update),
+            Users = [],
+            Chats = [],
             Date = DateTime.UtcNow.ToTimestamp()
         };
 

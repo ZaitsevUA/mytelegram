@@ -114,6 +114,12 @@ public class MyEventStoreBase(
             cancellationToken);
     }
 
+    public Task<IReadOnlyCollection<IDomainEvent<TAggregate, TIdentity>>> LoadEventsAsync<TAggregate, TIdentity>(TIdentity id, int fromSequenceNumber, int toSequenceNumber,
+        CancellationToken cancellationToken) where TAggregate : IAggregateRoot<TIdentity> where TIdentity : IIdentity
+    {
+        throw new NotImplementedException();
+    }
+
     public virtual async Task<IReadOnlyCollection<IDomainEvent<TAggregate, TIdentity>>> LoadEventsAsync<TAggregate, TIdentity>(
         TIdentity id,
         int fromEventSequenceNumber,

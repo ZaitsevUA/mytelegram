@@ -14,7 +14,8 @@ public class UpdatePinnedMessageStartedEvent(
     int senderMessageId,
     Peer toPeer,
     long randomId,
-    string messageActionData)
+    string messageActionData
+    )
     : RequestAggregateEvent2<MessageAggregate, MessageId>(requestInfo)
 {
     public long OwnerPeerId { get; } = ownerPeerId;

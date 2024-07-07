@@ -49,9 +49,9 @@ public static class NativeAotExtensions
 
 
     //[DynamicDependency(DynamicallyAccessedMemberTypes.All,typeof(MyTelegram.Caching.Redis.CacheManager<CachedFutureSalt>))]
-    [DynamicDependency(DynamicallyAccessedMemberTypes.All,typeof(MyTelegram.Caching.Redis.CacheManager<string>))]
-    [DynamicDependency(DynamicallyAccessedMemberTypes.All,typeof(MyTelegram.Caching.Redis.CacheManager<UserCacheItem>))]
-    [DynamicDependency(DynamicallyAccessedMemberTypes.All,typeof(MyTelegram.Caching.Redis.CacheManager<GlobalPrivacySettingsCacheItem>))]
+    [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(MyTelegram.Caching.Redis.CacheManager<string>))]
+    [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(MyTelegram.Caching.Redis.CacheManager<UserCacheItem>))]
+    [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(MyTelegram.Caching.Redis.CacheManager<GlobalPrivacySettingsCacheItem>))]
     [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(MongoDbEventPersistence))]
     [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(MongoDbSnapshotPersistence))]
     [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(MongoDbEventDataModel))]
@@ -68,7 +68,7 @@ public static class NativeAotExtensions
     [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(MongoDB.Bson.Serialization.Serializers.ExpandoObjectSerializer))]
     [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(MongoDB.Bson.Serialization.Serializers.NullableSerializer<long>))]
     public static IServiceCollection AddMyNativeAot(this IServiceCollection services)
-    { 
+    {
         services.AddTransient<ISagaStore, MySagaAggregateStore>();
         //services.AddTransient<IRabbitMqSerializer, NativeAotUtf8JsonRabbitMqSerializer>();
         FixMyTelegramServices(services);
@@ -89,7 +89,7 @@ public static class NativeAotExtensions
 
         Fix(new DialogReadModel());
         Fix(new ReadModel.Impl.DialogReadModel());
-        Fix(new Draft(string.Empty, false, null, 0));
+        Fix(new Draft(true, false, null, string.Empty, 0));
     }
 
     //[DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(GuidSerializer))]

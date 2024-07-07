@@ -2,11 +2,12 @@
 
 namespace MyTelegram.Messenger.Services.Caching;
 
-public class PtsCacheItem(long ownerUid, int pts = 0, int qts = 0)
+public class PtsCacheItem(long ownerUid, int pts = 1, int qts = 0, int date = 0)
 {
     private int _unreadCount;
 
     public long OwnerPeerId { get; private set; } = ownerUid;
+    public int Date { get; set; } = date;
 
     public int Pts => pts;
 

@@ -107,18 +107,24 @@ public class PtsEventHandler(
     //        domainEvent.AggregateEvent.Pts, domainEvent.AggregateEvent.RequestInfo.PermAuthKeyId);
     //}
 
-    public Task HandleAsync(IDomainEvent<PtsAggregate, PtsId, PtsAckedEvent> domainEvent,
+    public async Task HandleAsync(IDomainEvent<PtsAggregate, PtsId, PtsAckedEvent> domainEvent,
         CancellationToken cancellationToken)
     {
-        return UpdatePtsForAuthKeyIdAsync(domainEvent.AggregateEvent.PeerId, domainEvent.AggregateEvent.PermAuthKeyId,
-            domainEvent.AggregateEvent.Pts, 0, domainEvent.AggregateEvent.GlobalSeqNo);
+        // Console.WriteLine($"pts acked:PeerId={domainEvent.AggregateEvent.PeerId} Pts={domainEvent.AggregateEvent.Pts} IsFromGetDifference={domainEvent.AggregateEvent.IsFromGetDifference}");
+        if (!peerHelper.IsChannelPeer(domainEvent.AggregateEvent.PeerId))
+        {
+            if (await ptsHelper.UpdatePtsForAuthKeyIdAsync(domainEvent.AggregateEvent.PeerId,
+                    domainEvent.AggregateEvent.PermAuthKeyId, domainEvent.AggregateEvent.Pts,
+                    domainEvent.AggregateEvent.IsFromGetDifference))
+            {
+                await UpdatePtsForAuthKeyIdAsync(domainEvent.AggregateEvent.PeerId, domainEvent.AggregateEvent.PermAuthKeyId,
+                       domainEvent.AggregateEvent.Pts, 0, domainEvent.AggregateEvent.GlobalSeqNo);
+                return;
+            }
+        }
 
-        //var command = new PtsAckedCommand(
-        //    PtsId.Create(domainEvent.AggregateEvent.PeerId, domainEvent.AggregateEvent.PermAuthKeyId),
-        //    domainEvent.AggregateEvent.PeerId, domainEvent.AggregateEvent.PermAuthKeyId,
-        //    domainEvent.AggregateEvent.MsgId, domainEvent.AggregateEvent.Pts, domainEvent.AggregateEvent.GlobalSeqNo,
-        //    domainEvent.AggregateEvent.ToPeer);
-        //await _commandBus.PublishAsync(command, default);
+        await UpdatePtsForAuthKeyIdAsync(domainEvent.AggregateEvent.PeerId, domainEvent.AggregateEvent.PermAuthKeyId,
+           domainEvent.AggregateEvent.Pts, 0, domainEvent.AggregateEvent.GlobalSeqNo);
     }
 
     public async Task HandleAsync(
@@ -191,49 +197,33 @@ public class PtsEventHandler(
         await ptsHelper.IncrementPtsAsync(domainEvent.AggregateEvent.ChannelId, domainEvent.AggregateEvent.Pts);
         await IncrementTempPtsAsync(domainEvent.AggregateEvent.ChannelId, domainEvent.AggregateEvent.Pts);
     }
-    private async Task IncrementTempPtsAsync(long ownerPeerId, int newPts, long permAuthKeyId = 0,
+    private Task IncrementTempPtsAsync(long ownerPeerId, int newPts, long permAuthKeyId = 0,
         int changedUnreadCount = 0)
     {
-        //var command = new IncrementTempPtsCommand(TempPtsId.New, ownerPeerId, newPts, permAuthKeyId);
+        var command =
+            new UpdatePtsCommand(
+                PtsId.Create(ownerPeerId),
+                ownerPeerId,
+                permAuthKeyId,
+                newPts,
+                0,
+                changedUnreadCount);
 
-        Task.Run(() =>
-        {
-            var command =
-                new UpdatePtsCommand(
-                    PtsId.Create(ownerPeerId),
-                    ownerPeerId,
-                    permAuthKeyId,
-                    newPts,
-                    0,
-                    changedUnreadCount);
+        ptsCommandExecutor.Enqueue(command);
 
-            ptsCommandExecutor.Enqueue(command);
-
-            //_commandBus.PublishAsync(command, default);
-        });
-
-        //if (permAuthKeyId != 0)
-        //{
-        //    await UpdatePtsForAuthKeyIdAsync(ownerPeerId, permAuthKeyId, newPts, changedUnreadCount, 0);
-        //}
+        return Task.CompletedTask;
     }
 
     private Task UpdatePtsForAuthKeyIdAsync(long ownerPeerId, long permAuthKeyId, int pts, int changedUnreadCount, long globalSeqNo)
     {
-        Task.Run(() =>
-        {
-            //Console.WriteLine(
-            //    $"update pts for auth key id:{ownerPeerId} {permAuthKeyId} {pts} {globalSeqNo} changedUnreadCount:{changedUnreadCount}");
-            var updatePtsForAuthKeyIdCommand =
-                new UpdatePtsForAuthKeyIdCommand(PtsId.Create(ownerPeerId, permAuthKeyId), ownerPeerId, permAuthKeyId,
-                    pts,
-                    changedUnreadCount,
-                    globalSeqNo);
+        var updatePtsForAuthKeyIdCommand =
+            new UpdatePtsForAuthKeyIdCommand(PtsId.Create(ownerPeerId, permAuthKeyId), ownerPeerId, permAuthKeyId,
+                pts,
+                changedUnreadCount,
+                globalSeqNo);
 
-            ptsCommandExecutor.Enqueue(updatePtsForAuthKeyIdCommand);
+        ptsCommandExecutor.Enqueue(updatePtsForAuthKeyIdCommand);
 
-            //return _commandBus.PublishAsync(updatePtsForAuthKeyIdCommand, default);
-        });
         return Task.CompletedTask;
     }
     private Task UpdateQtsForAuthKeyIdAsync(long ownerPeerId, long permAuthKeyId, int qts, long globalSeqNo)

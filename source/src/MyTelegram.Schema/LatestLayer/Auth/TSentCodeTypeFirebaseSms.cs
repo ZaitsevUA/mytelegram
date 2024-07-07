@@ -7,10 +7,10 @@ namespace MyTelegram.Schema.Auth;
 /// An authentication code should be delivered via SMS after Firebase attestation, as described in the <a href="https://corefork.telegram.org/api/auth">auth documentation »</a>.
 /// See <a href="https://corefork.telegram.org/constructor/auth.sentCodeTypeFirebaseSms" />
 ///</summary>
-[TlObject(0xe57b1432)]
+[TlObject(0x9fd736)]
 public sealed class TSentCodeTypeFirebaseSms : ISentCodeType
 {
-    public uint ConstructorId => 0xe57b1432;
+    public uint ConstructorId => 0x9fd736;
     ///<summary>
     /// Flags, see <a href="https://corefork.telegram.org/mtproto/TL-combinators#conditional-fields">TL conditional fields</a>
     ///</summary>
@@ -20,6 +20,8 @@ public sealed class TSentCodeTypeFirebaseSms : ISentCodeType
     /// On Android, the nonce to be used as described in the <a href="https://corefork.telegram.org/api/auth">auth documentation »</a>
     ///</summary>
     public byte[]? Nonce { get; set; }
+    public long? PlayIntegrityProjectId { get; set; }
+    public byte[]? PlayIntegrityNonce { get; set; }
 
     ///<summary>
     /// On iOS, must be compared with the <code>receipt</code> extracted from the received push notification.
@@ -39,6 +41,8 @@ public sealed class TSentCodeTypeFirebaseSms : ISentCodeType
     public void ComputeFlag()
     {
         if (Nonce != null) { Flags[0] = true; }
+        if (/*PlayIntegrityProjectId != 0 &&*/ PlayIntegrityProjectId.HasValue) { Flags[2] = true; }
+        if (PlayIntegrityNonce != null) { Flags[2] = true; }
         if (Receipt != null) { Flags[1] = true; }
         if (/*PushTimeout != 0 && */PushTimeout.HasValue) { Flags[1] = true; }
 
@@ -50,6 +54,8 @@ public sealed class TSentCodeTypeFirebaseSms : ISentCodeType
         writer.Write(ConstructorId);
         writer.Write(Flags);
         if (Flags[0]) { writer.Write(Nonce); }
+        if (Flags[2]) { writer.Write(PlayIntegrityProjectId.Value); }
+        if (Flags[2]) { writer.Write(PlayIntegrityNonce); }
         if (Flags[1]) { writer.Write(Receipt); }
         if (Flags[1]) { writer.Write(PushTimeout.Value); }
         writer.Write(Length);
@@ -59,6 +65,8 @@ public sealed class TSentCodeTypeFirebaseSms : ISentCodeType
     {
         Flags = reader.ReadBitArray();
         if (Flags[0]) { Nonce = reader.ReadBytes(); }
+        if (Flags[2]) { PlayIntegrityProjectId = reader.ReadInt64(); }
+        if (Flags[2]) { PlayIntegrityNonce = reader.ReadBytes(); }
         if (Flags[1]) { Receipt = reader.ReadString(); }
         if (Flags[1]) { PushTimeout = reader.ReadInt32(); }
         Length = reader.ReadInt32();

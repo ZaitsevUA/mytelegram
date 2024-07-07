@@ -292,7 +292,8 @@ public class MessageAppService(
             TopMsgId: input.TopMsgId,
             PostAuthor: postAuthor,
             SendAs: input.SendAs,
-            QuickReplyShortcut: input.QuickReplyShortcut
+            QuickReplyShortcut: input.QuickReplyShortcut,
+            Effect: input.Effect
         );
 
         var command = new CreateOutboxMessageCommand(MessageId.Create(ownerPeerId, messageId),
@@ -308,52 +309,6 @@ public class MessageAppService(
             );
         await commandBus.PublishAsync(command);
     }
-
-    //public async Task SendMessageAsync2(SendMessageInput input)
-    //{
-    //    await CheckAccessHashAsync(input);
-    //    await CheckBlockedAsync(input);
-    //    await CheckChannelBannedRightsAsync(input);
-
-    //    var ownerPeerId = input.ToPeer.PeerType == PeerType.Channel ? input.ToPeer.PeerId : input.SenderPeerId;
-
-    //    var item = await GetMessageEntitiesAsync(input);
-
-    //    var date = CurrentDate;
-    //    //var aggregateId = MessageId.Create(ownerPeerId, outboxMessageId);
-    //    var aggregateId = MessageId.CreateWithRandomId(ownerPeerId, input.RandomId);
-    //    var messageItem = new MessageItem(
-    //        input.ToPeer with { PeerId = ownerPeerId },
-    //        input.ToPeer,
-    //        new Peer(PeerType.User, input.SenderPeerId),
-    //        0,
-    //        input.Message,
-    //        date,
-    //        input.RandomId,
-    //        true,
-    //        input.SendMessageType,
-    //        (MessageType)input.SendMessageType,
-    //        MessageSubType.Normal,
-    //        input.ReplyToMsgId,
-    //        input.MessageActionData,
-    //        MessageActionType.None,
-    //        item.entities.ToBytes(),
-    //        input.Media,
-    //        input.GroupId,
-    //        pollId: input.PollId,
-    //        replyMarkup: input.ReplyMarkup,
-    //        topMsgId: input.TopMsgId
-    //    );
-
-    //    var command = new StartSendMessageCommand(aggregateId,
-    //        input.RequestInfo with { RequestId = Guid.NewGuid() },
-    //        messageItem,
-    //        item.mentionedUserIds,
-    //        input.ClearDraft,
-    //        input.GroupItemCount);
-
-    //    await _commandBus.PublishAsync(command, default);
-    //}
 
     private (List<TMessageEntityMention> mentions, List<string> userNameList) GetMentions(string message)
     {

@@ -19,7 +19,14 @@ public interface IDialogReadModel : IReadModel
     int PinnedOrder { get; }
     int Pts { get; }
 
+    /// <summary>
+    /// The maximum ID of a received message that has been read (messages.ReadHistory)
+    /// </summary>
     int ReadInboxMaxId { get; }
+
+    /// <summary>
+    /// The max ID of the message we sent that was read by the other party
+    /// </summary>
     int ReadOutboxMaxId { get; }
     long ToPeerId { get; }
     PeerType ToPeerType { get; }

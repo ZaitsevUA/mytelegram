@@ -30,8 +30,9 @@ namespace MyTelegram.Services.Extensions
             services.AddSingleton<IInvokeAfterMsgProcessor, InvokeAfterMsgProcessor>();
             services.AddSystemTextJson();
 
-            services.AddSingleton(typeof(ICacheHelper<,>),typeof(CacheHelper<,>));
             services.AddSingleton<IMtpHelper, MtpHelper>();
+            services.AddSingleton(typeof(ICacheHelper<,>),typeof(CacheHelper<,>));
+            services.AddTransient<IHashCalculator, HashCalculator>();
             services.AddSingleton(typeof(IQueuedCommandExecutor<,,>), typeof(QueuedCommandExecutor<,,>));
 
             return services;

@@ -4,10 +4,12 @@ using System.Text.Json.Serialization;
 
 namespace MyTelegram.Services.NativeAot;
 
-// Generation time:2024-06-24 06:40:41Z ,count:70
+// Count:74
 // MyTelegram.Core
 [JsonSerializable(typeof(MyTelegram.Core.AcksDataReceivedEvent))]
 [JsonSerializable(typeof(MyTelegram.Core.AppCodeCreatedIntegrationEvent))]
+[JsonSerializable(typeof(MyTelegram.Core.AuthCacheItem))]
+[JsonSerializable(typeof(MyTelegram.Core.AuthKeyCacheItem))]
 [JsonSerializable(typeof(MyTelegram.Core.AuthKeyCreatedIntegrationEvent))]
 [JsonSerializable(typeof(MyTelegram.Core.AuthKeyNotFoundEvent))]
 [JsonSerializable(typeof(MyTelegram.Core.AuthKeyUnRegisteredIntegrationEvent))]
@@ -38,6 +40,7 @@ namespace MyTelegram.Services.NativeAot;
 [JsonSerializable(typeof(MyTelegram.Core.MessengerCommandDataReceivedEvent))]
 [JsonSerializable(typeof(MyTelegram.Core.MessengerDataReceivedEvent))]
 [JsonSerializable(typeof(MyTelegram.Core.MessengerQueryDataReceivedEvent))]
+[JsonSerializable(typeof(MyTelegram.Core.MtpMessage))]
 [JsonSerializable(typeof(MyTelegram.Core.NewDeviceCreatedEvent))]
 [JsonSerializable(typeof(MyTelegram.Core.NewPtsMessageHasSentEvent))]
 [JsonSerializable(typeof(MyTelegram.Core.NewQtsMessageHasSentEvent))]
@@ -48,6 +51,7 @@ namespace MyTelegram.Services.NativeAot;
 [JsonSerializable(typeof(MyTelegram.Core.PushNotificationCreatedEvent))]
 [JsonSerializable(typeof(MyTelegram.Core.RpcMessageHasSentEvent))]
 [JsonSerializable(typeof(MyTelegram.Core.SessionPasswordStateChangedEvent))]
+[JsonSerializable(typeof(MyTelegram.Core.SessionRevokedEvent))]
 [JsonSerializable(typeof(MyTelegram.Core.SetSessionPasswordStateEvent))]
 [JsonSerializable(typeof(MyTelegram.Core.StickerDataReceivedEvent))]
 [JsonSerializable(typeof(MyTelegram.Core.TransportErrorEvent))]

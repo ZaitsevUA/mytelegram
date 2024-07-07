@@ -37,6 +37,7 @@ public sealed class TPhoneCallProtocolLayerN : IPhoneCallProtocol
     /// Maximum layer for remote libtgvoip
     ///</summary>
     public int MaxLayer { get; set; }
+
     public TVector<string> LibraryVersions { get; set; }
 
     public void ComputeFlag()

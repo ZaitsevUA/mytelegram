@@ -35,5 +35,6 @@ public record MessageItem //: ValueObject
         int? PostMessageId = null,
         bool IsQuickReply = false,
         string? QuickReplyShortcut = null,
-        Guid? BatchId = null
+        Guid? BatchId = null,
+        long? Effect = null
         );

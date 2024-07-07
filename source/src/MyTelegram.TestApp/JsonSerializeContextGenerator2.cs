@@ -38,8 +38,6 @@ public class JsonSerializeContextGenerator2
         sb.AppendLine("namespace MyTelegram.Messenger.NativeAot;");
         sb.AppendLine();
 
-        sb.AppendLine($"// Generation time:{DateTime.UtcNow:u}");
-
         foreach (var kv in allTypes)
         {
             sb.AppendLine($"// {kv.Key}");

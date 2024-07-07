@@ -166,22 +166,14 @@ public class DialogAggregate : MyInMemorySnapshotAggregateRoot<DialogAggregate, 
     }
 
     public void SaveDraft(RequestInfo requestInfo,
-        string message,
-        bool noWebpage,
-        int? replyMsgId,
-        int date,
-        byte[]? entities
+        Draft draft
     )
     {
         //Specs.AggregateIsCreated.ThrowDomainErrorIfNotSatisfied(this);
         Emit(new DraftSavedEvent(requestInfo,
             _state.OwnerId,
             _state.ToPeer,
-            new Draft(message,
-                noWebpage,
-                replyMsgId,
-                date,
-                entities)));
+           draft));
     }
 
     public void SetOutboxTopMessage(

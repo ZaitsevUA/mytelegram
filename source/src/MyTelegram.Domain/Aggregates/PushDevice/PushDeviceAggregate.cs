@@ -14,7 +14,7 @@ public class PushDeviceAggregate(PushDeviceId id) : AggregateRoot<PushDeviceAggr
 
     public void RegisterDevice(RequestInfo requestInfo,
         long userId,
-        long authKeyId,
+        long permAuthKeyId,
         int tokenType,
         string token,
         bool noMuted,
@@ -24,7 +24,7 @@ public class PushDeviceAggregate(PushDeviceId id) : AggregateRoot<PushDeviceAggr
     {
         Emit(new PushDeviceRegisteredEvent(requestInfo,
             userId,
-            authKeyId,
+            permAuthKeyId,
             tokenType,
             token,
             noMuted,

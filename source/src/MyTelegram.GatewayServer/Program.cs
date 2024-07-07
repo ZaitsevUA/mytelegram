@@ -111,7 +111,8 @@ builder.WebHost.ConfigureKestrel(options =>
                                     });
                                 }
 
-                                listenOptions.UseConnectionLogging()
+                                listenOptions
+                                    //.UseConnectionLogging()
                                     .UseConnectionHandler<MtpConnectionHandler>()
                                     ;
                             });

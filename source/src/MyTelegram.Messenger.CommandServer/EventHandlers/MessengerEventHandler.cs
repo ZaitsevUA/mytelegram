@@ -1,5 +1,4 @@
-﻿using EventFlow.Exceptions;
-using MyTelegram.Domain.Aggregates.Device;
+﻿using MyTelegram.Domain.Aggregates.Device;
 using MyTelegram.Domain.Commands.Device;
 
 namespace MyTelegram.Messenger.CommandServer.EventHandlers;
@@ -21,15 +20,15 @@ public class MessengerEventHandler(
         var command = new UnRegisterDeviceForAuthKeyCommand(DeviceId.Create(eventData.PermAuthKeyId),
             eventData.PermAuthKeyId,
             eventData.TempAuthKeyId);
-        return commandBus.PublishAsync(command, default);
+        return commandBus.PublishAsync(command);
     }
 
     public Task HandleEventAsync(BindUidToAuthKeyIntegrationEvent eventData)
     {
-        var command = new BindUidToDeviceCommand(DeviceId.Create(eventData.PermAuthKeyId),
+        var command = new BindUserIdToDeviceCommand(DeviceId.Create(eventData.PermAuthKeyId),
             eventData.UserId,
             eventData.PermAuthKeyId);
-        return commandBus.PublishAsync(command, default);
+        return commandBus.PublishAsync(command);
     }
 
     public Task HandleEventAsync(MessengerCommandDataReceivedEvent eventData)

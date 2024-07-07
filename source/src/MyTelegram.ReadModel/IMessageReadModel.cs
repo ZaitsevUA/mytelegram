@@ -55,5 +55,6 @@ public interface IMessageReadModel : IReadModel, IHasReactions
     string? QuickReplyShortcut { get; }
     // long RandomId { get; }
     Guid BatchId { get; }
-    
+    long? Effect { get; }
+
 }

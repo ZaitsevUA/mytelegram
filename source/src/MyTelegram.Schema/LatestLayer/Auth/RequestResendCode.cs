@@ -14,10 +14,12 @@ namespace MyTelegram.Schema.Auth;
 /// 406 SEND_CODE_UNAVAILABLE Returned when all available options for this type of number were already used (e.g. flash-call, then SMS, then this error might be returned to trigger a second resend).
 /// See <a href="https://corefork.telegram.org/method/auth.resendCode" />
 ///</summary>
-[TlObject(0x3ef1a9bf)]
+[TlObject(0xcae47523)]
 public sealed class RequestResendCode : IRequest<MyTelegram.Schema.Auth.ISentCode>
 {
-    public uint ConstructorId => 0x3ef1a9bf;
+    public uint ConstructorId => 0xcae47523;
+    public BitArray Flags { get; set; } = new BitArray(32);
+
     ///<summary>
     /// The phone number
     ///</summary>
@@ -27,23 +29,28 @@ public sealed class RequestResendCode : IRequest<MyTelegram.Schema.Auth.ISentCod
     /// The phone code hash obtained from <a href="https://corefork.telegram.org/method/auth.sendCode">auth.sendCode</a>
     ///</summary>
     public string PhoneCodeHash { get; set; }
+    public string? Reason { get; set; }
 
     public void ComputeFlag()
     {
-
+        if (Reason != null) { Flags[0] = true; }
     }
 
     public void Serialize(IBufferWriter<byte> writer)
     {
         ComputeFlag();
         writer.Write(ConstructorId);
+        writer.Write(Flags);
         writer.Write(PhoneNumber);
         writer.Write(PhoneCodeHash);
+        if (Flags[0]) { writer.Write(Reason); }
     }
 
     public void Deserialize(ref SequenceReader<byte> reader)
     {
+        Flags = reader.ReadBitArray();
         PhoneNumber = reader.ReadString();
         PhoneCodeHash = reader.ReadString();
+        if (Flags[0]) { Reason = reader.ReadString(); }
     }
 }

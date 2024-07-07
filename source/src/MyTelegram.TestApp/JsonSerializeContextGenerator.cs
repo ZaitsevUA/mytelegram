@@ -38,7 +38,7 @@ public class JsonSerializeContextGenerator
         sb.AppendLine("namespace MyTelegram.Services.NativeAot;");
         sb.AppendLine();
 
-        sb.AppendLine($"// Generation time:{DateTime.UtcNow:u} ,count:{allTypes.Sum(x => x.Value.Count())}");
+        sb.AppendLine($"// Count:{allTypes.Sum(x => x.Value.Count())}");
 
         foreach (var kv in allTypes)
         {

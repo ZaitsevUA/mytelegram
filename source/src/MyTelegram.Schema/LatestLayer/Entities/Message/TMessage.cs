@@ -7,10 +7,10 @@ namespace MyTelegram.Schema;
 /// A message
 /// See <a href="https://corefork.telegram.org/constructor/message" />
 ///</summary>
-[TlObject(0x2357bf25)]
+[TlObject(0x94345242)]
 public sealed class TMessage : IMessage
 {
-    public uint ConstructorId => 0x2357bf25;
+    public uint ConstructorId => 0x94345242;
     ///<summary>
     /// Flags, see <a href="https://corefork.telegram.org/mtproto/TL-combinators#conditional-fields">TL conditional fields</a>
     ///</summary>
@@ -200,6 +200,8 @@ public sealed class TMessage : IMessage
     ///</summary>
     public int? TtlPeriod { get; set; }
     public int? QuickReplyShortcutId { get; set; }
+    public long? Effect { get; set; }
+    public MyTelegram.Schema.IFactCheck? Factcheck { get; set; }
 
     public void ComputeFlag()
     {
@@ -235,6 +237,8 @@ public sealed class TMessage : IMessage
         if (RestrictionReason?.Count > 0) { Flags[22] = true; }
         if (/*TtlPeriod != 0 && */TtlPeriod.HasValue) { Flags[25] = true; }
         if (/*QuickReplyShortcutId != 0 && */QuickReplyShortcutId.HasValue) { Flags[30] = true; }
+        if (/*Effect != 0 &&*/ Effect.HasValue) { Flags2[2] = true; }
+        if (Factcheck != null) { Flags2[3] = true; }
     }
 
     public void Serialize(IBufferWriter<byte> writer)
@@ -267,6 +271,8 @@ public sealed class TMessage : IMessage
         if (Flags[22]) { writer.Write(RestrictionReason); }
         if (Flags[25]) { writer.Write(TtlPeriod.Value); }
         if (Flags[30]) { writer.Write(QuickReplyShortcutId.Value); }
+        if (Flags2[2]) { writer.Write(Effect.Value); }
+        if (Flags2[3]) { writer.Write(Factcheck); }
     }
 
     public void Deserialize(ref SequenceReader<byte> reader)
@@ -309,5 +315,7 @@ public sealed class TMessage : IMessage
         if (Flags[22]) { RestrictionReason = reader.Read<TVector<MyTelegram.Schema.IRestrictionReason>>(); }
         if (Flags[25]) { TtlPeriod = reader.ReadInt32(); }
         if (Flags[30]) { QuickReplyShortcutId = reader.ReadInt32(); }
+        if (Flags2[2]) { Effect = reader.ReadInt64(); }
+        if (Flags2[3]) { Factcheck = reader.Read<MyTelegram.Schema.IFactCheck>(); }
     }
 }

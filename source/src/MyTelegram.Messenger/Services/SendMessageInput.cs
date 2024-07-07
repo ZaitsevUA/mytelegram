@@ -25,7 +25,8 @@ public record SendMessageInput
         byte[]? replyMarkup = null,
         int? topMsgId = null,
         Peer? sendAs = null,
-        string? quickReplyShortcut = null
+        string? quickReplyShortcut = null,
+        long? effect = null
         )
     {
         RequestInfo = requestInfo;
@@ -50,6 +51,7 @@ public record SendMessageInput
         TopMsgId = topMsgId;
         SendAs = sendAs;
         QuickReplyShortcut = quickReplyShortcut;
+        Effect = effect;
     }
 
     public bool ClearDraft { get; }
@@ -63,6 +65,7 @@ public record SendMessageInput
     public int? TopMsgId { get; }
     public Peer? SendAs { get; }
     public string? QuickReplyShortcut { get; }
+    public long? Effect { get; }
     public byte[]? Media { get; }
     public string Message { get; }
     public string? MessageActionData { get; }

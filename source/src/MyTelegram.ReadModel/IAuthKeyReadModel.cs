@@ -10,4 +10,5 @@ public interface IAuthKeyReadModel : IReadModel
     long ServerSalt { get; }
     long UserId { get; }
     int Layer { get; }
+    DeviceType? DeviceType { get; }
 }

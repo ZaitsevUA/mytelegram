@@ -6,6 +6,7 @@ public interface IPtsForAuthKeyIdReadModel : IReadModel
     string Id { get; }
     long PeerId { get; }
     long PermAuthKeyId { get; }
+    //int UnreadCount { get; }
     int Pts { get; }
     int Qts { get; }
 }

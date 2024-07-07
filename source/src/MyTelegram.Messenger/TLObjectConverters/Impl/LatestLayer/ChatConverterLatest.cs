@@ -49,6 +49,7 @@ public class ChatConverterLatest(
         if (channelMemberIsLeft)
         {
             channel.Left = true;
+            channel.ParticipantsCount = null;
         }
         else
         {
@@ -237,7 +238,7 @@ public class ChatConverterLatest(
         //IChatPhoto chatPhoto,
         //IUserReadModel userReadModel,
         IUser user //,
-        //IReadOnlyCollection<IPrivacyReadModel>? privacies = null
+                   //IReadOnlyCollection<IPrivacyReadModel>? privacies = null
     )
     {
         var participant = ToChannelParticipantCore(selfUserId, channelReadModel, channelMemberReadModel);
@@ -259,15 +260,15 @@ public class ChatConverterLatest(
         //IUserReadModel userReadModel,
         //IChatPhoto chatPhoto,
         IUser user
-        //,
-        //IReadOnlyCollection<IPrivacyReadModel>? privacies = null
+    //,
+    //IReadOnlyCollection<IPrivacyReadModel>? privacies = null
     )
     {
         var participant = ToChannelParticipantCore(selfUserId, channelReadModel, channelMemberReadModel);
         //var user = GetUserConverter().ToUser(userReadModel, selfUserId, privacies: privacies);
         //var channel = ToChannel(channelReadModel, selfUserId);
         return new Schema.Channels.LayerN.TChannelParticipant
-            { Participant = participant, Users = new TVector<IUser>(user) };
+        { Participant = participant, Users = new TVector<IUser>(user) };
     }
 
     public IChannelParticipants ToChannelParticipants(
@@ -281,12 +282,10 @@ public class ChatConverterLatest(
         IEnumerable<IUser> users,
         DeviceType deviceType,
         bool forceNotLeft //,
-        //IReadOnlyCollection<IContactReadModel>? contactReadModels = null,
-        //IReadOnlyCollection<IPrivacyReadModel>? privacies = null
+                          //IReadOnlyCollection<IContactReadModel>? contactReadModels = null,
+                          //IReadOnlyCollection<IPrivacyReadModel>? privacies = null
     )
     {
-        var participants =
-            ToChannelParticipantsCore(selfUserId, channelReadModel, chatAdminReadModels, channelMemberReadModels);
         //var users = GetUserConverter().ToUserList(userReadModels, selfUserId, contactReadModels, privacies);
         var channelMemberReadModel = channelMemberReadModels.FirstOrDefault(p => p.UserId == selfUserId);
         var channelMemberIsLeft = true;
@@ -310,6 +309,17 @@ public class ChatConverterLatest(
             //chatPhoto,
             channelMemberIsLeft);
 
+        if (channelReadModel.Broadcast)
+        {
+            if (selfUserId != channelReadModel.CreatorId)
+            {
+                chatAdminReadModels = [];
+            }
+        }
+
+        var participants =
+            ToChannelParticipantsCore(selfUserId, channelReadModel, chatAdminReadModels, channelMemberReadModels);
+
         return new TChannelParticipants
         {
             Chats = new TVector<IChat>(channel),
@@ -328,7 +338,7 @@ public class ChatConverterLatest(
         long selfUserId,
         IChatReadModel chat,
         IPhotoReadModel? photoReadModel
-        //IChatPhoto chatPhoto,
+    //IChatPhoto chatPhoto,
     )
     {
         if (chat.ChatMembers.All(p => p.UserId != selfUserId))
@@ -364,9 +374,9 @@ public class ChatConverterLatest(
         IPeerNotifySettingsReadModel peerNotifySettingsReadModel,
         IChannelReadModel? migratedToChannelReadModel = null,
         IChatInviteReadModel? chatInviteReadModel = null
-        //,
-        //IReadOnlyCollection<IContactReadModel>? contactReadModels = null,
-        //IReadOnlyCollection<IPrivacyReadModel>? privacies = null
+    //,
+    //IReadOnlyCollection<IContactReadModel>? contactReadModels = null,
+    //IReadOnlyCollection<IPrivacyReadModel>? privacies = null
     )
     {
         var tChat = ToChat(selfUserId, chat, photoReadModel);
@@ -454,7 +464,7 @@ public class ChatConverterLatest(
         long selfUserId,
         IReadOnlyCollection<IChatReadModel> chats,
         IReadOnlyCollection<IPhotoReadModel>? photoReadModels
-        //IPhotoConverter photoConverter,
+    //IPhotoConverter photoConverter,
     )
     {
         var chatList = new List<IChat>();
@@ -642,17 +652,17 @@ public class ChatConverterLatest(
     private static TChatParticipants ToChatParticipants(long chatId,
         IReadOnlyList<ChatMember> chatMemberList,
         int date,
-        long creatorUid,
+        long creatorUserId,
         int chatVersion)
     {
         var participants = chatMemberList.Select(p =>
         {
-            if (p.UserId == creatorUid)
+            if (p.UserId == creatorUserId)
             {
                 return (IChatParticipant)new TChatParticipantCreator { UserId = p.UserId };
             }
 
-            return new TChatParticipant { Date = date, InviterId = creatorUid, UserId = p.UserId };
+            return new TChatParticipant { Date = date, InviterId = creatorUserId, UserId = p.UserId };
         }).ToList();
 
         return new TChatParticipants
@@ -668,7 +678,7 @@ public class ChatConverterLatest(
         IChannelReadModel channelReadModel,
         IPhotoReadModel? photoReadModel,
         IChannelMemberReadModel? channelMemberReadModel
-        //IChatPhoto chatPhoto,
+    //IChatPhoto chatPhoto,
     )
     {
         return ToChannel(
@@ -762,13 +772,20 @@ public class ChatConverterLatest(
     {
         var participants = new List<Schema.IChannelParticipant>();
 
-        foreach (var chatAdminReadModel in chatAdminReadModels ?? Array.Empty<IChatAdminReadModel>())
+        foreach (var chatAdminReadModel in chatAdminReadModels ?? [])
         {
             participants.Add(ToChatParticipantAdmin(selfUserId, chatAdminReadModel));
         }
 
         foreach (var channelMemberReadModel in channelMemberReadModels)
         {
+            if (
+                (channelReadModel.Broadcast || channelReadModel.HasLink) &&
+                channelMemberReadModel.UserId == channelReadModel.CreatorId &&
+                selfUserId != channelReadModel.CreatorId)
+            {
+                continue;
+            }
             participants.Add(ToChannelParticipantCore(selfUserId, channelReadModel, channelMemberReadModel));
         }
 

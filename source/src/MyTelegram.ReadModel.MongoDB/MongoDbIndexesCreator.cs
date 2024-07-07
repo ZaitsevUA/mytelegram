@@ -76,7 +76,7 @@ public class MongoDbIndexesCreator(
         await CreateIndexAsync<MessageReadModel>(p => p.Pts);
         await CreateIndexAsync<MessageReadModel>(p => p.ToPeerType);
         await CreateIndexAsync<MessageReadModel>(p => p.SendMessageType);
-        //await CreateIndexAsync<MessageReadModel>(p => p.ReplyToMsgId);
+        await CreateIndexAsync<MessageReadModel>(p => p.ReplyToMsgId);
 
         await CreateIndexAsync<UserReadModel>(p => p.UserId);
         await CreateIndexAsync<UserReadModel>(p => p.PhoneNumber);

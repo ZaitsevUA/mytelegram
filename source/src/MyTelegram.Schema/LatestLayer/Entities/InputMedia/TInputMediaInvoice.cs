@@ -7,10 +7,10 @@ namespace MyTelegram.Schema;
 /// Generated invoice of a <a href="https://corefork.telegram.org/bots/payments">bot payment</a>
 /// See <a href="https://corefork.telegram.org/constructor/inputMediaInvoice" />
 ///</summary>
-[TlObject(0x8eb5a6d5)]
+[TlObject(0x405fef0d)]
 public sealed class TInputMediaInvoice : IInputMedia
 {
-    public uint ConstructorId => 0x8eb5a6d5;
+    public uint ConstructorId => 0x405fef0d;
     ///<summary>
     /// Flags, see <a href="https://corefork.telegram.org/mtproto/TL-combinators#conditional-fields">TL conditional fields</a>
     ///</summary>
@@ -46,7 +46,7 @@ public sealed class TInputMediaInvoice : IInputMedia
     ///<summary>
     /// Payments provider token, obtained via <a href="https://t.me/botfather">Botfather</a>
     ///</summary>
-    public string Provider { get; set; }
+    public string? Provider { get; set; }
 
     ///<summary>
     /// JSON-encoded data about the invoice, which will be shared with the payment provider. A detailed description of required fields should be provided by the payment provider.
@@ -68,6 +68,7 @@ public sealed class TInputMediaInvoice : IInputMedia
     public void ComputeFlag()
     {
         if (Photo != null) { Flags[0] = true; }
+        if (Provider != null) { Flags[3] = true; }
         if (StartParam != null) { Flags[1] = true; }
         if (ExtendedMedia != null) { Flags[2] = true; }
     }
@@ -82,7 +83,7 @@ public sealed class TInputMediaInvoice : IInputMedia
         if (Flags[0]) { writer.Write(Photo); }
         writer.Write(Invoice);
         writer.Write(Payload);
-        writer.Write(Provider);
+        if (Flags[3]) { writer.Write(Provider); }
         writer.Write(ProviderData);
         if (Flags[1]) { writer.Write(StartParam); }
         if (Flags[2]) { writer.Write(ExtendedMedia); }
@@ -96,7 +97,7 @@ public sealed class TInputMediaInvoice : IInputMedia
         if (Flags[0]) { Photo = reader.Read<MyTelegram.Schema.IInputWebDocument>(); }
         Invoice = reader.Read<MyTelegram.Schema.IInvoice>();
         Payload = reader.ReadBytes();
-        Provider = reader.ReadString();
+        if (Flags[3]) { Provider = reader.ReadString(); }
         ProviderData = reader.Read<MyTelegram.Schema.IDataJSON>();
         if (Flags[1]) { StartParam = reader.ReadString(); }
         if (Flags[2]) { ExtendedMedia = reader.Read<MyTelegram.Schema.IInputMedia>(); }

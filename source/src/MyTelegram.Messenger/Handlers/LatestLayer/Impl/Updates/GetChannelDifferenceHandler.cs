@@ -91,7 +91,8 @@ internal sealed class GetChannelDifferenceHandler(
                 await ackCacheService.AddRpcPtsToCacheAsync(input.ReqMsgId,
                     0,
                     channelMaxGlobalSeqNo,
-                    new Peer(PeerType.Channel, inputChannel.ChannelId));
+                    new Peer(PeerType.Channel, inputChannel.ChannelId),
+                    true);
             }
 
             var allUpdateList = updatesReadModels.Where(p => p.UpdatesType == UpdatesType.Updates)

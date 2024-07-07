@@ -11,7 +11,8 @@ public class WebSocketMiddleware(
     : IMiddleware
 {
     private readonly string _subProtocol = "binary";
-    private readonly string _wsPath = "/apiws";
+
+    private readonly string[] _allowedWsPaths = ["/apiws", "/apiws_premium", "/apiws_test"];
     private bool _isWebSocketConnected;
 
     public async Task InvokeAsync(HttpContext context,
@@ -19,7 +20,7 @@ public class WebSocketMiddleware(
     {
         if (context.WebSockets.IsWebSocketRequest)
         {
-            if (context.Request.Path == _wsPath)
+            if (_allowedWsPaths.Contains(context.Request.Path.Value ?? string.Empty))
             {
                 var webSocket = await context.WebSockets.AcceptWebSocketAsync(_subProtocol);
                 _isWebSocketConnected = true;

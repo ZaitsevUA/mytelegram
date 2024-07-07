@@ -198,6 +198,10 @@ public class DocumentReadModel : Impl.DocumentReadModel, IMongoDbReadModel
 {
 }
 
+// public class ThemeReadModel : Impl.ThemeReadModel, IMongoDbReadModel
+// {
+//
+// }
 //public class ChannelPtsReadModel : Impl.ChannelPtsReadModel, IMongoDbReadModel
 //{
 

@@ -10,18 +10,46 @@ public class DataSeeder(
     public async Task SeedAsync()
     {
         await CreateOfficialUserAsync();
-        //await CreateBotFatherUserAsync();
-        var initUid = MyTelegramServerDomainConsts.UserIdInitId;
+        await CreateDefaultSupportUserAsync();
+        await CreateGroupAnonymousBotUserAsync();
+        var initUserId = MyTelegramServerDomainConsts.UserIdInitId;
         var testUserCount = 30;
         for (var i = 1; i < testUserCount; i++)
         {
-            await CreateUserIfNeedAsync(initUid + i,
+            await CreateUserIfNeedAsync(initUserId + i,
                 $"1{i}",
                 $"{i}",
                 $"{i}",
                 $"user{i}",
                 false);
         }
+    }
+
+    private async Task CreateDefaultSupportUserAsync()
+    {
+        var userId = MyTelegramServerDomainConsts.DefaultSupportUserId;
+        var created = await CreateUserIfNeedAsync(userId,
+            MyTelegramServerDomainConsts.DefaultSupportUserId.ToString(),
+            "MyTelegram Support",
+            null,
+            null,
+            false);
+
+        if (created)
+        {
+            var command = new SetSupportCommand(UserId.Create(userId), true);
+            await commandBus.PublishAsync(command, CancellationToken.None);
+
+            var setVerifiedCommand = new SetVerifiedCommand(UserId.Create(userId), true);
+            await commandBus.PublishAsync(setVerifiedCommand, CancellationToken.None);
+        }
+    }
+
+    private async Task CreateGroupAnonymousBotUserAsync()
+    {
+        var userId = MyTelegramServerDomainConsts.GroupAnonymousBotUserId;
+        var userName = "GroupAnonymousBot";
+        await CreateUserIfNeedAsync(userId, "", "Group", null, userName, true);
     }
 
     private async Task CreateOfficialUserAsync()
@@ -43,7 +71,6 @@ public class DataSeeder(
             await commandBus.PublishAsync(setVerifiedCommand, CancellationToken.None);
         }
     }
-
     private async Task<bool> CreateUserIfNeedAsync(long userId,
         string phoneNumber,
         string firstName,
@@ -66,7 +93,8 @@ public class DataSeeder(
                     firstName,
                     lastName,
                     userName,
-                    bot);
+                    bot
+                );
             await commandBus.PublishAsync(createUserCommand, CancellationToken.None);
 
             return true;

@@ -2,5 +2,4 @@
 
 public class StartClearGroupChatHistoryCommand(
     ChatId aggregateId,
-    RequestInfo requestInfo) : RequestCommand2<ChatAggregate, ChatId, IExecutionResult>(aggregateId, requestInfo),
-    IHasCorrelationId;
+    RequestInfo requestInfo) : RequestCommand2<ChatAggregate, ChatId, IExecutionResult>(aggregateId, requestInfo);

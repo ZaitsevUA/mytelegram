@@ -13,7 +13,7 @@ public class ChannelMemberBannedRightsChangedEvent(
     bool removedFromKicked,
     bool removedFromBanned,
     ChatBannedRights bannedRights)
-    : RequestAggregateEvent2<ChannelMemberAggregate, ChannelMemberId>(requestInfo), IHasCorrelationId
+    : RequestAggregateEvent2<ChannelMemberAggregate, ChannelMemberId>(requestInfo)
 {
     public long AdminId { get; } = adminId;
     public ChatBannedRights BannedRights { get; } = bannedRights;

@@ -17,4 +17,11 @@
     <ProjectReference Include="..\MyTelegram.EventBus\MyTelegram.EventBus.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Update="Fody">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
 </Project>

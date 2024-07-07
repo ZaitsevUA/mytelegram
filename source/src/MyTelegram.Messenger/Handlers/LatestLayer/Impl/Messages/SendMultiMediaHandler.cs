@@ -91,7 +91,8 @@ internal sealed class SendMultiMediaHandler : RpcResultObjectHandler<MyTelegram.
                 groupId: groupId,
                 groupItemCount: groupItemCount,
                 topMsgId: topMsgId,
-                sendAs: sendAs
+                sendAs: sendAs,
+                effect: obj.Effect
             );
             await _messageAppService.SendMessageAsync(sendMessageInput);
             //_requestCacheAppService.AddRequest(input.ReqMsgId, input.AuthKeyId, input.RequestSessionId, input.SeqNumber);

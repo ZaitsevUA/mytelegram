@@ -37,8 +37,8 @@ public class OtherDomainEventHandler(
         ISubscribeSynchronousTo<PinForwardedChannelMessageSaga, PinForwardedChannelMessageSagaId,
             PinChannelMessagePtsIncrementedEvent>,
         ISubscribeSynchronousTo<UpdatePinnedMessageSaga, UpdatePinnedMessageSagaId, UpdateSavedMessagesPinnedCompletedEvent>//,
-        //ISubscribeSynchronousTo<UnpinAllMessagesSaga, UnpinAllMessagesSagaId, UnpinAllMessagesCompletedSagaEvent>,
-        //ISubscribeSynchronousTo<UnpinAllMessagesSaga, UnpinAllMessagesSagaId, UnpinAllParticipantMessagesCompletedSagaEvent>
+                                                                                                                            //ISubscribeSynchronousTo<UnpinAllMessagesSaga, UnpinAllMessagesSagaId, UnpinAllMessagesCompletedSagaEvent>,
+                                                                                                                            //ISubscribeSynchronousTo<UnpinAllMessagesSaga, UnpinAllMessagesSagaId, UnpinAllParticipantMessagesCompletedSagaEvent>
 
 //,
 //ISubscribeSynchronousTo<DeleteMessagesSaga4, DeleteMessagesSaga4Id, DeleteSelfMessagesCompletedEvent4>,
@@ -117,178 +117,7 @@ public class OtherDomainEventHandler(
             pts: domainEvent.AggregateEvent.Pts, layeredData: layeredUpdates);
 
     }
-    //public async Task HandleAsync(
-    //    IDomainEvent<DeleteMessageSaga, DeleteMessageSagaId, DeleteMessagesCompletedEvent> domainEvent,
-    //    CancellationToken cancellationToken)
-    //{
-    //    var date = DateTime.UtcNow.ToTimestamp();
-    //    IUpdates? channelUpdates = null;
-    //    Peer channelPeer;
-    //    if (domainEvent.AggregateEvent.ToPeerType == PeerType.Channel)
-    //    {
-    //        channelPeer = new Peer(PeerType.Channel, domainEvent.AggregateEvent.SelfDeletedBoxItem.OwnerPeerId);
-    //        channelUpdates = _layeredUpdatesService.GetConverter(domainEvent.AggregateEvent.RequestInfo.Layer)
-    //            .ToDeleteMessagesUpdates(domainEvent.AggregateEvent.ToPeerType,
-    //                domainEvent.AggregateEvent.SelfDeletedBoxItem,
-    //                date);
-    //        var globalSeqNo = await SavePushUpdatesAsync(
-    //            channelPeer.PeerId,
-    //            channelUpdates,
-    //            domainEvent.AggregateEvent.SelfDeletedBoxItem.Pts,
-    //            domainEvent.AggregateEvent.RequestInfo.AuthKeyId,
-    //            chats: new List<long> { channelPeer.PeerId }
-    //        );
-    //        await AddRpcGlobalSeqNoForAuthKeyIdAsync(domainEvent.AggregateEvent.RequestInfo.ReqMsgId,
-    //            domainEvent.AggregateEvent.RequestInfo.UserId,
-    //            globalSeqNo);
-    //        await UpdateSelfGlobalSeqNoAfterSendChannelMessageAsync(domainEvent.AggregateEvent.RequestInfo.UserId,
-    //            globalSeqNo);
-    //    }
 
-    //    var r = new TAffectedMessages
-    //    {
-    //        Pts = domainEvent.AggregateEvent.SelfDeletedBoxItem.Pts,
-    //        PtsCount = domainEvent.AggregateEvent.SelfDeletedBoxItem.PtsCount
-    //    };
-
-    //    await SendRpcMessageToClientAsync(domainEvent.AggregateEvent.RequestInfo,
-    //        r,
-    //        domainEvent.AggregateEvent.RequestInfo.UserId,
-    //        domainEvent.AggregateEvent.SelfDeletedBoxItem.Pts,
-    //        domainEvent.AggregateEvent.ToPeerType);
-
-    //    if (domainEvent.AggregateEvent.ToPeerType == PeerType.Channel)
-    //    {
-    //        channelPeer = new Peer(PeerType.Channel, domainEvent.AggregateEvent.SelfDeletedBoxItem.OwnerPeerId);
-    //        var layeredChannelUpdates = _layeredUpdatesService.GetLayeredData(c =>
-    //            c.ToDeleteMessagesUpdates(domainEvent.AggregateEvent.ToPeerType,
-    //                domainEvent.AggregateEvent.SelfDeletedBoxItem,
-    //                date));
-    //        await PushUpdatesToChannelMemberAsync(
-    //            new Peer(PeerType.User, domainEvent.AggregateEvent.RequestInfo.UserId),
-    //            channelPeer,
-    //            channelUpdates!,
-    //            domainEvent.AggregateEvent.RequestInfo.AuthKeyId,
-    //            skipSaveUpdates: true,
-    //            layeredData: layeredChannelUpdates);
-    //    }
-    //    else
-    //    {
-    //        foreach (var deletedBoxItem in domainEvent.AggregateEvent.DeletedBoxItems)
-    //        {
-    //            var excludeAuthKeyId = 0L;
-    //            if (deletedBoxItem.OwnerPeerId == domainEvent.AggregateEvent.SelfDeletedBoxItem.OwnerPeerId)
-    //            {
-    //                excludeAuthKeyId = domainEvent.AggregateEvent.RequestInfo.AuthKeyId;
-    //            }
-
-    //            var updates =
-    //                _layeredUpdatesService.GetConverter(domainEvent.AggregateEvent.RequestInfo.Layer)
-    //                    .ToDeleteMessagesUpdates(domainEvent.AggregateEvent.ToPeerType,
-    //                        deletedBoxItem,
-    //                        date);
-    //            var layeredUpdates = _layeredUpdatesService.GetLayeredData(c =>
-    //                c.ToDeleteMessagesUpdates(domainEvent.AggregateEvent.ToPeerType,
-    //                    domainEvent.AggregateEvent.SelfDeletedBoxItem,
-    //                    date));
-
-    //            await PushUpdatesToPeerAsync(
-    //                new Peer(PeerType.User, deletedBoxItem.OwnerPeerId),
-    //                updates,
-    //                excludeAuthKeyId,
-    //                pts: deletedBoxItem.Pts,
-    //                layeredData: layeredUpdates
-    //            );
-    //        }
-    //    }
-    //}
-
-    //private async Task HandleClearHistoryCompletedAsync(DeleteMessagesCompletedEvent2 aggregateEvent)
-    //{
-    //    var r = new TAffectedHistory
-    //    {
-    //        Pts = aggregateEvent.SelfDeletedBoxItem.Pts,
-    //        PtsCount = aggregateEvent.SelfDeletedBoxItem.PtsCount,
-    //        Offset = aggregateEvent.SelfDeletedBoxItem.DeletedMessageIdList.Min()
-    //    };
-    //    await SendRpcMessageToClientAsync(aggregateEvent.RequestInfo, r);
-    //    var date = DateTime.UtcNow.ToTimestamp();
-
-    //    foreach (var deletedBoxItem in aggregateEvent.DeletedBoxItems)
-    //    {
-    //        var updates = _layeredUpdatesService.GetConverter(aggregateEvent.RequestInfo.Layer)
-    //            .ToDeleteMessagesUpdates(aggregateEvent.ToPeerType, deletedBoxItem, date);
-    //        var layeredData = _layeredUpdatesService.GetLayeredData(c =>
-    //            c.ToDeleteMessagesUpdates(aggregateEvent.ToPeerType, deletedBoxItem, date));
-
-    //        await PushUpdatesToPeerAsync(new Peer(PeerType.User, deletedBoxItem.OwnerPeerId),
-    //            updates,
-    //            layeredData: layeredData);
-    //    }
-
-    //    //var updates = _layeredUpdatesService.GetConverter(aggregateEvent.RequestInfo.Layer)
-    //    //    .ToDeleteMessagesUpdates(aggregateEvent.ToPeerType, aggregateEvent.SelfDeletedBoxItem, date);
-    //    //var layeredData= _layeredUpdatesService.GetLayeredData(c =>
-    //    //    c.ToDeleteMessagesUpdates(PeerType.Channel,
-    //    //        aggregateEvent.SelfDeletedBoxItem,
-    //    //        date));
-    //    //await PushUpdatesToPeerAsync(
-    //    //    new Peer(PeerType.Channel, domainEvent.AggregateEvent.OwnerPeerId),
-    //    //    updates,
-    //    //    pts: domainEvent.AggregateEvent.Pts,
-    //    //    layeredData: layeredData);
-    //}
-
-    //public async Task HandleAsync(IDomainEvent<DeleteMessageSaga2, DeleteMessageSaga2Id, DeleteMessagesCompletedEvent2> domainEvent,
-    //    CancellationToken cancellationToken)
-    //{
-    //    if (domainEvent.AggregateEvent.IsClearHistory)
-    //    {
-    //        await HandleClearHistoryCompletedAsync(domainEvent.AggregateEvent);
-    //        return;
-    //    }
-
-    //    var date = DateTime.UtcNow.ToTimestamp();
-
-    //    var r = new TAffectedMessages
-    //    {
-    //        Pts = domainEvent.AggregateEvent.SelfDeletedBoxItem.Pts,
-    //        PtsCount = domainEvent.AggregateEvent.SelfDeletedBoxItem.PtsCount
-    //    };
-
-    //    await SendRpcMessageToClientAsync(domainEvent.AggregateEvent.RequestInfo,
-    //        r,
-    //        domainEvent.AggregateEvent.RequestInfo.UserId,
-    //        domainEvent.AggregateEvent.SelfDeletedBoxItem.Pts,
-    //        domainEvent.AggregateEvent.ToPeerType);
-
-    //    foreach (var deletedBoxItem in domainEvent.AggregateEvent.DeletedBoxItems)
-    //    {
-    //        var excludeAuthKeyId = 0L;
-    //        if (deletedBoxItem.OwnerPeerId == domainEvent.AggregateEvent.SelfDeletedBoxItem.OwnerPeerId)
-    //        {
-    //            excludeAuthKeyId = domainEvent.AggregateEvent.RequestInfo.AuthKeyId;
-    //        }
-
-    //        var updates =
-    //            _layeredUpdatesService.GetConverter(domainEvent.AggregateEvent.RequestInfo.Layer)
-    //                .ToDeleteMessagesUpdates(domainEvent.AggregateEvent.ToPeerType,
-    //                    deletedBoxItem,
-    //                    date);
-    //        var layeredUpdates = _layeredUpdatesService.GetLayeredData(c =>
-    //            c.ToDeleteMessagesUpdates(domainEvent.AggregateEvent.ToPeerType,
-    //                domainEvent.AggregateEvent.SelfDeletedBoxItem,
-    //                date));
-
-    //        await PushUpdatesToPeerAsync(
-    //            new Peer(PeerType.User, deletedBoxItem.OwnerPeerId),
-    //            updates,
-    //            excludeAuthKeyId,
-    //            pts: deletedBoxItem.Pts,
-    //            layeredData: layeredUpdates
-    //        );
-    //    }
-    //}
     public async Task HandleAsync(IDomainEvent<SignInSaga, SignInSagaId, SignInSuccessEvent> domainEvent,
         CancellationToken cancellationToken)
     {
@@ -311,12 +140,11 @@ public class OtherDomainEventHandler(
 
         if (domainEvent.AggregateEvent.HasPassword)
         {
-            //throw new BadRequestException("SESSION_PASSWORD_NEEDED");
-            //ThrowHelper.ThrowUserFriendlyException("SESSION_PASSWORD_NEEDED");
             //var rpcError = new TRpcError
             //{
             //    ErrorCode = MyTelegramServerDomainConsts.BadRequestErrorCode,
             //    ErrorMessage = RpcErrors.RpcErrors401.SessionPasswordNeeded.Message,
+            //};
 
             await SendRpcMessageToClientAsync(domainEvent.AggregateEvent.RequestInfo, RpcErrors.RpcErrors401.SessionPasswordNeeded.ToRpcError());
             return;
@@ -328,7 +156,6 @@ public class OtherDomainEventHandler(
         var r = layeredAuthorizationService.GetConverter(domainEvent.AggregateEvent.RequestInfo.Layer)
             .CreateAuthorization(user);
 
-        //await SendRpcMessageToClientAsync(domainEvent.AggregateEvent.RequestInfo, r);
         await _objectMessageSender.SendRpcMessageToClientAsync(domainEvent.AggregateEvent.RequestInfo.ReqMsgId,
             r,
             domainEvent.AggregateEvent.RequestInfo.AuthKeyId,
@@ -384,36 +211,6 @@ public class OtherDomainEventHandler(
             );
         }
     }
-
-    //public async Task HandleAsync(IDomainEvent<DeleteParticipantHistorySaga, DeleteParticipantHistorySagaId, DeleteParticipantHistoryCompletedEvent> domainEvent,
-    //    CancellationToken cancellationToken)
-    //{
-    //    var r = new TAffectedHistory
-    //    {
-    //        Pts = domainEvent.AggregateEvent.Pts,
-    //        PtsCount = domainEvent.AggregateEvent.PtsCount,
-    //        Offset = domainEvent.AggregateEvent.NextMaxId
-    //    };
-    //    await SendRpcMessageToClientAsync(domainEvent.AggregateEvent.RequestInfo, r);
-    //    var date = DateTime.UtcNow.ToTimestamp();
-    //    var deletedBoxItem = new DeletedBoxItem(domainEvent.AggregateEvent.OwnerPeerId,
-    //        domainEvent.AggregateEvent.Pts,
-    //        domainEvent.AggregateEvent.PtsCount,
-    //        domainEvent.AggregateEvent.MessageIds);
-    //    var updates = _layeredUpdatesService.GetConverter(domainEvent.AggregateEvent.RequestInfo.Layer)
-    //        .ToDeleteMessagesUpdates(PeerType.Channel,
-    //            deletedBoxItem,
-    //            date);
-    //    var layeredData = _layeredUpdatesService.GetLayeredData(c =>
-    //        c.ToDeleteMessagesUpdates(PeerType.Channel,
-    //            deletedBoxItem,
-    //            date));
-    //    await PushUpdatesToPeerAsync(
-    //        new Peer(PeerType.Channel, domainEvent.AggregateEvent.OwnerPeerId),
-    //        updates,
-    //        pts: domainEvent.AggregateEvent.Pts,
-    //        layeredData: layeredData);
-    //}
 
     public Task HandleAsync(IDomainEvent<PeerNotifySettingsAggregate, PeerNotifySettingsId, PeerNotifySettingsUpdatedEvent> domainEvent, CancellationToken cancellationToken)
     {
@@ -513,6 +310,4 @@ public class OtherDomainEventHandler(
             domainEvent.AggregateEvent.RequestInfo.PermAuthKeyId, pts: domainEvent.AggregateEvent.Pts);
 
     }
-
-    
 }

@@ -22,6 +22,7 @@ public record GetAuthKeyByAuthKeyIdQuery(long AuthKeyId) : IQuery<IAuthKeyReadMo
 //    long TargetPeerId) : IQuery<IBlockedReadModel?>;
 
 public record GetBotByBotUserIdQuery(long BotUserId) : IQuery<IBotReadModel?>;
+public record GetBotsByChannelIdQuery(long ChannelId) : IQuery<IReadOnlyCollection<long>>;
 
 public record GetChannelByChannelIdListQuery(IList<long> ChannelIdList)
     : IQuery<IReadOnlyCollection<IChannelReadModel>>;
@@ -321,6 +322,7 @@ public record GetUsersByPhoneNumberListQuery(List<string> PhoneNumbers) : IQuery
 
 public record GetMaxMessageByChatIdQuery(long SelfUserId, long ChatId) : IQuery<int>;
 
+public record GetMaxMessageIdByUserIdQuery(long UserId) : IQuery<int>;
 public record GetChatAdminListByChannelIdQuery(long PeerId, int Skip, int Limit)
     : IQuery<IReadOnlyCollection<IChatAdminReadModel>>;
 
@@ -435,3 +437,8 @@ public record GetMyBotQuery(long OwnerUserId, long BotUserId) : IQuery<IBotReadM
 public record GetMyBotsQuery(long OwnerUserId) : IQuery<IReadOnlyCollection<IBotReadModel>>;
 public record GetBotListQuery(List<long> BotUserIds):IQuery<IReadOnlyCollection<IBotReadModel>>;
 public record GetPushDevicesQuery(long UserId) : IQuery<IReadOnlyCollection<IPushDeviceReadModel>>;
+//public record GetThemeByIdQuery(long Id) : IQuery<IThemeReadModel?>;
+//public record GetThemeBySlugQuery(string Slug) : IQuery<IThemeReadModel?>;
+//public record GetThemeByEmoticonQuery(string Emoticon) : IQuery<IThemeReadModel?>;
+//public record GetDefaultThemesQuery : IQuery<IReadOnlyCollection<IThemeReadModel>>;
+//public record GetWallPaperListQuery(List<long>? Ids, List<string>? Slugs) : IQuery<IReadOnlyCollection<IWallPaperReadModel>>;

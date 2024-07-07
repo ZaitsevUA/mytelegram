@@ -15,8 +15,7 @@ public class InviteToChannelSagaStartEvent(
     bool broadcast,
     bool hasLink
     )
-    : RequestAggregateEvent2<InviteToChannelSaga, InviteToChannelSagaId>(requestInfo),
-        IHasCorrelationId
+    : RequestAggregateEvent2<InviteToChannelSaga, InviteToChannelSagaId>(requestInfo)
 {
     public int ChannelHistoryMinId { get; } = channelHistoryMinId;
     public long ChannelId { get; } = channelId;

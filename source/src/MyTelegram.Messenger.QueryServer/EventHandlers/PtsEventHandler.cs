@@ -32,7 +32,8 @@ public class PtsEventHandler(
                         msgId,
                         ackCacheItem.Pts,
                         ackCacheItem.GlobalSeqNo,
-                        ackCacheItem.ToPeer
+                        ackCacheItem.ToPeer,
+                        ackCacheItem.IsFromGetDifference
                     );
                     await commandBus.PublishAsync(command, default);
                 }
@@ -44,7 +45,8 @@ public class PtsEventHandler(
                     msgId,
                     ackCacheItem.Pts,
                     ackCacheItem.GlobalSeqNo,
-                    ackCacheItem.ToPeer
+                        ackCacheItem.ToPeer,
+                        ackCacheItem.IsFromGetDifference
                 );
                 await commandBus.PublishAsync(command, default);
                 }
@@ -61,7 +63,8 @@ public class PtsEventHandler(
                         msgId,
                         ackCacheItem.Pts,
                         ackCacheItem.GlobalSeqNo,
-                        ackCacheItem.ToPeer
+                        ackCacheItem.ToPeer,
+                        ackCacheItem.IsFromGetDifference
                     );
                     await commandBus.PublishAsync(command, default);
                 }

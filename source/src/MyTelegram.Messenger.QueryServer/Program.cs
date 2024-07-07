@@ -107,7 +107,7 @@ builder.ConfigureServices((ctx,
     services.AddHostedService<DataProcessorBackgroundService>();
     services.AddHostedService<ObjectMessageSenderBackgroundService>();
     services.AddHostedService<MyTelegramInvokeAfterMsgProcessorBackgroundService>();
-    services.AddHostedService<CommandExecutorBackgroundService>();
+    services.AddHostedService<QueuedCommandExecutorBackgroundService>();
 
     services.Configure<HostOptions>(options =>
     {

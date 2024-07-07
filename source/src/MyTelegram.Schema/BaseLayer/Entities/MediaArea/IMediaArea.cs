@@ -12,11 +12,8 @@ namespace MyTelegram.Schema;
 [JsonDerivedType(typeof(TMediaAreaSuggestedReaction), nameof(TMediaAreaSuggestedReaction))]
 [JsonDerivedType(typeof(TMediaAreaChannelPost), nameof(TMediaAreaChannelPost))]
 [JsonDerivedType(typeof(TInputMediaAreaChannelPost), nameof(TInputMediaAreaChannelPost))]
+[JsonDerivedType(typeof(TMediaAreaUrl), nameof(TMediaAreaUrl))]
 public interface IMediaArea : IObject
 {
-    ///<summary>
-    /// The size and location of the media area corresponding to the location sticker on top of the story media.
-    /// See <a href="https://corefork.telegram.org/type/MediaAreaCoordinates" />
-    ///</summary>
     MyTelegram.Schema.IMediaAreaCoordinates Coordinates { get; set; }
 }

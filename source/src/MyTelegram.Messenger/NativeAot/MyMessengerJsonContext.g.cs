@@ -4,7 +4,6 @@ using System.Text.Json.Serialization;
 
 namespace MyTelegram.Messenger.NativeAot;
 
-// Generation time:2024-06-24 06:40:41Z
 // MyTelegram.Domain
 [JsonSerializable(typeof(MyTelegram.Domain.Aggregates.AppCode.AppCodeSnapshot))]
 [JsonSerializable(typeof(MyTelegram.Domain.Aggregates.Channel.ChannelMemberSnapshot))]
@@ -148,7 +147,6 @@ namespace MyTelegram.Messenger.NativeAot;
 [JsonSerializable(typeof(MyTelegram.Domain.Events.Messaging.ReadingHistoryCreatedEvent))]
 [JsonSerializable(typeof(MyTelegram.Domain.Events.Messaging.ReplyChannelMessageCompletedEvent))]
 [JsonSerializable(typeof(MyTelegram.Domain.Events.Messaging.ReplyToMessageEvent))]
-[JsonSerializable(typeof(MyTelegram.Domain.Events.Messaging.ReplyToMessageStartedEvent))]
 [JsonSerializable(typeof(MyTelegram.Domain.Events.Messaging.SelfMessageDeletedEvent))]
 [JsonSerializable(typeof(MyTelegram.Domain.Events.Messaging.UpdatePinnedMessageStartedEvent))]
 [JsonSerializable(typeof(MyTelegram.Domain.Events.PeerNotifySettings.PeerNotifySettingsUpdatedEvent))]

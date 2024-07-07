@@ -10,10 +10,10 @@ namespace MyTelegram.Schema.Auth;
 /// 400 PHONE_NUMBER_INVALID The phone number is invalid.
 /// See <a href="https://corefork.telegram.org/method/auth.requestFirebaseSms" />
 ///</summary>
-[TlObject(0x89464b50)]
+[TlObject(0x8e39261e)]
 public sealed class RequestRequestFirebaseSms : IRequest<IBool>
 {
-    public uint ConstructorId => 0x89464b50;
+    public uint ConstructorId => 0x8e39261e;
     ///<summary>
     /// Flags, see <a href="https://corefork.telegram.org/mtproto/TL-combinators#conditional-fields">TL conditional fields</a>
     ///</summary>
@@ -33,6 +33,7 @@ public sealed class RequestRequestFirebaseSms : IRequest<IBool>
     /// On Android, a JWS object obtained as described in the <a href="https://corefork.telegram.org/api/auth">auth documentation »</a>
     ///</summary>
     public string? SafetyNetToken { get; set; }
+    public string? PlayIntegrityToken { get; set; }
 
     ///<summary>
     /// Secret token received via an apple push notification
@@ -42,6 +43,7 @@ public sealed class RequestRequestFirebaseSms : IRequest<IBool>
     public void ComputeFlag()
     {
         if (SafetyNetToken != null) { Flags[0] = true; }
+        if (PlayIntegrityToken != null) { Flags[2] = true; }
         if (IosPushSecret != null) { Flags[1] = true; }
     }
 
@@ -53,6 +55,7 @@ public sealed class RequestRequestFirebaseSms : IRequest<IBool>
         writer.Write(PhoneNumber);
         writer.Write(PhoneCodeHash);
         if (Flags[0]) { writer.Write(SafetyNetToken); }
+        if (Flags[2]) { writer.Write(PlayIntegrityToken); }
         if (Flags[1]) { writer.Write(IosPushSecret); }
     }
 
@@ -62,6 +65,7 @@ public sealed class RequestRequestFirebaseSms : IRequest<IBool>
         PhoneNumber = reader.ReadString();
         PhoneCodeHash = reader.ReadString();
         if (Flags[0]) { SafetyNetToken = reader.ReadString(); }
+        if (Flags[2]) { PlayIntegrityToken = reader.ReadString(); }
         if (Flags[1]) { IosPushSecret = reader.ReadString(); }
     }
 }

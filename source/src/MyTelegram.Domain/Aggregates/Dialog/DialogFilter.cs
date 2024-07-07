@@ -13,6 +13,7 @@ public record DialogFilter
     bool ExcludeArchived,
     string Title,
     string? Emoticon,
+    int? Color,
     IList<InputPeer> PinnedPeers,
     IList<InputPeer> IncludePeers,
     IList<InputPeer> ExcludePeers);

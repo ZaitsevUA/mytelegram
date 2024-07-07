@@ -51,6 +51,7 @@ internal sealed class UpdateDialogFilterHandler : RpcResultObjectHandler<MyTeleg
                     f.ExcludeArchived,
                     f.Title,
                     f.Emoticon,
+                    f.Color,
                     pinnedPeers,
                     includePeers,
                     excludePeers);

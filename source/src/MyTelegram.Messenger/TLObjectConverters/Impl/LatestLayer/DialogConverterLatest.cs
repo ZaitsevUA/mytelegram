@@ -13,9 +13,9 @@ public class DialogConverterLatest(
     private IChatConverter? _chatConverter;
     private IMessageConverter? _messageConverter;
     private IUserConverter? _userConverter;
+    protected virtual IObjectMapper ObjectMapper { get; } = objectMapper;
 
     public override int Layer => Layers.LayerLatest;
-    protected virtual IObjectMapper ObjectMapper { get; } = objectMapper;
 
     public virtual IDialogs ToDialogs(GetDialogOutput output)
     {
@@ -170,33 +170,7 @@ public class DialogConverterLatest(
                     tDialog.UnreadCount = 0;
                 }
             }
-
-            //var topMessageId = MessageId.Create(dialogReadModel.ToPeerId, dialogReadModel.TopMessage).Value;
-            //if (messages.TryGetValue(topMessageId, out var messageReadModel))
-            //{
-            //    tDialog.Pts = messageReadModel.Pts;
-            //}
-            //else
-            //{
-            //    var firstMessage = messages.Values.FirstOrDefault(p => p.ToPeerId == dialogReadModel.ToPeerId);
-            //    if (firstMessage != null)
-            //    {
-            //        tDialog.Pts = firstMessage.Pts;
-            //    }
-            //}
-
-            //var maxId = new[]
-            //{
-            //    dialogReadModel.MaxSendOutMessageId, dialogReadModel.ReadOutboxMaxId, dialogReadModel.ReadInboxMaxId,
-            //    dialogReadModel.ChannelHistoryMinId
-            //}.Max();
-            //tDialog.UnreadCount =
-            //    tDialog.TopMessage - maxId; // Math.Max(dialog.MaxSendOutMessageId, tDialog.ReadInboxMaxId);
-            //if (tDialog.UnreadCount < 0)
-            //{
-            //    tDialog.UnreadCount = 0;
-            //}
-            Console.WriteLine($"{dialogReadModel.ToPeerId} Unread count:{tDialog.UnreadCount}");
+            // Console.WriteLine($"{dialogReadModel.ToPeerId} Unread count:{tDialog.UnreadCount}");
         }
         else
         {

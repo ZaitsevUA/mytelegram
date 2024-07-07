@@ -1,5 +1,7 @@
 ﻿// ReSharper disable All
 
+using MyTelegram.Schema.Updates;
+
 namespace MyTelegram.Handlers.Messages;
 
 ///<summary>
@@ -26,17 +28,13 @@ internal sealed class GetPeerDialogsHandler(
     : RpcResultObjectHandler<MyTelegram.Schema.Messages.RequestGetPeerDialogs, MyTelegram.Schema.Messages.IPeerDialogs>,
         Messages.IGetPeerDialogsHandler
 {
-    private readonly IPeerHelper _peerHelper = peerHelper;
-    private readonly IAccessHashHelper _accessHashHelper = accessHashHelper;
     private readonly ILogger<GetPeerDialogsHandler> _logger = logger;
-    private readonly IQueryProcessor _queryProcessor = queryProcessor;
 
     protected override async Task<IPeerDialogs> HandleCoreAsync(IRequestInput input,
         RequestGetPeerDialogs obj)
     {
-        var userId = input.UserId; // await GetUidAsync(input);
+        var userId = input.UserId;
         var peerList = new List<Peer>();
-
         foreach (var inputDialogPeer in obj.Peers)
         {
             switch (inputDialogPeer)
@@ -44,29 +42,29 @@ internal sealed class GetPeerDialogsHandler(
                 case TInputDialogPeer dialogPeer when dialogPeer.Peer is TInputPeerSelf || dialogPeer.Peer is TInputPeerEmpty:
                     continue;
                 case TInputDialogPeer dialogPeer:
-                {
-                    var peer = peerHelper.GetPeer(dialogPeer.Peer, userId);
-                    if (peerHelper.IsEncryptedDialogPeer(peer.PeerId))
                     {
-                        continue;
+                        var peer = peerHelper.GetPeer(dialogPeer.Peer, userId);
+                        if (peerHelper.IsEncryptedDialogPeer(peer.PeerId))
+                        {
+                            continue;
+                        }
+
+                        await accessHashHelper.CheckAccessHashAsync(dialogPeer.Peer);
+
+                        //if (peer.PeerId != userId)
+                        //{
+                        //    peerList.Add(peer);
+                        //}
+
+                        peerList.Add(peer);
+                        break;
                     }
-
-                    await accessHashHelper.CheckAccessHashAsync(dialogPeer.Peer);
-
-                    //if (peer.PeerId != userId)
-                    //{
-                    //    peerList.Add(peer);
-                    //}
-
-                    peerList.Add(peer);
-                    break;
-                }
                 case TInputDialogPeerFolder inputDialogPeerFolder:
-                {
-                    var peers = await queryProcessor.ProcessAsync(
-                        new GetDialogsByFolderIdQuery(userId, inputDialogPeerFolder.FolderId));
-                    peerList.AddRange(peers);
-                }
+                    {
+                        var peers = await queryProcessor.ProcessAsync(
+                            new GetDialogsByFolderIdQuery(userId, inputDialogPeerFolder.FolderId));
+                        peerList.AddRange(peers);
+                    }
                     break;
             }
         }
@@ -79,7 +77,7 @@ internal sealed class GetPeerDialogsHandler(
                 Limit = limit,
                 PeerIdList = peerList.Select(p => p.PeerId).ToList()
             });
-        var pts = await _queryProcessor.ProcessAsync(new GetPtsByPeerIdQuery(input.UserId));
+        var pts = await queryProcessor.ProcessAsync(new GetPtsByPeerIdQuery(input.UserId));
         var cachedPts = ptsHelper.GetCachedPts(input.UserId);
 
         output.PtsReadModel = pts;
@@ -103,26 +101,53 @@ internal sealed class GetPeerDialogsHandler(
         if (r.Dialogs.Count == 0)
         {
             var userIds = peerList.Where(p => p.PeerType == PeerType.User).Select(p => p.PeerId).Distinct().ToList();
-            var userReadModels = await _queryProcessor.ProcessAsync(new GetUsersByUidListQuery(userIds));
+            //var userReadModels=await _quer
+            var userReadModels = await queryProcessor.ProcessAsync(new GetUsersByUidListQuery(userIds));
             var photoReadModels = await photoAppService.GetPhotosAsync(userReadModels);
-            var contactReadModels = await _queryProcessor.ProcessAsync(new GetContactListQuery(input.UserId, userIds));
+            var contactReadModels = await queryProcessor.ProcessAsync(new GetContactListQuery(input.UserId, userIds));
             var privacyReadModels = await privacyAppService.GetPrivacyListAsync(userIds);
             var users = layeredUserService.GetConverter(input.Layer)
                 .ToUserList(input.UserId, userReadModels, photoReadModels, contactReadModels, privacyReadModels);
-            r.Dialogs = new TVector<IDialog>(peerList.Select(p => new TDialog
+            var channels = output.ChannelList.ToDictionary(k => k.ChannelId, v => v);
+            r.Dialogs = new TVector<IDialog>(peerList.Select(p =>
             {
-                Peer = p.ToPeer(),
-                NotifySettings = new TPeerNotifySettings(),
+                var d = new TDialog
+                {
+                    Peer = p.ToPeer(),
+                    NotifySettings = new TPeerNotifySettings(),
+                };
+                if (p.PeerType == PeerType.Channel)
+                {
+                    if (channels.TryGetValue(p.PeerId, out var channel))
+                    {
+                        d.TopMessage = channel.TopMessageId;
+                        d.Pts = channel.Pts;
+                    }
+                }
+
+                return d;
             }));
+
             if (r.Users == null)
             {
-                r.Users = new();
+                r.Users = [];
             }
+
             foreach (var user in users)
             {
                 r.Users.Add(user);
             }
         }
+
+        var ptsCacheItem = await ptsHelper.GetPtsForUserAsync(input.UserId);
+        r.State = new TState
+        {
+            Pts = ptsCacheItem.Pts,
+            Qts = ptsCacheItem.Qts,
+            UnreadCount = ptsCacheItem.UnreadCount,
+            Date = ptsCacheItem.Date
+        };
+
         return r;
     }
 }

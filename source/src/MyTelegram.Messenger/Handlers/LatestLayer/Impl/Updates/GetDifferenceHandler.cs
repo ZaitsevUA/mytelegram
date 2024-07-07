@@ -82,13 +82,13 @@ internal sealed class GetDifferenceHandler : RpcResultObjectHandler<MyTelegram.S
         var joinedChannelIdList = await _queryProcessor
             .ProcessAsync(new GetChannelIdListByMemberUserIdQuery(input.UserId));
 
-        if (!joinedChannelIdList.Any() && !userUpdates.Any())
-        {
-            if ((obj.Pts != 0 && obj.Pts == ptsForAuthKeyId) || diff == 0)
-            {
-                return new TDifferenceEmpty { Date = CurrentDate, Seq = 0 };
-            }
-        }
+        //if (!joinedChannelIdList.Any() && !userUpdates.Any())
+        //{
+        //    if ((obj.Pts != 0 && obj.Pts == ptsForAuthKeyId) || diff == 0)
+        //    {
+        //        return new TDifferenceEmpty { Date = CurrentDate, Seq = 0 };
+        //    }
+        //}
 
         var limit = obj.PtsTotalLimit ?? MyTelegramServerDomainConsts.DefaultPtsTotalLimit;
         limit = Math.Min(limit, MyTelegramServerDomainConsts.DefaultPtsTotalLimit);
@@ -148,8 +148,9 @@ internal sealed class GetDifferenceHandler : RpcResultObjectHandler<MyTelegram.S
             await _ackCacheService.AddRpcPtsToCacheAsync(input.ReqMsgId,
                 maxPts,
                 maxGlobalSeqNo,
-                new Peer(PeerType.User, input.UserId));
-
+                new Peer(PeerType.User, input.UserId),
+                true
+                );
             //Console.WriteLine($"[{input.UserId}]Add channelMaxGlobalSeqNo to cache:{channelMaxGlobalSeqNo}");
         }
         dto.MessageList = dto.MessageList.OrderBy(p => p.MessageId).ToList();

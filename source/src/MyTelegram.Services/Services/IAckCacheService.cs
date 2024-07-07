@@ -15,7 +15,7 @@ public interface IAckCacheService
     Task AddRpcPtsToCacheAsync(long reqMsgId,
         int pts,
         long globalSeqNo,
-        Peer toPeer);
+        Peer toPeer, bool isFromGetDifference = false);
 
     bool TryGetPts(long msgId,
         [NotNullWhen(true)] out AckCacheItem? ackCacheItem);

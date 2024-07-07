@@ -10,7 +10,7 @@ internal sealed class UpdateDialogFiltersOrderHandler : RpcResultObjectHandler<M
     Messages.IUpdateDialogFiltersOrderHandler
 {
     protected override Task<IBool> HandleCoreAsync(IRequestInput input,
-        MyTelegram.Schema.Messages.RequestUpdateDialogFiltersOrder obj)
+        RequestUpdateDialogFiltersOrder obj)
     {
         return Task.FromResult<IBool>(new TBoolTrue());
     }

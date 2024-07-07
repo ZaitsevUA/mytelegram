@@ -7,10 +7,10 @@ namespace MyTelegram.Schema;
 /// Extended media update
 /// See <a href="https://corefork.telegram.org/constructor/updateMessageExtendedMedia" />
 ///</summary>
-[TlObject(0x5a73a98c)]
+[TlObject(0xd5a41724)]
 public sealed class TUpdateMessageExtendedMedia : IUpdate
 {
-    public uint ConstructorId => 0x5a73a98c;
+    public uint ConstructorId => 0xd5a41724;
     ///<summary>
     /// Peer
     /// See <a href="https://corefork.telegram.org/type/Peer" />
@@ -24,9 +24,8 @@ public sealed class TUpdateMessageExtendedMedia : IUpdate
 
     ///<summary>
     /// Extended media
-    /// See <a href="https://corefork.telegram.org/type/MessageExtendedMedia" />
     ///</summary>
-    public MyTelegram.Schema.IMessageExtendedMedia ExtendedMedia { get; set; }
+    public TVector<MyTelegram.Schema.IMessageExtendedMedia> ExtendedMedia { get; set; }
 
     public void ComputeFlag()
     {
@@ -46,6 +45,6 @@ public sealed class TUpdateMessageExtendedMedia : IUpdate
     {
         Peer = reader.Read<MyTelegram.Schema.IPeer>();
         MsgId = reader.ReadInt32();
-        ExtendedMedia = reader.Read<MyTelegram.Schema.IMessageExtendedMedia>();
+        ExtendedMedia = reader.Read<TVector<MyTelegram.Schema.IMessageExtendedMedia>>();
     }
 }

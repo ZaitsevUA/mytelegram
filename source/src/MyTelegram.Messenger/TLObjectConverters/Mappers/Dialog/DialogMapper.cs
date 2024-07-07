@@ -22,6 +22,7 @@ internal class DialogMapper : ILayeredMapper,
         destination.ExcludeArchived = source.ExcludeArchived;
         destination.Title = source.Title;
         destination.Emoticon = source.Emoticon;
+        destination.Color = source.Color;
         destination.Broadcasts = source.Broadcasts;
         destination.PinnedPeers = new TVector<IInputPeer>();
         destination.ExcludePeers = new TVector<IInputPeer>();
@@ -72,7 +73,9 @@ internal class DialogMapper : ILayeredMapper,
                 {
                     ReplyToMsgId = source.Draft.ReplyToMsgId ?? 0
                 },
-                Entities = source.Draft.Entities.ToTObject<TVector<IMessageEntity>>()
+                Entities = source.Draft.Entities.ToTObject<TVector<IMessageEntity>>(),
+                InvertMedia = source.Draft.InvertMedia,
+                Effect = source.Draft.Effect,
             };
         }
 
@@ -103,6 +106,7 @@ internal class DialogMapper : ILayeredMapper,
         destination.TtlPeriod = source.TtlPeriod;
         destination.UnreadMentionsCount = source.UnreadMentionsCount;
         destination.UnreadReactionsCount = source.UnreadReactionsCount;
+        destination.FolderId = source.FolderId;
 
         return destination;
     }

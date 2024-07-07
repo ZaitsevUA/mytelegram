@@ -16,6 +16,8 @@ internal sealed class SetHistoryTTLHandler : RpcResultObjectHandler<MyTelegram.S
     protected override Task<MyTelegram.Schema.IUpdates> HandleCoreAsync(IRequestInput input,
         MyTelegram.Schema.Messages.RequestSetHistoryTTL obj)
     {
-        throw new NotImplementedException();
+        RpcErrors.RpcErrors400.ChatNotModified.ThrowRpcError();
+
+        return null!;
     }
 }

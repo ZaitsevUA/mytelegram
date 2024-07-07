@@ -5,6 +5,7 @@ public class DialogAppService(
     IQueryProcessor queryProcessor,
     IPhotoAppService photoAppService,
     IPrivacyAppService privacyAppService,
+    IPeerHelper peerHelper,
     IOffsetHelper offsetHelper)
     : BaseAppService, IDialogAppService
 {
@@ -45,6 +46,17 @@ public class DialogAppService(
 
         var channelIdList = dialogList.Where(p => p.ToPeerType == PeerType.Channel).Select(p => p.ToPeerId)
             .ToList();
+        if (input.PeerIdList?.Count > 0)
+        {
+            foreach (var peerId in input.PeerIdList)
+            {
+                if (peerHelper.IsChannelPeer(peerId))
+                {
+                    channelIdList.Add(peerId);
+                }
+            }
+        }
+
         var channelList = channelIdList.Count == 0
             ? new List<IChannelReadModel>()
             : await queryProcessor

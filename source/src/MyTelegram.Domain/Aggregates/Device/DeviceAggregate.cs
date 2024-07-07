@@ -9,7 +9,7 @@ public class DeviceAggregate : AggregateRoot<DeviceAggregate, DeviceId>
         Register(_state);
     }
 
-    public void BindUidToDevice(long userId,
+    public void BindUserIdToDevice(long userId,
         long permAuthKeyId)
     {
         //Specs.AggregateIsCreated.ThrowDomainErrorIfNotSatisfied(this);

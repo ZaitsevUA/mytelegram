@@ -78,6 +78,7 @@ public class DialogDomainEventHandler(
         await PushMessageToPeerAsync(new Peer(PeerType.User, requestInfo.UserId), updates, requestInfo.AuthKeyId)
      ;
     }
+
     public Task HandleAsync(IDomainEvent<EditPeerFoldersSaga, EditPeerFoldersSagaId, EditPeerFoldersCompletedSagaEvent> domainEvent, CancellationToken cancellationToken)
     {
         var folderPeers = new TVector<IFolderPeer>(domainEvent.AggregateEvent.FolderPeers.Select(p => new TFolderPeer

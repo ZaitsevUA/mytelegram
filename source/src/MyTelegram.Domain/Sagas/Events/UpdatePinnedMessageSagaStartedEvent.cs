@@ -17,8 +17,7 @@ public class
         long randomId,
         int date,
         string? messageActionData)
-    : RequestAggregateEvent2<UpdatePinnedMessageSaga, UpdatePinnedMessageSagaId>(requestInfo),
-        IHasCorrelationId
+    : RequestAggregateEvent2<UpdatePinnedMessageSaga, UpdatePinnedMessageSagaId>(requestInfo)
 {
     public int Date { get; } = date;
     public int InboxCount { get; } = inboxCount;
@@ -38,17 +37,4 @@ public class
     public Peer ToPeer { get; } = toPeer;
     public long SenderPeerId { get; } = senderPeerId;
     public bool Silent { get; } = silent;
-
-    //public int MessageId { get; }
-    ////public long ChannelId { get; }
-    //public bool Pinned { get; }
-    //public bool PmOneSide { get; }
-    //public bool Silent { get; }
-    //public int Date { get; }
-
-    //public bool IsOut { get; }
-    //public IReadOnlyList<InboxItem> InboxItems { get; }
-    //public long SenderPeerId { get; }
-    //public int SenderMessageId { get; }
-    //public long ToPeerId { get; } 
 }

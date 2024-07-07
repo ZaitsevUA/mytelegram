@@ -97,11 +97,11 @@ public class MyMongoDbReadModelStore<TReadModel, TDbContext>(
         if (updateStrategy == UpdateStrategy.All || updateStrategy == UpdateStrategy.UpdateCache)
         {
             var item = await memoryCache.GetOrCreateAsync(CacheKey.With(typeof(TReadModel), id),
-                cacheEntry =>
-                {
-                    cacheEntry.SlidingExpiration = TimeSpan.FromDays(3);
-                    return base.GetAsync(id, cancellationToken);
-                });
+                 cacheEntry =>
+             {
+                 cacheEntry.SlidingExpiration = TimeSpan.FromDays(3);
+                 return base.GetAsync(id, cancellationToken);
+             });
 
             if (item == null)
             {

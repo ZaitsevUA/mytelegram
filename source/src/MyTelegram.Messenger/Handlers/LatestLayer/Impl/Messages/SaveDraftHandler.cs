@@ -46,12 +46,9 @@ internal sealed class SaveDraftHandler : RpcResultObjectHandler<MyTelegram.Schem
         var peer = _peerHelper.GetPeer(obj.Peer, input.UserId);
         var dialogId = DialogId.Create(input.UserId, peer);
         var saveDraftCommand = new SaveDraftCommand(dialogId,
-            input.ToRequestInfo(), 
-            obj.Message,
-            obj.NoWebpage,
-            CurrentDate,
-            replyToMsgId,
-            null);
+            input.ToRequestInfo(),
+            new Draft(obj.NoWebpage, obj.InvertMedia, replyToMsgId, obj.Message, CurrentDate
+                , obj.Entities.ToBytes(), null, null, obj.Effect));
         await _commandBus.PublishAsync(saveDraftCommand, CancellationToken.None);
 
         return new TBoolTrue();

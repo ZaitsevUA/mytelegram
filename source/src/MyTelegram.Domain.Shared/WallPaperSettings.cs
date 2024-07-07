@@ -8,5 +8,6 @@ public record WallPaperSettings(
     int? ThirdBackgroundColor,
     int? FourthBackgroundColor,
     int? Intensity,
-    int? Rotation
+    int? Rotation,
+    string? Emoticon
 );

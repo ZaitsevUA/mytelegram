@@ -7,10 +7,10 @@ namespace MyTelegram.Schema.Messages;
 /// Open a <a href="https://corefork.telegram.org/api/bots/webapps">bot mini app</a>.
 /// See <a href="https://corefork.telegram.org/method/messages.requestSimpleWebView" />
 ///</summary>
-[TlObject(0x1a46500a)]
-public sealed class RequestRequestSimpleWebView : IRequest<MyTelegram.Schema.ISimpleWebViewResult>
+[TlObject(0x413a3e73)]
+public sealed class RequestRequestSimpleWebView : IRequest<MyTelegram.Schema.IWebViewResult>
 {
-    public uint ConstructorId => 0x1a46500a;
+    public uint ConstructorId => 0x413a3e73;
     ///<summary>
     /// Flags, see <a href="https://corefork.telegram.org/mtproto/TL-combinators#conditional-fields">TL conditional fields</a>
     ///</summary>
@@ -27,6 +27,7 @@ public sealed class RequestRequestSimpleWebView : IRequest<MyTelegram.Schema.ISi
     /// See <a href="https://corefork.telegram.org/type/true" />
     ///</summary>
     public bool FromSideMenu { get; set; }
+    public bool Compact { get; set; }
 
     ///<summary>
     /// Bot that owns the mini app
@@ -59,6 +60,7 @@ public sealed class RequestRequestSimpleWebView : IRequest<MyTelegram.Schema.ISi
     {
         if (FromSwitchWebview) { Flags[1] = true; }
         if (FromSideMenu) { Flags[2] = true; }
+        if (Compact) { Flags[7] = true; }
         if (Url != null) { Flags[3] = true; }
         if (StartParam != null) { Flags[4] = true; }
         if (ThemeParams != null) { Flags[0] = true; }
@@ -82,6 +84,7 @@ public sealed class RequestRequestSimpleWebView : IRequest<MyTelegram.Schema.ISi
         Flags = reader.ReadBitArray();
         if (Flags[1]) { FromSwitchWebview = true; }
         if (Flags[2]) { FromSideMenu = true; }
+        if (Flags[7]) { Compact = true; }
         Bot = reader.Read<MyTelegram.Schema.IInputUser>();
         if (Flags[3]) { Url = reader.ReadString(); }
         if (Flags[4]) { StartParam = reader.ReadString(); }

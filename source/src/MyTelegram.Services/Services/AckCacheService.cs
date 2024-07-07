@@ -35,9 +35,10 @@ public class AckCacheService(IScheduleAppService scheduleAppService) : IAckCache
     public Task AddRpcPtsToCacheAsync(long reqMsgId,
         int pts,
         long globalSeqNo,
-        Peer toPeer)
+        Peer toPeer,
+        bool isFromGetDifference)
     {
-        _rpcReqMsgIdToPtsDict.TryAdd(reqMsgId, new AckCacheItem(pts, globalSeqNo, toPeer));
+        _rpcReqMsgIdToPtsDict.TryAdd(reqMsgId, new AckCacheItem(pts, globalSeqNo, toPeer, false, isFromGetDifference));
         scheduleAppService.ExecuteAsync(() =>
             {
                 _rpcReqMsgIdToPtsDict.TryRemove(reqMsgId, out _);

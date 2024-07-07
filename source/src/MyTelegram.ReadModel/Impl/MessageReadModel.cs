@@ -13,7 +13,6 @@ public class MessageReadModel : IMessageReadModel,
     IAmReadModelFor<MessageAggregate, MessageId, InboxMessagePinnedUpdatedEvent>,
     IAmReadModelFor<MessageAggregate, MessageId, OutboxMessagePinnedUpdatedEvent>,
     IAmReadModelFor<MessageAggregate, MessageId, UpdatePinnedMessageStartedEvent>,
-    IAmReadModelFor<MessageAggregate, MessageId, ReplyToMessageStartedEvent>,
     IAmReadModelFor<MessageAggregate, MessageId, MessageDeletedEvent>,
     IAmReadModelFor<MessageAggregate, MessageId, OutboxMessageDeletedEvent>,
     IAmReadModelFor<MessageAggregate, MessageId, InboxMessageDeletedEvent>,
@@ -46,7 +45,7 @@ public class MessageReadModel : IMessageReadModel,
     public long OwnerPeerId { get; private set; }
     public bool Pinned { get; private set; }
     public bool Post { get; private set; }
-    public string? PostAuthor { get; private set; } = null;
+    public string? PostAuthor { get; private set; }
     public int Pts { get; private set; }
     public int? ReplyToMsgId { get; private set; }
     public int? TopMsgId { get; private set; }
@@ -74,6 +73,7 @@ public class MessageReadModel : IMessageReadModel,
     public bool HasQuickReplyShortcut { get; private set; }
     public string? QuickReplyShortcut { get; private set; }
     public Guid BatchId { get; private set; }
+    public long? Effect { get; private set; }
     //public long RandomId { get; private set; }
 
     public List<UserReaction>? UserReactions { get; set; }
@@ -141,6 +141,7 @@ public class MessageReadModel : IMessageReadModel,
             BatchId = messageItem.BatchId.Value;
         }
 
+        Effect = messageItem.Effect;
         return Task.CompletedTask;
     }
 
@@ -181,6 +182,7 @@ public class MessageReadModel : IMessageReadModel,
         {
             BatchId = messageItem.BatchId.Value;
         }
+        Effect = messageItem.Effect;
 
         return Task.CompletedTask;
     }
@@ -282,14 +284,6 @@ public class MessageReadModel : IMessageReadModel,
         CancellationToken cancellationToken)
     {
         Pinned = domainEvent.AggregateEvent.Pinned;
-        return Task.CompletedTask;
-    }
-
-    public Task ApplyAsync(IReadModelContext context,
-        IDomainEvent<MessageAggregate, MessageId, ReplyToMessageStartedEvent> domainEvent,
-        CancellationToken cancellationToken)
-    {
-        Replies++;
         return Task.CompletedTask;
     }
 

@@ -3,18 +3,10 @@
 public class SaveDraftCommand(
     DialogId aggregateId,
     RequestInfo requestInfo,
-    string message,
-    bool noWebpage,
-    int date,
-    int? replyToMsgId,
-    byte[]? entities)
+    Draft draft)
     : RequestCommand2<DialogAggregate, DialogId, IExecutionResult>(aggregateId, requestInfo)
 {
-    public int Date { get; } = date;
-    public byte[]? Entities { get; } = entities;
-    public string Message { get; } = message;
-    public bool NoWebpage { get; } = noWebpage;
-    public int? ReplyToMsgId { get; } = replyToMsgId;
+    public Draft Draft { get; } = draft;
 
     protected override IEnumerable<byte[]> GetSourceIdComponents()
     {

@@ -181,6 +181,8 @@ public class UpdatesConverterLatest(
         {
             Draft = new TDraftMessage
             {
+                InvertMedia = p.Draft.InvertMedia,
+                Effect = p.Draft.Effect,
                 Date = p.Draft.Date,
                 Message = p.Draft.Message,
                 Entities = p.Draft.Entities.ToTObject<TVector<IMessageEntity>>(),
@@ -260,6 +262,25 @@ public class UpdatesConverterLatest(
         bool createUpdatesForSelf)
     {
         var item = aggregateEvent.MessageItem;
+        var channel = GetChatConverter().ToChannel(
+            createUpdatesForSelf ? item.SenderPeer.PeerId : 0,
+            channelReadModel,
+            null,
+            null, false);
+        if (!createUpdatesForSelf)
+        {
+            return new TUpdates
+            {
+                Updates = new TVector<IUpdate>([new TUpdateChannel
+                {
+                    ChannelId = channel.Id
+                }
+                ]),
+                Chats = new TVector<IChat>(channel),
+                Users = [],
+                Date = DateTime.UtcNow.ToTimestamp()
+            };
+        }
         var updateList = ToChannelMessageServiceUpdates(item.MessageId,
             item.RandomId,
             aggregateEvent.Pts,
@@ -270,22 +291,6 @@ public class UpdatesConverterLatest(
             0,
             createUpdatesForSelf
         );
-        // privacy restricted updates
-        //if (startInviteToChannelEvent.PrivacyRestrictedUserId?.Count > 0)
-        //{
-        //    updateList.AddRange(startInviteToChannelEvent.PrivacyRestrictedUserId.Select(p =>
-        //        new TUpdateGroupInvitePrivacyForbidden
-        //        {
-        //            UserId = p
-        //        }));
-        //}
-
-#warning Set channel photo
-        var channel = GetChatConverter().ToChannel(
-            createUpdatesForSelf ? item.SenderPeer.PeerId : 0,
-            channelReadModel,
-            null,
-            null, false);
 
         return new TUpdates
         {
@@ -582,7 +587,8 @@ public class UpdatesConverterLatest(
         var item = aggregateEvent.MessageItem;
         if (item.Media?.Length > 0 ||
             item.MessageSubType == MessageSubType.ForwardMessage ||
-            item.SendMessageType == SendMessageType.MessageService
+            item.SendMessageType == SendMessageType.MessageService ||
+            item.Effect.HasValue
            )
         {
             var updateMessageId = new TUpdateMessageID { Id = item.MessageId, RandomId = item.RandomId };
@@ -677,7 +683,7 @@ public class UpdatesConverterLatest(
             item.ToPeer,
             new TMessageActionPinMessage(),
             item.Date,
-            0,
+            aggregateEvent.RequestInfo.UserId,
             item.InputReplyTo);
         return new TUpdates
         {
@@ -767,7 +773,7 @@ public class UpdatesConverterLatest(
             return ToInboxForwardMessageUpdates(item, aggregateEvent.Pts);
         }
 
-        if (aggregateEvent.MessageItem.ReplyMarkup != null)
+        if (aggregateEvent.MessageItem.ReplyMarkup != null || aggregateEvent.MessageItem.Effect.HasValue)
         {
             var update = new TUpdateNewMessage
             {

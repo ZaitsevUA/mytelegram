@@ -11,10 +11,10 @@ namespace MyTelegram.Schema.Messages;
 /// 400 BOT_APP_SHORTNAME_INVALID The specified bot app short name is invalid.
 /// See <a href="https://corefork.telegram.org/method/messages.requestAppWebView" />
 ///</summary>
-[TlObject(0x8c5a3b3c)]
-public sealed class RequestRequestAppWebView : IRequest<MyTelegram.Schema.IAppWebViewResult>
+[TlObject(0x53618bce)]
+public sealed class RequestRequestAppWebView : IRequest<MyTelegram.Schema.IWebViewResult>
 {
-    public uint ConstructorId => 0x8c5a3b3c;
+    public uint ConstructorId => 0x53618bce;
     ///<summary>
     /// Flags, see <a href="https://corefork.telegram.org/mtproto/TL-combinators#conditional-fields">TL conditional fields</a>
     ///</summary>
@@ -25,6 +25,7 @@ public sealed class RequestRequestAppWebView : IRequest<MyTelegram.Schema.IAppWe
     /// See <a href="https://corefork.telegram.org/type/true" />
     ///</summary>
     public bool WriteAllowed { get; set; }
+    public bool Compact { get; set; }
 
     ///<summary>
     /// If the client has clicked on the link in a Telegram chat, pass the chat's peer information; otherwise pass the bot's peer information, instead.
@@ -57,6 +58,7 @@ public sealed class RequestRequestAppWebView : IRequest<MyTelegram.Schema.IAppWe
     public void ComputeFlag()
     {
         if (WriteAllowed) { Flags[0] = true; }
+        if (Compact) { Flags[7] = true; }
         if (StartParam != null) { Flags[1] = true; }
         if (ThemeParams != null) { Flags[2] = true; }
 
@@ -78,6 +80,7 @@ public sealed class RequestRequestAppWebView : IRequest<MyTelegram.Schema.IAppWe
     {
         Flags = reader.ReadBitArray();
         if (Flags[0]) { WriteAllowed = true; }
+        if (Flags[7]) { Compact = true; }
         Peer = reader.Read<MyTelegram.Schema.IInputPeer>();
         App = reader.Read<MyTelegram.Schema.IInputBotApp>();
         if (Flags[1]) { StartParam = reader.ReadString(); }

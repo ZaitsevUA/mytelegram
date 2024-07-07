@@ -7,10 +7,12 @@ namespace MyTelegram.Schema;
 /// Coordinates and size of a clicable rectangular area on top of a story.
 /// See <a href="https://corefork.telegram.org/constructor/mediaAreaCoordinates" />
 ///</summary>
-[TlObject(0x3d1ea4e)]
+[TlObject(0xcfc9e002)]
 public sealed class TMediaAreaCoordinates : IMediaAreaCoordinates
 {
-    public uint ConstructorId => 0x3d1ea4e;
+    public uint ConstructorId => 0xcfc9e002;
+    public BitArray Flags { get; set; } = new BitArray(32);
+
     ///<summary>
     /// The abscissa of the rectangle's center, as a percentage of the media width (0-100).
     ///</summary>
@@ -35,29 +37,34 @@ public sealed class TMediaAreaCoordinates : IMediaAreaCoordinates
     /// Clockwise rotation angle of the rectangle, in degrees (0-360).
     ///</summary>
     public double Rotation { get; set; }
+    public double? Radius { get; set; }
 
     public void ComputeFlag()
     {
-
+        if (Radius>0) { Flags[0] = true; }
     }
 
     public void Serialize(IBufferWriter<byte> writer)
     {
         ComputeFlag();
         writer.Write(ConstructorId);
+        writer.Write(Flags);
         writer.Write(X);
         writer.Write(Y);
         writer.Write(W);
         writer.Write(H);
         writer.Write(Rotation);
+        if (Flags[0]) { writer.Write(Radius.Value); }
     }
 
     public void Deserialize(ref SequenceReader<byte> reader)
     {
+        Flags = reader.ReadBitArray();
         X = reader.ReadDouble();
         Y = reader.ReadDouble();
         W = reader.ReadDouble();
         H = reader.ReadDouble();
         Rotation = reader.ReadDouble();
+        if (Flags[0]) { Radius = reader.ReadDouble(); }
     }
 }

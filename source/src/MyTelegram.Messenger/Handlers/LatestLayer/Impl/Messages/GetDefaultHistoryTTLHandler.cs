@@ -1,5 +1,7 @@
 ﻿// ReSharper disable All
 
+using MyTelegram.Schema;
+
 namespace MyTelegram.Handlers.Messages;
 
 ///<summary>
@@ -14,7 +16,7 @@ internal sealed class GetDefaultHistoryTTLHandler : RpcResultObjectHandler<MyTel
     {
         return Task.FromResult<MyTelegram.Schema.IDefaultHistoryTTL>(new TDefaultHistoryTTL
         {
-            Period = 1 * 30 * 24 * 60 * 60
+            Period = 0
         });
     }
 }

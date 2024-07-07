@@ -184,9 +184,11 @@ public class ChatMapper :
         }
 
         destination.Antispam = source.AntiSpam;
-        destination.TtlPeriod = source.TtlPeriod;
         destination.TranslationsDisabled = false;
-
+        if (source.TtlPeriod != 0)
+        {
+            destination.TtlPeriod = source.TtlPeriod;
+        }
 
         return destination;
     }

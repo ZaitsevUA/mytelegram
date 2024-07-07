@@ -35,14 +35,18 @@ public class PtsAggregate : MyInMemorySnapshotAggregateRoot<PtsAggregate, PtsId,
         long msgId,
         int pts,
         long globalSeqNo,
-        Peer toPeer)
+        Peer toPeer,
+        bool isFromGetDifference
+        )
     {
         Emit(new PtsAckedEvent(peerId,
             permAuthKeyId,
             msgId,
             pts,
             globalSeqNo,
-            toPeer));
+            toPeer,
+            isFromGetDifference
+            ));
     }
 
     public void QtsAcked(long peerId,
@@ -50,14 +54,18 @@ public class PtsAggregate : MyInMemorySnapshotAggregateRoot<PtsAggregate, PtsId,
         long msgId,
         int qts,
         long globalSeqNo,
-        Peer toPeer)
+        Peer toPeer,
+        bool isFromGetDifference
+        )
     {
         Emit(new QtsAckedEvent(peerId,
             permAuthKeyId,
             msgId,
             qts,
             globalSeqNo,
-            toPeer));
+            toPeer,
+            isFromGetDifference
+            ));
     }
 
     public void UpdateGlobalSeqNo(long peerId,

@@ -12,10 +12,10 @@ namespace MyTelegram.Schema.Messages;
 /// 400 PEER_ID_INVALID The provided peer id is invalid.
 /// See <a href="https://corefork.telegram.org/method/messages.saveDraft" />
 ///</summary>
-[TlObject(0x7ff3b806)]
+[TlObject(0xd372c5ce)]
 public sealed class RequestSaveDraft : IRequest<IBool>
 {
-    public uint ConstructorId => 0x7ff3b806;
+    public uint ConstructorId => 0xd372c5ce;
     ///<summary>
     /// Flags, see <a href="https://corefork.telegram.org/mtproto/TL-combinators#conditional-fields">TL conditional fields</a>
     ///</summary>
@@ -60,6 +60,7 @@ public sealed class RequestSaveDraft : IRequest<IBool>
     /// See <a href="https://corefork.telegram.org/type/InputMedia" />
     ///</summary>
     public MyTelegram.Schema.IInputMedia? Media { get; set; }
+    public long? Effect { get; set; }
 
     public void ComputeFlag()
     {
@@ -68,6 +69,7 @@ public sealed class RequestSaveDraft : IRequest<IBool>
         if (ReplyTo != null) { Flags[4] = true; }
         if (Entities?.Count > 0) { Flags[3] = true; }
         if (Media != null) { Flags[5] = true; }
+        if (/*Effect != 0 &&*/ Effect.HasValue) { Flags[7] = true; }
     }
 
     public void Serialize(IBufferWriter<byte> writer)
@@ -80,6 +82,7 @@ public sealed class RequestSaveDraft : IRequest<IBool>
         writer.Write(Message);
         if (Flags[3]) { writer.Write(Entities); }
         if (Flags[5]) { writer.Write(Media); }
+        if (Flags[7]) { writer.Write(Effect.Value); }
     }
 
     public void Deserialize(ref SequenceReader<byte> reader)
@@ -92,5 +95,6 @@ public sealed class RequestSaveDraft : IRequest<IBool>
         Message = reader.ReadString();
         if (Flags[3]) { Entities = reader.Read<TVector<MyTelegram.Schema.IMessageEntity>>(); }
         if (Flags[5]) { Media = reader.Read<MyTelegram.Schema.IInputMedia>(); }
+        if (Flags[7]) { Effect = reader.ReadInt64(); }
     }
 }

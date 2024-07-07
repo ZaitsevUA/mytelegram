@@ -7,6 +7,7 @@ public class DuplicateOperationExceptionHandler(
     IObjectMessageSender messageSender,
     ILogger<DuplicateOperationExceptionHandler> logger)
     : IEventHandler<DuplicateCommandEvent>
+//, IDistributedEventHandler<DuplicateCommandEvent>//, ITransientDependency
 {
     public async Task HandleEventAsync(DuplicateCommandEvent eventData)
     {

@@ -8,24 +8,15 @@ namespace MyTelegram.Handlers.Updates;
 /// Returns a current state of updates.
 /// See <a href="https://corefork.telegram.org/method/updates.getState" />
 ///</summary>
-internal sealed class GetStateHandler : RpcResultObjectHandler<MyTelegram.Schema.Updates.RequestGetState, MyTelegram.Schema.Updates.IState>,
-    Updates.IGetStateHandler
+internal sealed class GetStateHandler(
+    IPtsHelper ptsHelper,
+    IQueryProcessor queryProcessor,
+    IObjectMapper objectMapper,
+    IObjectMessageSender objectMessageSender,
+    ILogger<GetStateHandler> logger)
+    : RpcResultObjectHandler<MyTelegram.Schema.Updates.RequestGetState, MyTelegram.Schema.Updates.IState>,
+        Updates.IGetStateHandler
 {
-    private readonly IObjectMapper _objectMapper;
-    private readonly IPtsHelper _ptsHelper;
-    private readonly IQueryProcessor _queryProcessor;
-    private readonly ILogger<GetStateHandler> _logger;
-
-    public GetStateHandler(IPtsHelper ptsHelper,
-        IQueryProcessor queryProcessor,
-        IObjectMapper objectMapper, ILogger<GetStateHandler> logger)
-    {
-        _ptsHelper = ptsHelper;
-        _queryProcessor = queryProcessor;
-        _objectMapper = objectMapper;
-        _logger = logger;
-    }
-
     protected override async Task<IState> HandleCoreAsync(IRequestInput input,
         RequestGetState obj)
     {
@@ -35,36 +26,20 @@ internal sealed class GetStateHandler : RpcResultObjectHandler<MyTelegram.Schema
             RpcErrors.RpcErrors401.AuthKeyInvalid.ThrowRpcError();
         }
 
-        //var userId = await GetUidAsync(input);
-        var pts = await _queryProcessor.ProcessAsync(new GetPtsByPeerIdQuery(input.UserId));
-        TState state;
-        if (pts == null)
+        var cacheItem = await ptsHelper.GetPtsForUserAsync(input.UserId);
+
+        var state = new TState
         {
-            var cachedPts = _ptsHelper.GetCachedPts(input.UserId);
+            Date = CurrentDate,
+            Pts = cacheItem.Pts,
+            Qts = cacheItem.Qts,
+            Seq = 1,
+            UnreadCount = cacheItem.UnreadCount,
+        };
 
-            state = new TState
-            {
-                Date = DateTime.UtcNow.ToTimestamp(),
-                Pts = cachedPts,
-                Qts = 0,
-                Seq = 1,
-                UnreadCount = 0,
-            };
-        }
-        else
-        {
-            state = _objectMapper.Map<IPtsReadModel, TState>(pts);
-            state.Seq = 1;
-            var cachedPts = _ptsHelper.GetCachedPts(input.UserId);
-            if (cachedPts > 0 && cachedPts != pts.Pts)
-            {
-                state.Pts = cachedPts;
-            }
-        }
-
-        _logger.LogInformation("[{UserId}]Get state:{@state}",input.UserId, state);
-
+        logger.LogInformation("[{UserId}]Get state:{@state} {@PtsReadModel}", input.UserId, state, cacheItem);
 
         return state;
+
     }
 }

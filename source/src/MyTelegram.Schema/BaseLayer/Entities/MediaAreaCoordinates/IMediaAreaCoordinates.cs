@@ -9,6 +9,8 @@ namespace MyTelegram.Schema;
 [JsonDerivedType(typeof(TMediaAreaCoordinates), nameof(TMediaAreaCoordinates))]
 public interface IMediaAreaCoordinates : IObject
 {
+    BitArray Flags { get; set; }
+
     ///<summary>
     /// The abscissa of the rectangle's center, as a percentage of the media width (0-100).
     ///</summary>
@@ -33,4 +35,5 @@ public interface IMediaAreaCoordinates : IObject
     /// Clockwise rotation angle of the rectangle, in degrees (0-360).
     ///</summary>
     double Rotation { get; set; }
+    double? Radius { get; set; }
 }

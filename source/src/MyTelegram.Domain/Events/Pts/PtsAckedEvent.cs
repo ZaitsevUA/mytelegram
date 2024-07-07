@@ -6,7 +6,9 @@ public class PtsAckedEvent(
     long msgId,
     int pts,
     long globalSeqNo,
-    Peer toPeer)
+    Peer toPeer,
+    bool isFromGetDifference
+    )
     : AggregateEvent<PtsAggregate, PtsId>
 {
     public long GlobalSeqNo { get; } = globalSeqNo;
@@ -15,20 +17,5 @@ public class PtsAckedEvent(
     public long PermAuthKeyId { get; } = permAuthKeyId;
     public int Pts { get; } = pts;
     public Peer ToPeer { get; } = toPeer;
+    public bool IsFromGetDifference { get; } = isFromGetDifference;
 }
-
-//public class ChannelPtsForUserUpdatedEvent : AggregateEvent<ChannelPtsAggregate, ChannelPtsId>
-//{
-//    public long UserId { get; }
-//    public long ChannelId { get; }
-//    public int Pts { get; }
-//    public long GlobalSeqNo { get; }
-
-//    public ChannelPtsForUserUpdatedEvent(long userId,long channelId,int pts,long globalSeqNo)
-//    {
-//        UserId = userId;
-//        ChannelId = channelId;
-//        Pts = pts;
-//        GlobalSeqNo = globalSeqNo;
-//    }
-//}

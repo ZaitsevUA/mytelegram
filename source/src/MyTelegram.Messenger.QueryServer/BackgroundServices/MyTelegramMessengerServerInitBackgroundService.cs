@@ -11,29 +11,17 @@ public class MyTelegramMessengerServerInitBackgroundService(
     IHandlerHelper handlerHelper,
     IDataSeeder dataSeeder,
     IIdGenerator idGenerator,
-    IOptions<MyTelegramMessengerServerOptions> options,
+    IOptionsMonitor<MyTelegramMessengerServerOptions> options,
     IMongoDbIndexesCreator mongoDbIndexesCreator,
     IEnumerable<IReadStoreManager> readStoreManagers)
     : BackgroundService
 {
-    private readonly IDataSeeder _dataSeeder = dataSeeder;
-    private readonly IIdGenerator _idGenerator = idGenerator;
-    private readonly MyTelegramMessengerServerOptions _options = options.Value;
-
-    //private readonly IReadOnlyCollection<IReadStoreManager> _readStoreManagers;
-    private readonly IEnumerable<IReadStoreManager> _readStoreManagers = readStoreManagers;
-    //private readonly IMyMongoDbReadModelStore<MyTelegram.ReadModel.InMemory.UserReadModel> _readModelStore;
-
-    /*IReadOnlyCollection<IReadStoreManager> readStoreManagers*/
-    //_readModelStore = readModelStore;
-    //_readStoreManagers = readStoreManagers;
-
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         logger.LogInformation("App init starting...");
         handlerHelper.InitAllHandlers(typeof(MyTelegramMessengerServerExtensions).Assembly);
         await mongoDbIndexesCreator.CreateAllIndexesAsync();
-        if (_options.UseInMemoryFilters)
+        if (options.CurrentValue.UseInMemoryFilters)
         {
             await serviceProvider.GetRequiredService<IInMemoryFilterDataLoader>().LoadAllFilterDataAsync()
          ;

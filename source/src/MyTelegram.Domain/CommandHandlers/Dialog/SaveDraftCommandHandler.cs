@@ -7,11 +7,7 @@ public class SaveDraftCommandHandler : CommandHandler<DialogAggregate, DialogId,
         CancellationToken cancellationToken)
     {
         aggregate.SaveDraft(command.RequestInfo,
-            command.Message,
-            command.NoWebpage,
-            command.ReplyToMsgId,
-            command.Date,
-            command.Entities);
+            command.Draft);
         return Task.CompletedTask;
     }
 }

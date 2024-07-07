@@ -22,18 +22,31 @@ public class UserReadModel : IUserReadModel,
     public virtual string? About { get; private set; }
     public virtual long AccessHash { get; private set; }
     public virtual int AccountTtl { get; private set; }
+    public Birthday? Birthday { get; private set; }
     public virtual bool Bot { get; private set; }
     public int? BotInfoVersion { get; private set; }
+    public PeerColor? Color { get; private set; }
+    public string? Email { get; private set; }
+    public long? EmojiStatusDocumentId { get; private set; }
+    public int? EmojiStatusValidUntil { get; private set; }
+    public long? FallbackPhotoId { get; private set; }
     public virtual string FirstName { get; private set; } = null!;
+    public GlobalPrivacySettings? GlobalPrivacySettings { get; private set; }
     public virtual bool HasPassword { get; private set; }
     public virtual string Id { get; private set; } = null!;
-    public virtual bool IsOnline { get; private set; }
+    public virtual bool IsOnline { get; private set;}
     public virtual string? LastName { get; private set; }
     public virtual DateTime LastUpdateDate { get; private set; }
+    public long? PersonalChannelId { get; private set; }
+    public long? PersonalPhotoId { get; }
     public virtual string PhoneNumber { get; private set; } = null!;
     public virtual int? PinnedMsgId { get; private set; }
     public virtual List<int> PinnedMsgIdList { get; protected set; } = [];
-    public virtual byte[]? ProfilePhoto { get; private set; }
+    public bool Premium { get; private set; }
+    public PeerColor? ProfileColor { get; private set; }
+    public virtual byte[]? ProfilePhoto { get; }
+    public long? ProfilePhotoId { get; private set; }
+    public List<long> RecentEmojiStatuses { get; private set; } = [];
     public virtual bool SensitiveCanChange { get; private set; }
     public virtual bool SensitiveEnabled { get; private set; }
     public virtual bool ShowContactSignUpNotification { get; private set; }
@@ -43,23 +56,11 @@ public class UserReadModel : IUserReadModel,
     public virtual string? UserName { get; private set; }
 
     public virtual bool Verified { get; private set; }
-    public bool Premium { get; private set; }
-    public string? Email { get; private set; }
-    public long? EmojiStatusDocumentId { get; private set; }
-    public int? EmojiStatusValidUntil { get; private set; }
-    public List<long> RecentEmojiStatuses { get; private set; } = [];
-    public VideoSizeEmojiMarkup? VideoEmojiMarkup { get; private set; }
-    public long? ProfilePhotoId { get; private set; }
-    public long? PersonalPhotoId { get; private set; }
-    public long? FallbackPhotoId { get; private set; }
-    public PeerColor? Color { get; private set; }
-    public PeerColor? ProfileColor { get; private set; }
-    public GlobalPrivacySettings? GlobalPrivacySettings { get; private set; }
-    public long? PersonalChannelId { get; private set; }
-    public Birthday? Birthday { get; private set; }
+
     //public int? Color { get; private set; }
     //public long? BackgroundEmojiId { get; private set; }
     public virtual long? Version { get; set; }
+    public VideoSizeEmojiMarkup? VideoEmojiMarkup { get; }
 
     public Task ApplyAsync(IReadModelContext context,
         IDomainEvent<MessageAggregate, MessageId, InboxMessagePinnedUpdatedEvent> domainEvent,
@@ -168,21 +169,6 @@ public class UserReadModel : IUserReadModel,
         Verified = domainEvent.AggregateEvent.Verified;
         return Task.CompletedTask;
     }
-    private void UpdatePinnedMsgId(int messageId,
-        bool pinned)
-    {
-        if (pinned)
-        {
-            PinnedMsgId = messageId;
-            PinnedMsgIdList.Add(messageId);
-        }
-        else
-        {
-            PinnedMsgIdList.Remove(messageId);
-            PinnedMsgId = PinnedMsgIdList.LastOrDefault();
-        }
-    }
-
     public Task ApplyAsync(IReadModelContext context, IDomainEvent<UserAggregate, UserId, UserProfilePhotoUploadedEvent> domainEvent, CancellationToken cancellationToken)
     {
         if (domainEvent.AggregateEvent.Fallback)
@@ -201,7 +187,7 @@ public class UserReadModel : IUserReadModel,
     {
         if (domainEvent.AggregateEvent.ForProfile)
         {
-            ProfileColor=domainEvent.AggregateEvent.Color;
+            ProfileColor = domainEvent.AggregateEvent.Color;
         }
         else
         {
@@ -210,16 +196,19 @@ public class UserReadModel : IUserReadModel,
 
         return Task.CompletedTask;
     }
+
     public Task ApplyAsync(IReadModelContext context, IDomainEvent<UserAggregate, UserId, UserGlobalPrivacySettingsChangedEvent> domainEvent, CancellationToken cancellationToken)
     {
-        GlobalPrivacySettings=domainEvent.AggregateEvent.GlobalPrivacySettings;
+        GlobalPrivacySettings = domainEvent.AggregateEvent.GlobalPrivacySettings;
         return Task.CompletedTask;
     }
+
     public Task ApplyAsync(IReadModelContext context, IDomainEvent<UserAggregate, UserId, UserPremiumStatusChangedEvent> domainEvent, CancellationToken cancellationToken)
     {
-        Premium=domainEvent.AggregateEvent.Premium;
+        Premium = domainEvent.AggregateEvent.Premium;
         return Task.CompletedTask;
     }
+
     public Task ApplyAsync(IReadModelContext context, IDomainEvent<UserAggregate, UserId, PersonalChannelUpdatedEvent> domainEvent, CancellationToken cancellationToken)
     {
         PersonalChannelId = domainEvent.AggregateEvent.PersonalChannelId;
@@ -233,6 +222,7 @@ public class UserReadModel : IUserReadModel,
 
         return Task.CompletedTask;
     }
+
     public Task ApplyAsync(IReadModelContext context, IDomainEvent<MessageAggregate, MessageId, MessagePinnedUpdatedEvent> domainEvent, CancellationToken cancellationToken)
     {
         UpdatePinnedMsgId(domainEvent.AggregateEvent.MessageId, domainEvent.AggregateEvent.Pinned);
@@ -252,5 +242,20 @@ public class UserReadModel : IUserReadModel,
         FirstName = domainEvent.AggregateEvent.FirstName;
 
         return Task.CompletedTask;
+    }
+
+    private void UpdatePinnedMsgId(int messageId,
+                                            bool pinned)
+    {
+        if (pinned)
+        {
+            PinnedMsgId = messageId;
+            PinnedMsgIdList.Add(messageId);
+        }
+        else
+        {
+            PinnedMsgIdList.Remove(messageId);
+            PinnedMsgId = PinnedMsgIdList.LastOrDefault();
+        }
     }
 }
