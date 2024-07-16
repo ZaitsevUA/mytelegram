@@ -1,15 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using EventFlow.Aggregates;
-using EventFlow.MongoDB.ValueObjects;
-using EventFlow.Provided.Jobs;
-using EventFlow.Snapshots;
-using MyTelegram.Core;
+﻿using EventFlow.Aggregates;
 using MyTelegram.Domain.Aggregates.Messaging;
 using MyTelegram.Domain.ValueObjects;
+using System.Text;
 
 namespace MyTelegram.TestApp;
 
