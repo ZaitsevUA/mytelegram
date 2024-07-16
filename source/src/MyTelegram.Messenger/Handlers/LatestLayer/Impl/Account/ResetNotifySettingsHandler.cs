@@ -12,6 +12,7 @@ internal sealed class ResetNotifySettingsHandler : RpcResultObjectHandler<MyTele
     protected override Task<IBool> HandleCoreAsync(IRequestInput input,
         MyTelegram.Schema.Account.RequestResetNotifySettings obj)
     {
-        throw new NotImplementedException();
+        // TODO: ResetNotifySettingsHandler
+        return Task.FromResult<IBool>(new TBoolTrue());
     }
 }

@@ -12,6 +12,6 @@ internal sealed class SetContactSignUpNotificationHandler : RpcResultObjectHandl
     protected override Task<IBool> HandleCoreAsync(IRequestInput input,
         MyTelegram.Schema.Account.RequestSetContactSignUpNotification obj)
     {
-        throw new NotImplementedException();
+        return Task.FromResult<IBool>(new TBoolTrue());
     }
 }

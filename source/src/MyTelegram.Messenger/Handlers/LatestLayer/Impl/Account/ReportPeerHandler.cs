@@ -10,12 +10,14 @@ namespace MyTelegram.Handlers.Account;
 /// 400 PEER_ID_INVALID The provided peer id is invalid.
 /// See <a href="https://corefork.telegram.org/method/account.reportPeer" />
 ///</summary>
-internal sealed class ReportPeerHandler : RpcResultObjectHandler<MyTelegram.Schema.Account.RequestReportPeer, IBool>,
+internal sealed class ReportPeerHandler(ILogger<ReportPeerHandler> logger) : RpcResultObjectHandler<MyTelegram.Schema.Account.RequestReportPeer, IBool>,
     Account.IReportPeerHandler
 {
     protected override Task<IBool> HandleCoreAsync(IRequestInput input,
         MyTelegram.Schema.Account.RequestReportPeer obj)
     {
-        throw new NotImplementedException();
+        logger.LogInformation("ReportPeerHandler peer:{Peer},reason:{@Reason},message:{Message}", obj.Peer,obj.Reason,obj.Message);
+
+        return Task.FromResult<IBool>(new TBoolTrue());
     }
 }

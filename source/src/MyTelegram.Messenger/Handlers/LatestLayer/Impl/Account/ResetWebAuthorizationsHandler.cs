@@ -1,17 +1,30 @@
 ﻿// ReSharper disable All
 
+using EventFlow.Aggregates.ExecutionResults;
+using MyTelegram.Domain.Aggregates.Device;
+
 namespace MyTelegram.Handlers.Account;
 
-///<summary>
-/// Reset all active web <a href="https://corefork.telegram.org/widgets/login">telegram login</a> sessions
-/// See <a href="https://corefork.telegram.org/method/account.resetWebAuthorizations" />
-///</summary>
-internal sealed class ResetWebAuthorizationsHandler : RpcResultObjectHandler<MyTelegram.Schema.Account.RequestResetWebAuthorizations, IBool>,
+/// <summary>
+///     Reset all active web <a href="https://corefork.telegram.org/widgets/login">telegram login</a> sessions
+///     See <a href="https://corefork.telegram.org/method/account.resetWebAuthorizations" />
+/// </summary>
+internal sealed class ResetWebAuthorizationsHandler(
+    IQueryProcessor queryProcessor,
+    IObjectMessageSender messageSender,
+    IQueuedCommandExecutor<DeviceAggregate, DeviceId, IExecutionResult> commandExecutor,
+    IEventBus eventBus) : RpcResultObjectHandler<Schema.Account.RequestResetWebAuthorizations, IBool>,
     Account.IResetWebAuthorizationsHandler
 {
-    protected override Task<IBool> HandleCoreAsync(IRequestInput input,
-        MyTelegram.Schema.Account.RequestResetWebAuthorizations obj)
+    protected override async Task<IBool> HandleCoreAsync(IRequestInput input,
+        Schema.Account.RequestResetWebAuthorizations obj)
     {
-        return Task.FromResult<IBool>(new TBoolTrue());
+        var deviceList = await queryProcessor
+            .ProcessAsync(new GetDeviceByUserIdQuery(input.UserId));
+        var revokedAuthKeyIdList = deviceList
+            .Where(p => p.PermAuthKeyId != input.PermAuthKeyId && p.AppVersion.Contains("web"))
+            .Select(p => p.PermAuthKeyId).ToList();
+        await eventBus.PublishAsync(new SessionRevokedEvent(input.PermAuthKeyId, revokedAuthKeyIdList));
+        return new TBoolTrue();
     }
 }
