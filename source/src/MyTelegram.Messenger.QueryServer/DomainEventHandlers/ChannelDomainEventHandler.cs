@@ -310,7 +310,7 @@ public class ChannelDomainEventHandler(
         IDomainEvent<InviteToChannelSaga, InviteToChannelSagaId, InviteToChannelCompletedEvent> domainEvent,
         CancellationToken cancellationToken)
     {
-        if (domainEvent.AggregateEvent.Broadcast)
+        if (domainEvent.AggregateEvent.Broadcast || domainEvent.AggregateEvent.HasLink)
         {
             var updates = new TUpdateShort
             {
