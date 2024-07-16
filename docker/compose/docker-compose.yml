@@ -78,9 +78,9 @@ services:
       - tg-net
     ports:
       - "${App__Servers__0__Port}:${App__Servers__0__Port}"
-      #- "${App__Servers__1__Port}:${App__Servers__1__Port}"
-      #- "${App__Servers__2__Port}:${App__Servers__2__Port}"
-      #- "${App__Servers__3__Port}:${App__Servers__3__Port}"
+      - "${App__Servers__1__Port}:${App__Servers__1__Port}"
+      - "${App__Servers__2__Port}:${App__Servers__2__Port}"
+      - "${App__Servers__3__Port}:${App__Servers__3__Port}"
       - "${App__Servers__4__Port}:${App__Servers__4__Port}"
       - "${App__Servers__5__Port}:${App__Servers__5__Port}"
     volumes:
@@ -230,21 +230,21 @@ services:
       - rabbitmq
       - redis
 
-  ### 5.Messenger grpc server
-  messenger-grpc-server:
-    image: mytelegram/mytelegram-messenger-grpc-service:${MyTelegramVersion}
-    restart: always
-    networks:
-      - tg-net
-    environment:
-      Serilog__MinimumLevel__Default: ${Serilog__MinimumLevel__Default}
-      ConnectionStrings__Default: ${ConnectionStrings__Default}
-      App__DatabaseName: ${App__DatabaseName}
-      App__BotDatabaseName: ${App__BotDatabaseName}
-    volumes:
-      - ./data/mytelegram/messenger-grpc-service/logs:/app/Logs
-    depends_on:
-      - mongodb
+  # ### 5.Messenger grpc server
+  # messenger-grpc-server:
+  #   image: mytelegram/mytelegram-messenger-grpc-service:${MyTelegramVersion}
+  #   restart: always
+  #   networks:
+  #     - tg-net
+  #   environment:
+  #     Serilog__MinimumLevel__Default: ${Serilog__MinimumLevel__Default}
+  #     ConnectionStrings__Default: ${ConnectionStrings__Default}
+  #     App__DatabaseName: ${App__DatabaseName}
+  #     App__BotDatabaseName: ${App__BotDatabaseName}
+  #   volumes:
+  #     - ./data/mytelegram/messenger-grpc-service/logs:/app/Logs
+  #   depends_on:
+  #     - mongodb
 
   ### 6.File server
   file-server:
@@ -470,6 +470,7 @@ services:
       # TwilioSms__AccountSId: ${TwilioSms__AccountSId}
       # TwilioSms__AuthToken: ${TwilioSms__AuthToken}
       # TwilioSms__FromNumber: ${TwilioSms__FromNumber}
+      # TwilioSms__MessagingServiceSId: ${TwilioSms__MessagingServiceSId}
       # VonageSms__Enabled: ${VonageSms__Enabled}
       # VonageSms__BrandName: ${VonageSms__BrandName}
       # VonageSms__ApiKey: ${VonageSms__ApiKey}
