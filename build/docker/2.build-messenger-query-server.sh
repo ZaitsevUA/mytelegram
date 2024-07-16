@@ -1,7 +1,7 @@
 #!/bin/sh
 #currentDate=`date +%-m%d`
 #imageVersion=0.6.$currentDate-alpine
-source ./get-version.sh
+. ./get-version.sh
 
 echo Building mytelegram/mytelegram-messenger-query-server:$imageVersion
 #docker build -t mytelegram-messenger-server:$imageVersion -f ./Dockerfile-messenger-server .
