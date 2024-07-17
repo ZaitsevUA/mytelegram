@@ -28,9 +28,11 @@ internal sealed class GetContactsHandler(
         var photos = await photoAppService.GetPhotosAsync(userReadModels, contactReadModels);
         var userList = layeredUserService.GetConverter(input.Layer).ToUserList(input.UserId, userReadModels, photos, contactReadModels, privacies);
 
+        var validUserIds = new List<long>();
         foreach (var user in userList)
         {
             user.Contact = true;
+            validUserIds.Add(user.Id);
         }
 
         var hash = hashCalculator.GetHash(userIdList);
@@ -43,7 +45,7 @@ internal sealed class GetContactsHandler(
         var r = new TContacts
         {
             Contacts =
-                new TVector<IContact>(contactReadModels.Where(p => userIdList.Contains(p.TargetUserId)).Select(p =>
+                new TVector<IContact>(contactReadModels.Where(p => validUserIds.Contains(p.TargetUserId)).Select(p =>
                     new TContact { UserId = p.TargetUserId, Mutual = false })),
             Users = new TVector<IUser>(userList),
             SavedCount = contactReadModels.Count,
