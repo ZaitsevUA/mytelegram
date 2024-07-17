@@ -21,19 +21,15 @@ internal sealed class GetDialogFiltersHandler : RpcResultObjectHandler<MyTelegra
     protected override async Task<MyTelegram.Schema.Messages.IDialogFilters> HandleCoreAsync(IRequestInput input,
         RequestGetDialogFilters obj)
     {
-        var filterReadModels = await _queryProcessor.ProcessAsync(new GetDialogFiltersQuery(input.UserId), default)
-     ;
+        var filterReadModels = await _queryProcessor.ProcessAsync(new GetDialogFiltersQuery(input.UserId));
 
         var filters = new TVector<IDialogFilter>();
+        filters.Add(new TDialogFilterDefault());
+
         foreach (var filterReadModel in filterReadModels)
         {
             var filter = _objectMapper.Map<DialogFilter, TDialogFilter>(filterReadModel.Filter);
             filters.Add(filter);
-        }
-
-        if (filters.Count == 0)
-        {
-            filters.Add(new TDialogFilterDefault());
         }
 
         return new TDialogFilters
