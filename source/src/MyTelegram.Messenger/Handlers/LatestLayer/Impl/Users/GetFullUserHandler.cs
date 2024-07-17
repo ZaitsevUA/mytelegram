@@ -59,7 +59,7 @@ internal sealed class GetFullUserHandler(
             contactReadModels.FirstOrDefault(p =>
                 p.SelfUserId == targetPeer.PeerId && p.TargetUserId == input.UserId);
 
-        if (contactReadModel2 != null)
+        if (contactReadModel != null)
         {
             contactType = ContactType.Unilateral;
         }
