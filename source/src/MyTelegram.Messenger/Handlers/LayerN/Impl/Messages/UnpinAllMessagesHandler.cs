@@ -11,7 +11,7 @@ namespace MyTelegram.Handlers.Messages.LayerN;
 /// See <a href="https://corefork.telegram.org/method/messages.unpinAllMessages" />
 ///</summary>
 internal sealed class UnpinAllMessagesHandler(ICommandBus commandBus, IHandlerHelper handlerHelper)
-    : RpcResultObjectHandler<MyTelegram.Schema.Messages.LayerN.RequestUnpinAllMessages,
+    : BaseObjectHandler<MyTelegram.Schema.Messages.LayerN.RequestUnpinAllMessages,
             IObject>,
         Messages.IUnpinAllMessagesHandler
 {
