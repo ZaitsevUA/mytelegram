@@ -295,6 +295,7 @@ services:
       App__FixedVerifyCode: ${App__FixedVerifyCode}
       App__VerificationCodeLength: ${App__VerificationCodeLength}
       App__VerificationCodeExpirationSeconds: ${App__VerificationCodeExpirationSeconds}
+      App__CheckPhoneNumberFormat: ${App__CheckPhoneNumberFormat}
       # App__JoinChatDomain: ${App__JoinChatDomain}
       # App__ChannelGetDifferenceIntervalSeconds: ${App__ChannelGetDifferenceIntervalSeconds}
       # App__UseInMemoryFilters: ${App__UseInMemoryFilters}
