@@ -83,7 +83,7 @@ internal sealed class GetFullUserHandler(
         var peerSettings = await peerSettingsAppService.GetPeerSettingsAsync(input.UserId, targetPeer.PeerId);
         var photos = await photoAppService.GetPhotosAsync(user, contactReadModel);
 
-        return await layeredUserService.GetConverter(input.Layer).ToUserFullAsync(
+        var userFull = await layeredUserService.GetConverter(input.Layer).ToUserFullAsync(
             userId,
             user,
             peerNotifySettings,
@@ -95,5 +95,25 @@ internal sealed class GetFullUserHandler(
             contactReadModel,
             contactType,
             privacies);
+
+        await SetPersonalChannelAsync(input, user, userFull);
+
+        return userFull;
+    }
+
+    private async Task SetPersonalChannelAsync(IRequestInput input, IUserReadModel userReadModel, MyTelegram.Schema.Users.IUserFull userFull)
+    {
+        if (userReadModel.PersonalChannelId.HasValue)
+        {
+            var channelTopMessageId =
+                await queryProcessor.ProcessAsync(
+                    new GetChannelTopMessageIdQuery(userReadModel.PersonalChannelId.Value));
+
+            if (channelTopMessageId.HasValue)
+            {
+                userFull.FullUser.PersonalChannelId = userReadModel.PersonalChannelId;
+                userFull.FullUser.PersonalChannelMessage = channelTopMessageId.Value;
+            }
+        }
     }
 }

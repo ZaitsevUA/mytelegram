@@ -442,3 +442,4 @@ public record GetPushDevicesQuery(long UserId) : IQuery<IReadOnlyCollection<IPus
 //public record GetThemeByEmoticonQuery(string Emoticon) : IQuery<IThemeReadModel?>;
 //public record GetDefaultThemesQuery : IQuery<IReadOnlyCollection<IThemeReadModel>>;
 //public record GetWallPaperListQuery(List<long>? Ids, List<string>? Slugs) : IQuery<IReadOnlyCollection<IWallPaperReadModel>>;
+public record GetChannelTopMessageIdQuery(long ChannelId) : IQuery<int?>;
