@@ -6,6 +6,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="System.Net.Http" />
+    <PackageReference Include="System.Text.RegularExpressions" />
     <PackageReference Include="xunit" />
     <PackageReference Include="AutoFixture.Xunit2" />
     <PackageReference Include="AutoFixture.AutoMoq" />
