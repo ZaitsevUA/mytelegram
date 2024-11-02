@@ -1,5 +1,7 @@
 ﻿// ReSharper disable All
 
+using EventFlow.Queries;
+
 namespace MyTelegram.Handlers.Channels;
 
 ///<summary>
@@ -18,33 +20,35 @@ namespace MyTelegram.Handlers.Channels;
 /// 400 USERNAME_PURCHASE_AVAILABLE The specified username can be purchased on <a href="https://fragment.com/">https://fragment.com</a>.
 /// See <a href="https://corefork.telegram.org/method/channels.updateUsername" />
 ///</summary>
-internal sealed class UpdateUsernameHandler : RpcResultObjectHandler<MyTelegram.Schema.Channels.RequestUpdateUsername, IBool>,
-    Channels.IUpdateUsernameHandler
+internal sealed class UpdateUsernameHandler(
+    ICommandBus commandBus,
+    IQueryProcessor queryProcessor,
+    IAccessHashHelper accessHashHelper)
+    : RpcResultObjectHandler<MyTelegram.Schema.Channels.RequestUpdateUsername, IBool>,
+        Channels.IUpdateUsernameHandler
 {
-    private readonly ICommandBus _commandBus;
-    private readonly IAccessHashHelper _accessHashHelper;
-    public UpdateUsernameHandler(ICommandBus commandBus,
-        IAccessHashHelper accessHashHelper)
-    {
-        _commandBus = commandBus;
-        _accessHashHelper = accessHashHelper;
-    }
-
     protected override async Task<IBool> HandleCoreAsync(IRequestInput input,
         MyTelegram.Schema.Channels.RequestUpdateUsername obj)
     {
         if (obj.Channel is TInputChannel inputChannel)
         {
-            await _accessHashHelper.CheckAccessHashAsync(inputChannel.ChannelId, inputChannel.AccessHash);
+            await accessHashHelper.CheckAccessHashAsync(inputChannel.ChannelId, inputChannel.AccessHash);
+
+            var oldUserName = await queryProcessor.ProcessAsync(new GetChannelUserNameByChannelIdQuery(inputChannel.ChannelId));
+            if (string.Equals(obj.Username, oldUserName))
+            {
+                RpcErrors.RpcErrors400.UsernameNotModified.ThrowRpcError();
+            }
 
             var command = new SetUserNameCommand(UserNameId.Create(obj.Username),
                 input.ToRequestInfo(),
-                input.UserId,
-                PeerType.Channel,
-                inputChannel.ChannelId,
-                obj.Username);
-            await _commandBus.PublishAsync(command, default);
-            return null!;
+                inputChannel.ChannelId.ToChannelPeer(),
+                obj.Username,
+                oldUserName
+                );
+            await commandBus.PublishAsync(command, default);
+
+            return new TBoolTrue();
         }
 
         throw new NotImplementedException();

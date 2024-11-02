@@ -3,14 +3,14 @@
 public class SetUserNameCommand(
     UserNameId aggregateId,
     RequestInfo requestInfo,
-    long selfUserId,
-    PeerType peerType,
-    long peerId,
-    string userName)
-    : RequestCommand2<UserNameAggregate, UserNameId, IExecutionResult>(aggregateId, requestInfo)
+    Peer peer,
+    string? userName,
+    string? oldUserName
+    )
+    : Command<UserNameAggregate, UserNameId, IExecutionResult>(aggregateId), IHasRequestInfo
 {
-    public long PeerId { get; } = peerId;
-    public PeerType PeerType { get; } = peerType;
-    public long SelfUserId { get; } = selfUserId;
-    public string UserName { get; } = userName;
+    public Peer Peer { get; } = peer;
+    public string? UserName { get; } = userName;
+    public string? OldUserName { get; } = oldUserName;
+    public RequestInfo RequestInfo { get; } = requestInfo;
 }

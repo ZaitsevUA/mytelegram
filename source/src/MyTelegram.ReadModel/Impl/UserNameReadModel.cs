@@ -3,19 +3,16 @@
 public class UserNameReadModel : IUserNameReadModel,
     IAmReadModelFor<UserNameAggregate, UserNameId, SetUserNameSuccessEvent>,
     IAmReadModelFor<UserNameAggregate, UserNameId, UserNameDeletedEvent>,
-    IAmReadModelFor<UserNameAggregate, UserNameId, UserNameCreatedEvent>
+    IAmReadModelFor<UserNameAggregate, UserNameId, UserNameCreatedEvent>,
+    IAmReadModelFor<UserNameAggregate, UserNameId, UserNameChangedEvent>
 
 {
+    public virtual string Id { get; private set; } = null!;
+    public virtual long PeerId { get; private set; }
+    public virtual PeerType PeerType { get; private set; }
+    public virtual string UserName { get; private set; } = null!;
     public virtual long? Version { get; set; }
-    //public void Apply(IReadModelContext context,
-    //    IDomainEvent<UserNameAggregate, UserNameId, SetUserNameSuccessEvent> domainEvent)
-    //{
-    //    Id = domainEvent.AggregateIdentity.Value;
-    //    UserName = domainEvent.AggregateEvent.UserName;
-    //    PeerType = domainEvent.AggregateEvent.PeerType;
-    //    PeerId = domainEvent.AggregateEvent.PeerId;
-    //}
-
+   
     public Task ApplyAsync(IReadModelContext context,
         IDomainEvent<UserNameAggregate, UserNameId, SetUserNameSuccessEvent> domainEvent,
         CancellationToken cancellationToken)
@@ -28,12 +25,6 @@ public class UserNameReadModel : IUserNameReadModel,
         return Task.CompletedTask;
     }
 
-    //public void Apply(IReadModelContext context,
-    //    IDomainEvent<UserNameAggregate, UserNameId, UserNameDeletedEvent> domainEvent)
-    //{
-    //    context.MarkForDeletion();
-    //}
-
     public Task ApplyAsync(IReadModelContext context,
         IDomainEvent<UserNameAggregate, UserNameId, UserNameDeletedEvent> domainEvent,
         CancellationToken cancellationToken)
@@ -41,20 +32,31 @@ public class UserNameReadModel : IUserNameReadModel,
         context.MarkForDeletion();
         return Task.CompletedTask;
     }
-
-    public virtual string Id { get; private set; } = null!;
-    public virtual string UserName { get; private set; } = null!;
-    public virtual PeerType PeerType { get; private set; }
-    public virtual long PeerId { get; private set; }
-
     public Task ApplyAsync(IReadModelContext context,
         IDomainEvent<UserNameAggregate, UserNameId, UserNameCreatedEvent> domainEvent,
         CancellationToken cancellationToken)
     {
         Id = domainEvent.AggregateIdentity.Value;
-        UserName= domainEvent.AggregateEvent.UserName;
+        UserName = domainEvent.AggregateEvent.UserName;
         PeerId = domainEvent.AggregateEvent.UserId;
         PeerType = PeerType.User;
+
+        return Task.CompletedTask;
+    }
+
+    public Task ApplyAsync(IReadModelContext context, IDomainEvent<UserNameAggregate, UserNameId, UserNameChangedEvent> domainEvent, CancellationToken cancellationToken)
+    {
+        if (string.IsNullOrEmpty(domainEvent.AggregateEvent.UserName))
+        {
+            context.MarkForDeletion();
+        }
+        else
+        {
+            Id = domainEvent.AggregateIdentity.Value;
+            UserName = domainEvent.AggregateEvent.UserName;
+            PeerId = domainEvent.AggregateEvent.Peer.PeerId;
+            PeerType = PeerType.User;
+        }
 
         return Task.CompletedTask;
     }

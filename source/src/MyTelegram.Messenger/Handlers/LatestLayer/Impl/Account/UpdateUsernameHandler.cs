@@ -1,7 +1,5 @@
 ﻿// ReSharper disable All
 
-using MyTelegram.Messenger.Services.Filters;
-
 namespace MyTelegram.Handlers.Account;
 
 ///<summary>
@@ -14,36 +12,30 @@ namespace MyTelegram.Handlers.Account;
 /// 400 USERNAME_PURCHASE_AVAILABLE The specified username can be purchased on <a href="https://fragment.com/">https://fragment.com</a>.
 /// See <a href="https://corefork.telegram.org/method/account.updateUsername" />
 ///</summary>
-internal sealed class UpdateUsernameHandler : RpcResultObjectHandler<MyTelegram.Schema.Account.RequestUpdateUsername, MyTelegram.Schema.IUser>,
-    Account.IUpdateUsernameHandler
+internal sealed class UpdateUsernameHandler(
+    ICommandBus commandBus,
+    IQueryProcessor queryProcessor
+)
+    : RpcResultObjectHandler<MyTelegram.Schema.Account.RequestUpdateUsername, MyTelegram.Schema.IUser>,
+        Account.IUpdateUsernameHandler
 {
-    private readonly ICommandBus _commandBus;
-    private readonly ICuckooFilter _cuckooFilter;
-
-    public UpdateUsernameHandler(ICommandBus commandBus,
-        ICuckooFilter cuckooFilter)
-    {
-        _commandBus = commandBus;
-        _cuckooFilter = cuckooFilter;
-    }
-
     protected override async Task<IUser> HandleCoreAsync(IRequestInput input,
         MyTelegram.Schema.Account.RequestUpdateUsername obj)
     {
-        if (await _cuckooFilter
-                .ExistsAsync(Encoding.UTF8.GetBytes($"{MyTelegramServerDomainConsts.UserNameCuckooFilterKey}_{obj.Username}"))
-                .ConfigureAwait(false))
+        var oldUserName = await queryProcessor.ProcessAsync(new GetUserNameByUserIdQuery(input.UserId));
+        if (string.Equals(obj.Username, oldUserName))
         {
-            RpcErrors.RpcErrors400.UsernameOccupied.ThrowRpcError();
+            RpcErrors.RpcErrors400.UsernameNotModified.ThrowRpcError();
         }
 
         var command = new SetUserNameCommand(UserNameId.Create(obj.Username),
             input.ToRequestInfo(),
-            input.UserId,
-            PeerType.User,
-            input.UserId,
-            obj.Username);
-        await _commandBus.PublishAsync(command, default);
+            input.UserId.ToUserPeer(),
+            obj.Username,
+            oldUserName
+        );
+        await commandBus.PublishAsync(command);
+
         return null!;
     }
 }

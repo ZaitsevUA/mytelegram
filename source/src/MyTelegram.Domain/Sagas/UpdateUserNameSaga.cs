@@ -2,7 +2,7 @@
 
 public class UpdateUserNameSaga(UpdateUserNameSagaId id)
     : AggregateSaga<UpdateUserNameSaga, UpdateUserNameSagaId, UpdateUserNameSagaLocator>(id),
-        ISagaIsStartedBy<UserNameAggregate, UserNameId, SetUserNameSuccessEvent>,
+        ISagaIsStartedBy<UserNameAggregate, UserNameId, UserNameChangedEvent>,
         ISagaHandles<UserAggregate, UserId, UserNameUpdatedEvent>,
         ISagaHandles<ChannelAggregate, ChannelId, ChannelUserNameChangedEvent>,
         IApply<UpdateUserNameStartedEvent>
@@ -42,33 +42,36 @@ public class UpdateUserNameSaga(UpdateUserNameSagaId id)
         return Task.CompletedTask;
     }
 
-    public Task HandleAsync(IDomainEvent<UserNameAggregate, UserNameId, SetUserNameSuccessEvent> domainEvent,
-        ISagaContext sagaContext,
-        CancellationToken cancellationToken)
+    public Task HandleAsync(IDomainEvent<UserNameAggregate, UserNameId, UserNameChangedEvent> domainEvent, ISagaContext sagaContext, CancellationToken cancellationToken)
     {
-        Emit(new UpdateUserNameStartedEvent());
-
-        switch (domainEvent.AggregateEvent.PeerType)
+        switch (domainEvent.AggregateEvent.Peer.PeerType)
         {
             case PeerType.User:
-            {
-                var command = new UpdateUserNameCommand(UserId.Create(domainEvent.AggregateEvent.PeerId),
-                    domainEvent.AggregateEvent.RequestInfo,
-                    domainEvent.AggregateEvent.UserName
-                );
-                Publish(command);
-            }
+                {
+                    var command = new UpdateUserNameCommand(UserId.Create(domainEvent.AggregateEvent.Peer.PeerId),
+                        domainEvent.AggregateEvent.RequestInfo,
+                        domainEvent.AggregateEvent.UserName ?? string.Empty
+                    );
+                    Publish(command);
+                }
                 break;
+
             case PeerType.Channel:
-            {
-                var command = new UpdateChannelUserNameCommand(ChannelId.Create(domainEvent.AggregateEvent.PeerId),
-                    domainEvent.AggregateEvent.RequestInfo,
-                    domainEvent.AggregateEvent.PeerId,
-                    domainEvent.AggregateEvent.UserName
-                );
-                Publish(command);
-            }
+                {
+                    var command = new UpdateChannelUserNameCommand(ChannelId.Create(domainEvent.AggregateEvent.Peer.PeerId),
+                        domainEvent.AggregateEvent.RequestInfo,
+                        domainEvent.AggregateEvent.Peer.PeerId,
+                        domainEvent.AggregateEvent.UserName ?? string.Empty
+                    );
+                    Publish(command);
+                }
                 break;
+        }
+
+        if (!string.IsNullOrEmpty(domainEvent.AggregateEvent.OldUserName))
+        {
+            var command = new DeleteUserNameCommand(UserNameId.Create(domainEvent.AggregateEvent.OldUserName));
+            Publish(command);
         }
 
         return Task.CompletedTask;

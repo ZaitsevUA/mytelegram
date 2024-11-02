@@ -10,15 +10,3 @@ public class DeleteUserNameCommandHandler : CommandHandler<UserNameAggregate, Us
         return Task.CompletedTask;
     }
 }
-
-//public class CheckUserNameCommandHandler : CommandHandler<UserNameAggregate, UserNameId, CheckUserNameCommand>
-//{
-//    public override Task ExecuteAsync(UserNameAggregate aggregate,
-//        CheckUserNameCommand command,
-//        CancellationToken cancellationToken)
-//    {
-//        aggregate.Check(command.ReqMsgId, command.UserName);
-
-//        return Task.CompletedTask;
-//    }
-//}

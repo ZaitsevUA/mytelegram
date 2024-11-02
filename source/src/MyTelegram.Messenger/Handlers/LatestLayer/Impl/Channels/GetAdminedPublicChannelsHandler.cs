@@ -26,8 +26,8 @@ internal sealed class GetAdminedPublicChannelsHandler : RpcResultObjectHandler<M
     protected override async Task<MyTelegram.Schema.Messages.IChats> HandleCoreAsync(IRequestInput input,
         MyTelegram.Schema.Channels.RequestGetAdminedPublicChannels obj)
     {
-        var channelIds = (await _queryProcessor.ProcessAsync(new GetAdminedChannelIdsQuery(input.UserId))).ToList();
-        var channelReadModels = await _queryProcessor.ProcessAsync(new GetChannelByChannelIdListQuery(channelIds));
+        var channelReadModels = await _queryProcessor.ProcessAsync(new GetAdminedPublicChannelsQuery(input.UserId));
+        var channelIds = channelReadModels.Select(p => p.ChannelId).ToList();
         var photoIds = channelReadModels.Select(p => p.PhotoId ?? 0).Distinct().ToList();
         var photoReadModels = await _photoAppService.GetPhotosAsync(channelReadModels);
         var channelMemberReadModels =

@@ -3,10 +3,12 @@
 public class UserNameState : AggregateState<UserNameAggregate, UserNameId, UserNameState>,
     IApply<SetUserNameSuccessEvent>,
     IApply<UserNameDeletedEvent>,
-    IApply<UserNameCreatedEvent>
+    IApply<UserNameCreatedEvent>,
+    IApply<UserNameChangedEvent>
 {
     public bool IsDeleted { get; private set; }
-    public string UserName { get; private set; } = default!;
+    public string? UserName { get; private set; }
+    public Peer Peer { get; private set; } = default!;
 
     public void Apply(SetUserNameSuccessEvent aggregateEvent)
     {
@@ -23,11 +25,17 @@ public class UserNameState : AggregateState<UserNameAggregate, UserNameId, UserN
     {
         UserName = snapshot.UserName;
         IsDeleted = snapshot.IsDeleted;
+        Peer = snapshot.Peer;
     }
 
     public void Apply(UserNameCreatedEvent aggregateEvent)
     {
-        UserName=aggregateEvent.UserName;
+        UserName = aggregateEvent.UserName;
         IsDeleted = false;
+    }
+
+    public void Apply(UserNameChangedEvent aggregateEvent)
+    {
+        Peer = aggregateEvent.Peer;
     }
 }

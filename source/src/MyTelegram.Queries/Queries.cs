@@ -266,6 +266,7 @@ public record GetUserNameByNameQuery(string Name) : IQuery<IUserNameReadModel?>;
 //public record GetUserPasswordQuery(long UserId) : IQuery<IUserPasswordReadModel?>;
 
 public record GetUsersByUidListQuery(List<long> UserIdList) : IQuery<IReadOnlyCollection<IUserReadModel>>;
+public record GetUserNameByUserIdQuery(long UserId) : IQuery<string?>;
 
 public record MessageView
 {
@@ -370,7 +371,7 @@ public record GetUpdatesQuery(
 public record GetChannelUpdatesByGlobalSeqNoQuery(List<long> ChannelIdList, long MinGlobalSeqNo, int Limit)
     : IQuery<IReadOnlyCollection<IUpdatesReadModel>>;
 
-public record GetUpdatesByGlobalSeqNoQuery(long UserId,long MinGlobalSeqNo) : IQuery<IReadOnlyCollection<IUpdatesReadModel>>;
+public record GetUpdatesByGlobalSeqNoQuery(long UserId, long MinGlobalSeqNo) : IQuery<IReadOnlyCollection<IUpdatesReadModel>>;
 public record GetReplyToMsgIdListQuery(Peer ToPeer, long SelfUserId, int? ReplyToMsgId)
     : IQuery<IReadOnlyCollection<ReplyToMsgItem>?>;
 
@@ -427,7 +428,7 @@ public record GetMessageItemListToBeDeletedQuery2(long OwnerPeerId, long ToPeerI
     : IQuery<IReadOnlyCollection<MessageItemToBeDeleted>>;
 public record GetPhoneCallHistoryToBeDeletedQuery(long UserId, int Limit, bool Revoke) : IQuery<IReadOnlyCollection<MessageItemToBeDeleted>>;
 public record GetPinnedMessageListQuery(long RequestUserId, Peer ToPeer, bool IncludeOtherParticipantMessages, int Limit) : IQuery<IReadOnlyCollection<SimpleMessageItem>>;
-public record GetSimpleMessageListQuery(long OwnerPeerId, Peer ToPeer,List<int>? MessageIds, bool? Pinned, bool IncludeOtherParticipantMessages, int Limit) : IQuery<IReadOnlyCollection<SimpleMessageItem>>;
+public record GetSimpleMessageListQuery(long OwnerPeerId, Peer ToPeer, List<int>? MessageIds, bool? Pinned, bool IncludeOtherParticipantMessages, int Limit) : IQuery<IReadOnlyCollection<SimpleMessageItem>>;
 public record GetBotByIdQuery(long BotUserId) : IQuery<IBotReadModel?>;
 //public record GetBotCallbackAnswerQuery(long PeerId, long QueryId) : IQuery<IBotCallbackAnswerReadModel?>;
 public record GetBotByUserNameQuery(long OwnerUserId, string UserName) : IQuery<IBotReadModel?>;
@@ -435,7 +436,7 @@ public record GetBotsCountQuery(long OwnerUserId) : IQuery<int>;
 public record GetMaxBotUserIdQuery() : IQuery<long>;
 public record GetMyBotQuery(long OwnerUserId, long BotUserId) : IQuery<IBotReadModel?>;
 public record GetMyBotsQuery(long OwnerUserId) : IQuery<IReadOnlyCollection<IBotReadModel>>;
-public record GetBotListQuery(List<long> BotUserIds):IQuery<IReadOnlyCollection<IBotReadModel>>;
+public record GetBotListQuery(List<long> BotUserIds) : IQuery<IReadOnlyCollection<IBotReadModel>>;
 public record GetPushDevicesQuery(long UserId) : IQuery<IReadOnlyCollection<IPushDeviceReadModel>>;
 //public record GetThemeByIdQuery(long Id) : IQuery<IThemeReadModel?>;
 //public record GetThemeBySlugQuery(string Slug) : IQuery<IThemeReadModel?>;
@@ -443,3 +444,6 @@ public record GetPushDevicesQuery(long UserId) : IQuery<IReadOnlyCollection<IPus
 //public record GetDefaultThemesQuery : IQuery<IReadOnlyCollection<IThemeReadModel>>;
 //public record GetWallPaperListQuery(List<long>? Ids, List<string>? Slugs) : IQuery<IReadOnlyCollection<IWallPaperReadModel>>;
 public record GetChannelTopMessageIdQuery(long ChannelId) : IQuery<int?>;
+public record GetAdminedPublicChannelsQuery(long UserId) : IQuery<IReadOnlyCollection<IChannelReadModel>>;
+public record GetAdminedPublicChannelIdsQuery(long UserId) : IQuery<IReadOnlyCollection<long>>;
+public record GetChannelUserNameByChannelIdQuery(long ChannelId) : IQuery<string?>;

@@ -6,11 +6,11 @@ public class SetUserNameCommandHandler : CommandHandler<UserNameAggregate, UserN
         SetUserNameCommand command,
         CancellationToken cancellationToken)
     {
-        aggregate.SetUserName(command.RequestInfo,
-            command.SelfUserId,
-            command.PeerType,
-            command.PeerId,
-            command.UserName);
+        aggregate.UpdateUserName(command.RequestInfo,
+            command.Peer,
+            command.UserName,
+            command.OldUserName
+            );
         return Task.CompletedTask;
     }
 }
