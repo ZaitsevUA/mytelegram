@@ -201,6 +201,7 @@ namespace MyTelegram.Messenger.NativeAot;
 [JsonSerializable(typeof(MyTelegram.Domain.Events.User.UserSupportHasSetEvent))]
 [JsonSerializable(typeof(MyTelegram.Domain.Events.User.UserVerifiedHasSetEvent))]
 [JsonSerializable(typeof(MyTelegram.Domain.Events.UserName.SetUserNameSuccessEvent))]
+[JsonSerializable(typeof(MyTelegram.Domain.Events.UserName.UserNameChangedEvent))]
 [JsonSerializable(typeof(MyTelegram.Domain.Events.UserName.UserNameCreatedEvent))]
 [JsonSerializable(typeof(MyTelegram.Domain.Events.UserName.UserNameDeletedEvent))]
 [JsonSerializable(typeof(MyTelegram.Domain.Sagas.DeleteChannelHistoryCompletedEvent))]
