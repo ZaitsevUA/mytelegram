@@ -264,6 +264,12 @@ public class MessageAppService(
             postAuthor = $"{user!.FirstName} {user.LastName}";
         }
 
+        MessageReply? reply = null;
+        if (post && linkedChannelId.HasValue)
+        {
+            reply = new MessageReply(linkedChannelId, 0, 0, 0, []);
+        }
+
         var messageId = await idGenerator.NextIdAsync(idType, ownerPeerId);
 
         var date = CurrentDate;
@@ -293,7 +299,8 @@ public class MessageAppService(
             PostAuthor: postAuthor,
             SendAs: input.SendAs,
             QuickReplyShortcut: input.QuickReplyShortcut,
-            Effect: input.Effect
+            Effect: input.Effect,
+            Reply: reply
         );
 
         var command = new CreateOutboxMessageCommand(MessageId.Create(ownerPeerId, messageId),
