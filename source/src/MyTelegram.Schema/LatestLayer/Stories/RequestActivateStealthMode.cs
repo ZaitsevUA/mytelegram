@@ -5,6 +5,9 @@ namespace MyTelegram.Schema.Stories;
 
 ///<summary>
 /// Activates <a href="https://corefork.telegram.org/api/stories#stealth-mode">stories stealth mode</a>, see <a href="https://corefork.telegram.org/api/stories#stealth-mode">here »</a> for more info.Will return an <a href="https://corefork.telegram.org/constructor/updateStoriesStealthMode">updateStoriesStealthMode</a>.
+/// <para>Possible errors</para>
+/// Code Type Description
+/// 400 PREMIUM_ACCOUNT_REQUIRED A premium account is required to execute this action.
 /// See <a href="https://corefork.telegram.org/method/stories.activateStealthMode" />
 ///</summary>
 [TlObject(0x57bbd166)]

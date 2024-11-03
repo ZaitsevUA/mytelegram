@@ -4,12 +4,16 @@
 namespace MyTelegram.Schema;
 
 ///<summary>
+/// A new SMS job was received
 /// See <a href="https://corefork.telegram.org/constructor/updateSmsJob" />
 ///</summary>
 [TlObject(0xf16269d4)]
 public sealed class TUpdateSmsJob : IUpdate
 {
     public uint ConstructorId => 0xf16269d4;
+    ///<summary>
+    /// SMS job ID
+    ///</summary>
     public string JobId { get; set; }
 
     public void ComputeFlag()

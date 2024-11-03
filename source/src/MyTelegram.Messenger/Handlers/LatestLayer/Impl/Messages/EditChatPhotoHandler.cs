@@ -47,14 +47,14 @@ internal sealed class EditChatPhotoHandler : RpcResultObjectHandler<MyTelegram.S
             case Schema.TInputChatUploadedPhoto inputChatUploadedPhoto:
                 {
                     var file = inputChatUploadedPhoto.File ?? inputChatUploadedPhoto.Video;
-                    if (file != null)
+                    if (file != null && file is TInputFile tInputFile)
                     {
                         //ThrowHelper.ThrowUserFriendlyException("PHOTO_INVALID");
                         //RpcErrors.RpcErrors400.PhotoInvalid.ThrowRpcError();
 
-                        fileId = file!.Id;
-                        parts = file.Parts;
-                        name = file.Name;
+                        fileId = tInputFile!.Id;
+                        parts = tInputFile.Parts;
+                        name = tInputFile.Name;
                         hasVideo = inputChatUploadedPhoto.Video != null;
                         videoStartTs = inputChatUploadedPhoto.VideoStartTs;
                         switch (file)
@@ -94,6 +94,7 @@ internal sealed class EditChatPhotoHandler : RpcResultObjectHandler<MyTelegram.S
 
         var r = await _mediaHelper.SavePhotoAsync(input.ReqMsgId,
             fileId,
+            input.UserId,
             hasVideo,
             videoStartTs,
             parts,

@@ -4,44 +4,52 @@
 namespace MyTelegram.Schema.Payments;
 
 ///<summary>
+/// Info about the current <a href="https://corefork.telegram.org/api/stars#balance-and-transaction-history">Telegram Star balance and transaction history »</a>.
 /// See <a href="https://corefork.telegram.org/constructor/payments.starsStatus" />
 ///</summary>
-[TlObject(0x8cf4ee60)]
+[TlObject(0xbbfa316c)]
 public sealed class TStarsStatus : IStarsStatus
 {
-    public uint ConstructorId => 0x8cf4ee60;
+    public uint ConstructorId => 0xbbfa316c;
     ///<summary>
     /// Flags, see <a href="https://corefork.telegram.org/mtproto/TL-combinators#conditional-fields">TL conditional fields</a>
     ///</summary>
     public BitArray Flags { get; set; } = new BitArray(32);
 
     ///<summary>
-    /// &nbsp;
+    /// Current Telegram Star balance.
     ///</summary>
     public long Balance { get; set; }
+    public TVector<MyTelegram.Schema.IStarsSubscription>? Subscriptions { get; set; }
+    public string? SubscriptionsNextOffset { get; set; }
+    public long? SubscriptionsMissingBalance { get; set; }
 
     ///<summary>
-    /// &nbsp;
+    /// List of Telegram Star transactions (partial if <code>next_offset</code> is set).
     ///</summary>
-    public TVector<MyTelegram.Schema.IStarsTransaction> History { get; set; }
+    public TVector<MyTelegram.Schema.IStarsTransaction>? History { get; set; }
 
     ///<summary>
-    /// &nbsp;
+    /// Offset to use to fetch more transactions from the transaction history using <a href="https://corefork.telegram.org/method/payments.getStarsTransactions">payments.getStarsTransactions</a>.
     ///</summary>
     public string? NextOffset { get; set; }
 
     ///<summary>
-    /// &nbsp;
+    /// Chats mentioned in <code>history</code>.
     ///</summary>
     public TVector<MyTelegram.Schema.IChat> Chats { get; set; }
 
     ///<summary>
-    /// &nbsp;
+    /// Users mentioned in <code>history</code>.
     ///</summary>
     public TVector<MyTelegram.Schema.IUser> Users { get; set; }
 
     public void ComputeFlag()
     {
+        if (Subscriptions?.Count > 0) { Flags[1] = true; }
+        if (SubscriptionsNextOffset != null) { Flags[2] = true; }
+        if (/*SubscriptionsMissingBalance != 0 &&*/ SubscriptionsMissingBalance.HasValue) { Flags[4] = true; }
+        if (History?.Count > 0) { Flags[3] = true; }
         if (NextOffset != null) { Flags[0] = true; }
 
     }
@@ -52,7 +60,10 @@ public sealed class TStarsStatus : IStarsStatus
         writer.Write(ConstructorId);
         writer.Write(Flags);
         writer.Write(Balance);
-        writer.Write(History);
+        if (Flags[1]) { writer.Write(Subscriptions); }
+        if (Flags[2]) { writer.Write(SubscriptionsNextOffset); }
+        if (Flags[4]) { writer.Write(SubscriptionsMissingBalance.Value); }
+        if (Flags[3]) { writer.Write(History); }
         if (Flags[0]) { writer.Write(NextOffset); }
         writer.Write(Chats);
         writer.Write(Users);
@@ -62,7 +73,10 @@ public sealed class TStarsStatus : IStarsStatus
     {
         Flags = reader.ReadBitArray();
         Balance = reader.ReadInt64();
-        History = reader.Read<TVector<MyTelegram.Schema.IStarsTransaction>>();
+        if (Flags[1]) { Subscriptions = reader.Read<TVector<MyTelegram.Schema.IStarsSubscription>>(); }
+        if (Flags[2]) { SubscriptionsNextOffset = reader.ReadString(); }
+        if (Flags[4]) { SubscriptionsMissingBalance = reader.ReadInt64(); }
+        if (Flags[3]) { History = reader.Read<TVector<MyTelegram.Schema.IStarsTransaction>>(); }
         if (Flags[0]) { NextOffset = reader.ReadString(); }
         Chats = reader.Read<TVector<MyTelegram.Schema.IChat>>();
         Users = reader.Read<TVector<MyTelegram.Schema.IUser>>();

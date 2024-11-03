@@ -60,7 +60,7 @@ public sealed class TInputMediaInvoice : IInputMedia
     public string? StartParam { get; set; }
 
     ///<summary>
-    /// Extended media
+    /// Deprecated
     /// See <a href="https://corefork.telegram.org/type/InputMedia" />
     ///</summary>
     public MyTelegram.Schema.IInputMedia? ExtendedMedia { get; set; }

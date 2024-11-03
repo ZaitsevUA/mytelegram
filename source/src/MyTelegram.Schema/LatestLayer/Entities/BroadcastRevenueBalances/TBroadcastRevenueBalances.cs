@@ -4,18 +4,34 @@
 namespace MyTelegram.Schema;
 
 ///<summary>
+/// Describes <a href="https://corefork.telegram.org/api/revenue">channel ad revenue balances »</a>.Note that all balances are in the smallest unit of the chosen cryptocurrency (currently nanotons for TONs, so to obtain a value in USD divide the chosen amount by <code>10^9</code>, and then divide by <code>usd_rate</code>).
 /// See <a href="https://corefork.telegram.org/constructor/broadcastRevenueBalances" />
 ///</summary>
-[TlObject(0x8438f1c6)]
+[TlObject(0xc3ff71e7)]
 public sealed class TBroadcastRevenueBalances : IBroadcastRevenueBalances
 {
-    public uint ConstructorId => 0x8438f1c6;
+    public uint ConstructorId => 0xc3ff71e7;
+    public BitArray Flags { get; set; } = new BitArray(32);
+    public bool WithdrawalEnabled { get; set; }
+
+    ///<summary>
+    /// Amount of not-yet-withdrawn cryptocurrency.
+    ///</summary>
     public long CurrentBalance { get; set; }
+
+    ///<summary>
+    /// Amount of withdrawable cryptocurrency, out of the currently available balance (<code>available_balance &lt;= current_balance</code>).
+    ///</summary>
     public long AvailableBalance { get; set; }
+
+    ///<summary>
+    /// Total amount of earned cryptocurrency.
+    ///</summary>
     public long OverallRevenue { get; set; }
 
     public void ComputeFlag()
     {
+        if (WithdrawalEnabled) { Flags[0] = true; }
 
     }
 
@@ -23,6 +39,7 @@ public sealed class TBroadcastRevenueBalances : IBroadcastRevenueBalances
     {
         ComputeFlag();
         writer.Write(ConstructorId);
+        writer.Write(Flags);
         writer.Write(CurrentBalance);
         writer.Write(AvailableBalance);
         writer.Write(OverallRevenue);
@@ -30,6 +47,8 @@ public sealed class TBroadcastRevenueBalances : IBroadcastRevenueBalances
 
     public void Deserialize(ref SequenceReader<byte> reader)
     {
+        Flags = reader.ReadBitArray();
+        if (Flags[0]) { WithdrawalEnabled = true; }
         CurrentBalance = reader.ReadInt64();
         AvailableBalance = reader.ReadInt64();
         OverallRevenue = reader.ReadInt64();

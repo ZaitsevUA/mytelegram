@@ -11,6 +11,9 @@ namespace MyTelegram.Schema.Stories;
 public sealed class TStories : IStories
 {
     public uint ConstructorId => 0x63c3dd0a;
+    ///<summary>
+    /// Flags, see <a href="https://corefork.telegram.org/mtproto/TL-combinators#conditional-fields">TL conditional fields</a>
+    ///</summary>
     public BitArray Flags { get; set; } = new BitArray(32);
 
     ///<summary>
@@ -22,6 +25,10 @@ public sealed class TStories : IStories
     /// Stories
     ///</summary>
     public TVector<MyTelegram.Schema.IStoryItem> Stories { get; set; }
+
+    ///<summary>
+    /// IDs of pinned stories.
+    ///</summary>
     public TVector<int>? PinnedToTop { get; set; }
 
     ///<summary>

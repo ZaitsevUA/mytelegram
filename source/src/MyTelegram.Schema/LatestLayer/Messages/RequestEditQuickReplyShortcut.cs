@@ -4,13 +4,26 @@
 namespace MyTelegram.Schema.Messages;
 
 ///<summary>
+/// Rename a <a href="https://corefork.telegram.org/api/business#quick-reply-shortcuts">quick reply shortcut</a>.<br>
+/// This will emit an <a href="https://corefork.telegram.org/constructor/updateQuickReplies">updateQuickReplies</a> update to other logged-in sessions.
+/// <para>Possible errors</para>
+/// Code Type Description
+/// 403 PREMIUM_ACCOUNT_REQUIRED A premium account is required to execute this action.
+/// 400 SHORTCUT_INVALID The specified shortcut is invalid.
 /// See <a href="https://corefork.telegram.org/method/messages.editQuickReplyShortcut" />
 ///</summary>
 [TlObject(0x5c003cef)]
 public sealed class RequestEditQuickReplyShortcut : IRequest<IBool>
 {
     public uint ConstructorId => 0x5c003cef;
+    ///<summary>
+    /// <a href="https://corefork.telegram.org/api/business#quick-reply-shortcuts">Shortcut ID</a>.
+    ///</summary>
     public int ShortcutId { get; set; }
+
+    ///<summary>
+    /// New shortcut name.
+    ///</summary>
     public string Shortcut { get; set; }
 
     public void ComputeFlag()

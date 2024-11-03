@@ -4,13 +4,21 @@
 namespace MyTelegram.Schema;
 
 ///<summary>
+/// <a href="https://corefork.telegram.org/api/paid-media">Paid media, see here »</a> for more info.
 /// See <a href="https://corefork.telegram.org/constructor/messageMediaPaidMedia" />
 ///</summary>
 [TlObject(0xa8852491)]
 public sealed class TMessageMediaPaidMedia : IMessageMedia
 {
     public uint ConstructorId => 0xa8852491;
+    ///<summary>
+    /// The price of the media in <a href="https://corefork.telegram.org/api/stars">Telegram Stars</a>.
+    ///</summary>
     public long StarsAmount { get; set; }
+
+    ///<summary>
+    /// Either the paid-for media, or super low resolution media previews if the media wasn't purchased yet, <a href="https://corefork.telegram.org/api/paid-media#viewing-paid-media">see here »</a> for more info.
+    ///</summary>
     public TVector<MyTelegram.Schema.IMessageExtendedMedia> ExtendedMedia { get; set; }
 
     public void ComputeFlag()

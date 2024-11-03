@@ -5,6 +5,9 @@ namespace MyTelegram.Schema.Messages;
 
 ///<summary>
 /// Enable or disable <a href="https://corefork.telegram.org/api/bots/attach">web bot attachment menu »</a>
+/// <para>Possible errors</para>
+/// Code Type Description
+/// 400 BOT_INVALID This is not a valid bot.
 /// See <a href="https://corefork.telegram.org/method/messages.toggleBotInAttachMenu" />
 ///</summary>
 [TlObject(0x69f59d69)]

@@ -43,7 +43,7 @@ public sealed class TUpdateBotPrecheckoutQuery : IUpdate
     public string? ShippingOptionId { get; set; }
 
     ///<summary>
-    /// Three-letter ISO 4217 <a href="https://corefork.telegram.org/bots/payments#supported-currencies">currency</a> code
+    /// Three-letter ISO 4217 <a href="https://corefork.telegram.org/bots/payments#supported-currencies">currency</a> code, or <code>XTR</code> for <a href="https://corefork.telegram.org/api/stars">Telegram Stars</a>.
     ///</summary>
     public string Currency { get; set; }
 

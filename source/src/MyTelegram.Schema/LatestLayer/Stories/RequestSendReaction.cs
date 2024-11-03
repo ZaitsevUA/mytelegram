@@ -10,6 +10,7 @@ namespace MyTelegram.Schema.Stories;
 /// 400 PEER_ID_INVALID The provided peer id is invalid.
 /// 400 REACTION_INVALID The specified reaction is invalid.
 /// 400 STORY_ID_EMPTY You specified no story IDs.
+/// 400 STORY_ID_INVALID The specified story ID is invalid.
 /// See <a href="https://corefork.telegram.org/method/stories.sendReaction" />
 ///</summary>
 [TlObject(0x7fd736b2)]

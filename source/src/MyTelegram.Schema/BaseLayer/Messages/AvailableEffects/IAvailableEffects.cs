@@ -3,6 +3,7 @@
 namespace MyTelegram.Schema.Messages;
 
 ///<summary>
+/// Full list of usable <a href="https://corefork.telegram.org/api/effects">animated message effects »</a>.
 /// See <a href="https://corefork.telegram.org/constructor/messages.AvailableEffects" />
 ///</summary>
 [JsonDerivedType(typeof(TAvailableEffectsNotModified), nameof(TAvailableEffectsNotModified))]

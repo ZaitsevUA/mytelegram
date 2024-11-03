@@ -18,7 +18,7 @@ namespace MyTelegram.Schema.Messages;
 /// 400 MSG_ID_INVALID Invalid message ID provided.
 /// 400 PEER_ID_INVALID The provided peer id is invalid.
 /// 403 PREMIUM_ACCOUNT_REQUIRED A premium account is required to execute this action.
-/// 400 REACTIONS_TOO_MANY The message already has exactly <code>reactions_uniq_max</code> reaction emojis, you can't react with a new emoji, see <a href="https://corefork.telegram.org/api/config#client-configuration">the docs for more info »</a>.
+/// 400 REACTIONS_TOO_MANY The message already has exactly <code>reactions_uniq_max</code> reaction emojis, you can't react with a new emoji, see <a href="https://corefork.telegram.org/api/config#client-configuration">the docs for more info&nbsp;»</a>.
 /// 400 REACTION_EMPTY Empty reaction provided.
 /// 400 REACTION_INVALID The specified reaction is invalid.
 /// 400 USER_BANNED_IN_CHANNEL You're banned from sending messages in supergroups/channels.

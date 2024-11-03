@@ -4,7 +4,7 @@
 namespace MyTelegram.Schema;
 
 ///<summary>
-/// Represents an <a href="https://corefork.telegram.org/api/custom-emoji#emoji-categories">emoji category</a>.
+/// Represents an <a href="https://corefork.telegram.org/api/emoji-categories">emoji category</a>.
 /// See <a href="https://corefork.telegram.org/constructor/emojiGroup" />
 ///</summary>
 [TlObject(0x7a9abda9)]

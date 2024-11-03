@@ -4,15 +4,28 @@
 namespace MyTelegram.Schema.Stats;
 
 ///<summary>
+/// Get <a href="https://corefork.telegram.org/api/revenue">channel ad revenue statistics »</a>.
+/// <para>Possible errors</para>
+/// Code Type Description
+/// 400 CHANNEL_INVALID The provided channel is invalid.
+/// 400 CHAT_ADMIN_REQUIRED You must be an admin in this chat to do this.
 /// See <a href="https://corefork.telegram.org/method/stats.getBroadcastRevenueStats" />
 ///</summary>
-[TlObject(0x75dfb671)]
+[TlObject(0xf788ee19)]
 public sealed class RequestGetBroadcastRevenueStats : IRequest<MyTelegram.Schema.Stats.IBroadcastRevenueStats>
 {
-    public uint ConstructorId => 0x75dfb671;
+    public uint ConstructorId => 0xf788ee19;
+    ///<summary>
+    /// Flags, see <a href="https://corefork.telegram.org/mtproto/TL-combinators#conditional-fields">TL conditional fields</a>
+    ///</summary>
     public BitArray Flags { get; set; } = new BitArray(32);
+
+    ///<summary>
+    /// Whether to enable dark theme for graph colors
+    /// See <a href="https://corefork.telegram.org/type/true" />
+    ///</summary>
     public bool Dark { get; set; }
-    public MyTelegram.Schema.IInputChannel Channel { get; set; }
+    public MyTelegram.Schema.IInputPeer Peer { get; set; }
 
     public void ComputeFlag()
     {
@@ -25,13 +38,13 @@ public sealed class RequestGetBroadcastRevenueStats : IRequest<MyTelegram.Schema
         ComputeFlag();
         writer.Write(ConstructorId);
         writer.Write(Flags);
-        writer.Write(Channel);
+        writer.Write(Peer);
     }
 
     public void Deserialize(ref SequenceReader<byte> reader)
     {
         Flags = reader.ReadBitArray();
         if (Flags[0]) { Dark = true; }
-        Channel = reader.Read<MyTelegram.Schema.IInputChannel>();
+        Peer = reader.Read<MyTelegram.Schema.IInputPeer>();
     }
 }

@@ -5,6 +5,9 @@ namespace MyTelegram.Schema.Account;
 
 ///<summary>
 /// Upload notification sound, use <a href="https://corefork.telegram.org/method/account.saveRingtone">account.saveRingtone</a> to convert it and add it to the list of saved notification sounds.
+/// <para>Possible errors</para>
+/// Code Type Description
+/// 400 RINGTONE_MIME_INVALID The MIME type for the ringtone is invalid.
 /// See <a href="https://corefork.telegram.org/method/account.uploadRingtone" />
 ///</summary>
 [TlObject(0x831a83a2)]

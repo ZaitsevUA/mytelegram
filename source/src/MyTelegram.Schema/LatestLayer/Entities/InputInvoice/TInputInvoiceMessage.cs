@@ -4,7 +4,7 @@
 namespace MyTelegram.Schema;
 
 ///<summary>
-/// An invoice contained in a <a href="https://corefork.telegram.org/constructor/messageMediaInvoice">messageMediaInvoice</a> message.
+/// An invoice contained in a <a href="https://corefork.telegram.org/constructor/messageMediaInvoice">messageMediaInvoice</a> message or <a href="https://corefork.telegram.org/api/paid-media">paid media »</a>.
 /// See <a href="https://corefork.telegram.org/constructor/inputInvoiceMessage" />
 ///</summary>
 [TlObject(0xc5b56859)]
@@ -12,7 +12,7 @@ public sealed class TInputInvoiceMessage : IInputInvoice
 {
     public uint ConstructorId => 0xc5b56859;
     ///<summary>
-    /// Chat where the invoice was sent
+    /// Chat where the invoice/paid media was sent
     /// See <a href="https://corefork.telegram.org/type/InputPeer" />
     ///</summary>
     public MyTelegram.Schema.IInputPeer Peer { get; set; }

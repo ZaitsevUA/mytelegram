@@ -5,6 +5,9 @@ namespace MyTelegram.Schema.Phone;
 
 ///<summary>
 /// Save phone call debug information
+/// <para>Possible errors</para>
+/// Code Type Description
+/// 400 CALL_PEER_INVALID The provided call peer object is invalid.
 /// See <a href="https://corefork.telegram.org/method/phone.saveCallLog" />
 ///</summary>
 [TlObject(0x41248786)]

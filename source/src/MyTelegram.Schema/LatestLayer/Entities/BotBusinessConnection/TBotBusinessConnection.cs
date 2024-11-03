@@ -4,18 +4,48 @@
 namespace MyTelegram.Schema;
 
 ///<summary>
+/// Contains info about a <a href="https://corefork.telegram.org/api/business#connected-bots">bot business connection</a>.
 /// See <a href="https://corefork.telegram.org/constructor/botBusinessConnection" />
 ///</summary>
 [TlObject(0x896433b4)]
 public sealed class TBotBusinessConnection : IBotBusinessConnection
 {
     public uint ConstructorId => 0x896433b4;
+    ///<summary>
+    /// Flags, see <a href="https://corefork.telegram.org/mtproto/TL-combinators#conditional-fields">TL conditional fields</a>
+    ///</summary>
     public BitArray Flags { get; set; } = new BitArray(32);
+
+    ///<summary>
+    /// Whether the bot can reply on behalf of the user to messages it receives through the business connection
+    /// See <a href="https://corefork.telegram.org/type/true" />
+    ///</summary>
     public bool CanReply { get; set; }
+
+    ///<summary>
+    /// Whether this business connection is currently disabled
+    /// See <a href="https://corefork.telegram.org/type/true" />
+    ///</summary>
     public bool Disabled { get; set; }
+
+    ///<summary>
+    /// Business connection ID, used to identify messages coming from the connection and to reply to them as specified <a href="https://corefork.telegram.org/api/business#connected-bots">here »</a>.
+    ///</summary>
     public string ConnectionId { get; set; }
+
+    ///<summary>
+    /// ID of the user that the bot is connected to via this connection.
+    ///</summary>
     public long UserId { get; set; }
+
+    ///<summary>
+    /// ID of the datacenter where to send queries wrapped in a <a href="https://corefork.telegram.org/method/invokeWithBusinessConnection">invokeWithBusinessConnection</a> as specified <a href="https://corefork.telegram.org/api/business#connected-bots">here »</a>.
+    ///</summary>
     public int DcId { get; set; }
+
+    ///<summary>
+    /// When was the connection created.
+    ///</summary>
     public int Date { get; set; }
 
     public void ComputeFlag()

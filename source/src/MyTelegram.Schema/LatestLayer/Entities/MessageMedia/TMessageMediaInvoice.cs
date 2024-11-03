@@ -50,7 +50,7 @@ public sealed class TMessageMediaInvoice : IMessageMedia
     public int? ReceiptMsgId { get; set; }
 
     ///<summary>
-    /// Three-letter ISO 4217 <a href="https://corefork.telegram.org/bots/payments#supported-currencies">currency</a> code
+    /// Three-letter ISO 4217 <a href="https://corefork.telegram.org/bots/payments#supported-currencies">currency</a> code, or <code>XTR</code> for <a href="https://corefork.telegram.org/api/stars">Telegram Stars</a>.
     ///</summary>
     public string Currency { get; set; }
 
@@ -65,7 +65,7 @@ public sealed class TMessageMediaInvoice : IMessageMedia
     public string StartParam { get; set; }
 
     ///<summary>
-    /// Extended media
+    /// Deprecated
     /// See <a href="https://corefork.telegram.org/type/MessageExtendedMedia" />
     ///</summary>
     public MyTelegram.Schema.IMessageExtendedMedia? ExtendedMedia { get; set; }

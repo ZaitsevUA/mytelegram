@@ -8,20 +8,8 @@ namespace MyTelegram.Schema;
 ///</summary>
 [JsonDerivedType(typeof(TInputFile), nameof(TInputFile))]
 [JsonDerivedType(typeof(TInputFileBig), nameof(TInputFileBig))]
+[JsonDerivedType(typeof(TInputFileStoryDocument), nameof(TInputFileStoryDocument))]
 public interface IInputFile : IObject
 {
-    ///<summary>
-    /// Random file id, created by the client
-    ///</summary>
-    long Id { get; set; }
 
-    ///<summary>
-    /// Number of parts saved
-    ///</summary>
-    int Parts { get; set; }
-
-    ///<summary>
-    /// Full file name
-    ///</summary>
-    string Name { get; set; }
 }

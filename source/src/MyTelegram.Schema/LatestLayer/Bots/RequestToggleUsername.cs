@@ -8,6 +8,7 @@ namespace MyTelegram.Schema.Bots;
 /// <para>Possible errors</para>
 /// Code Type Description
 /// 400 BOT_INVALID This is not a valid bot.
+/// 400 USERNAME_NOT_MODIFIED The username was not modified.
 /// See <a href="https://corefork.telegram.org/method/bots.toggleUsername" />
 ///</summary>
 [TlObject(0x53ca973)]

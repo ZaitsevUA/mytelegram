@@ -5,6 +5,9 @@ namespace MyTelegram.Schema.Chatlists;
 
 ///<summary>
 /// List all <a href="https://corefork.telegram.org/api/links#chat-folder-links">chat folder deep links »</a> associated to a folder
+/// <para>Possible errors</para>
+/// Code Type Description
+/// 400 FILTER_ID_INVALID The specified filter ID is invalid.
 /// See <a href="https://corefork.telegram.org/method/chatlists.getExportedInvites" />
 ///</summary>
 [TlObject(0xce03da83)]

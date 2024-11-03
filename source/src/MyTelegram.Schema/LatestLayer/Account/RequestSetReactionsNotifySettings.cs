@@ -4,12 +4,17 @@
 namespace MyTelegram.Schema.Account;
 
 ///<summary>
+/// Change the <a href="https://corefork.telegram.org/api/reactions#notifications-about-reactions">reaction notification settings »</a>.
 /// See <a href="https://corefork.telegram.org/method/account.setReactionsNotifySettings" />
 ///</summary>
 [TlObject(0x316ce548)]
 public sealed class RequestSetReactionsNotifySettings : IRequest<MyTelegram.Schema.IReactionsNotifySettings>
 {
     public uint ConstructorId => 0x316ce548;
+    ///<summary>
+    /// New reaction notification settings.
+    /// See <a href="https://corefork.telegram.org/type/ReactionsNotifySettings" />
+    ///</summary>
     public MyTelegram.Schema.IReactionsNotifySettings Settings { get; set; }
 
     public void ComputeFlag()

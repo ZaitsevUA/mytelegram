@@ -4,19 +4,53 @@
 namespace MyTelegram.Schema;
 
 ///<summary>
+/// A callback button sent via a <a href="https://corefork.telegram.org/api/business#connected-bots">business connection</a> was pressed, and the button data was sent to the bot that created the button.
 /// See <a href="https://corefork.telegram.org/constructor/updateBusinessBotCallbackQuery" />
 ///</summary>
 [TlObject(0x1ea2fda7)]
 public sealed class TUpdateBusinessBotCallbackQuery : IUpdate
 {
     public uint ConstructorId => 0x1ea2fda7;
+    ///<summary>
+    /// Flags, see <a href="https://corefork.telegram.org/mtproto/TL-combinators#conditional-fields">TL conditional fields</a>
+    ///</summary>
     public BitArray Flags { get; set; } = new BitArray(32);
+
+    ///<summary>
+    /// Query ID
+    ///</summary>
     public long QueryId { get; set; }
+
+    ///<summary>
+    /// ID of the user that pressed the button
+    ///</summary>
     public long UserId { get; set; }
+
+    ///<summary>
+    /// <a href="https://corefork.telegram.org/api/business#connected-bots">Business connection ID</a>
+    ///</summary>
     public string ConnectionId { get; set; }
+
+    ///<summary>
+    /// Message that contains the keyboard (also contains info about the chat where the message was sent).
+    /// See <a href="https://corefork.telegram.org/type/Message" />
+    ///</summary>
     public MyTelegram.Schema.IMessage Message { get; set; }
+
+    ///<summary>
+    /// The message that <code>message</code> is replying to.
+    /// See <a href="https://corefork.telegram.org/type/Message" />
+    ///</summary>
     public MyTelegram.Schema.IMessage? ReplyToMessage { get; set; }
+
+    ///<summary>
+    /// Global identifier, uniquely corresponding to the chat to which the message with the callback button was sent. Useful for high scores in games.
+    ///</summary>
     public long ChatInstance { get; set; }
+
+    ///<summary>
+    /// Callback data
+    ///</summary>
     public byte[]? Data { get; set; }
 
     public void ComputeFlag()

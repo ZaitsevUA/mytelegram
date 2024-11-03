@@ -7,6 +7,7 @@ namespace MyTelegram.Schema.Channels;
 /// Enable or disable <a href="https://corefork.telegram.org/api/forum">forum functionality</a> in a supergroup.
 /// <para>Possible errors</para>
 /// Code Type Description
+/// 400 CHANNEL_INVALID The provided channel is invalid.
 /// 400 CHAT_DISCUSSION_UNALLOWED You can't enable forum topics in a discussion group linked to a channel.
 /// 400 CHAT_NOT_MODIFIED No changes were made to chat information because the new information you passed is identical to the current information.
 /// See <a href="https://corefork.telegram.org/method/channels.toggleForum" />

@@ -5,6 +5,9 @@ namespace MyTelegram.Schema.Phone;
 
 ///<summary>
 /// Get group call participants
+/// <para>Possible errors</para>
+/// Code Type Description
+/// 400 GROUPCALL_INVALID The specified group call is invalid.
 /// See <a href="https://corefork.telegram.org/method/phone.getGroupParticipants" />
 ///</summary>
 [TlObject(0xc558d8ab)]

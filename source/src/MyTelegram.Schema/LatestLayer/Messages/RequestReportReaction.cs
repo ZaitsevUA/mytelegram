@@ -8,6 +8,7 @@ namespace MyTelegram.Schema.Messages;
 /// <para>Possible errors</para>
 /// Code Type Description
 /// 400 MSG_ID_INVALID Invalid message ID provided.
+/// 400 PEER_ID_INVALID The provided peer id is invalid.
 /// 400 USER_ID_INVALID The provided user ID is invalid.
 /// See <a href="https://corefork.telegram.org/method/messages.reportReaction" />
 ///</summary>

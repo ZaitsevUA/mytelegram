@@ -4,6 +4,7 @@
 namespace MyTelegram.Schema.Channels;
 
 ///<summary>
+/// The sponsored message was reported successfully.
 /// See <a href="https://corefork.telegram.org/constructor/channels.sponsoredMessageReportResultReported" />
 ///</summary>
 [TlObject(0xad798849)]

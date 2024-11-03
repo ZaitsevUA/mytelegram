@@ -7,10 +7,10 @@ namespace MyTelegram.Schema;
 /// <a href="https://corefork.telegram.org/api/reactions">Message reactions »</a>
 /// See <a href="https://corefork.telegram.org/constructor/messageReactions" />
 ///</summary>
-[TlObject(0x4f2b9479)]
+[TlObject(0xa339f0b)]
 public sealed class TMessageReactions : IMessageReactions
 {
-    public uint ConstructorId => 0x4f2b9479;
+    public uint ConstructorId => 0xa339f0b;
     ///<summary>
     /// Flags, see <a href="https://corefork.telegram.org/mtproto/TL-combinators#conditional-fields">TL conditional fields</a>
     ///</summary>
@@ -27,6 +27,11 @@ public sealed class TMessageReactions : IMessageReactions
     /// See <a href="https://corefork.telegram.org/type/true" />
     ///</summary>
     public bool CanSeeList { get; set; }
+
+    ///<summary>
+    /// If set or if there are no reactions, all present and future reactions should be treated as <a href="https://corefork.telegram.org/api/saved-messages#tags">message tags, see here » for more info</a>.
+    /// See <a href="https://corefork.telegram.org/type/true" />
+    ///</summary>
     public bool ReactionsAsTags { get; set; }
 
     ///<summary>
@@ -38,6 +43,7 @@ public sealed class TMessageReactions : IMessageReactions
     /// List of recent peers and their reactions
     ///</summary>
     public TVector<MyTelegram.Schema.IMessagePeerReaction>? RecentReactions { get; set; }
+    public TVector<MyTelegram.Schema.IMessageReactor>? TopReactors { get; set; }
 
     public void ComputeFlag()
     {
@@ -45,6 +51,7 @@ public sealed class TMessageReactions : IMessageReactions
         if (CanSeeList) { Flags[2] = true; }
         if (ReactionsAsTags) { Flags[3] = true; }
         if (RecentReactions?.Count > 0) { Flags[1] = true; }
+        if (TopReactors?.Count > 0) { Flags[4] = true; }
     }
 
     public void Serialize(IBufferWriter<byte> writer)
@@ -54,6 +61,7 @@ public sealed class TMessageReactions : IMessageReactions
         writer.Write(Flags);
         writer.Write(Results);
         if (Flags[1]) { writer.Write(RecentReactions); }
+        if (Flags[4]) { writer.Write(TopReactors); }
     }
 
     public void Deserialize(ref SequenceReader<byte> reader)
@@ -64,5 +72,6 @@ public sealed class TMessageReactions : IMessageReactions
         if (Flags[3]) { ReactionsAsTags = true; }
         Results = reader.Read<TVector<MyTelegram.Schema.IReactionCount>>();
         if (Flags[1]) { RecentReactions = reader.Read<TVector<MyTelegram.Schema.IMessagePeerReaction>>(); }
+        if (Flags[4]) { TopReactors = reader.Read<TVector<MyTelegram.Schema.IMessageReactor>>(); }
     }
 }

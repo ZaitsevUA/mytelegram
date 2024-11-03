@@ -4,16 +4,38 @@
 namespace MyTelegram.Schema;
 
 ///<summary>
+/// A message was edited in a <a href="https://corefork.telegram.org/api/business#connected-bots">connected business chat »</a>.
 /// See <a href="https://corefork.telegram.org/constructor/updateBotEditBusinessMessage" />
 ///</summary>
 [TlObject(0x7df587c)]
 public sealed class TUpdateBotEditBusinessMessage : IUpdate
 {
     public uint ConstructorId => 0x7df587c;
+    ///<summary>
+    /// Flags, see <a href="https://corefork.telegram.org/mtproto/TL-combinators#conditional-fields">TL conditional fields</a>
+    ///</summary>
     public BitArray Flags { get; set; } = new BitArray(32);
+
+    ///<summary>
+    /// Business connection ID
+    ///</summary>
     public string ConnectionId { get; set; }
+
+    ///<summary>
+    /// New message.
+    /// See <a href="https://corefork.telegram.org/type/Message" />
+    ///</summary>
     public MyTelegram.Schema.IMessage Message { get; set; }
+
+    ///<summary>
+    /// The message that <code>message</code> is replying to.
+    /// See <a href="https://corefork.telegram.org/type/Message" />
+    ///</summary>
     public MyTelegram.Schema.IMessage? ReplyToMessage { get; set; }
+
+    ///<summary>
+    /// New <strong>qts</strong> value, see <a href="https://corefork.telegram.org/api/updates">updates »</a> for more info.
+    ///</summary>
     public int Qts { get; set; }
 
     public void ComputeFlag()

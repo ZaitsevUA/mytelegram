@@ -8,16 +8,20 @@ namespace MyTelegram.Schema.Channels;
 /// <para>Possible errors</para>
 /// Code Type Description
 /// 400 CHANNEL_INVALID The provided channel is invalid.
+/// 400 CHANNEL_PRIVATE You haven't joined this channel/supergroup.
 /// See <a href="https://corefork.telegram.org/method/channels.getChannelRecommendations" />
 ///</summary>
 [TlObject(0x25a71742)]
 public sealed class RequestGetChannelRecommendations : IRequest<MyTelegram.Schema.Messages.IChats>
 {
     public uint ConstructorId => 0x25a71742;
+    ///<summary>
+    /// Flags, see <a href="https://corefork.telegram.org/mtproto/TL-combinators#conditional-fields">TL conditional fields</a>
+    ///</summary>
     public BitArray Flags { get; set; } = new BitArray(32);
 
     ///<summary>
-    /// The method will return channels related to the passed <code>channel</code>.
+    /// The method will return channels related to the passed <code>channel</code>. If not set, the method will returns channels related to channels the user has joined.
     /// See <a href="https://corefork.telegram.org/type/InputChannel" />
     ///</summary>
     public MyTelegram.Schema.IInputChannel? Channel { get; set; }
@@ -39,40 +43,5 @@ public sealed class RequestGetChannelRecommendations : IRequest<MyTelegram.Schem
     {
         Flags = reader.ReadBitArray();
         if (Flags[0]) { Channel = reader.Read<MyTelegram.Schema.IInputChannel>(); }
-    }
-}
-
-///<summary>
-/// Obtain a list of similarly themed public channels, selected based on similarities in their <strong>subscriber bases</strong>.
-/// <para>Possible errors</para>
-/// Code Type Description
-/// 400 CHANNEL_INVALID The provided channel is invalid.
-/// See <a href="https://corefork.telegram.org/method/channels.getChannelRecommendations" />
-///</summary>
-[TlObject(0x83b70d97)]
-public sealed class RequestGetChannelRecommendations2 : IRequest<MyTelegram.Schema.Messages.IChats>
-{
-    public uint ConstructorId => 0x83b70d97;
-
-    ///<summary>
-    /// The method will return channels related to the passed <code>channel</code>.
-    /// See <a href="https://corefork.telegram.org/type/InputChannel" />
-    ///</summary>
-    public MyTelegram.Schema.IInputChannel Channel { get; set; }
-
-    public void ComputeFlag()
-    {
-    }
-
-    public void Serialize(IBufferWriter<byte> writer)
-    {
-        ComputeFlag();
-        writer.Write(ConstructorId);
-        writer.Write(Channel);
-    }
-
-    public void Deserialize(ref SequenceReader<byte> reader)
-    {
-        Channel = reader.Read<MyTelegram.Schema.IInputChannel>();
     }
 }

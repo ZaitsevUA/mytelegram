@@ -123,6 +123,7 @@ public sealed class TChannelAdminLogEventsFilter : IChannelAdminLogEventsFilter
     /// See <a href="https://corefork.telegram.org/type/true" />
     ///</summary>
     public bool Forums { get; set; }
+    public bool SubExtend { get; set; }
 
     public void ComputeFlag()
     {
@@ -144,6 +145,7 @@ public sealed class TChannelAdminLogEventsFilter : IChannelAdminLogEventsFilter
         if (Invites) { Flags[15] = true; }
         if (Send) { Flags[16] = true; }
         if (Forums) { Flags[17] = true; }
+        if (SubExtend) { Flags[18] = true; }
     }
 
     public void Serialize(IBufferWriter<byte> writer)
@@ -175,5 +177,6 @@ public sealed class TChannelAdminLogEventsFilter : IChannelAdminLogEventsFilter
         if (Flags[15]) { Invites = true; }
         if (Flags[16]) { Send = true; }
         if (Flags[17]) { Forums = true; }
+        if (Flags[18]) { SubExtend = true; }
     }
 }

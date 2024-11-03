@@ -4,14 +4,26 @@
 namespace MyTelegram.Schema;
 
 ///<summary>
+/// Represents an <a href="https://corefork.telegram.org/api/emoji-categories">emoji category</a>, that should be moved to the top of the list when choosing a sticker for a <a href="https://corefork.telegram.org/api/business#business-introduction">business introduction</a>
 /// See <a href="https://corefork.telegram.org/constructor/emojiGroupGreeting" />
 ///</summary>
 [TlObject(0x80d26cc7)]
 public sealed class TEmojiGroupGreeting : IEmojiGroup
 {
     public uint ConstructorId => 0x80d26cc7;
+    ///<summary>
+    /// Category name, i.e. "Animals", "Flags", "Faces" and so on...
+    ///</summary>
     public string Title { get; set; }
+
+    ///<summary>
+    /// A single custom emoji used as preview for the category.
+    ///</summary>
     public long IconEmojiId { get; set; }
+
+    ///<summary>
+    /// A list of UTF-8 emojis, matching the category.
+    ///</summary>
     public TVector<string> Emoticons { get; set; }
 
     public void ComputeFlag()

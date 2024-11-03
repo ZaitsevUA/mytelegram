@@ -4,19 +4,53 @@
 namespace MyTelegram.Schema;
 
 ///<summary>
+/// Describes a <a href="https://corefork.telegram.org/api/revenue#withdrawing-revenue">withdrawal of ad earnings »</a>
 /// See <a href="https://corefork.telegram.org/constructor/broadcastRevenueTransactionWithdrawal" />
 ///</summary>
 [TlObject(0x5a590978)]
 public sealed class TBroadcastRevenueTransactionWithdrawal : IBroadcastRevenueTransaction
 {
     public uint ConstructorId => 0x5a590978;
+    ///<summary>
+    /// Flags, see <a href="https://corefork.telegram.org/mtproto/TL-combinators#conditional-fields">TL conditional fields</a>
+    ///</summary>
     public BitArray Flags { get; set; } = new BitArray(32);
+
+    ///<summary>
+    /// Whether the withdrawal is currently pending
+    /// See <a href="https://corefork.telegram.org/type/true" />
+    ///</summary>
     public bool Pending { get; set; }
+
+    ///<summary>
+    /// Whether the withdrawal has failed
+    /// See <a href="https://corefork.telegram.org/type/true" />
+    ///</summary>
     public bool Failed { get; set; }
+
+    ///<summary>
+    /// Amount withdrawn
+    ///</summary>
     public long Amount { get; set; }
+
+    ///<summary>
+    /// Withdrawal date
+    ///</summary>
     public int Date { get; set; }
+
+    ///<summary>
+    /// Payment provider name
+    ///</summary>
     public string Provider { get; set; }
+
+    ///<summary>
+    /// If neither <code>pending</code> nor <code>failed</code> are set, the transaction was completed successfully, and this field will contain the point in time (Unix timestamp) when the withdrawal was completed successfully.
+    ///</summary>
     public int? TransactionDate { get; set; }
+
+    ///<summary>
+    /// If neither <code>pending</code> nor <code>failed</code> are set, the transaction was completed successfully, and this field will contain a URL where the withdrawal transaction can be viewed.
+    ///</summary>
     public string? TransactionUrl { get; set; }
 
     public void ComputeFlag()

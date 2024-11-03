@@ -18,15 +18,15 @@ internal sealed class GetChannelRecommendationsHandler : RpcResultObjectHandler<
     }
 }
 
-internal sealed class GetChannelRecommendationsHandler2 : RpcResultObjectHandler<MyTelegram.Schema.Channels.RequestGetChannelRecommendations2, MyTelegram.Schema.Messages.IChats>,
-    Channels.IGetChannelRecommendationsHandler2
-{
-    protected override Task<MyTelegram.Schema.Messages.IChats> HandleCoreAsync(IRequestInput input,
-        MyTelegram.Schema.Channels.RequestGetChannelRecommendations2 obj)
-    {
-        return Task.FromResult<MyTelegram.Schema.Messages.IChats>(new TChats
-        {
-            Chats = new()
-        });
-    }
-}
+//internal sealed class GetChannelRecommendationsHandler2 : RpcResultObjectHandler<MyTelegram.Schema.Channels.RequestGetChannelRecommendations2, MyTelegram.Schema.Messages.IChats>,
+//    Channels.IGetChannelRecommendationsHandler2
+//{
+//    protected override Task<MyTelegram.Schema.Messages.IChats> HandleCoreAsync(IRequestInput input,
+//        MyTelegram.Schema.Channels.RequestGetChannelRecommendations2 obj)
+//    {
+//        return Task.FromResult<MyTelegram.Schema.Messages.IChats>(new TChats
+//        {
+//            Chats = new()
+//        });
+//    }
+//}

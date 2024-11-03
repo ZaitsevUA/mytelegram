@@ -7,10 +7,10 @@ namespace MyTelegram.Schema;
 /// A <a href="https://corefork.telegram.org/api/giveaways">giveaway</a> with public winners has finished, this constructor contains info about the winners.
 /// See <a href="https://corefork.telegram.org/constructor/messageMediaGiveawayResults" />
 ///</summary>
-[TlObject(0xc6991068)]
+[TlObject(0xceaa3ea1)]
 public sealed class TMessageMediaGiveawayResults : IMessageMedia
 {
-    public uint ConstructorId => 0xc6991068;
+    public uint ConstructorId => 0xceaa3ea1;
     ///<summary>
     /// Flags, see <a href="https://corefork.telegram.org/mtproto/TL-combinators#conditional-fields">TL conditional fields</a>
     ///</summary>
@@ -29,7 +29,7 @@ public sealed class TMessageMediaGiveawayResults : IMessageMedia
     public bool Refunded { get; set; }
 
     ///<summary>
-    /// ID of the channel that was automatically <a href="https://corefork.telegram.org/api/boost">boosted</a> by the winners of the giveaway for duration of the Premium subscription.
+    /// ID of the channel/supergroup that was automatically <a href="https://corefork.telegram.org/api/boost">boosted</a> by the winners of the giveaway for duration of the Premium subscription.
     ///</summary>
     public long ChannelId { get; set; }
 
@@ -61,7 +61,8 @@ public sealed class TMessageMediaGiveawayResults : IMessageMedia
     ///<summary>
     /// Duration in months of each <a href="https://corefork.telegram.org/api/premium">Telegram Premium</a> subscription in the giveaway.
     ///</summary>
-    public int Months { get; set; }
+    public int? Months { get; set; }
+    public long? Stars { get; set; }
 
     ///<summary>
     /// Can contain a textual description of additional giveaway prizes.
@@ -78,6 +79,8 @@ public sealed class TMessageMediaGiveawayResults : IMessageMedia
         if (OnlyNewSubscribers) { Flags[0] = true; }
         if (Refunded) { Flags[2] = true; }
         if (/*AdditionalPeersCount != 0 && */AdditionalPeersCount.HasValue) { Flags[3] = true; }
+        if (/*Months != 0 && */Months.HasValue) { Flags[4] = true; }
+        if (/*Stars != 0 &&*/ Stars.HasValue) { Flags[5] = true; }
         if (PrizeDescription != null) { Flags[1] = true; }
 
     }
@@ -93,7 +96,8 @@ public sealed class TMessageMediaGiveawayResults : IMessageMedia
         writer.Write(WinnersCount);
         writer.Write(UnclaimedCount);
         writer.Write(Winners);
-        writer.Write(Months);
+        if (Flags[4]) { writer.Write(Months.Value); }
+        if (Flags[5]) { writer.Write(Stars.Value); }
         if (Flags[1]) { writer.Write(PrizeDescription); }
         writer.Write(UntilDate);
     }
@@ -109,7 +113,8 @@ public sealed class TMessageMediaGiveawayResults : IMessageMedia
         WinnersCount = reader.ReadInt32();
         UnclaimedCount = reader.ReadInt32();
         Winners = reader.Read<TVector<long>>();
-        Months = reader.ReadInt32();
+        if (Flags[4]) { Months = reader.ReadInt32(); }
+        if (Flags[5]) { Stars = reader.ReadInt64(); }
         if (Flags[1]) { PrizeDescription = reader.ReadString(); }
         UntilDate = reader.ReadInt32();
     }

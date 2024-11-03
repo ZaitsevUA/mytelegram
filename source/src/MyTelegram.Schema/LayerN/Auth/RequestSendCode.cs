@@ -17,6 +17,7 @@ namespace MyTelegram.Schema.Auth.LayerN;
 /// 406 PHONE_PASSWORD_FLOOD You have tried logging in too many times.
 /// 400 PHONE_PASSWORD_PROTECTED This phone is password protected.
 /// 400 SMS_CODE_CREATE_FAILED An error occurred while creating the SMS code.
+/// 406 UPDATE_APP_TO_LOGIN Please update to the latest version of MadelineProto to login.
 /// See <a href="https://corefork.telegram.org/method/auth.sendCode" />
 ///</summary>
 [TlObject(0x86aef0ec)]

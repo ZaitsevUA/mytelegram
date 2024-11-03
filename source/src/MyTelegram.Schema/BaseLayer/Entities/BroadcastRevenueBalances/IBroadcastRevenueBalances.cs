@@ -3,12 +3,27 @@
 namespace MyTelegram.Schema;
 
 ///<summary>
+/// <a href="https://corefork.telegram.org/api/revenue">Channel ad revenue balance »</a> information.
 /// See <a href="https://corefork.telegram.org/constructor/BroadcastRevenueBalances" />
 ///</summary>
 [JsonDerivedType(typeof(TBroadcastRevenueBalances), nameof(TBroadcastRevenueBalances))]
 public interface IBroadcastRevenueBalances : IObject
 {
+    BitArray Flags { get; set; }
+    bool WithdrawalEnabled { get; set; }
+
+    ///<summary>
+    /// Amount of not-yet-withdrawn cryptocurrency.
+    ///</summary>
     long CurrentBalance { get; set; }
+
+    ///<summary>
+    /// Amount of withdrawable cryptocurrency, out of the currently available balance (<code>available_balance &lt;= current_balance</code>).
+    ///</summary>
     long AvailableBalance { get; set; }
+
+    ///<summary>
+    /// Total amount of earned cryptocurrency.
+    ///</summary>
     long OverallRevenue { get; set; }
 }

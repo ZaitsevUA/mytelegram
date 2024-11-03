@@ -12,6 +12,7 @@ namespace MyTelegram.Schema.Messages;
 /// 400 MSG_ID_INVALID Invalid message ID provided.
 /// 400 PEER_ID_INVALID The provided peer id is invalid.
 /// 400 TO_LANG_INVALID The specified destination language is invalid.
+/// 400 TRANSLATE_REQ_QUOTA_EXCEEDED Translation is currently unavailable due to a temporary server-side lack of resources.
 /// See <a href="https://corefork.telegram.org/method/messages.translateText" />
 ///</summary>
 [TlObject(0x63183030)]

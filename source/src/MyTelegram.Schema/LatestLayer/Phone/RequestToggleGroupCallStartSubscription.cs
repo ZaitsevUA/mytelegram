@@ -8,6 +8,7 @@ namespace MyTelegram.Schema.Phone;
 /// <para>Possible errors</para>
 /// Code Type Description
 /// 403 GROUPCALL_ALREADY_STARTED The groupcall has already started, you can join directly using <a href="https://corefork.telegram.org/method/phone.joinGroupCall">phone.joinGroupCall</a>.
+/// 400 GROUPCALL_INVALID The specified group call is invalid.
 /// See <a href="https://corefork.telegram.org/method/phone.toggleGroupCallStartSubscription" />
 ///</summary>
 [TlObject(0x219c34e6)]

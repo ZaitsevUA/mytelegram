@@ -7,6 +7,7 @@ namespace MyTelegram.Schema.Phone;
 /// Change group call settings
 /// <para>Possible errors</para>
 /// Code Type Description
+/// 400 GROUPCALL_INVALID The specified group call is invalid.
 /// 400 GROUPCALL_NOT_MODIFIED Group call settings weren't modified.
 /// See <a href="https://corefork.telegram.org/method/phone.toggleGroupCallSettings" />
 ///</summary>

@@ -29,6 +29,7 @@ public class MediaHelper(
     }
 
     public async Task<SavePhotoResult> SavePhotoAsync(long reqMsgId,
+        long userId,
         long fileId,
         bool hasVideo,
         double? videoStartTs,
@@ -43,6 +44,7 @@ public class MediaHelper(
         var r = await client.SavePhotoAsync(new SavePhotoRequest
         {
             FileId = fileId,
+            UserId = userId,
             HasVideo = hasVideo,
             Md5 = md5 ?? string.Empty,
             Name = name ?? string.Empty,

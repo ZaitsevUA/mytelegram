@@ -5,6 +5,9 @@ namespace MyTelegram.Schema.Channels;
 
 ///<summary>
 /// Report a <a href="https://corefork.telegram.org/api/antispam">native antispam</a> false positive
+/// <para>Possible errors</para>
+/// Code Type Description
+/// 400 CHANNEL_INVALID The provided channel is invalid.
 /// See <a href="https://corefork.telegram.org/method/channels.reportAntiSpamFalsePositive" />
 ///</summary>
 [TlObject(0xa850a693)]

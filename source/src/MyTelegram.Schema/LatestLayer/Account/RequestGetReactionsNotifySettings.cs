@@ -4,6 +4,7 @@
 namespace MyTelegram.Schema.Account;
 
 ///<summary>
+/// Get the current <a href="https://corefork.telegram.org/api/reactions#notifications-about-reactions">reaction notification settings »</a>.
 /// See <a href="https://corefork.telegram.org/method/account.getReactionsNotifySettings" />
 ///</summary>
 [TlObject(0x6dd654c)]

@@ -9,6 +9,7 @@ namespace MyTelegram.Schema.Account;
 /// Code Type Description
 /// 400 USERNAMES_ACTIVE_TOO_MUCH The maximum number of active usernames was reached.
 /// 400 USERNAME_INVALID The provided username is not valid.
+/// 400 USERNAME_NOT_MODIFIED The username was not modified.
 /// See <a href="https://corefork.telegram.org/method/account.toggleUsername" />
 ///</summary>
 [TlObject(0x58d6b376)]

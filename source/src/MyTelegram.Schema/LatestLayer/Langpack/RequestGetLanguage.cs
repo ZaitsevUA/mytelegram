@@ -16,12 +16,12 @@ public sealed class RequestGetLanguage : IRequest<MyTelegram.Schema.ILangPackLan
 {
     public uint ConstructorId => 0x6a596502;
     ///<summary>
-    /// Language pack name, usually obtained from a <a href="https://corefork.telegram.org/api/links#language-pack-links">language pack link</a>
+    /// Platform identifier (i.e. <code>android</code>, <code>tdesktop</code>, etc).
     ///</summary>
     public string LangPack { get; set; }
 
     ///<summary>
-    /// Language code
+    /// Either an ISO 639-1 language code or a language pack name obtained from a <a href="https://corefork.telegram.org/api/links#language-pack-links">language pack link</a>.
     ///</summary>
     public string LangCode { get; set; }
 

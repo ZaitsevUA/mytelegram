@@ -7,26 +7,29 @@ namespace MyTelegram.Schema;
 /// A <a href="https://corefork.telegram.org/api/giveaways">giveaway</a> was started.
 /// See <a href="https://corefork.telegram.org/constructor/messageActionGiveawayLaunch" />
 ///</summary>
-[TlObject(0x332ba9ed)]
+[TlObject(0xa80f51e4)]
 public sealed class TMessageActionGiveawayLaunch : IMessageAction
 {
-    public uint ConstructorId => 0x332ba9ed;
-
+    public uint ConstructorId => 0xa80f51e4;
+    public BitArray Flags { get; set; } = new BitArray(32);
+    public long? Stars { get; set; }
 
     public void ComputeFlag()
     {
-
+        if (/*Stars != 0 &&*/ Stars.HasValue) { Flags[0] = true; }
     }
 
     public void Serialize(IBufferWriter<byte> writer)
     {
         ComputeFlag();
         writer.Write(ConstructorId);
-
+        writer.Write(Flags);
+        if (Flags[0]) { writer.Write(Stars.Value); }
     }
 
     public void Deserialize(ref SequenceReader<byte> reader)
     {
-
+        Flags = reader.ReadBitArray();
+        if (Flags[0]) { Stars = reader.ReadInt64(); }
     }
 }

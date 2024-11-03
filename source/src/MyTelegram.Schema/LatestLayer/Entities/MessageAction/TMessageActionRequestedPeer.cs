@@ -4,7 +4,7 @@
 namespace MyTelegram.Schema;
 
 ///<summary>
-/// Contains info about one or more peers that the user shared with the bot after clicking on a <a href="https://corefork.telegram.org/constructor/keyboardButtonRequestPeer">keyboardButtonRequestPeer</a> button.
+/// Contains info about one or more peers that the we (the user) shared with the bot after clicking on a <a href="https://corefork.telegram.org/constructor/keyboardButtonRequestPeer">keyboardButtonRequestPeer</a> button (service message sent by the user).
 /// See <a href="https://corefork.telegram.org/constructor/messageActionRequestedPeer" />
 ///</summary>
 [TlObject(0x31518e9b)]

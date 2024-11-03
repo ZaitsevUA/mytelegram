@@ -4,13 +4,25 @@
 namespace MyTelegram.Schema.Smsjobs;
 
 ///<summary>
+/// Update SMS job settings (official clients only).
+/// <para>Possible errors</para>
+/// Code Type Description
+/// 400 NOT_JOINED The current user hasn't joined the Peer-to-Peer Login Program.
 /// See <a href="https://corefork.telegram.org/method/smsjobs.updateSettings" />
 ///</summary>
 [TlObject(0x93fa0bf)]
 public sealed class RequestUpdateSettings : IRequest<IBool>
 {
     public uint ConstructorId => 0x93fa0bf;
+    ///<summary>
+    /// Flags, see <a href="https://corefork.telegram.org/mtproto/TL-combinators#conditional-fields">TL conditional fields</a>
+    ///</summary>
     public BitArray Flags { get; set; } = new BitArray(32);
+
+    ///<summary>
+    /// Allow international numbers?
+    /// See <a href="https://corefork.telegram.org/type/true" />
+    ///</summary>
     public bool AllowInternational { get; set; }
 
     public void ComputeFlag()

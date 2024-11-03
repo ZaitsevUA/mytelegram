@@ -10,6 +10,7 @@ namespace MyTelegram.Schema.Bots;
 /// 400 DATA_JSON_INVALID The provided JSON data is invalid.
 /// 400 QUERY_ID_INVALID The query ID is invalid.
 /// 403 USER_BOT_INVALID User accounts must provide the <code>bot</code> method parameter when calling this method. If there is no such method parameter, this method can only be invoked by bot accounts.
+/// 400 USER_BOT_REQUIRED This method can only be called by a bot.
 /// See <a href="https://corefork.telegram.org/method/bots.answerWebhookJSONQuery" />
 ///</summary>
 [TlObject(0xe6213f4d)]

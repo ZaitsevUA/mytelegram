@@ -7,6 +7,7 @@ namespace MyTelegram.Schema.Bots;
 /// Get localized name, about text and description of a bot (or of the current account, if called by a bot).
 /// <para>Possible errors</para>
 /// Code Type Description
+/// 400 BOT_INVALID This is not a valid bot.
 /// 400 LANG_CODE_INVALID The specified language code is invalid.
 /// 400 USER_BOT_INVALID User accounts must provide the <code>bot</code> method parameter when calling this method. If there is no such method parameter, this method can only be invoked by bot accounts.
 /// See <a href="https://corefork.telegram.org/method/bots.getBotInfo" />

@@ -5,6 +5,9 @@ namespace MyTelegram.Schema.Account;
 
 ///<summary>
 /// Save a theme
+/// <para>Possible errors</para>
+/// Code Type Description
+/// 400 THEME_INVALID Invalid theme provided.
 /// See <a href="https://corefork.telegram.org/method/account.saveTheme" />
 ///</summary>
 [TlObject(0xf257106c)]

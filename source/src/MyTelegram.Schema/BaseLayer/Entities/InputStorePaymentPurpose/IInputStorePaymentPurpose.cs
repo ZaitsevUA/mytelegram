@@ -10,7 +10,9 @@ namespace MyTelegram.Schema;
 [JsonDerivedType(typeof(TInputStorePaymentGiftPremium), nameof(TInputStorePaymentGiftPremium))]
 [JsonDerivedType(typeof(TInputStorePaymentPremiumGiftCode), nameof(TInputStorePaymentPremiumGiftCode))]
 [JsonDerivedType(typeof(TInputStorePaymentPremiumGiveaway), nameof(TInputStorePaymentPremiumGiveaway))]
-[JsonDerivedType(typeof(TInputStorePaymentStars), nameof(TInputStorePaymentStars))]
+[JsonDerivedType(typeof(TInputStorePaymentStarsTopup), nameof(TInputStorePaymentStarsTopup))]
+[JsonDerivedType(typeof(TInputStorePaymentStarsGift), nameof(TInputStorePaymentStarsGift))]
+[JsonDerivedType(typeof(TInputStorePaymentStarsGiveaway), nameof(TInputStorePaymentStarsGiveaway))]
 public interface IInputStorePaymentPurpose : IObject
 {
 

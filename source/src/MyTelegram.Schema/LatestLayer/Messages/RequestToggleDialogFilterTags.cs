@@ -4,12 +4,20 @@
 namespace MyTelegram.Schema.Messages;
 
 ///<summary>
+/// Enable or disable <a href="https://corefork.telegram.org/api/folders#folder-tags">folder tags »</a>.
+/// <para>Possible errors</para>
+/// Code Type Description
+/// 403 PREMIUM_ACCOUNT_REQUIRED A premium account is required to execute this action.
 /// See <a href="https://corefork.telegram.org/method/messages.toggleDialogFilterTags" />
 ///</summary>
 [TlObject(0xfd2dda49)]
 public sealed class RequestToggleDialogFilterTags : IRequest<IBool>
 {
     public uint ConstructorId => 0xfd2dda49;
+    ///<summary>
+    /// Enable or disable folder tags.
+    /// See <a href="https://corefork.telegram.org/type/Bool" />
+    ///</summary>
     public bool Enabled { get; set; }
 
     public void ComputeFlag()

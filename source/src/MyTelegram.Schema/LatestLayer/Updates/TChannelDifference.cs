@@ -28,7 +28,7 @@ public sealed class TChannelDifference : IChannelDifference
     public int Pts { get; set; }
 
     ///<summary>
-    /// Clients are supposed to refetch the channel difference after timeout seconds have elapsed
+    /// Clients are supposed to refetch the channel difference after timeout seconds have elapsed, if the user is <a href="https://corefork.telegram.org/api/updates#subscribing-to-updates-of-channels-supergroups">currently viewing the chat, see here »</a> for more info.
     ///</summary>
     public int? Timeout { get; set; }
 

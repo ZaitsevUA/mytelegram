@@ -54,6 +54,10 @@ public sealed class TDraftMessage : IDraftMessage
     /// Date of last update of the draft.
     ///</summary>
     public int Date { get; set; }
+
+    ///<summary>
+    /// A <a href="https://corefork.telegram.org/api/effects">message effect that should be played as specified here »</a>.
+    ///</summary>
     public long? Effect { get; set; }
 
     public void ComputeFlag()

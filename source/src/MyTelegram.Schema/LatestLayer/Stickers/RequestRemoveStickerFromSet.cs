@@ -4,10 +4,9 @@
 namespace MyTelegram.Schema.Stickers;
 
 ///<summary>
-/// Remove a sticker from the set where it belongs, bots only. The sticker set must have been created by the bot.
+/// Remove a sticker from the set where it belongs. The sticker set must have been created by the current user/bot.
 /// <para>Possible errors</para>
 /// Code Type Description
-/// 400 BOT_MISSING Only bots can call this method, please use <a href="https://t.me/stickers">@stickers</a> if you're a user.
 /// 400 STICKER_INVALID The provided sticker is invalid.
 /// See <a href="https://corefork.telegram.org/method/stickers.removeStickerFromSet" />
 ///</summary>

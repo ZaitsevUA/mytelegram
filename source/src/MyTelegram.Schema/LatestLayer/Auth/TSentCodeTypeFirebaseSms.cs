@@ -20,7 +20,15 @@ public sealed class TSentCodeTypeFirebaseSms : ISentCodeType
     /// On Android, the nonce to be used as described in the <a href="https://corefork.telegram.org/api/auth">auth documentation »</a>
     ///</summary>
     public byte[]? Nonce { get; set; }
+
+    ///<summary>
+    /// Google Play Integrity project ID
+    ///</summary>
     public long? PlayIntegrityProjectId { get; set; }
+
+    ///<summary>
+    /// Play Integrity API nonce
+    ///</summary>
     public byte[]? PlayIntegrityNonce { get; set; }
 
     ///<summary>

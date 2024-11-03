@@ -8,6 +8,7 @@ namespace MyTelegram.Schema.Phone;
 /// <para>Possible errors</para>
 /// Code Type Description
 /// 403 GROUPCALL_FORBIDDEN The group call has already ended.
+/// 400 GROUPCALL_INVALID The specified group call is invalid.
 /// See <a href="https://corefork.telegram.org/method/phone.editGroupCallTitle" />
 ///</summary>
 [TlObject(0x1ca6ac0a)]

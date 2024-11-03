@@ -12,7 +12,7 @@ namespace MyTelegram.Schema.Messages;
 /// 406 CHANNEL_PRIVATE You haven't joined this channel/supergroup.
 /// 403 CHAT_ADMIN_REQUIRED You must be an admin in this chat to do this.
 /// 406 CHAT_FORWARDS_RESTRICTED You can't forward messages from a protected chat.
-/// 403 CHAT_GUEST_SEND_FORBIDDEN You join the discussion group before commenting, see <a href="https://corefork.telegram.org/api/discussion#requiring-users-to-join-the-group">here »</a> for more info.
+/// 403 CHAT_GUEST_SEND_FORBIDDEN You join the discussion group before commenting, see <a href="https://corefork.telegram.org/api/discussion#requiring-users-to-join-the-group">here&nbsp;»</a> for more info.
 /// 400 CHAT_ID_INVALID The provided chat id is invalid.
 /// 400 CHAT_RESTRICTED You can't send messages in this chat, you were restricted.
 /// 403 CHAT_SEND_AUDIOS_FORBIDDEN You can't send audio messages in this chat.
@@ -33,11 +33,15 @@ namespace MyTelegram.Schema.Messages;
 /// 400 MESSAGE_IDS_EMPTY No message ids were provided.
 /// 400 MESSAGE_ID_INVALID The provided message id is invalid.
 /// 400 MSG_ID_INVALID Invalid message ID provided.
-/// 406 PAYMENT_UNSUPPORTED A detailed description of the error will be received separately as described <a href="https://corefork.telegram.org/api/errors#406-not-acceptable">here »</a>.
+/// 406 PAYMENT_UNSUPPORTED A detailed description of the error will be received separately as described <a href="https://corefork.telegram.org/api/errors#406-not-acceptable">here&nbsp;»</a>.
 /// 400 PEER_ID_INVALID The provided peer id is invalid.
+/// 403 PREMIUM_ACCOUNT_REQUIRED A premium account is required to execute this action.
+/// 406 PRIVACY_PREMIUM_REQUIRED You need a <a href="https://corefork.telegram.org/api/premium">Telegram Premium subscription</a> to send a message to this user.
+/// 400 QUICK_REPLIES_TOO_MUCH A maximum of <a href="https://corefork.telegram.org/api/config#quick-replies-limit">appConfig.<code>quick_replies_limit</code></a> shortcuts may be created, the limit was reached.
 /// 400 QUIZ_ANSWER_MISSING You can forward a quiz while hiding the original author only after choosing an option in the quiz.
 /// 500 RANDOM_ID_DUPLICATE You provided a random ID that was already used.
 /// 400 RANDOM_ID_INVALID A provided random ID is invalid.
+/// 400 REPLY_MESSAGES_TOO_MUCH Each shortcut can contain a maximum of <a href="https://corefork.telegram.org/api/config#quick-reply-messages-limit">appConfig.<code>quick_reply_messages_limit</code></a> messages, the limit was reached.
 /// 400 SCHEDULE_BOT_NOT_ALLOWED Bots cannot schedule messages.
 /// 400 SCHEDULE_DATE_TOO_LATE You can't schedule a message this far in the future.
 /// 400 SCHEDULE_TOO_MUCH There are too many scheduled messages.
@@ -97,6 +101,7 @@ public sealed class RequestForwardMessages : IRequest<MyTelegram.Schema.IUpdates
     /// See <a href="https://corefork.telegram.org/type/true" />
     ///</summary>
     public bool Noforwards { get; set; }
+    public bool AllowPaidFloodskip { get; set; }
 
     ///<summary>
     /// Source of messages
@@ -135,6 +140,11 @@ public sealed class RequestForwardMessages : IRequest<MyTelegram.Schema.IUpdates
     /// See <a href="https://corefork.telegram.org/type/InputPeer" />
     ///</summary>
     public MyTelegram.Schema.IInputPeer? SendAs { get; set; }
+
+    ///<summary>
+    /// Add the messages to the specified <a href="https://corefork.telegram.org/api/business#quick-reply-shortcuts">quick reply shortcut »</a>, instead.
+    /// See <a href="https://corefork.telegram.org/type/InputQuickReplyShortcut" />
+    ///</summary>
     public MyTelegram.Schema.IInputQuickReplyShortcut? QuickReplyShortcut { get; set; }
 
     public void ComputeFlag()
@@ -145,6 +155,7 @@ public sealed class RequestForwardMessages : IRequest<MyTelegram.Schema.IUpdates
         if (DropAuthor) { Flags[11] = true; }
         if (DropMediaCaptions) { Flags[12] = true; }
         if (Noforwards) { Flags[14] = true; }
+        if (AllowPaidFloodskip) { Flags[19] = true; }
         if (/*TopMsgId != 0 && */TopMsgId.HasValue) { Flags[9] = true; }
         if (/*ScheduleDate != 0 && */ScheduleDate.HasValue) { Flags[10] = true; }
         if (SendAs != null) { Flags[13] = true; }
@@ -175,6 +186,7 @@ public sealed class RequestForwardMessages : IRequest<MyTelegram.Schema.IUpdates
         if (Flags[11]) { DropAuthor = true; }
         if (Flags[12]) { DropMediaCaptions = true; }
         if (Flags[14]) { Noforwards = true; }
+        if (Flags[19]) { AllowPaidFloodskip = true; }
         FromPeer = reader.Read<MyTelegram.Schema.IInputPeer>();
         Id = reader.Read<TVector<int>>();
         RandomId = reader.Read<TVector<long>>();

@@ -7,6 +7,7 @@ namespace MyTelegram.Schema.Auth;
 /// Request an SMS code via Firebase.
 /// <para>Possible errors</para>
 /// Code Type Description
+/// 400 PHONE_CODE_EMPTY phone_code is missing.
 /// 400 PHONE_NUMBER_INVALID The phone number is invalid.
 /// See <a href="https://corefork.telegram.org/method/auth.requestFirebaseSms" />
 ///</summary>
@@ -33,6 +34,10 @@ public sealed class RequestRequestFirebaseSms : IRequest<IBool>
     /// On Android, a JWS object obtained as described in the <a href="https://corefork.telegram.org/api/auth">auth documentation »</a>
     ///</summary>
     public string? SafetyNetToken { get; set; }
+
+    ///<summary>
+    /// On Android, an object obtained as described in the <a href="https://corefork.telegram.org/api/auth">auth documentation »</a>
+    ///</summary>
     public string? PlayIntegrityToken { get; set; }
 
     ///<summary>

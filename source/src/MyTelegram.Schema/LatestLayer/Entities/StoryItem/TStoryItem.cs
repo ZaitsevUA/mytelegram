@@ -79,6 +79,11 @@ public sealed class TStoryItem : IStoryItem
     /// When was the story posted.
     ///</summary>
     public int Date { get; set; }
+
+    ///<summary>
+    /// Sender of the story.
+    /// See <a href="https://corefork.telegram.org/type/Peer" />
+    ///</summary>
     public MyTelegram.Schema.IPeer? FromId { get; set; }
 
     ///<summary>

@@ -103,4 +103,5 @@ public interface IChannelAdminLogEventsFilter : IObject
     /// <a href="https://corefork.telegram.org/api/forum">Forum</a>-related events
     ///</summary>
     bool Forums { get; set; }
+    bool SubExtend { get; set; }
 }

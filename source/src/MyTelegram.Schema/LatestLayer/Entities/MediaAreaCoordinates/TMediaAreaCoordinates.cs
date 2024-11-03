@@ -11,6 +11,9 @@ namespace MyTelegram.Schema;
 public sealed class TMediaAreaCoordinates : IMediaAreaCoordinates
 {
     public uint ConstructorId => 0xcfc9e002;
+    ///<summary>
+    /// Flags, see <a href="https://corefork.telegram.org/mtproto/TL-combinators#conditional-fields">TL conditional fields</a>
+    ///</summary>
     public BitArray Flags { get; set; } = new BitArray(32);
 
     ///<summary>
@@ -37,6 +40,10 @@ public sealed class TMediaAreaCoordinates : IMediaAreaCoordinates
     /// Clockwise rotation angle of the rectangle, in degrees (0-360).
     ///</summary>
     public double Rotation { get; set; }
+
+    ///<summary>
+    /// The radius of the rectangle corner rounding, as a percentage of the media width.
+    ///</summary>
     public double? Radius { get; set; }
 
     public void ComputeFlag()

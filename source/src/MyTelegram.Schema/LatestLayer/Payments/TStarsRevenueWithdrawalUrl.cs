@@ -4,12 +4,16 @@
 namespace MyTelegram.Schema.Payments;
 
 ///<summary>
+/// Contains the URL to use to <a href="https://corefork.telegram.org/api/stars#withdrawing-revenue">withdraw Telegram Star revenue</a>.
 /// See <a href="https://corefork.telegram.org/constructor/payments.starsRevenueWithdrawalUrl" />
 ///</summary>
 [TlObject(0x1dab80b7)]
 public sealed class TStarsRevenueWithdrawalUrl : IStarsRevenueWithdrawalUrl
 {
     public uint ConstructorId => 0x1dab80b7;
+    ///<summary>
+    /// Contains the URL to use to <a href="https://corefork.telegram.org/api/stars#withdrawing-revenue">withdraw Telegram Star revenue</a>.
+    ///</summary>
     public string Url { get; set; }
 
     public void ComputeFlag()

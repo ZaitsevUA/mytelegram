@@ -4,12 +4,16 @@
 namespace MyTelegram.Schema;
 
 ///<summary>
+/// Represents a <a href="https://corefork.telegram.org/api/fragment">username fragment collectible</a>
 /// See <a href="https://corefork.telegram.org/constructor/inputCollectibleUsername" />
 ///</summary>
 [TlObject(0xe39460a9)]
 public sealed class TInputCollectibleUsername : IInputCollectible
 {
     public uint ConstructorId => 0xe39460a9;
+    ///<summary>
+    /// Username
+    ///</summary>
     public string Username { get; set; }
 
     public void ComputeFlag()

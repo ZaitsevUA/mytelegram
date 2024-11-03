@@ -4,14 +4,26 @@
 namespace MyTelegram.Schema.Stats;
 
 ///<summary>
+/// Fetch <a href="https://corefork.telegram.org/api/revenue">channel ad revenue transaction history »</a>.
+/// <para>Possible errors</para>
+/// Code Type Description
+/// 400 CHANNEL_INVALID The provided channel is invalid.
 /// See <a href="https://corefork.telegram.org/method/stats.getBroadcastRevenueTransactions" />
 ///</summary>
-[TlObject(0x69280f)]
+[TlObject(0x70990b6d)]
 public sealed class RequestGetBroadcastRevenueTransactions : IRequest<MyTelegram.Schema.Stats.IBroadcastRevenueTransactions>
 {
-    public uint ConstructorId => 0x69280f;
-    public MyTelegram.Schema.IInputChannel Channel { get; set; }
+    public uint ConstructorId => 0x70990b6d;
+    public MyTelegram.Schema.IInputPeer Peer { get; set; }
+
+    ///<summary>
+    /// <a href="https://corefork.telegram.org/api/offsets">Offset for pagination</a>
+    ///</summary>
     public int Offset { get; set; }
+
+    ///<summary>
+    /// Maximum number of results to return, <a href="https://corefork.telegram.org/api/offsets">see pagination</a>
+    ///</summary>
     public int Limit { get; set; }
 
     public void ComputeFlag()
@@ -23,14 +35,14 @@ public sealed class RequestGetBroadcastRevenueTransactions : IRequest<MyTelegram
     {
         ComputeFlag();
         writer.Write(ConstructorId);
-        writer.Write(Channel);
+        writer.Write(Peer);
         writer.Write(Offset);
         writer.Write(Limit);
     }
 
     public void Deserialize(ref SequenceReader<byte> reader)
     {
-        Channel = reader.Read<MyTelegram.Schema.IInputChannel>();
+        Peer = reader.Read<MyTelegram.Schema.IInputPeer>();
         Offset = reader.ReadInt32();
         Limit = reader.ReadInt32();
     }

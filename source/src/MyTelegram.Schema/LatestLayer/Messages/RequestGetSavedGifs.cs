@@ -4,7 +4,7 @@
 namespace MyTelegram.Schema.Messages;
 
 ///<summary>
-/// Get saved GIFs
+/// Get saved GIFs.
 /// See <a href="https://corefork.telegram.org/method/messages.getSavedGifs" />
 ///</summary>
 [TlObject(0x5cf09635)]
@@ -12,7 +12,7 @@ public sealed class RequestGetSavedGifs : IRequest<MyTelegram.Schema.Messages.IS
 {
     public uint ConstructorId => 0x5cf09635;
     ///<summary>
-    /// <a href="https://corefork.telegram.org/api/offsets#hash-generation">Hash for pagination, for more info click here</a>
+    /// <a href="https://corefork.telegram.org/api/offsets#hash-generation">Hash used for caching, for more info click here</a>.
     ///</summary>
     public long Hash { get; set; }
 

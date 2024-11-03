@@ -4,6 +4,7 @@
 namespace MyTelegram.Schema;
 
 ///<summary>
+/// Describes a <a href="https://corefork.telegram.org/api/stars">Telegram Star</a> transaction with the Play Store, used when purchasing Telegram Stars through the Play Store.
 /// See <a href="https://corefork.telegram.org/constructor/starsTransactionPeerPlayMarket" />
 ///</summary>
 [TlObject(0x7b560a0b)]

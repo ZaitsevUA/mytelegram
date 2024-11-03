@@ -4,12 +4,19 @@
 namespace MyTelegram.Schema.Messages;
 
 ///<summary>
+/// Before offering the user the choice to add a message to a <a href="https://corefork.telegram.org/api/business#quick-reply-shortcuts">quick reply shortcut</a>, to make sure that none of the limits specified <a href="https://corefork.telegram.org/api/business#quick-reply-shortcuts">here »</a> were reached.
+/// <para>Possible errors</para>
+/// Code Type Description
+/// 403 PREMIUM_ACCOUNT_REQUIRED A premium account is required to execute this action.
 /// See <a href="https://corefork.telegram.org/method/messages.checkQuickReplyShortcut" />
 ///</summary>
 [TlObject(0xf1d0fbd3)]
 public sealed class RequestCheckQuickReplyShortcut : IRequest<IBool>
 {
     public uint ConstructorId => 0xf1d0fbd3;
+    ///<summary>
+    /// Shorcut name (not ID!).
+    ///</summary>
     public string Shortcut { get; set; }
 
     public void ComputeFlag()

@@ -8,6 +8,7 @@ namespace MyTelegram.Schema.Phone;
 /// <para>Possible errors</para>
 /// Code Type Description
 /// 400 JOIN_AS_PEER_INVALID The specified peer cannot be used to join a group call.
+/// 400 PEER_ID_INVALID The provided peer id is invalid.
 /// See <a href="https://corefork.telegram.org/method/phone.saveDefaultGroupCallJoinAs" />
 ///</summary>
 [TlObject(0x575e1f8c)]

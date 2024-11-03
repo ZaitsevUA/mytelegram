@@ -4,6 +4,7 @@
 namespace MyTelegram.Schema.Account;
 
 ///<summary>
+/// List all created <a href="https://corefork.telegram.org/api/business#business-chat-links">business chat deep links »</a>.
 /// See <a href="https://corefork.telegram.org/method/account.getBusinessChatLinks" />
 ///</summary>
 [TlObject(0x6f70dde1)]

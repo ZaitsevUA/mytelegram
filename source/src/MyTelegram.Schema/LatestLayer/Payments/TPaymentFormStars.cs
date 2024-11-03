@@ -4,6 +4,7 @@
 namespace MyTelegram.Schema.Payments;
 
 ///<summary>
+/// Represents a payment form, for payments to be using <a href="https://corefork.telegram.org/api/stars">Telegram Stars, see here »</a> for more info.
 /// See <a href="https://corefork.telegram.org/constructor/payments.paymentFormStars" />
 ///</summary>
 [TlObject(0x7bf6b15c)]
@@ -16,39 +17,39 @@ public sealed class TPaymentFormStars : IPaymentForm
     public BitArray Flags { get; set; } = new BitArray(32);
 
     ///<summary>
-    /// &nbsp;
+    /// Form ID.
     ///</summary>
     public long FormId { get; set; }
 
     ///<summary>
-    /// &nbsp;
+    /// Bot ID.
     ///</summary>
     public long BotId { get; set; }
 
     ///<summary>
-    /// &nbsp;
+    /// Form title
     ///</summary>
     public string Title { get; set; }
 
     ///<summary>
-    /// &nbsp;
+    /// Description
     ///</summary>
     public string Description { get; set; }
 
     ///<summary>
-    /// &nbsp;
+    /// Product photo
     /// See <a href="https://corefork.telegram.org/type/WebDocument" />
     ///</summary>
     public MyTelegram.Schema.IWebDocument? Photo { get; set; }
 
     ///<summary>
-    /// &nbsp;
+    /// Invoice
     /// See <a href="https://corefork.telegram.org/type/Invoice" />
     ///</summary>
     public MyTelegram.Schema.IInvoice Invoice { get; set; }
 
     ///<summary>
-    /// &nbsp;
+    /// Info about users mentioned in the other fields.
     ///</summary>
     public TVector<MyTelegram.Schema.IUser> Users { get; set; }
 

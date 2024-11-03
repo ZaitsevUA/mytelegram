@@ -12,6 +12,8 @@ namespace MyTelegram.Schema.Messages;
 /// 400 FILTER_ID_INVALID The specified filter ID is invalid.
 /// 400 FILTER_INCLUDE_EMPTY The include_peers vector of the filter is empty.
 /// 400 FILTER_TITLE_EMPTY The title field of the filter is empty.
+/// 400 MSG_ID_INVALID Invalid message ID provided.
+/// 400 PEER_ID_INVALID The provided peer id is invalid.
 /// See <a href="https://corefork.telegram.org/method/messages.updateDialogFilter" />
 ///</summary>
 [TlObject(0x1ad4a04a)]

@@ -60,7 +60,7 @@ public interface IInvoice : IObject
     bool Recurring { get; set; }
 
     ///<summary>
-    /// Three-letter ISO 4217 <a href="https://corefork.telegram.org/bots/payments#supported-currencies">currency</a> code
+    /// Three-letter ISO 4217 <a href="https://corefork.telegram.org/bots/payments#supported-currencies">currency</a> code, or <code>XTR</code> for <a href="https://corefork.telegram.org/api/stars">Telegram Stars</a>.
     ///</summary>
     string Currency { get; set; }
 

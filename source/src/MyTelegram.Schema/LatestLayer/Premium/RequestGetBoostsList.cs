@@ -4,7 +4,7 @@
 namespace MyTelegram.Schema.Premium;
 
 ///<summary>
-/// Obtains info about the boosts that were applied to a certain channel (admins only)
+/// Obtains info about the boosts that were applied to a certain channel or supergroup (admins only)
 /// <para>Possible errors</para>
 /// Code Type Description
 /// 400 CHAT_ADMIN_REQUIRED You must be an admin in this chat to do this.
@@ -21,13 +21,13 @@ public sealed class RequestGetBoostsList : IRequest<MyTelegram.Schema.Premium.IB
     public BitArray Flags { get; set; } = new BitArray(32);
 
     ///<summary>
-    /// Whether to return only info about boosts received from <a href="https://corefork.telegram.org/api/giveaways">gift codes and giveaways created by the channel »</a>
+    /// Whether to return only info about boosts received from <a href="https://corefork.telegram.org/api/giveaways">gift codes and giveaways created by the channel/supergroup »</a>
     /// See <a href="https://corefork.telegram.org/type/true" />
     ///</summary>
     public bool Gifts { get; set; }
 
     ///<summary>
-    /// The channel
+    /// The channel/supergroup
     /// See <a href="https://corefork.telegram.org/type/InputPeer" />
     ///</summary>
     public MyTelegram.Schema.IInputPeer Peer { get; set; }

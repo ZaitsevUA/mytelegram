@@ -70,7 +70,7 @@ public sealed class TPhoneCall : IPhoneCall
     public MyTelegram.Schema.IPhoneCallProtocol Protocol { get; set; }
 
     ///<summary>
-    /// List of endpoints the user can connect to to exchange call data
+    /// List of endpoints the user can connect to exchange call data
     ///</summary>
     public TVector<MyTelegram.Schema.IPhoneConnection> Connections { get; set; }
 
@@ -78,6 +78,11 @@ public sealed class TPhoneCall : IPhoneCall
     /// When was the call actually started
     ///</summary>
     public int StartDate { get; set; }
+
+    ///<summary>
+    /// Custom JSON-encoded call parameters to be passed to tgcalls.
+    /// See <a href="https://corefork.telegram.org/type/DataJSON" />
+    ///</summary>
     public MyTelegram.Schema.IDataJSON? CustomParameters { get; set; }
 
     public void ComputeFlag()

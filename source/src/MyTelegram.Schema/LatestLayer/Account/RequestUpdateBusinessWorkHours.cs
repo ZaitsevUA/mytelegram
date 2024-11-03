@@ -4,13 +4,28 @@
 namespace MyTelegram.Schema.Account;
 
 ///<summary>
+/// Specify a set of <a href="https://corefork.telegram.org/api/business#opening-hours">Telegram Business opening hours</a>.<br>
+/// This info will be contained in <a href="https://corefork.telegram.org/constructor/userFull">userFull</a>.<code>business_work_hours</code>.To remove all opening hours, invoke the method without setting the <code>business_work_hours</code> field.Note that the opening hours specified by the user must be appropriately validated and transformed before invoking the method, as specified <a href="https://corefork.telegram.org/api/business#opening-hours">here »</a>.
+/// <para>Possible errors</para>
+/// Code Type Description
+/// 400 BUSINESS_WORK_HOURS_EMPTY No work hours were specified.
+/// 400 BUSINESS_WORK_HOURS_PERIOD_INVALID The specified work hours are invalid, see <a href="https://corefork.telegram.org/api/business#opening-hours">here&nbsp;»</a> for the exact requirements.
+/// 400 TIMEZONE_INVALID The specified timezone does not exist.
 /// See <a href="https://corefork.telegram.org/method/account.updateBusinessWorkHours" />
 ///</summary>
 [TlObject(0x4b00e066)]
 public sealed class RequestUpdateBusinessWorkHours : IRequest<IBool>
 {
     public uint ConstructorId => 0x4b00e066;
+    ///<summary>
+    /// Flags, see <a href="https://corefork.telegram.org/mtproto/TL-combinators#conditional-fields">TL conditional fields</a>
+    ///</summary>
     public BitArray Flags { get; set; } = new BitArray(32);
+
+    ///<summary>
+    /// Opening hours (optional, if not set removes all opening hours).
+    /// See <a href="https://corefork.telegram.org/type/BusinessWorkHours" />
+    ///</summary>
     public MyTelegram.Schema.IBusinessWorkHours? BusinessWorkHours { get; set; }
 
     public void ComputeFlag()

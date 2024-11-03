@@ -4,15 +4,32 @@
 namespace MyTelegram.Schema;
 
 ///<summary>
+/// Info about a <a href="https://corefork.telegram.org/api/channel">chat</a>, shared by a user with the currently logged in bot using <a href="https://corefork.telegram.org/method/messages.sendBotRequestedPeer">messages.sendBotRequestedPeer</a>.All fields except the ID are optional, and will be populated if present on the chosen chat, according to the parameters of the requesting <a href="https://corefork.telegram.org/constructor/inputKeyboardButtonRequestPeer">inputKeyboardButtonRequestPeer</a>.
 /// See <a href="https://corefork.telegram.org/constructor/requestedPeerChat" />
 ///</summary>
 [TlObject(0x7307544f)]
 public sealed class TRequestedPeerChat : IRequestedPeer
 {
     public uint ConstructorId => 0x7307544f;
+    ///<summary>
+    /// Flags, see <a href="https://corefork.telegram.org/mtproto/TL-combinators#conditional-fields">TL conditional fields</a>
+    ///</summary>
     public BitArray Flags { get; set; } = new BitArray(32);
+
+    ///<summary>
+    /// Chat ID.
+    ///</summary>
     public long ChatId { get; set; }
+
+    ///<summary>
+    /// Chat title.
+    ///</summary>
     public string? Title { get; set; }
+
+    ///<summary>
+    /// Chat photo.
+    /// See <a href="https://corefork.telegram.org/type/Photo" />
+    ///</summary>
     public MyTelegram.Schema.IPhoto? Photo { get; set; }
 
     public void ComputeFlag()

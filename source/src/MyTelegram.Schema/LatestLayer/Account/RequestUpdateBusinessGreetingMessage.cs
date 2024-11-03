@@ -4,13 +4,22 @@
 namespace MyTelegram.Schema.Account;
 
 ///<summary>
+/// Set a list of <a href="https://corefork.telegram.org/api/business#greeting-messages">Telegram Business greeting messages</a>.
 /// See <a href="https://corefork.telegram.org/method/account.updateBusinessGreetingMessage" />
 ///</summary>
 [TlObject(0x66cdafc4)]
 public sealed class RequestUpdateBusinessGreetingMessage : IRequest<IBool>
 {
     public uint ConstructorId => 0x66cdafc4;
+    ///<summary>
+    /// Flags, see <a href="https://corefork.telegram.org/mtproto/TL-combinators#conditional-fields">TL conditional fields</a>
+    ///</summary>
     public BitArray Flags { get; set; } = new BitArray(32);
+
+    ///<summary>
+    /// Greeting message configuration and contents.
+    /// See <a href="https://corefork.telegram.org/type/InputBusinessGreetingMessage" />
+    ///</summary>
     public MyTelegram.Schema.IInputBusinessGreetingMessage? Message { get; set; }
 
     public void ComputeFlag()

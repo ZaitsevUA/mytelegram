@@ -15,12 +15,12 @@ public interface IBoostsStatus : IObject
     BitArray Flags { get; set; }
 
     ///<summary>
-    /// Whether we're currently boosting this channel, <code>my_boost_slots</code> will also be set.
+    /// Whether we're currently boosting this channel/supergroup, <code>my_boost_slots</code> will also be set.
     ///</summary>
     bool MyBoost { get; set; }
 
     ///<summary>
-    /// The current boost level of the channel.
+    /// The current boost level of the channel/supergroup.
     ///</summary>
     int Level { get; set; }
 
@@ -35,7 +35,7 @@ public interface IBoostsStatus : IObject
     int Boosts { get; set; }
 
     ///<summary>
-    /// The number of boosts acquired from created Telegram Premium <a href="https://corefork.telegram.org/api/giveaways">gift codes</a> and <a href="https://corefork.telegram.org/api/giveaways">giveaways</a>; only returned to channel admins.
+    /// The number of boosts acquired from created Telegram Premium <a href="https://corefork.telegram.org/api/giveaways">gift codes</a> and <a href="https://corefork.telegram.org/api/giveaways">giveaways</a>; only returned to channel/supergroup admins.
     ///</summary>
     int? GiftBoosts { get; set; }
 
@@ -45,7 +45,7 @@ public interface IBoostsStatus : IObject
     int? NextLevelBoosts { get; set; }
 
     ///<summary>
-    /// Only returned to channel admins: contains the approximated number of Premium users subscribed to the channel, related to the total number of subscribers.
+    /// Only returned to channel/supergroup admins: contains the approximated number of Premium users subscribed to the channel/supergroup, related to the total number of subscribers.
     /// See <a href="https://corefork.telegram.org/type/StatsPercentValue" />
     ///</summary>
     MyTelegram.Schema.IStatsPercentValue? PremiumAudience { get; set; }
@@ -56,7 +56,7 @@ public interface IBoostsStatus : IObject
     string BoostUrl { get; set; }
 
     ///<summary>
-    /// A list of prepaid <a href="https://corefork.telegram.org/api/giveaways">giveaways</a> available for the chat; only returned to channel admins.
+    /// A list of prepaid <a href="https://corefork.telegram.org/api/giveaways">giveaways</a> available for the chat; only returned to channel/supergroup admins.
     /// See <a href="https://corefork.telegram.org/type/PrepaidGiveaway" />
     ///</summary>
     TVector<MyTelegram.Schema.IPrepaidGiveaway>? PrepaidGiveaways { get; set; }

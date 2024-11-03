@@ -4,6 +4,7 @@
 namespace MyTelegram.Schema.Smsjobs;
 
 ///<summary>
+/// Check if we can process SMS jobs (official clients only).
 /// See <a href="https://corefork.telegram.org/method/smsjobs.isEligibleToJoin" />
 ///</summary>
 [TlObject(0xedc39d0)]

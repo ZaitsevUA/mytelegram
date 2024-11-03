@@ -7,10 +7,10 @@ namespace MyTelegram.Schema;
 /// Exported chat invite
 /// See <a href="https://corefork.telegram.org/constructor/chatInviteExported" />
 ///</summary>
-[TlObject(0xab4a819)]
+[TlObject(0xa22cbd96)]
 public sealed class TChatInviteExported : IExportedChatInvite
 {
-    public uint ConstructorId => 0xab4a819;
+    public uint ConstructorId => 0xa22cbd96;
     ///<summary>
     /// Flags, see <a href="https://corefork.telegram.org/mtproto/TL-combinators#conditional-fields">TL conditional fields</a>
     ///</summary>
@@ -73,11 +73,13 @@ public sealed class TChatInviteExported : IExportedChatInvite
     /// Number of users that have already used this link to join
     ///</summary>
     public int? Requested { get; set; }
+    public int? SubscriptionExpired { get; set; }
 
     ///<summary>
     /// Custom description for the invite link, visible only to admins
     ///</summary>
     public string? Title { get; set; }
+    public MyTelegram.Schema.IStarsSubscriptionPricing? SubscriptionPricing { get; set; }
 
     public void ComputeFlag()
     {
@@ -89,7 +91,9 @@ public sealed class TChatInviteExported : IExportedChatInvite
         if (/*UsageLimit != 0 && */UsageLimit.HasValue) { Flags[2] = true; }
         if (/*Usage != 0 && */Usage.HasValue) { Flags[3] = true; }
         if (/*Requested != 0 && */Requested.HasValue) { Flags[7] = true; }
+        if (/*SubscriptionExpired != 0 && */SubscriptionExpired.HasValue) { Flags[10] = true; }
         if (Title != null) { Flags[8] = true; }
+        if (SubscriptionPricing != null) { Flags[9] = true; }
     }
 
     public void Serialize(IBufferWriter<byte> writer)
@@ -105,7 +109,9 @@ public sealed class TChatInviteExported : IExportedChatInvite
         if (Flags[2]) { writer.Write(UsageLimit.Value); }
         if (Flags[3]) { writer.Write(Usage.Value); }
         if (Flags[7]) { writer.Write(Requested.Value); }
+        if (Flags[10]) { writer.Write(SubscriptionExpired.Value); }
         if (Flags[8]) { writer.Write(Title); }
+        if (Flags[9]) { writer.Write(SubscriptionPricing); }
     }
 
     public void Deserialize(ref SequenceReader<byte> reader)
@@ -122,6 +128,8 @@ public sealed class TChatInviteExported : IExportedChatInvite
         if (Flags[2]) { UsageLimit = reader.ReadInt32(); }
         if (Flags[3]) { Usage = reader.ReadInt32(); }
         if (Flags[7]) { Requested = reader.ReadInt32(); }
+        if (Flags[10]) { SubscriptionExpired = reader.ReadInt32(); }
         if (Flags[8]) { Title = reader.ReadString(); }
+        if (Flags[9]) { SubscriptionPricing = reader.Read<MyTelegram.Schema.IStarsSubscriptionPricing>(); }
     }
 }

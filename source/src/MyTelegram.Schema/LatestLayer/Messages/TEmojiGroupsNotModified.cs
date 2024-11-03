@@ -4,7 +4,7 @@
 namespace MyTelegram.Schema.Messages;
 
 ///<summary>
-/// The list of <a href="https://corefork.telegram.org/api/custom-emoji#emoji-categories">emoji categories</a> hasn't changed.
+/// The list of <a href="https://corefork.telegram.org/api/emoji-categories">emoji categories</a> hasn't changed.
 /// See <a href="https://corefork.telegram.org/constructor/messages.emojiGroupsNotModified" />
 ///</summary>
 [TlObject(0x6fb4ad87)]

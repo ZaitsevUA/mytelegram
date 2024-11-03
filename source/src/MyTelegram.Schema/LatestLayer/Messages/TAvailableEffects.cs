@@ -4,6 +4,7 @@
 namespace MyTelegram.Schema.Messages;
 
 ///<summary>
+/// The full list of usable <a href="https://corefork.telegram.org/api/effects">animated message effects »</a>.
 /// See <a href="https://corefork.telegram.org/constructor/messages.availableEffects" />
 ///</summary>
 [TlObject(0xbddb616e)]
@@ -11,17 +12,17 @@ public sealed class TAvailableEffects : IAvailableEffects
 {
     public uint ConstructorId => 0xbddb616e;
     ///<summary>
-    /// <a href="https://corefork.telegram.org/api/offsets#hash-generation">Hash for pagination, for more info click here</a>
+    /// <a href="https://corefork.telegram.org/api/offsets#hash-generation">Hash used for caching, for more info click here</a>
     ///</summary>
     public int Hash { get; set; }
 
     ///<summary>
-    /// &nbsp;
+    /// Message effects
     ///</summary>
     public TVector<MyTelegram.Schema.IAvailableEffect> Effects { get; set; }
 
     ///<summary>
-    /// &nbsp;
+    /// Documents specified in the <code>effects</code> constructors.
     ///</summary>
     public TVector<MyTelegram.Schema.IDocument> Documents { get; set; }
 

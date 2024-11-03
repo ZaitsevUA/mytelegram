@@ -15,12 +15,12 @@ public sealed class RequestGetDifference : IRequest<MyTelegram.Schema.ILangPackD
 {
     public uint ConstructorId => 0xcd984aa5;
     ///<summary>
-    /// Language pack
+    /// Platform identifier (i.e. <code>android</code>, <code>tdesktop</code>, etc).
     ///</summary>
     public string LangPack { get; set; }
 
     ///<summary>
-    /// Language code
+    /// Either an ISO 639-1 language code or a language pack name obtained from a <a href="https://corefork.telegram.org/api/links#language-pack-links">language pack link</a>.
     ///</summary>
     public string LangCode { get; set; }
 

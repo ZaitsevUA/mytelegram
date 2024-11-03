@@ -4,13 +4,21 @@
 namespace MyTelegram.Schema.Contacts;
 
 ///<summary>
+/// Birthday information of our contacts.
 /// See <a href="https://corefork.telegram.org/constructor/contacts.contactBirthdays" />
 ///</summary>
 [TlObject(0x114ff30d)]
 public sealed class TContactBirthdays : IContactBirthdays
 {
     public uint ConstructorId => 0x114ff30d;
+    ///<summary>
+    /// Birthday info
+    ///</summary>
     public TVector<MyTelegram.Schema.IContactBirthday> Contacts { get; set; }
+
+    ///<summary>
+    /// User information
+    ///</summary>
     public TVector<MyTelegram.Schema.IUser> Users { get; set; }
 
     public void ComputeFlag()

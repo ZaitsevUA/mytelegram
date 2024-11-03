@@ -11,7 +11,15 @@ namespace MyTelegram.Schema;
 public sealed class TMessageEntityBlockquote : IMessageEntity
 {
     public uint ConstructorId => 0xf1ccaaac;
+    ///<summary>
+    /// Flags, see <a href="https://corefork.telegram.org/mtproto/TL-combinators#conditional-fields">TL conditional fields</a>
+    ///</summary>
     public BitArray Flags { get; set; } = new BitArray(32);
+
+    ///<summary>
+    /// Whether the quote is collapsed by default.
+    /// See <a href="https://corefork.telegram.org/type/true" />
+    ///</summary>
     public bool Collapsed { get; set; }
 
     ///<summary>

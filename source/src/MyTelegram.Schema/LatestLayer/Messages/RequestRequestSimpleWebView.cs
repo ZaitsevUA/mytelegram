@@ -5,6 +5,10 @@ namespace MyTelegram.Schema.Messages;
 
 ///<summary>
 /// Open a <a href="https://corefork.telegram.org/api/bots/webapps">bot mini app</a>.
+/// <para>Possible errors</para>
+/// Code Type Description
+/// 400 BOT_INVALID This is not a valid bot.
+/// 400 URL_INVALID Invalid URL provided.
 /// See <a href="https://corefork.telegram.org/method/messages.requestSimpleWebView" />
 ///</summary>
 [TlObject(0x413a3e73)]
@@ -23,10 +27,15 @@ public sealed class RequestRequestSimpleWebView : IRequest<MyTelegram.Schema.IWe
     public bool FromSwitchWebview { get; set; }
 
     ///<summary>
-    /// Set this flag if opening the Mini App from the installed <a href="https://corefork.telegram.org/api/bots/attach">side menu entry »</a> or from a <a href="https://corefork.telegram.org/api/links#mini-app-links">Mini App link »</a>.
+    /// Set this flag if opening the Mini App from the installed <a href="https://corefork.telegram.org/api/bots/attach">side menu entry »</a>.
     /// See <a href="https://corefork.telegram.org/type/true" />
     ///</summary>
     public bool FromSideMenu { get; set; }
+
+    ///<summary>
+    /// Deprecated.
+    /// See <a href="https://corefork.telegram.org/type/true" />
+    ///</summary>
     public bool Compact { get; set; }
 
     ///<summary>
@@ -41,7 +50,7 @@ public sealed class RequestRequestSimpleWebView : IRequest<MyTelegram.Schema.IWe
     public string? Url { get; set; }
 
     ///<summary>
-    /// Start parameter, if opening from a <a href="https://corefork.telegram.org/api/links#mini-app-links">Mini App link »</a>.
+    /// Deprecated.
     ///</summary>
     public string? StartParam { get; set; }
 

@@ -12,10 +12,10 @@ namespace MyTelegram.Schema.Messages;
 /// 400 PEER_ID_INVALID The provided peer id is invalid.
 /// See <a href="https://corefork.telegram.org/method/messages.report" />
 ///</summary>
-[TlObject(0x8953ab4e)]
-public sealed class RequestReport : IRequest<IBool>
+[TlObject(0xfc78af9b)]
+public sealed class RequestReport : IRequest<MyTelegram.Schema.IReportResult>
 {
-    public uint ConstructorId => 0x8953ab4e;
+    public uint ConstructorId => 0xfc78af9b;
     ///<summary>
     /// Peer
     /// See <a href="https://corefork.telegram.org/type/InputPeer" />
@@ -26,12 +26,7 @@ public sealed class RequestReport : IRequest<IBool>
     /// IDs of messages to report
     ///</summary>
     public TVector<int> Id { get; set; }
-
-    ///<summary>
-    /// Why are these messages being reported
-    /// See <a href="https://corefork.telegram.org/type/ReportReason" />
-    ///</summary>
-    public MyTelegram.Schema.IReportReason Reason { get; set; }
+    public byte[] Option { get; set; }
 
     ///<summary>
     /// Comment for report moderation
@@ -49,7 +44,7 @@ public sealed class RequestReport : IRequest<IBool>
         writer.Write(ConstructorId);
         writer.Write(Peer);
         writer.Write(Id);
-        writer.Write(Reason);
+        writer.Write(Option);
         writer.Write(Message);
     }
 
@@ -57,7 +52,7 @@ public sealed class RequestReport : IRequest<IBool>
     {
         Peer = reader.Read<MyTelegram.Schema.IInputPeer>();
         Id = reader.Read<TVector<int>>();
-        Reason = reader.Read<MyTelegram.Schema.IReportReason>();
+        Option = reader.ReadBytes();
         Message = reader.ReadString();
     }
 }

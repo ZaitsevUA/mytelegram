@@ -4,6 +4,7 @@
 namespace MyTelegram.Schema.Payments;
 
 ///<summary>
+/// Obtain a list of <a href="https://corefork.telegram.org/api/stars#buying-or-gifting-stars">Telegram Stars topup options »</a> as <a href="https://corefork.telegram.org/constructor/starsTopupOption">starsTopupOption</a> constructors.
 /// See <a href="https://corefork.telegram.org/method/payments.getStarsTopupOptions" />
 ///</summary>
 [TlObject(0xc00ec7d3)]

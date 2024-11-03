@@ -31,12 +31,17 @@ internal sealed class UploadContactProfilePhotoHandler : RpcResultObjectHandler<
     {
         var file = obj.File ?? obj.Video;
         var md5 = string.Empty;
+        var parts = 0;
+        var name = string.Empty;
         switch (file)
         {
             case TInputFile inputFile:
                 md5 = inputFile.Md5Checksum;
+                name = inputFile.Name;
                 break;
             case TInputFileBig inputFileBig:
+                name = inputFileBig.Name;
+                parts = inputFileBig.Parts;
                 break;
         }
 
@@ -59,11 +64,12 @@ internal sealed class UploadContactProfilePhotoHandler : RpcResultObjectHandler<
             var r = file == null
                 ? null
                 : await _mediaHelper.SavePhotoAsync(input.ReqMsgId,
-                    file?.Id ?? 0,
+                    input.UserId,
+                    file.GetFileId(),
                     obj.Video != null,
                     obj.VideoStartTs,
-                    file?.Parts ?? 0,
-                    file?.Name ?? string.Empty,
+                    parts,
+                    name,
                     md5 ?? string.Empty);
             photoId = r.PhotoId;
             photo = r.Photo;

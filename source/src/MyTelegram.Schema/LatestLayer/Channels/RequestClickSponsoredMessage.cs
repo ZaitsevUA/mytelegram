@@ -10,10 +10,14 @@ namespace MyTelegram.Schema.Channels;
 /// 400 CHANNEL_INVALID The provided channel is invalid.
 /// See <a href="https://corefork.telegram.org/method/channels.clickSponsoredMessage" />
 ///</summary>
-[TlObject(0x18afbc93)]
+[TlObject(0x1445d75)]
 public sealed class RequestClickSponsoredMessage : IRequest<IBool>
 {
-    public uint ConstructorId => 0x18afbc93;
+    public uint ConstructorId => 0x1445d75;
+    public BitArray Flags { get; set; } = new BitArray(32);
+    public bool Media { get; set; }
+    public bool Fullscreen { get; set; }
+
     ///<summary>
     /// Channel where the sponsored message was posted
     /// See <a href="https://corefork.telegram.org/type/InputChannel" />
@@ -27,6 +31,8 @@ public sealed class RequestClickSponsoredMessage : IRequest<IBool>
 
     public void ComputeFlag()
     {
+        if (Media) { Flags[0] = true; }
+        if (Fullscreen) { Flags[1] = true; }
 
     }
 
@@ -34,12 +40,16 @@ public sealed class RequestClickSponsoredMessage : IRequest<IBool>
     {
         ComputeFlag();
         writer.Write(ConstructorId);
+        writer.Write(Flags);
         writer.Write(Channel);
         writer.Write(RandomId);
     }
 
     public void Deserialize(ref SequenceReader<byte> reader)
     {
+        Flags = reader.ReadBitArray();
+        if (Flags[0]) { Media = true; }
+        if (Flags[1]) { Fullscreen = true; }
         Channel = reader.Read<MyTelegram.Schema.IInputChannel>();
         RandomId = reader.ReadBytes();
     }

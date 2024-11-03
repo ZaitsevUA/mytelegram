@@ -4,6 +4,7 @@
 namespace MyTelegram.Schema.Account;
 
 ///<summary>
+/// List all currently connected <a href="https://corefork.telegram.org/api/business#connected-bots">business bots »</a>
 /// See <a href="https://corefork.telegram.org/method/account.getConnectedBots" />
 ///</summary>
 [TlObject(0x4ea4c80f)]

@@ -4,6 +4,10 @@
 namespace MyTelegram.Schema.Payments;
 
 ///<summary>
+/// Get the current <a href="https://corefork.telegram.org/api/stars">Telegram Stars balance</a> of the current account (with peer=<a href="https://corefork.telegram.org/constructor/inputPeerSelf">inputPeerSelf</a>), or the stars balance of the bot specified in <code>peer</code>.
+/// <para>Possible errors</para>
+/// Code Type Description
+/// 400 PEER_ID_INVALID The provided peer id is invalid.
 /// See <a href="https://corefork.telegram.org/method/payments.getStarsStatus" />
 ///</summary>
 [TlObject(0x104fcfa7)]
@@ -11,7 +15,7 @@ public sealed class RequestGetStarsStatus : IRequest<MyTelegram.Schema.Payments.
 {
     public uint ConstructorId => 0x104fcfa7;
     ///<summary>
-    /// &nbsp;
+    /// Peer of which to get the balance.
     /// See <a href="https://corefork.telegram.org/type/InputPeer" />
     ///</summary>
     public MyTelegram.Schema.IInputPeer Peer { get; set; }

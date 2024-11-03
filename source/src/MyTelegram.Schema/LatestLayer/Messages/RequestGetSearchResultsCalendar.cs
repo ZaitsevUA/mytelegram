@@ -9,6 +9,7 @@ namespace MyTelegram.Schema.Messages;
 /// <para>Possible errors</para>
 /// Code Type Description
 /// 400 FILTER_NOT_SUPPORTED The specified filter cannot be used in this context.
+/// 400 PEER_ID_INVALID The provided peer id is invalid.
 /// See <a href="https://corefork.telegram.org/method/messages.getSearchResultsCalendar" />
 ///</summary>
 [TlObject(0x6aa3f6bd)]

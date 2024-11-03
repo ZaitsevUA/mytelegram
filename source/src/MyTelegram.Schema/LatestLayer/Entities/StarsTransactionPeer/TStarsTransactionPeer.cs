@@ -4,6 +4,7 @@
 namespace MyTelegram.Schema;
 
 ///<summary>
+/// Describes a <a href="https://corefork.telegram.org/api/stars">Telegram Star</a> transaction with another peer.
 /// See <a href="https://corefork.telegram.org/constructor/starsTransactionPeer" />
 ///</summary>
 [TlObject(0xd80da15d)]
@@ -11,7 +12,7 @@ public sealed class TStarsTransactionPeer : IStarsTransactionPeer
 {
     public uint ConstructorId => 0xd80da15d;
     ///<summary>
-    /// &nbsp;
+    /// The peer.
     /// See <a href="https://corefork.telegram.org/type/Peer" />
     ///</summary>
     public MyTelegram.Schema.IPeer Peer { get; set; }

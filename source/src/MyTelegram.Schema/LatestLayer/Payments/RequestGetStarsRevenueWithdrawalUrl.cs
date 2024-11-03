@@ -4,14 +4,33 @@
 namespace MyTelegram.Schema.Payments;
 
 ///<summary>
+/// Withdraw funds from a channel or bot's <a href="https://corefork.telegram.org/api/stars#withdrawing-revenue">star balance »</a>.
+/// <para>Possible errors</para>
+/// Code Type Description
+/// 400 PASSWORD_HASH_INVALID The provided password hash is invalid.
+/// 400 PASSWORD_MISSING You must <a href="https://corefork.telegram.org/api/srp">enable 2FA</a> before executing this operation.
+/// 400 PASSWORD_TOO_FRESH_%d The password was modified less than 24 hours ago, try again in %d seconds.
 /// See <a href="https://corefork.telegram.org/method/payments.getStarsRevenueWithdrawalUrl" />
 ///</summary>
 [TlObject(0x13bbe8b3)]
 public sealed class RequestGetStarsRevenueWithdrawalUrl : IRequest<MyTelegram.Schema.Payments.IStarsRevenueWithdrawalUrl>
 {
     public uint ConstructorId => 0x13bbe8b3;
+    ///<summary>
+    /// Channel or bot from which to withdraw funds.
+    /// See <a href="https://corefork.telegram.org/type/InputPeer" />
+    ///</summary>
     public MyTelegram.Schema.IInputPeer Peer { get; set; }
+
+    ///<summary>
+    /// Amount of stars to withdraw.
+    ///</summary>
     public long Stars { get; set; }
+
+    ///<summary>
+    /// 2FA password, see <a href="https://corefork.telegram.org/api/srp#using-the-2fa-password">here »</a> for more info.
+    /// See <a href="https://corefork.telegram.org/type/InputCheckPasswordSRP" />
+    ///</summary>
     public MyTelegram.Schema.IInputCheckPasswordSRP Password { get; set; }
 
     public void ComputeFlag()

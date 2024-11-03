@@ -4,7 +4,8 @@
 namespace MyTelegram.Schema.Messages;
 
 ///<summary>
-/// Get information about extended media
+/// Fetch updated information about <a href="https://corefork.telegram.org/api/paid-media">paid media, see here »</a> for the full flow.This method will return an array of <a href="https://corefork.telegram.org/constructor/updateMessageExtendedMedia">updateMessageExtendedMedia</a> updates, only for messages containing <strong>already bought</strong> paid media.<br>
+/// No information will be returned for messages containing not yet bought paid media.
 /// See <a href="https://corefork.telegram.org/method/messages.getExtendedMedia" />
 ///</summary>
 [TlObject(0x84f80814)]
@@ -12,13 +13,13 @@ public sealed class RequestGetExtendedMedia : IRequest<MyTelegram.Schema.IUpdate
 {
     public uint ConstructorId => 0x84f80814;
     ///<summary>
-    /// Peer
+    /// Peer with visible paid media messages.
     /// See <a href="https://corefork.telegram.org/type/InputPeer" />
     ///</summary>
     public MyTelegram.Schema.IInputPeer Peer { get; set; }
 
     ///<summary>
-    /// Message IDs
+    /// IDs of currently visible messages containing paid media.
     ///</summary>
     public TVector<int> Id { get; set; }
 

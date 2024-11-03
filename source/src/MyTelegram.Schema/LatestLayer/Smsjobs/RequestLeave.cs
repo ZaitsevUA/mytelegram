@@ -4,6 +4,7 @@
 namespace MyTelegram.Schema.Smsjobs;
 
 ///<summary>
+/// Disable SMS jobs (official clients only).
 /// See <a href="https://corefork.telegram.org/method/smsjobs.leave" />
 ///</summary>
 [TlObject(0x9898ad73)]

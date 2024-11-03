@@ -4,7 +4,7 @@
 namespace MyTelegram.Schema.Messages;
 
 ///<summary>
-/// Adds a user to a chat and sends a service message on it.May also return 0-N updates of type <a href="https://corefork.telegram.org/constructor/updateGroupInvitePrivacyForbidden">updateGroupInvitePrivacyForbidden</a>: it indicates we couldn't add a user to a chat because of their privacy settings; if required, an <a href="https://corefork.telegram.org/api/invites">invite link</a> can be shared with the user, instead.
+/// Adds a user to a chat and sends a service message on it.
 /// <para>Possible errors</para>
 /// Code Type Description
 /// 400 BOT_GROUPS_BLOCKED This bot can't be added to groups.

@@ -4,18 +4,51 @@
 namespace MyTelegram.Schema;
 
 ///<summary>
+/// Specifies the chats that <strong>can</strong> receive Telegram Business <a href="https://corefork.telegram.org/api/business#away-messages">away »</a> and <a href="https://corefork.telegram.org/api/business#greeting-messages">greeting »</a> messages.If <code>exclude_selected</code> is set, specifies all chats that <strong>cannot</strong> receive Telegram Business <a href="https://corefork.telegram.org/api/business#away-messages">away »</a> and <a href="https://corefork.telegram.org/api/business#greeting-messages">greeting »</a> messages.
 /// See <a href="https://corefork.telegram.org/constructor/inputBusinessRecipients" />
 ///</summary>
 [TlObject(0x6f8b32aa)]
 public sealed class TInputBusinessRecipients : IInputBusinessRecipients
 {
     public uint ConstructorId => 0x6f8b32aa;
+    ///<summary>
+    /// Flags, see <a href="https://corefork.telegram.org/mtproto/TL-combinators#conditional-fields">TL conditional fields</a>
+    ///</summary>
     public BitArray Flags { get; set; } = new BitArray(32);
+
+    ///<summary>
+    /// All existing private chats.
+    /// See <a href="https://corefork.telegram.org/type/true" />
+    ///</summary>
     public bool ExistingChats { get; set; }
+
+    ///<summary>
+    /// All new private chats.
+    /// See <a href="https://corefork.telegram.org/type/true" />
+    ///</summary>
     public bool NewChats { get; set; }
+
+    ///<summary>
+    /// All private chats with contacts.
+    /// See <a href="https://corefork.telegram.org/type/true" />
+    ///</summary>
     public bool Contacts { get; set; }
+
+    ///<summary>
+    /// All private chats with non-contacts.
+    /// See <a href="https://corefork.telegram.org/type/true" />
+    ///</summary>
     public bool NonContacts { get; set; }
+
+    ///<summary>
+    /// If set, inverts the selection.
+    /// See <a href="https://corefork.telegram.org/type/true" />
+    ///</summary>
     public bool ExcludeSelected { get; set; }
+
+    ///<summary>
+    /// Only private chats with the specified users.
+    ///</summary>
     public TVector<MyTelegram.Schema.IInputUser>? Users { get; set; }
 
     public void ComputeFlag()

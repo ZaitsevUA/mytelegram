@@ -4,14 +4,26 @@
 namespace MyTelegram.Schema;
 
 ///<summary>
+/// Timezone information.
 /// See <a href="https://corefork.telegram.org/constructor/timezone" />
 ///</summary>
 [TlObject(0xff9289f5)]
 public sealed class TTimezone : ITimezone
 {
     public uint ConstructorId => 0xff9289f5;
+    ///<summary>
+    /// Unique timezone ID.
+    ///</summary>
     public string Id { get; set; }
+
+    ///<summary>
+    /// Human-readable and localized timezone name.
+    ///</summary>
     public string Name { get; set; }
+
+    ///<summary>
+    /// UTC offset in seconds, which may be displayed in hh:mm format by the client together with the human-readable name (i.e. <code>$name UTC -01:00</code>).
+    ///</summary>
     public int UtcOffset { get; set; }
 
     public void ComputeFlag()

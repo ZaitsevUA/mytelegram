@@ -4,72 +4,116 @@
 namespace MyTelegram.Schema;
 
 ///<summary>
+/// Represents a <a href="https://corefork.telegram.org/api/stars">Telegram Stars transaction »</a>.
 /// See <a href="https://corefork.telegram.org/constructor/starsTransaction" />
 ///</summary>
-[TlObject(0x2db5418f)]
+[TlObject(0x35d4f276)]
 public sealed class TStarsTransaction : IStarsTransaction
 {
-    public uint ConstructorId => 0x2db5418f;
+    public uint ConstructorId => 0x35d4f276;
     ///<summary>
     /// Flags, see <a href="https://corefork.telegram.org/mtproto/TL-combinators#conditional-fields">TL conditional fields</a>
     ///</summary>
     public BitArray Flags { get; set; } = new BitArray(32);
 
     ///<summary>
-    /// &nbsp;
+    /// Whether this transaction is a refund.
     /// See <a href="https://corefork.telegram.org/type/true" />
     ///</summary>
     public bool Refund { get; set; }
+
+    ///<summary>
+    /// The transaction is currently pending.
+    /// See <a href="https://corefork.telegram.org/type/true" />
+    ///</summary>
     public bool Pending { get; set; }
+
+    ///<summary>
+    /// This transaction has failed.
+    /// See <a href="https://corefork.telegram.org/type/true" />
+    ///</summary>
     public bool Failed { get; set; }
 
     ///<summary>
-    /// &nbsp;
+    /// This transaction was a gift from the user in <code>peer.peer</code>.
+    /// See <a href="https://corefork.telegram.org/type/true" />
+    ///</summary>
+    public bool Gift { get; set; }
+    public bool Reaction { get; set; }
+
+    ///<summary>
+    /// Transaction ID.
     ///</summary>
     public string Id { get; set; }
 
     ///<summary>
-    /// &nbsp;
+    /// Amount of Stars (negative for outgoing transactions).
     ///</summary>
     public long Stars { get; set; }
 
     ///<summary>
-    /// &nbsp;
+    /// Date of the transaction (unixtime).
     ///</summary>
     public int Date { get; set; }
 
     ///<summary>
-    /// &nbsp;
+    /// Source of the incoming transaction, or its recipient for outgoing transactions.
     /// See <a href="https://corefork.telegram.org/type/StarsTransactionPeer" />
     ///</summary>
     public MyTelegram.Schema.IStarsTransactionPeer Peer { get; set; }
 
     ///<summary>
-    /// &nbsp;
+    /// For transactions with bots, title of the bought product.
     ///</summary>
     public string? Title { get; set; }
 
     ///<summary>
-    /// &nbsp;
+    /// For transactions with bots, description of the bought product.
     ///</summary>
     public string? Description { get; set; }
 
     ///<summary>
-    /// &nbsp;
+    /// For transactions with bots, photo of the bought product.
     /// See <a href="https://corefork.telegram.org/type/WebDocument" />
     ///</summary>
     public MyTelegram.Schema.IWebDocument? Photo { get; set; }
+
+    ///<summary>
+    /// If neither <code>pending</code> nor <code>failed</code> are set, the transaction was completed successfully, and this field will contain the point in time (Unix timestamp) when the withdrawal was completed successfully.
+    ///</summary>
     public int? TransactionDate { get; set; }
+
+    ///<summary>
+    /// If neither <code>pending</code> nor <code>failed</code> are set, the transaction was completed successfully, and this field will contain a URL where the withdrawal transaction can be viewed.
+    ///</summary>
     public string? TransactionUrl { get; set; }
+
+    ///<summary>
+    /// Bot specified invoice payload (i.e. the <code>payload</code> passed to <a href="https://corefork.telegram.org/constructor/inputMediaInvoice">inputMediaInvoice</a> when <a href="https://corefork.telegram.org/api/payments">creating the invoice</a>).
+    ///</summary>
     public byte[]? BotPayload { get; set; }
+
+    ///<summary>
+    /// For <a href="https://corefork.telegram.org/api/paid-media">paid media transactions »</a>, message ID of the paid media posted to <code>peer.peer</code> (can point to a deleted message; either way, <code>extended_media</code> will always contain the bought media).
+    ///</summary>
     public int? MsgId { get; set; }
+
+    ///<summary>
+    /// The purchased <a href="https://corefork.telegram.org/api/paid-media">paid media »</a>.
+    ///</summary>
     public TVector<MyTelegram.Schema.IMessageMedia>? ExtendedMedia { get; set; }
+    public int? SubscriptionPeriod { get; set; }
+    public int? GiveawayPostId { get; set; }
+    public MyTelegram.Schema.IStarGift? Stargift { get; set; }
+    public int? FloodskipNumber { get; set; }
 
     public void ComputeFlag()
     {
         if (Refund) { Flags[3] = true; }
         if (Pending) { Flags[4] = true; }
         if (Failed) { Flags[6] = true; }
+        if (Gift) { Flags[10] = true; }
+        if (Reaction) { Flags[11] = true; }
         if (Title != null) { Flags[0] = true; }
         if (Description != null) { Flags[1] = true; }
         if (Photo != null) { Flags[2] = true; }
@@ -78,6 +122,10 @@ public sealed class TStarsTransaction : IStarsTransaction
         if (BotPayload != null) { Flags[7] = true; }
         if (/*MsgId != 0 && */MsgId.HasValue) { Flags[8] = true; }
         if (ExtendedMedia?.Count > 0) { Flags[9] = true; }
+        if (/*SubscriptionPeriod != 0 && */SubscriptionPeriod.HasValue) { Flags[12] = true; }
+        if (/*GiveawayPostId != 0 && */GiveawayPostId.HasValue) { Flags[13] = true; }
+        if (Stargift != null) { Flags[14] = true; }
+        if (/*FloodskipNumber != 0 && */FloodskipNumber.HasValue) { Flags[15] = true; }
     }
 
     public void Serialize(IBufferWriter<byte> writer)
@@ -97,6 +145,10 @@ public sealed class TStarsTransaction : IStarsTransaction
         if (Flags[7]) { writer.Write(BotPayload); }
         if (Flags[8]) { writer.Write(MsgId.Value); }
         if (Flags[9]) { writer.Write(ExtendedMedia); }
+        if (Flags[12]) { writer.Write(SubscriptionPeriod.Value); }
+        if (Flags[13]) { writer.Write(GiveawayPostId.Value); }
+        if (Flags[14]) { writer.Write(Stargift); }
+        if (Flags[15]) { writer.Write(FloodskipNumber.Value); }
     }
 
     public void Deserialize(ref SequenceReader<byte> reader)
@@ -105,6 +157,8 @@ public sealed class TStarsTransaction : IStarsTransaction
         if (Flags[3]) { Refund = true; }
         if (Flags[4]) { Pending = true; }
         if (Flags[6]) { Failed = true; }
+        if (Flags[10]) { Gift = true; }
+        if (Flags[11]) { Reaction = true; }
         Id = reader.ReadString();
         Stars = reader.ReadInt64();
         Date = reader.ReadInt32();
@@ -117,5 +171,9 @@ public sealed class TStarsTransaction : IStarsTransaction
         if (Flags[7]) { BotPayload = reader.ReadBytes(); }
         if (Flags[8]) { MsgId = reader.ReadInt32(); }
         if (Flags[9]) { ExtendedMedia = reader.Read<TVector<MyTelegram.Schema.IMessageMedia>>(); }
+        if (Flags[12]) { SubscriptionPeriod = reader.ReadInt32(); }
+        if (Flags[13]) { GiveawayPostId = reader.ReadInt32(); }
+        if (Flags[14]) { Stargift = reader.Read<MyTelegram.Schema.IStarGift>(); }
+        if (Flags[15]) { FloodskipNumber = reader.ReadInt32(); }
     }
 }

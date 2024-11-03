@@ -4,7 +4,7 @@
 namespace MyTelegram.Schema;
 
 ///<summary>
-/// Full info about a <a href="https://corefork.telegram.org/api/channel#basic-groups">basic group</a>.
+/// Full info about a <a href="https://corefork.telegram.org/api/channel#basic-groups">basic group</a>.When updating the <a href="https://corefork.telegram.org/api/peers">local peer database »</a>, all fields from the newly received constructor take priority over the old constructor cached locally (including by removing fields that aren't set in the new constructor).
 /// See <a href="https://corefork.telegram.org/constructor/chatFull" />
 ///</summary>
 [TlObject(0x2633421b)]
@@ -120,6 +120,10 @@ public sealed class TChatFull : MyTelegram.Schema.IChatFull, ILayeredChatFull
     /// See <a href="https://corefork.telegram.org/type/ChatReactions" />
     ///</summary>
     public MyTelegram.Schema.IChatReactions? AvailableReactions { get; set; }
+
+    ///<summary>
+    /// This flag may be used to impose a custom limit of unique reactions (i.e. a customizable version of <a href="https://corefork.telegram.org/api/config#reactions-uniq-max">appConfig.reactions_uniq_max</a>).
+    ///</summary>
     public int? ReactionsLimit { get; set; }
 
     public void ComputeFlag()

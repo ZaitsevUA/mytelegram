@@ -4,14 +4,26 @@
 namespace MyTelegram.Schema;
 
 ///<summary>
+/// Describes a <a href="https://corefork.telegram.org/api/revenue#withdrawing-revenue">refund for failed withdrawal of ad earnings »</a>
 /// See <a href="https://corefork.telegram.org/constructor/broadcastRevenueTransactionRefund" />
 ///</summary>
 [TlObject(0x42d30d2e)]
 public sealed class TBroadcastRevenueTransactionRefund : IBroadcastRevenueTransaction
 {
     public uint ConstructorId => 0x42d30d2e;
+    ///<summary>
+    /// Amount refunded.
+    ///</summary>
     public long Amount { get; set; }
+
+    ///<summary>
+    /// Date of refund.
+    ///</summary>
     public int Date { get; set; }
+
+    ///<summary>
+    /// Payment provider name.
+    ///</summary>
     public string Provider { get; set; }
 
     public void ComputeFlag()

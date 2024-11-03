@@ -5,6 +5,9 @@ namespace MyTelegram.Schema.Messages;
 
 ///<summary>
 /// Used by the user to relay data from an opened <a href="https://corefork.telegram.org/api/bots/webapps">reply keyboard bot mini app</a> to the bot that owns it.
+/// <para>Possible errors</para>
+/// Code Type Description
+/// 400 BOT_INVALID This is not a valid bot.
 /// See <a href="https://corefork.telegram.org/method/messages.sendWebViewData" />
 ///</summary>
 [TlObject(0xdc0242c8)]

@@ -7,10 +7,10 @@ namespace MyTelegram.Schema.Payments;
 /// A <a href="https://corefork.telegram.org/api/giveaways">giveaway</a> has ended.
 /// See <a href="https://corefork.telegram.org/constructor/payments.giveawayInfoResults" />
 ///</summary>
-[TlObject(0xcd5570)]
+[TlObject(0xe175e66f)]
 public sealed class TGiveawayInfoResults : IGiveawayInfo
 {
-    public uint ConstructorId => 0xcd5570;
+    public uint ConstructorId => 0xe175e66f;
     ///<summary>
     /// Flags, see <a href="https://corefork.telegram.org/mtproto/TL-combinators#conditional-fields">TL conditional fields</a>
     ///</summary>
@@ -37,6 +37,7 @@ public sealed class TGiveawayInfoResults : IGiveawayInfo
     /// If we're one of the winners of this giveaway, contains the <a href="https://corefork.telegram.org/api/links#premium-giftcode-links">Premium gift code</a>, see <a href="https://corefork.telegram.org/api/giveaways">here »</a> for more info on the full giveaway flow.
     ///</summary>
     public string? GiftCodeSlug { get; set; }
+    public long? StarsPrize { get; set; }
 
     ///<summary>
     /// End date of the giveaway. May be bigger than the end date specified in parameters of the giveaway.
@@ -51,14 +52,15 @@ public sealed class TGiveawayInfoResults : IGiveawayInfo
     ///<summary>
     /// Number of winners, which activated their <a href="https://corefork.telegram.org/api/links#premium-giftcode-links">gift codes</a>.
     ///</summary>
-    public int ActivatedCount { get; set; }
+    public int? ActivatedCount { get; set; }
 
     public void ComputeFlag()
     {
         if (Winner) { Flags[0] = true; }
         if (Refunded) { Flags[1] = true; }
-        if (GiftCodeSlug != null) { Flags[0] = true; }
-
+        if (GiftCodeSlug != null) { Flags[3] = true; }
+        if (/*StarsPrize != 0 &&*/ StarsPrize.HasValue) { Flags[4] = true; }
+        if (/*ActivatedCount != 0 && */ActivatedCount.HasValue) { Flags[2] = true; }
     }
 
     public void Serialize(IBufferWriter<byte> writer)
@@ -67,10 +69,11 @@ public sealed class TGiveawayInfoResults : IGiveawayInfo
         writer.Write(ConstructorId);
         writer.Write(Flags);
         writer.Write(StartDate);
-        if (Flags[0]) { writer.Write(GiftCodeSlug); }
+        if (Flags[3]) { writer.Write(GiftCodeSlug); }
+        if (Flags[4]) { writer.Write(StarsPrize.Value); }
         writer.Write(FinishDate);
         writer.Write(WinnersCount);
-        writer.Write(ActivatedCount);
+        if (Flags[2]) { writer.Write(ActivatedCount.Value); }
     }
 
     public void Deserialize(ref SequenceReader<byte> reader)
@@ -79,9 +82,10 @@ public sealed class TGiveawayInfoResults : IGiveawayInfo
         if (Flags[0]) { Winner = true; }
         if (Flags[1]) { Refunded = true; }
         StartDate = reader.ReadInt32();
-        if (Flags[0]) { GiftCodeSlug = reader.ReadString(); }
+        if (Flags[3]) { GiftCodeSlug = reader.ReadString(); }
+        if (Flags[4]) { StarsPrize = reader.ReadInt64(); }
         FinishDate = reader.ReadInt32();
         WinnersCount = reader.ReadInt32();
-        ActivatedCount = reader.ReadInt32();
+        if (Flags[2]) { ActivatedCount = reader.ReadInt32(); }
     }
 }

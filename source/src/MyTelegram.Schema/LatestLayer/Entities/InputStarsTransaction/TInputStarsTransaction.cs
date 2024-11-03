@@ -4,14 +4,27 @@
 namespace MyTelegram.Schema;
 
 ///<summary>
+/// Used to fetch info about a <a href="https://corefork.telegram.org/api/stars#balance-and-transaction-history">Telegram Star transaction »</a>.
 /// See <a href="https://corefork.telegram.org/constructor/inputStarsTransaction" />
 ///</summary>
 [TlObject(0x206ae6d1)]
 public sealed class TInputStarsTransaction : IInputStarsTransaction
 {
     public uint ConstructorId => 0x206ae6d1;
+    ///<summary>
+    /// Flags, see <a href="https://corefork.telegram.org/mtproto/TL-combinators#conditional-fields">TL conditional fields</a>
+    ///</summary>
     public BitArray Flags { get; set; } = new BitArray(32);
+
+    ///<summary>
+    /// If set, fetches info about the refund transaction for this transaction.
+    /// See <a href="https://corefork.telegram.org/type/true" />
+    ///</summary>
     public bool Refund { get; set; }
+
+    ///<summary>
+    /// Transaction ID.
+    ///</summary>
     public string Id { get; set; }
 
     public void ComputeFlag()

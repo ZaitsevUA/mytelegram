@@ -7,6 +7,7 @@ namespace MyTelegram.Schema.Channels;
 /// Edit location of geogroup, see <a href="https://corefork.telegram.org/api/nearby">here »</a> for more info on geogroups.
 /// <para>Possible errors</para>
 /// Code Type Description
+/// 400 CHANNEL_INVALID The provided channel is invalid.
 /// 400 CHAT_ADMIN_REQUIRED You must be an admin in this chat to do this.
 /// 400 CHAT_NOT_MODIFIED No changes were made to chat information because the new information you passed is identical to the current information.
 /// 400 MEGAGROUP_GEO_REQUIRED This method can only be invoked on a geogroup.

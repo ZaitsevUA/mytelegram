@@ -4,6 +4,7 @@
 namespace MyTelegram.Schema;
 
 ///<summary>
+/// A new <a href="https://corefork.telegram.org/api/revenue#revenue-statistics">channel ad revenue transaction was made, see here »</a> for more info.
 /// See <a href="https://corefork.telegram.org/constructor/updateBroadcastRevenueTransactions" />
 ///</summary>
 [TlObject(0xdfd961f5)]
@@ -11,13 +12,13 @@ public sealed class TUpdateBroadcastRevenueTransactions : IUpdate
 {
     public uint ConstructorId => 0xdfd961f5;
     ///<summary>
-    /// &nbsp;
+    /// Channel
     /// See <a href="https://corefork.telegram.org/type/Peer" />
     ///</summary>
     public MyTelegram.Schema.IPeer Peer { get; set; }
 
     ///<summary>
-    /// &nbsp;
+    /// New ad revenue balance.
     /// See <a href="https://corefork.telegram.org/type/BroadcastRevenueBalances" />
     ///</summary>
     public MyTelegram.Schema.IBroadcastRevenueBalances Balances { get; set; }

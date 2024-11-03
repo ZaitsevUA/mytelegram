@@ -4,13 +4,21 @@
 namespace MyTelegram.Schema.Stats;
 
 ///<summary>
+/// <a href="https://corefork.telegram.org/api/revenue">Channel ad revenue transactions »</a>.
 /// See <a href="https://corefork.telegram.org/constructor/stats.broadcastRevenueTransactions" />
 ///</summary>
 [TlObject(0x87158466)]
 public sealed class TBroadcastRevenueTransactions : IBroadcastRevenueTransactions
 {
     public uint ConstructorId => 0x87158466;
+    ///<summary>
+    /// Total number of transactions.
+    ///</summary>
     public int Count { get; set; }
+
+    ///<summary>
+    /// Transactions
+    ///</summary>
     public TVector<MyTelegram.Schema.IBroadcastRevenueTransaction> Transactions { get; set; }
 
     public void ComputeFlag()

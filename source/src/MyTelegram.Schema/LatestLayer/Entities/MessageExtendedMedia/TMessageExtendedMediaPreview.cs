@@ -4,7 +4,7 @@
 namespace MyTelegram.Schema;
 
 ///<summary>
-/// Extended media preview
+/// Paid media preview for not yet purchased paid media, <a href="https://corefork.telegram.org/api/paid-media">see here »</a> for more info.
 /// See <a href="https://corefork.telegram.org/constructor/messageExtendedMediaPreview" />
 ///</summary>
 [TlObject(0xad628cc8)]
@@ -27,13 +27,13 @@ public sealed class TMessageExtendedMediaPreview : IMessageExtendedMedia
     public int? H { get; set; }
 
     ///<summary>
-    /// Thumbnail
+    /// <a href="https://corefork.telegram.org/api/files#stripped-thumbnails">Extremely low resolution thumbnail</a>.
     /// See <a href="https://corefork.telegram.org/type/PhotoSize" />
     ///</summary>
     public MyTelegram.Schema.IPhotoSize? Thumb { get; set; }
 
     ///<summary>
-    /// Video duration
+    /// Video duration for videos.
     ///</summary>
     public int? VideoDuration { get; set; }
 

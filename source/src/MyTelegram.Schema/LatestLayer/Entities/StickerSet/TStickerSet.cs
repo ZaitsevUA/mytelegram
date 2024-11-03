@@ -47,10 +47,15 @@ public sealed class TStickerSet : IStickerSet
     public bool TextColor { get; set; }
 
     ///<summary>
-    /// If set, this custom emoji stickerset can be used in <a href="https://corefork.telegram.org/api/emoji-status">channel emoji statuses</a>.
+    /// If set, this custom emoji stickerset can be used in <a href="https://corefork.telegram.org/api/emoji-status">channel/supergroup emoji statuses</a>.
     /// See <a href="https://corefork.telegram.org/type/true" />
     ///</summary>
     public bool ChannelEmojiStatus { get; set; }
+
+    ///<summary>
+    /// Whether we created this stickerset
+    /// See <a href="https://corefork.telegram.org/type/true" />
+    ///</summary>
     public bool Creator { get; set; }
 
     ///<summary>

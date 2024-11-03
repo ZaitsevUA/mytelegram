@@ -7,7 +7,7 @@ namespace MyTelegram.Schema;
 /// See <a href="https://corefork.telegram.org/method/invokeWithBusinessConnection" />
 ///</summary>
 [TlObject(0xdd289f8e)]
-public sealed class RequestInvokeWithBusinessConnection : IRequest<IObject>
+public sealed class RequestInvokeWithBusinessConnection : IRequest<IObject>, IHasSubQuery
 {
     public uint ConstructorId => 0xdd289f8e;
     public string ConnectionId { get; set; }

@@ -14,6 +14,7 @@ namespace MyTelegram.Schema;
 [JsonDerivedType(typeof(TTopPeerCategoryPhoneCalls), nameof(TTopPeerCategoryPhoneCalls))]
 [JsonDerivedType(typeof(TTopPeerCategoryForwardUsers), nameof(TTopPeerCategoryForwardUsers))]
 [JsonDerivedType(typeof(TTopPeerCategoryForwardChats), nameof(TTopPeerCategoryForwardChats))]
+[JsonDerivedType(typeof(TTopPeerCategoryBotsApp), nameof(TTopPeerCategoryBotsApp))]
 public interface ITopPeerCategory : IObject
 {
 

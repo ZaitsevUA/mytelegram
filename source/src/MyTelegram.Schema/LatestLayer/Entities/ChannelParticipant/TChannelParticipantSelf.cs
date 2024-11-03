@@ -7,10 +7,10 @@ namespace MyTelegram.Schema;
 /// Myself
 /// See <a href="https://corefork.telegram.org/constructor/channelParticipantSelf" />
 ///</summary>
-[TlObject(0x35a8bfa7)]
+[TlObject(0x4f607bef)]
 public sealed class TChannelParticipantSelf : IChannelParticipant
 {
-    public uint ConstructorId => 0x35a8bfa7;
+    public uint ConstructorId => 0x4f607bef;
     ///<summary>
     /// Flags, see <a href="https://corefork.telegram.org/mtproto/TL-combinators#conditional-fields">TL conditional fields</a>
     ///</summary>
@@ -36,11 +36,12 @@ public sealed class TChannelParticipantSelf : IChannelParticipant
     /// When did I join the channel/supergroup
     ///</summary>
     public int Date { get; set; }
+    public int? SubscriptionUntilDate { get; set; }
 
     public void ComputeFlag()
     {
         if (ViaRequest) { Flags[0] = true; }
-
+        if (/*SubscriptionUntilDate != 0 && */SubscriptionUntilDate.HasValue) { Flags[1] = true; }
     }
 
     public void Serialize(IBufferWriter<byte> writer)
@@ -51,6 +52,7 @@ public sealed class TChannelParticipantSelf : IChannelParticipant
         writer.Write(UserId);
         writer.Write(InviterId);
         writer.Write(Date);
+        if (Flags[1]) { writer.Write(SubscriptionUntilDate.Value); }
     }
 
     public void Deserialize(ref SequenceReader<byte> reader)
@@ -60,5 +62,6 @@ public sealed class TChannelParticipantSelf : IChannelParticipant
         UserId = reader.ReadInt64();
         InviterId = reader.ReadInt64();
         Date = reader.ReadInt32();
+        if (Flags[1]) { SubscriptionUntilDate = reader.ReadInt32(); }
     }
 }

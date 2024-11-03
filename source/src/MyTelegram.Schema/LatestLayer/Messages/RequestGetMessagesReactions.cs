@@ -7,6 +7,7 @@ namespace MyTelegram.Schema.Messages;
 /// Get <a href="https://corefork.telegram.org/api/reactions">message reactions »</a>
 /// <para>Possible errors</para>
 /// Code Type Description
+/// 400 CHANNEL_INVALID The provided channel is invalid.
 /// 400 CHANNEL_PRIVATE You haven't joined this channel/supergroup.
 /// See <a href="https://corefork.telegram.org/method/messages.getMessagesReactions" />
 ///</summary>

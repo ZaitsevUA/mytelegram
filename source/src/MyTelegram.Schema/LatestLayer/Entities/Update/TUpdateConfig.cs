@@ -4,7 +4,7 @@
 namespace MyTelegram.Schema;
 
 ///<summary>
-/// The server-side configuration has changed; the client should re-fetch the config using <a href="https://corefork.telegram.org/method/help.getConfig">help.getConfig</a>
+/// The server-side configuration has changed; the client should re-fetch the config using <a href="https://corefork.telegram.org/method/help.getConfig">help.getConfig</a> and <a href="https://corefork.telegram.org/method/help.getAppConfig">help.getAppConfig</a>.
 /// See <a href="https://corefork.telegram.org/constructor/updateConfig" />
 ///</summary>
 [TlObject(0xa229dd06)]

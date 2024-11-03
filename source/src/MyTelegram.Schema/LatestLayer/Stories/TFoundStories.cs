@@ -4,17 +4,41 @@
 namespace MyTelegram.Schema.Stories;
 
 ///<summary>
+/// Stories found using <a href="https://corefork.telegram.org/api/stories#searching-stories">global story search »</a>.
 /// See <a href="https://corefork.telegram.org/constructor/stories.foundStories" />
 ///</summary>
 [TlObject(0xe2de7737)]
 public sealed class TFoundStories : IFoundStories
 {
     public uint ConstructorId => 0xe2de7737;
+    ///<summary>
+    /// Flags, see <a href="https://corefork.telegram.org/mtproto/TL-combinators#conditional-fields">TL conditional fields</a>
+    ///</summary>
     public BitArray Flags { get; set; } = new BitArray(32);
+
+    ///<summary>
+    /// Total number of results found for the query.
+    ///</summary>
     public int Count { get; set; }
+
+    ///<summary>
+    /// Matching stories.
+    ///</summary>
     public TVector<MyTelegram.Schema.IFoundStory> Stories { get; set; }
+
+    ///<summary>
+    /// Offset used to fetch the next page, if not set this is the final page.
+    ///</summary>
     public string? NextOffset { get; set; }
+
+    ///<summary>
+    /// Mentioned chats
+    ///</summary>
     public TVector<MyTelegram.Schema.IChat> Chats { get; set; }
+
+    ///<summary>
+    /// Mentioned users
+    ///</summary>
     public TVector<MyTelegram.Schema.IUser> Users { get; set; }
 
     public void ComputeFlag()

@@ -4,7 +4,7 @@
 namespace MyTelegram.Schema;
 
 ///<summary>
-/// Info about a group
+/// Info about a group.When updating the <a href="https://corefork.telegram.org/api/peers">local peer database</a>, all fields from the newly received constructor take priority over the old constructor cached locally (including by removing fields that aren't set in the new constructor).See <a href="https://github.com/tdlib/td/blob/a24af0992245f838f2b4b418a0a2d5fa9caa27b5/td/telegram/ChatManager.cpp#L5152">here »</a> for an implementation of the logic to use when updating the <a href="https://corefork.telegram.org/api/peers">local user peer database</a>.
 /// See <a href="https://corefork.telegram.org/constructor/chat" />
 ///</summary>
 [TlObject(0x41cbf256)]
@@ -53,7 +53,7 @@ public sealed class TChat : MyTelegram.Schema.IChat, ILayeredChat
     public bool Noforwards { get; set; }
 
     ///<summary>
-    /// ID of the group
+    /// ID of the group, see <a href="https://corefork.telegram.org/api/peers#peer-id">here »</a> for more info
     ///</summary>
     public long Id { get; set; }
 

@@ -4,7 +4,7 @@
 namespace MyTelegram.Schema.Premium;
 
 ///<summary>
-/// Gets the current <a href="https://corefork.telegram.org/api/boost">number of boosts</a> of a channel.
+/// Gets the current <a href="https://corefork.telegram.org/api/boost">number of boosts</a> of a channel/supergroup.
 /// <para>Possible errors</para>
 /// Code Type Description
 /// 400 PEER_ID_INVALID The provided peer id is invalid.

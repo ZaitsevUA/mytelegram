@@ -20,7 +20,7 @@ public sealed class RequestGetWebPage : IRequest<MyTelegram.Schema.Messages.IWeb
     public string Url { get; set; }
 
     ///<summary>
-    /// <a href="https://corefork.telegram.org/api/offsets#hash-generation">Hash for pagination, for more info click here</a>
+    /// <a href="https://corefork.telegram.org/api/offsets#hash-generation">Hash used for caching, for more info click here</a>. <br><strong>Note</strong>: the usual hash generation algorithm cannot be used in this case, please re-use the <a href="https://corefork.telegram.org/constructor/webPage">webPage</a>.<code>hash</code> field returned by a previous call to the method, or pass 0 if this is the first call or if the previous call did not return a <a href="https://corefork.telegram.org/constructor/webPage">webPage</a>.
     ///</summary>
     public int Hash { get; set; }
 

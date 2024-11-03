@@ -29,7 +29,7 @@ public sealed class TInputStorePaymentPremiumGiveaway : IInputStorePaymentPurpos
     public bool WinnersAreVisible { get; set; }
 
     ///<summary>
-    /// The channel starting the giveaway, that the user must join to participate, that will receive the giveaway <a href="https://corefork.telegram.org/api/boost">boosts</a>; see <a href="https://corefork.telegram.org/api/giveaways">here »</a> for more info on giveaways.
+    /// The channel/supergroup starting the giveaway, that the user must join to participate, that will receive the giveaway <a href="https://corefork.telegram.org/api/boost">boosts</a>; see <a href="https://corefork.telegram.org/api/giveaways">here »</a> for more info on giveaways.
     /// See <a href="https://corefork.telegram.org/type/InputPeer" />
     ///</summary>
     public MyTelegram.Schema.IInputPeer BoostPeer { get; set; }

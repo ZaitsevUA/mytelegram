@@ -4,31 +4,46 @@
 namespace MyTelegram.Schema;
 
 ///<summary>
+/// <a href="https://corefork.telegram.org/api/paid-media">Paid media, see here »</a> for more info.
 /// See <a href="https://corefork.telegram.org/constructor/inputMediaPaidMedia" />
 ///</summary>
-[TlObject(0xaa661fc3)]
+[TlObject(0xc4103386)]
 public sealed class TInputMediaPaidMedia : IInputMedia
 {
-    public uint ConstructorId => 0xaa661fc3;
+    public uint ConstructorId => 0xc4103386;
+    public BitArray Flags { get; set; } = new BitArray(32);
+
+    ///<summary>
+    /// The price of the media in <a href="https://corefork.telegram.org/api/stars">Telegram Stars</a>.
+    ///</summary>
     public long StarsAmount { get; set; }
+
+    ///<summary>
+    /// Photos or videos.
+    ///</summary>
     public TVector<MyTelegram.Schema.IInputMedia> ExtendedMedia { get; set; }
+    public string? Payload { get; set; }
 
     public void ComputeFlag()
     {
-
+        if (Payload != null) { Flags[0] = true; }
     }
 
     public void Serialize(IBufferWriter<byte> writer)
     {
         ComputeFlag();
         writer.Write(ConstructorId);
+        writer.Write(Flags);
         writer.Write(StarsAmount);
         writer.Write(ExtendedMedia);
+        if (Flags[0]) { writer.Write(Payload); }
     }
 
     public void Deserialize(ref SequenceReader<byte> reader)
     {
+        Flags = reader.ReadBitArray();
         StarsAmount = reader.ReadInt64();
         ExtendedMedia = reader.Read<TVector<MyTelegram.Schema.IInputMedia>>();
+        if (Flags[0]) { Payload = reader.ReadString(); }
     }
 }

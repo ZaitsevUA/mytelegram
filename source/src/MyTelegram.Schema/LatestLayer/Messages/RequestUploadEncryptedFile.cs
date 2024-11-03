@@ -5,6 +5,9 @@ namespace MyTelegram.Schema.Messages;
 
 ///<summary>
 /// Upload encrypted file and associate it to a secret chat
+/// <para>Possible errors</para>
+/// Code Type Description
+/// 400 CHAT_ID_INVALID The provided chat id is invalid.
 /// See <a href="https://corefork.telegram.org/method/messages.uploadEncryptedFile" />
 ///</summary>
 [TlObject(0x5057c497)]

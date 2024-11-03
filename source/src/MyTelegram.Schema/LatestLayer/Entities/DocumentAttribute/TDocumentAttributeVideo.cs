@@ -7,10 +7,10 @@ namespace MyTelegram.Schema;
 /// Defines a video
 /// See <a href="https://corefork.telegram.org/constructor/documentAttributeVideo" />
 ///</summary>
-[TlObject(0xd38ff1c2)]
+[TlObject(0x43c57c48)]
 public sealed class TDocumentAttributeVideo : IDocumentAttribute
 {
-    public uint ConstructorId => 0xd38ff1c2;
+    public uint ConstructorId => 0x43c57c48;
     ///<summary>
     /// Flags, see <a href="https://corefork.telegram.org/mtproto/TL-combinators#conditional-fields">TL conditional fields</a>
     ///</summary>
@@ -54,12 +54,20 @@ public sealed class TDocumentAttributeVideo : IDocumentAttribute
     ///</summary>
     public int? PreloadPrefixSize { get; set; }
 
+    ///<summary>
+    /// Floating point UNIX timestamp in seconds, indicating the frame of the video that should be used as static preview and thumbnail.
+    ///</summary>
+    public double? VideoStartTs { get; set; }
+    public string? VideoCodec { get; set; }
+
     public void ComputeFlag()
     {
         if (RoundMessage) { Flags[0] = true; }
         if (SupportsStreaming) { Flags[1] = true; }
         if (Nosound) { Flags[3] = true; }
         if (/*PreloadPrefixSize != 0 && */PreloadPrefixSize.HasValue) { Flags[2] = true; }
+        if (VideoStartTs>0) { Flags[4] = true; }
+        if (VideoCodec != null) { Flags[5] = true; }
     }
 
     public void Serialize(IBufferWriter<byte> writer)
@@ -71,6 +79,8 @@ public sealed class TDocumentAttributeVideo : IDocumentAttribute
         writer.Write(W);
         writer.Write(H);
         if (Flags[2]) { writer.Write(PreloadPrefixSize.Value); }
+        if (Flags[4]) { writer.Write(VideoStartTs.Value); }
+        if (Flags[5]) { writer.Write(VideoCodec); }
     }
 
     public void Deserialize(ref SequenceReader<byte> reader)
@@ -83,5 +93,7 @@ public sealed class TDocumentAttributeVideo : IDocumentAttribute
         W = reader.ReadInt32();
         H = reader.ReadInt32();
         if (Flags[2]) { PreloadPrefixSize = reader.ReadInt32(); }
+        if (Flags[4]) { VideoStartTs = reader.ReadDouble(); }
+        if (Flags[5]) { VideoCodec = reader.ReadString(); }
     }
 }

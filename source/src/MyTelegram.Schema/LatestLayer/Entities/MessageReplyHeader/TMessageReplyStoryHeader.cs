@@ -11,6 +11,10 @@ namespace MyTelegram.Schema;
 public sealed class TMessageReplyStoryHeader : IMessageReplyHeader
 {
     public uint ConstructorId => 0xe5af939;
+    ///<summary>
+    /// Sender of the story.
+    /// See <a href="https://corefork.telegram.org/type/Peer" />
+    ///</summary>
     public MyTelegram.Schema.IPeer Peer { get; set; }
 
     ///<summary>

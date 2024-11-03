@@ -46,7 +46,7 @@ public sealed class TPoll : IPoll
     public bool Quiz { get; set; }
 
     ///<summary>
-    /// The question of the poll
+    /// The question of the poll (only <a href="https://corefork.telegram.org/api/premium">Premium</a> users can use <a href="https://corefork.telegram.org/api/custom-emoji">custom emoji entities</a> here).
     /// See <a href="https://corefork.telegram.org/type/TextWithEntities" />
     ///</summary>
     public MyTelegram.Schema.ITextWithEntities Question { get; set; }

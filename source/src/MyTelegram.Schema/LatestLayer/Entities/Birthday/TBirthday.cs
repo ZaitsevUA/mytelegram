@@ -4,15 +4,31 @@
 namespace MyTelegram.Schema;
 
 ///<summary>
+/// <a href="https://corefork.telegram.org/api/profile#birthday">Birthday</a> information for a user.Also used to invite users to gift <a href="https://corefork.telegram.org/api/premium#gifting-telegram-premium">Telegram Premium subscriptions »</a> to other users with birthdays within a +1/-1 day time range, related to the current day.
 /// See <a href="https://corefork.telegram.org/constructor/birthday" />
 ///</summary>
 [TlObject(0x6c8e1e06)]
 public sealed class TBirthday : IBirthday
 {
     public uint ConstructorId => 0x6c8e1e06;
+    ///<summary>
+    /// Flags, see <a href="https://corefork.telegram.org/mtproto/TL-combinators#conditional-fields">TL conditional fields</a>
+    ///</summary>
     public BitArray Flags { get; set; } = new BitArray(32);
+
+    ///<summary>
+    /// Birth day
+    ///</summary>
     public int Day { get; set; }
+
+    ///<summary>
+    /// Birth month
+    ///</summary>
     public int Month { get; set; }
+
+    ///<summary>
+    /// (Optional) birth year.
+    ///</summary>
     public int? Year { get; set; }
 
     public void ComputeFlag()

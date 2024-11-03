@@ -28,7 +28,7 @@ public sealed class TKeyboardButtonRequestPeer : IKeyboardButton
     public MyTelegram.Schema.IRequestPeerType PeerType { get; set; }
 
     ///<summary>
-    /// Maximum number of peers that can be chosne.
+    /// Maximum number of peers that can be chosen.
     ///</summary>
     public int MaxQuantity { get; set; }
 

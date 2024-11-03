@@ -3,7 +3,7 @@
 namespace MyTelegram.Handlers.Account;
 
 ///<summary>
-/// Change authorization settings
+/// Change settings related to a session.
 /// <para>Possible errors</para>
 /// Code Type Description
 /// 400 HASH_INVALID The provided hash is invalid.

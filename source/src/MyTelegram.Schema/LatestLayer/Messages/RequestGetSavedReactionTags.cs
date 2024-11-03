@@ -4,14 +4,27 @@
 namespace MyTelegram.Schema.Messages;
 
 ///<summary>
+/// Fetch the full list of <a href="https://corefork.telegram.org/api/saved-messages#tags">saved message tags</a> created by the user.
 /// See <a href="https://corefork.telegram.org/method/messages.getSavedReactionTags" />
 ///</summary>
 [TlObject(0x3637e05b)]
 public sealed class RequestGetSavedReactionTags : IRequest<MyTelegram.Schema.Messages.ISavedReactionTags>
 {
     public uint ConstructorId => 0x3637e05b;
+    ///<summary>
+    /// Flags, see <a href="https://corefork.telegram.org/mtproto/TL-combinators#conditional-fields">TL conditional fields</a>
+    ///</summary>
     public BitArray Flags { get; set; } = new BitArray(32);
+
+    ///<summary>
+    /// If set, returns tags only used in the specified <a href="https://corefork.telegram.org/api/saved-messages#saved-message-dialogs">saved message dialog</a>.
+    /// See <a href="https://corefork.telegram.org/type/InputPeer" />
+    ///</summary>
     public MyTelegram.Schema.IInputPeer? Peer { get; set; }
+
+    ///<summary>
+    /// <a href="https://corefork.telegram.org/api/offsets#hash-generation">Hash used for caching, for more info click here</a>.
+    ///</summary>
     public long Hash { get; set; }
 
     public void ComputeFlag()

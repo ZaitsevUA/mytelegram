@@ -22,7 +22,7 @@ public sealed class RequestGetStickerSet : IRequest<MyTelegram.Schema.Messages.I
     public MyTelegram.Schema.IInputStickerSet Stickerset { get; set; }
 
     ///<summary>
-    /// <a href="https://corefork.telegram.org/api/offsets#hash-generation">Hash for pagination, for more info click here</a>
+    /// <a href="https://corefork.telegram.org/api/offsets#hash-generation">Hash used for caching, for more info click here</a>
     ///</summary>
     public int Hash { get; set; }
 

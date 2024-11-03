@@ -8,6 +8,7 @@ namespace MyTelegram.Schema.Account;
 /// <para>Possible errors</para>
 /// Code Type Description
 /// 400 COLOR_INVALID The specified color palette ID was invalid.
+/// 403 PREMIUM_ACCOUNT_REQUIRED A premium account is required to execute this action.
 /// See <a href="https://corefork.telegram.org/method/account.updateColor" />
 ///</summary>
 [TlObject(0x7cefa15d)]

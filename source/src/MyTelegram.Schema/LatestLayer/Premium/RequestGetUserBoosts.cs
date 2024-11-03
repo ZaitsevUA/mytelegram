@@ -4,7 +4,7 @@
 namespace MyTelegram.Schema.Premium;
 
 ///<summary>
-/// Returns the lists of boost that were applied to a channel by a specific user (admins only)
+/// Returns the lists of boost that were applied to a channel/supergroup by a specific user (admins only)
 /// <para>Possible errors</para>
 /// Code Type Description
 /// 400 PEER_ID_INVALID The provided peer id is invalid.
@@ -15,7 +15,7 @@ public sealed class RequestGetUserBoosts : IRequest<MyTelegram.Schema.Premium.IB
 {
     public uint ConstructorId => 0x39854d1f;
     ///<summary>
-    /// The channel
+    /// The channel/supergroup
     /// See <a href="https://corefork.telegram.org/type/InputPeer" />
     ///</summary>
     public MyTelegram.Schema.IInputPeer Peer { get; set; }

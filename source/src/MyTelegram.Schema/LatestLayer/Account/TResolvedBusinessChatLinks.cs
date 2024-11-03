@@ -4,17 +4,42 @@
 namespace MyTelegram.Schema.Account;
 
 ///<summary>
+/// Contains info about a single resolved <a href="https://corefork.telegram.org/api/business#business-chat-links">business chat deep link »</a>.
 /// See <a href="https://corefork.telegram.org/constructor/account.resolvedBusinessChatLinks" />
 ///</summary>
 [TlObject(0x9a23af21)]
 public sealed class TResolvedBusinessChatLinks : IResolvedBusinessChatLinks
 {
     public uint ConstructorId => 0x9a23af21;
+    ///<summary>
+    /// Flags, see <a href="https://corefork.telegram.org/mtproto/TL-combinators#conditional-fields">TL conditional fields</a>
+    ///</summary>
     public BitArray Flags { get; set; } = new BitArray(32);
+
+    ///<summary>
+    /// Destination peer
+    /// See <a href="https://corefork.telegram.org/type/Peer" />
+    ///</summary>
     public MyTelegram.Schema.IPeer Peer { get; set; }
+
+    ///<summary>
+    /// Message to pre-fill in the message input field.
+    ///</summary>
     public string Message { get; set; }
+
+    ///<summary>
+    /// <a href="https://corefork.telegram.org/api/entities">Message entities for styled text</a>
+    ///</summary>
     public TVector<MyTelegram.Schema.IMessageEntity>? Entities { get; set; }
+
+    ///<summary>
+    /// Mentioned chats
+    ///</summary>
     public TVector<MyTelegram.Schema.IChat> Chats { get; set; }
+
+    ///<summary>
+    /// Mentioned users
+    ///</summary>
     public TVector<MyTelegram.Schema.IUser> Users { get; set; }
 
     public void ComputeFlag()

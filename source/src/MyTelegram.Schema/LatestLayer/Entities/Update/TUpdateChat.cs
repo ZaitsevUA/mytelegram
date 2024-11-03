@@ -4,7 +4,7 @@
 namespace MyTelegram.Schema;
 
 ///<summary>
-/// A new chat is available
+/// Chat (<a href="https://corefork.telegram.org/constructor/chat">chat</a> and/or <a href="https://corefork.telegram.org/constructor/chatFull">chatFull</a>) information was updated.This update can only be received through getDifference or in <a href="https://corefork.telegram.org/constructor/updates">updates</a>/<a href="https://corefork.telegram.org/constructor/updatesCombined">updatesCombined</a> constructors, so it will <strong>always</strong> come bundled with the updated <a href="https://corefork.telegram.org/constructor/chat">chat</a>, that should be applied <a href="https://corefork.telegram.org/api/peers">as usual »</a>, <strong>without</strong> re-fetching the info manually.However, full peer information will not come bundled in updates, so the full peer cache (<a href="https://corefork.telegram.org/constructor/chatFull">chatFull</a>) must be invalidated for <code>chat_id</code> when receiving this update.
 /// See <a href="https://corefork.telegram.org/constructor/updateChat" />
 ///</summary>
 [TlObject(0xf89a6a4e)]

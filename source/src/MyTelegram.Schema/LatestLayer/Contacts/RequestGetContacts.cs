@@ -12,7 +12,7 @@ public sealed class RequestGetContacts : IRequest<MyTelegram.Schema.Contacts.ICo
 {
     public uint ConstructorId => 0x5dd69e12;
     ///<summary>
-    /// If there already is a full contact list on the client, a <a href="https://corefork.telegram.org/api/offsets#hash-generation">hash</a> of a the list of contact IDs in ascending order may be passed in this parameter. If the contact set was not changed, <a href="https://corefork.telegram.org/constructor/contacts.contactsNotModified">(contacts.contactsNotModified)</a> will be returned.
+    /// <a href="https://corefork.telegram.org/api/offsets#hash-generation">Hash used for caching, for more info click here</a>.<br>Note that the hash is computed <a href="https://corefork.telegram.org/api/offsets#hash-generation">using the usual algorithm</a>, passing to the algorithm first the previously returned <a href="https://corefork.telegram.org/constructor/contacts.contacts">contacts.contacts</a>.<code>saved_count</code> field, then max <code>100000</code> sorted user IDs from the contact list, including the ID of the currently logged in user if it is saved as a contact. <br>Example: <a href="https://github.com/tdlib/td/blob/63c7d0301825b78c30dc7307f1f1466be049eb79/td/telegram/UserManager.cpp#L5754">tdlib implementation</a>.
     ///</summary>
     public long Hash { get; set; }
 

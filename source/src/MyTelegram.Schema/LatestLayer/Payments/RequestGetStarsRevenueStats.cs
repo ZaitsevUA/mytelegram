@@ -4,14 +4,31 @@
 namespace MyTelegram.Schema.Payments;
 
 ///<summary>
+/// Get <a href="https://corefork.telegram.org/api/stars">Telegram Star revenue statistics »</a>.
+/// <para>Possible errors</para>
+/// Code Type Description
+/// 400 PEER_ID_INVALID The provided peer id is invalid.
 /// See <a href="https://corefork.telegram.org/method/payments.getStarsRevenueStats" />
 ///</summary>
 [TlObject(0xd91ffad6)]
 public sealed class RequestGetStarsRevenueStats : IRequest<MyTelegram.Schema.Payments.IStarsRevenueStats>
 {
     public uint ConstructorId => 0xd91ffad6;
+    ///<summary>
+    /// Flags, see <a href="https://corefork.telegram.org/mtproto/TL-combinators#conditional-fields">TL conditional fields</a>
+    ///</summary>
     public BitArray Flags { get; set; } = new BitArray(32);
+
+    ///<summary>
+    /// Whether to enable dark theme for graph colors
+    /// See <a href="https://corefork.telegram.org/type/true" />
+    ///</summary>
     public bool Dark { get; set; }
+
+    ///<summary>
+    /// Get statistics for the specified bot, channel or ourselves (<a href="https://corefork.telegram.org/constructor/inputPeerSelf">inputPeerSelf</a>).
+    /// See <a href="https://corefork.telegram.org/type/InputPeer" />
+    ///</summary>
     public MyTelegram.Schema.IInputPeer Peer { get; set; }
 
     public void ComputeFlag()
