@@ -97,8 +97,15 @@ internal sealed class GetFullUserHandler(
             privacies);
 
         await SetPersonalChannelAsync(input, user, userFull);
+        await SetCommonChatCountAsync(input, user, userFull);
 
         return userFull;
+    }
+
+    private async Task SetCommonChatCountAsync(IRequestInput input, IUserReadModel userReadModel, MyTelegram.Schema.Users.IUserFull userFull)
+    {
+        var count = await queryProcessor.ProcessAsync(new GetCommonChatCountQuery(input.UserId, userReadModel.UserId));
+        userFull.FullUser.CommonChatsCount = count;
     }
 
     private async Task SetPersonalChannelAsync(IRequestInput input, IUserReadModel userReadModel, MyTelegram.Schema.Users.IUserFull userFull)

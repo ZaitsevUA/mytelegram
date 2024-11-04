@@ -447,3 +447,5 @@ public record GetChannelTopMessageIdQuery(long ChannelId) : IQuery<int?>;
 public record GetAdminedPublicChannelsQuery(long UserId) : IQuery<IReadOnlyCollection<IChannelReadModel>>;
 public record GetAdminedPublicChannelIdsQuery(long UserId) : IQuery<IReadOnlyCollection<long>>;
 public record GetChannelUserNameByChannelIdQuery(long ChannelId) : IQuery<string?>;
+public record GetCommonChatCountQuery(long SelfUserId, long TargetUserId) : IQuery<int>;
+public record GetCommonChatChannelIdsQuery(long SelfUserId, long TargetUserId, long MaxId, int Limit) : IQuery<IReadOnlyCollection<long>>;
