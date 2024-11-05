@@ -83,6 +83,7 @@ public class ChannelMemberReadModel : IChannelMemberReadModel,
         UserId = domainEvent.AggregateEvent.MemberUserId;
         InviterId = domainEvent.AggregateEvent.MemberUserId;
         Date = domainEvent.AggregateEvent.Date;
+
         return Task.CompletedTask;
     }
 
@@ -91,6 +92,7 @@ public class ChannelMemberReadModel : IChannelMemberReadModel,
         CancellationToken cancellationToken)
     {
         Left = true;
+
         return Task.CompletedTask;
     }
 }

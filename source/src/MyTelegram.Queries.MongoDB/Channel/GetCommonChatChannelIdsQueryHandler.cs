@@ -1,7 +1,7 @@
 ﻿namespace MyTelegram.QueryHandlers.MongoDB.Channel;
 
 public class GetCommonChatChannelIdsQueryHandler
-    (IQueryOnlyReadModelStore<ChannelMemberReadModel> store) : IQueryHandler<GetCommonChatChannelIdsQuery, IReadOnlyCollection<long>>
+    (IQueryOnlyReadModelStore<ChannelMemberReadModel> store, IQueryOnlyReadModelStore<ChannelReadModel> channelStore) : IQueryHandler<GetCommonChatChannelIdsQuery, IReadOnlyCollection<long>>
 {
     public async Task<IReadOnlyCollection<long>> ExecuteQueryAsync(GetCommonChatChannelIdsQuery query,
         CancellationToken cancellationToken)
@@ -9,7 +9,16 @@ public class GetCommonChatChannelIdsQueryHandler
         var joinedChannelIds = await store.FindAsync(p => p.UserId == query.SelfUserId, p => p.ChannelId, cancellationToken: cancellationToken);
         if (joinedChannelIds.Any())
         {
-            Expression<Func<ChannelMemberReadModel, bool>> predicate = p => joinedChannelIds.Contains(p.ChannelId) && p.UserId == query.TargetUserId;
+            // Exclude broadcast channel ids
+            var superGroupIds = await channelStore.FindAsync(p => joinedChannelIds.Contains(p.ChannelId) && !p.Broadcast,
+                p => p.ChannelId, cancellationToken: cancellationToken);
+
+            if (!superGroupIds.Any())
+            {
+                return [];
+            }
+
+            Expression<Func<ChannelMemberReadModel, bool>> predicate = p => superGroupIds.Contains(p.ChannelId) && p.UserId == query.TargetUserId;
             if (query.MaxId > 0)
             {
                 predicate = predicate.And(p => p.ChannelId > query.MaxId);
