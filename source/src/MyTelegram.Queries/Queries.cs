@@ -265,7 +265,7 @@ public record GetUserNameByNameQuery(string Name) : IQuery<IUserNameReadModel?>;
 
 //public record GetUserPasswordQuery(long UserId) : IQuery<IUserPasswordReadModel?>;
 
-public record GetUsersByUidListQuery(List<long> UserIdList) : IQuery<IReadOnlyCollection<IUserReadModel>>;
+public record GetUsersByUserIdListQuery(List<long> UserIdList) : IQuery<IReadOnlyCollection<IUserReadModel>>;
 public record GetUserNameByUserIdQuery(long UserId) : IQuery<string?>;
 
 public record MessageView

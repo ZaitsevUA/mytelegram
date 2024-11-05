@@ -1,9 +1,9 @@
 ﻿namespace MyTelegram.QueryHandlers.MongoDB.User;
 
 public class
-    GetUsersByUidListQueryHandler(IQueryOnlyReadModelStore<UserReadModel> store) : IQueryHandler<GetUsersByUidListQuery, IReadOnlyCollection<IUserReadModel>>
+    GetUsersByUserIdListQueryHandler(IQueryOnlyReadModelStore<UserReadModel> store) : IQueryHandler<GetUsersByUserIdListQuery, IReadOnlyCollection<IUserReadModel>>
 {
-    public async Task<IReadOnlyCollection<IUserReadModel>> ExecuteQueryAsync(GetUsersByUidListQuery query,
+    public async Task<IReadOnlyCollection<IUserReadModel>> ExecuteQueryAsync(GetUsersByUserIdListQuery query,
         CancellationToken cancellationToken)
     {
         if (query.UserIdList.Count == 0)

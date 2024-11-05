@@ -118,7 +118,7 @@ public class DialogAppService(
         userIdList.AddRange(extraChatUserIdList);
 
         var userList =
-            await queryProcessor.ProcessAsync(new GetUsersByUidListQuery(userIdList))
+            await queryProcessor.ProcessAsync(new GetUsersByUserIdListQuery(userIdList))
          ;
         var contactList = await queryProcessor
             .ProcessAsync(new GetContactListQuery(input.OwnerId, userIdList))

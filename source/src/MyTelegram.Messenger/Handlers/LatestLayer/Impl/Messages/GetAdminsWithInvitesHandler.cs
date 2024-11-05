@@ -37,7 +37,7 @@ internal sealed class GetAdminsWithInvitesHandler : RpcResultObjectHandler<MyTel
             var adminWithInvitesList =
                 await _queryProcessor.ProcessAsync(new GetAdminInvitesQuery(inputPeerChannel.ChannelId));
             var userIds = adminWithInvitesList.Select(p => p.AdminId).ToList();
-            var userReadModels = await _queryProcessor.ProcessAsync(new GetUsersByUidListQuery(userIds));
+            var userReadModels = await _queryProcessor.ProcessAsync(new GetUsersByUserIdListQuery(userIds));
             var contactReadModels = await _queryProcessor.ProcessAsync(new GetContactListQuery(input.UserId, userIds));
             var photoReadModels = await _photoAppService.GetPhotosAsync(userReadModels, contactReadModels);
             var privacyList = await _privacyAppService.GetPrivacyListAsync(userIds);

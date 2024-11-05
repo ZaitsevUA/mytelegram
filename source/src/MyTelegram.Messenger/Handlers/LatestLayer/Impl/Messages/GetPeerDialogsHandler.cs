@@ -102,7 +102,7 @@ internal sealed class GetPeerDialogsHandler(
         {
             var userIds = peerList.Where(p => p.PeerType == PeerType.User).Select(p => p.PeerId).Distinct().ToList();
             //var userReadModels=await _quer
-            var userReadModels = await queryProcessor.ProcessAsync(new GetUsersByUidListQuery(userIds));
+            var userReadModels = await queryProcessor.ProcessAsync(new GetUsersByUserIdListQuery(userIds));
             var photoReadModels = await photoAppService.GetPhotosAsync(userReadModels);
             var contactReadModels = await queryProcessor.ProcessAsync(new GetContactListQuery(input.UserId, userIds));
             var privacyReadModels = await privacyAppService.GetPrivacyListAsync(userIds);

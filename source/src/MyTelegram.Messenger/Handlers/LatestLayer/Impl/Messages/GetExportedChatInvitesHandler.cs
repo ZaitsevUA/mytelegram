@@ -73,7 +73,7 @@ internal sealed class GetExportedChatInvitesHandler : RpcResultObjectHandler<MyT
                     obj.OffsetLink,
                     obj.Limit));
         var userIds = invites.Select(p => p.AdminId).ToList();
-        var userReadModels = await _queryProcessor.ProcessAsync(new GetUsersByUidListQuery(userIds));
+        var userReadModels = await _queryProcessor.ProcessAsync(new GetUsersByUserIdListQuery(userIds));
         var contactReadModels = await _queryProcessor.ProcessAsync(new GetContactListQuery(input.UserId, userIds));
         var photoReadModels = await _photoAppService.GetPhotosAsync(userReadModels, contactReadModels);
         var privacyReadModels = await _privacyAppService.GetPrivacyListAsync(userIds);

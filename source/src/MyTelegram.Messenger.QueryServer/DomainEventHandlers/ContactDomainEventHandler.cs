@@ -119,7 +119,7 @@ public class ContactDomainEventHandler(
         var userIds = importedContacts.Select(p => p.UserId).ToList();
         var userReadModels =
             await queryProcessor.ProcessAsync(
-                new GetUsersByUidListQuery(userIds), cancellationToken);
+                new GetUsersByUserIdListQuery(userIds), cancellationToken);
         var photoReadModels = await photoAppService.GetPhotosAsync(userReadModels);
         var privacyReadModels = await privacyAppService.GetPrivacyListAsync(userIds);
         var contactReadModels =

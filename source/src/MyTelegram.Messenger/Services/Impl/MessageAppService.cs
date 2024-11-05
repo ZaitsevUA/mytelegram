@@ -409,7 +409,7 @@ public class MessageAppService(
             channelIdList.AddRange(chatOrChannelPeers.Where(p => p.PeerType == PeerType.Channel).Select(p => p.PeerId));
         }
 
-        var userList = await queryProcessor.ProcessAsync(new GetUsersByUidListQuery(userIdList));
+        var userList = await queryProcessor.ProcessAsync(new GetUsersByUserIdListQuery(userIdList));
         var chatList = chatIdList.Count == 0
             ? new List<IChatReadModel>()
             : await queryProcessor
