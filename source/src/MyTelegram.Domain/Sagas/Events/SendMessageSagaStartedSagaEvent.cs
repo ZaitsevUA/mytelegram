@@ -2,24 +2,18 @@
 
 public class SendMessageSagaStartedSagaEvent(
     RequestInfo requestInfo,
-    MessageItem messageItem,
-    List<long>? mentionedUserIds,
-    List<ReplyToMsgItem>? replyToMsgItems,
+    List<SendMessageItem> sendMessageItems,
+    List<long>? chatMembers,
+
     bool clearDraft,
-    int groupItemCount,
-    long? linkedChannelId,
-    List<long>? chatMembers)
+    bool isSendQuickReplyMessage,
+    bool isSendGroupedMessage
+    )
     : RequestAggregateEvent2<SendMessageSaga, SendMessageSagaId>(requestInfo)
 {
-    public MessageItem MessageItem { get; } = messageItem;
-    public List<long>? MentionedUserIds { get; } = mentionedUserIds;
-    public List<ReplyToMsgItem>? ReplyToMsgItems { get; } = replyToMsgItems;
+    public List<SendMessageItem> SendMessageItems { get; } = sendMessageItems;
     public bool ClearDraft { get; } = clearDraft;
-    public int GroupItemCount { get; } = groupItemCount;
-    public long? LinkedChannelId { get; } = linkedChannelId;
-
+    public bool IsSendQuickReplyMessage { get; } = isSendQuickReplyMessage;
+    public bool IsSendGroupedMessage { get; } = isSendGroupedMessage;
     public List<long>? ChatMembers { get; } = chatMembers;
-    //public bool ForwardFromLinkedChannel { get; }
-
-    //ForwardFromLinkedChannel = forwardFromLinkedChannel;
 }

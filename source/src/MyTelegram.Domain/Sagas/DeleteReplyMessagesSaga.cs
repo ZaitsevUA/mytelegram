@@ -162,10 +162,10 @@ public class
 
 public class DeleteChannelMessagesSagaState : AggregateState<DeleteChannelMessagesSaga, DeleteChannelMessagesSagaId,
     DeleteChannelMessagesSagaState>,
-    IApply<DeleteChannelMessagesSagaStartedEvent>,
-    IApply<DeleteChannelMessagePtsIncrementedEvent>,
-    IApply<DeleteChannelMessagesCompletedEvent>,
-    IApply<DeleteChannelHistoryCompletedEvent>
+    IApply<DeleteChannelMessagesSagaStartedSagaEvent>,
+    IApply<DeleteChannelMessagePtsIncrementedSagaEvent>,
+    IApply<DeleteChannelMessagesCompletedSagaEvent>,
+    IApply<DeleteChannelHistoryCompletedSagaEvent>
 {
     public RequestInfo RequestInfo { get; private set; } = null!;
     public long ChannelId { get; private set; }
@@ -181,7 +181,7 @@ public class DeleteChannelMessagesSagaState : AggregateState<DeleteChannelMessag
     public int NewTopMessageId { get; private set; }
     public int? NewTopMessageIdForDiscussionGroup { get; private set; }
 
-    public void Apply(DeleteChannelMessagesSagaStartedEvent aggregateEvent)
+    public void Apply(DeleteChannelMessagesSagaStartedSagaEvent aggregateEvent)
     {
         RequestInfo = aggregateEvent.RequestInfo;
         ChannelId = aggregateEvent.ChannelId;
@@ -194,7 +194,7 @@ public class DeleteChannelMessagesSagaState : AggregateState<DeleteChannelMessag
         NewTopMessageIdForDiscussionGroup = aggregateEvent.NewTopMessageIdForDiscussionGroup;
     }
 
-    public void Apply(DeleteChannelMessagePtsIncrementedEvent aggregateEvent)
+    public void Apply(DeleteChannelMessagePtsIncrementedSagaEvent aggregateEvent)
     {
         DeletedCount++;
         if (Pts < aggregateEvent.Pts)
@@ -203,12 +203,12 @@ public class DeleteChannelMessagesSagaState : AggregateState<DeleteChannelMessag
         }
     }
 
-    public void Apply(DeleteChannelMessagesCompletedEvent aggregateEvent)
+    public void Apply(DeleteChannelMessagesCompletedSagaEvent aggregateEvent)
     {
         //throw new NotImplementedException();
     }
 
-    public void Apply(DeleteChannelHistoryCompletedEvent aggregateEvent)
+    public void Apply(DeleteChannelHistoryCompletedSagaEvent aggregateEvent)
     {
         //throw new NotImplementedException();
     }
@@ -231,7 +231,7 @@ public class DeleteChannelMessagesSaga : MyInMemoryAggregateSaga<DeleteChannelMe
 
     public Task HandleAsync(IDomainEvent<TempAggregate, TempId, DeleteChannelMessagesStartedEvent> domainEvent, ISagaContext sagaContext, CancellationToken cancellationToken)
     {
-        Emit(new DeleteChannelMessagesSagaStartedEvent(domainEvent.AggregateEvent.RequestInfo,
+        Emit(new DeleteChannelMessagesSagaStartedSagaEvent(domainEvent.AggregateEvent.RequestInfo,
             domainEvent.AggregateEvent.ChannelId,
             domainEvent.AggregateEvent.MessageIds,
             domainEvent.AggregateEvent.NewTopMessageId,
@@ -278,11 +278,11 @@ public class DeleteChannelMessagesSaga : MyInMemoryAggregateSaga<DeleteChannelMe
         {
             if (_state.IsDeleteHistory)
             {
-                Emit(new DeleteChannelHistoryCompletedEvent(_state.RequestInfo, _state.ChannelId, _state.Pts, _state.TotalCount, _state.MessageIds, _state.NewTopMessageId));
+                Emit(new DeleteChannelHistoryCompletedSagaEvent(_state.RequestInfo, _state.ChannelId, _state.Pts, _state.TotalCount, _state.MessageIds, _state.NewTopMessageId));
             }
             else
             {
-                Emit(new DeleteChannelMessagesCompletedEvent(_state.RequestInfo, _state.ChannelId, _state.Pts, _state.TotalCount, _state.MessageIds, _state.NewTopMessageId));
+                Emit(new DeleteChannelMessagesCompletedSagaEvent(_state.RequestInfo, _state.ChannelId, _state.Pts, _state.TotalCount, _state.MessageIds, _state.NewTopMessageId));
                 HandleDeleteReplyMessages();
             }
 
@@ -306,12 +306,12 @@ public class DeleteChannelMessagesSaga : MyInMemoryAggregateSaga<DeleteChannelMe
     private async Task IncrementPtsAsync(long peerId)
     {
         var pts = await _idGenerator.NextIdAsync(IdType.Pts, peerId);
-        Emit(new DeleteChannelMessagePtsIncrementedEvent(peerId, pts));
+        Emit(new DeleteChannelMessagePtsIncrementedSagaEvent(peerId, pts));
     }
 
     public Task HandleAsync(IDomainEvent<TempAggregate, TempId, DeleteParticipantHistoryStartedEvent> domainEvent, ISagaContext sagaContext, CancellationToken cancellationToken)
     {
-        Emit(new DeleteChannelMessagesSagaStartedEvent(domainEvent.AggregateEvent.RequestInfo,
+        Emit(new DeleteChannelMessagesSagaStartedSagaEvent(domainEvent.AggregateEvent.RequestInfo,
             domainEvent.AggregateEvent.ChannelId,
             domainEvent.AggregateEvent.MessageIds,
             domainEvent.AggregateEvent.NewTopMessageId,
@@ -328,7 +328,7 @@ public class DeleteChannelMessagesSaga : MyInMemoryAggregateSaga<DeleteChannelMe
     }
 }
 
-public class DeleteChannelMessagesCompletedEvent(RequestInfo requestInfo, long channelId, int pts, int ptsCount,
+public class DeleteChannelMessagesCompletedSagaEvent(RequestInfo requestInfo, long channelId, int pts, int ptsCount,
         List<int> messageIds, int newTopMessageId)
     : RequestAggregateEvent2<DeleteChannelMessagesSaga, DeleteChannelMessagesSagaId>(requestInfo)
 {
@@ -339,7 +339,7 @@ public class DeleteChannelMessagesCompletedEvent(RequestInfo requestInfo, long c
     public int NewTopMessageId { get; } = newTopMessageId;
 }
 
-public class DeleteChannelHistoryCompletedEvent(RequestInfo requestInfo, long channelId, int pts, int ptsCount,
+public class DeleteChannelHistoryCompletedSagaEvent(RequestInfo requestInfo, long channelId, int pts, int ptsCount,
         List<int> messageIds,int newTopMessageId)
     : RequestAggregateEvent2<DeleteChannelMessagesSaga, DeleteChannelMessagesSagaId>(requestInfo)
 {
@@ -350,14 +350,14 @@ public class DeleteChannelHistoryCompletedEvent(RequestInfo requestInfo, long ch
     public int NewTopMessageId { get; } = newTopMessageId;
 }
 
-public class DeleteChannelMessagePtsIncrementedEvent(long channelId, int pts) : AggregateEvent<DeleteChannelMessagesSaga, DeleteChannelMessagesSagaId>
+public class DeleteChannelMessagePtsIncrementedSagaEvent(long channelId, int pts) : AggregateEvent<DeleteChannelMessagesSaga, DeleteChannelMessagesSagaId>
 {
     public long ChannelId { get; } = channelId;
     public int Pts { get; } = pts;
 }
 
 public class
-    DeleteChannelMessagesSagaStartedEvent(RequestInfo requestInfo, long channelId, List<int> messageIds,
+    DeleteChannelMessagesSagaStartedSagaEvent(RequestInfo requestInfo, long channelId, List<int> messageIds,
         int newTopMessageId,
         int? newTopMessageIdForDiscussionGroup,
         bool isDeleteHistory, long? discussionGroupChannelId, IReadOnlyCollection<int>? repliesMessageIds)

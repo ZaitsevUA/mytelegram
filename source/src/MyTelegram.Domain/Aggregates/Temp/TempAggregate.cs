@@ -16,12 +16,23 @@ public class TempAggregate(TempId id) : AggregateRoot<TempAggregate, TempId>(id)
     IApply<PinForwardedChannelMessageStartedEvent>,
     IApply<UnpinAllMessagesStartedEvent>,
     IApply<UpdateMessagePinnedStartedEvent>,
-    IApply<EditPeerFoldersStartedEvent>
+    IApply<EditPeerFoldersStartedEvent>,
+    IApply<SendMessageStartedEvent>
 {
+    public void StartSendMessage(RequestInfo requestInfo, List<SendMessageItem> sendMessageItems,
+        bool isSendQuickReplyMessages,
+        bool isSendGroupedMessages,
+        bool clearDraft)
+    {
+        Emit(new SendMessageStartedEvent(requestInfo, sendMessageItems, isSendQuickReplyMessages, isSendGroupedMessages,
+            clearDraft));
+    }
+
     public void StartEditPeerFolders(RequestInfo requestInfo, IEnumerable<MyTelegram.Schema.IInputFolderPeer> folderPeers)
     {
         Emit(new EditPeerFoldersStartedEvent(requestInfo, folderPeers));
     }
+
     public void StartUpdatePinnedMessages(RequestInfo requestInfo, IReadOnlyCollection<SimpleMessageItem> messageItems,
         Peer toPeer, bool pinned, bool pmOneSide)
     {
@@ -132,6 +143,11 @@ public class TempAggregate(TempId id) : AggregateRoot<TempAggregate, TempId>(id)
 
     }
     public void Apply(EditPeerFoldersStartedEvent aggregateEvent)
+    {
+
+    }
+
+    public void Apply(SendMessageStartedEvent aggregateEvent)
     {
 
     }

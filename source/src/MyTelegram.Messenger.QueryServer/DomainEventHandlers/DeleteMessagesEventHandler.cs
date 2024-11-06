@@ -11,8 +11,8 @@ public class DeleteMessagesEventHandler(IObjectMessageSender objectMessageSender
         ISubscribeSynchronousTo<DeleteMessagesSaga4, DeleteMessagesSaga4Id, DeleteOtherParticipantMessagesCompletedSagaEvent>,
         ISubscribeSynchronousTo<DeleteMessagesSaga4, DeleteMessagesSaga4Id, DeleteSelfHistoryCompletedSagaEvent>,
         ISubscribeSynchronousTo<DeleteMessagesSaga4, DeleteMessagesSaga4Id, DeleteOtherParticipantHistoryCompletedSagaEvent>,
-        ISubscribeSynchronousTo<DeleteChannelMessagesSaga, DeleteChannelMessagesSagaId, DeleteChannelMessagesCompletedEvent>,
-        ISubscribeSynchronousTo<DeleteChannelMessagesSaga, DeleteChannelMessagesSagaId, DeleteChannelHistoryCompletedEvent>,
+        ISubscribeSynchronousTo<DeleteChannelMessagesSaga, DeleteChannelMessagesSagaId, DeleteChannelMessagesCompletedSagaEvent>,
+        ISubscribeSynchronousTo<DeleteChannelMessagesSaga, DeleteChannelMessagesSagaId, DeleteChannelHistoryCompletedSagaEvent>,
         ISubscribeSynchronousTo<DeleteReplyMessagesSaga, DeleteReplyMessagesSagaId, DeleteReplyMessagesCompletedSagaEvent>,
 
 ISubscribeSynchronousTo<DialogAggregate, DialogId, ChannelHistoryClearedEvent>
@@ -52,7 +52,7 @@ ISubscribeSynchronousTo<DialogAggregate, DialogId, ChannelHistoryClearedEvent>
 
     }
 
-    public async Task HandleAsync(IDomainEvent<DeleteChannelMessagesSaga, DeleteChannelMessagesSagaId, DeleteChannelHistoryCompletedEvent> domainEvent, CancellationToken cancellationToken)
+    public async Task HandleAsync(IDomainEvent<DeleteChannelMessagesSaga, DeleteChannelMessagesSagaId, DeleteChannelHistoryCompletedSagaEvent> domainEvent, CancellationToken cancellationToken)
     {
         var nextMaxId = domainEvent.AggregateEvent.MessageIds.Min();
         var r = new TAffectedHistory
@@ -126,7 +126,7 @@ ISubscribeSynchronousTo<DialogAggregate, DialogId, ChannelHistoryClearedEvent>
             pts: domainEvent.AggregateEvent.Pts, layeredData: layeredUpdates);
     }
 
-    public async Task HandleAsync(IDomainEvent<DeleteChannelMessagesSaga, DeleteChannelMessagesSagaId, DeleteChannelMessagesCompletedEvent> domainEvent, CancellationToken cancellationToken)
+    public async Task HandleAsync(IDomainEvent<DeleteChannelMessagesSaga, DeleteChannelMessagesSagaId, DeleteChannelMessagesCompletedSagaEvent> domainEvent, CancellationToken cancellationToken)
     {
         var channelId = domainEvent.AggregateEvent.ChannelId;
         var updates = layeredUpdatesService.GetConverter(domainEvent.AggregateEvent.RequestInfo.Layer)

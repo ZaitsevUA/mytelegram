@@ -18,7 +18,8 @@ public class ChannelCreatedEvent(
     long? migratedFromChatId,
     int? migratedMaxId,
     long? photoId,
-    bool autoCreateFromChat
+    bool autoCreateFromChat,
+    bool ttlFromDefaultSetting
     )
     : RequestAggregateEvent2<ChannelAggregate, ChannelId>(requestInfo)
 {
@@ -38,6 +39,7 @@ public class ChannelCreatedEvent(
     public int? MigratedMaxId { get; } = migratedMaxId;
     public long? PhotoId { get; } = photoId;
     public bool AutoCreateFromChat { get; } = autoCreateFromChat;
+    public bool TtlFromDefaultSetting { get; } = ttlFromDefaultSetting;
     public long RandomId { get; } = randomId;
     public string Title { get; } = title;
 }

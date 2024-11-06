@@ -1,20 +1,29 @@
-﻿namespace MyTelegram.Messenger.CommandServer.DomainEventHandlers;
+﻿using MyTelegram.Messenger.DomainEventHandlers;
+using MyTelegram.Messenger.Services.Caching;
+
+namespace MyTelegram.Messenger.CommandServer.DomainEventHandlers;
 
 public class UserDomainEventHandler(
+    IObjectMessageSender objectMessageSender,
+    ICommandBus commandBus,
+    IIdGenerator idGenerator,
+    IAckCacheService ackCacheService,
+    IResponseCacheAppService responseCacheAppService,
     IMessageAppService messageAppService,
-    IRandomHelper randomHelper,
     IOptionsMonitor<MyTelegramMessengerServerOptions> options,
-    ICommandBus commandBus)
-    :
+    IRandomHelper randomHelper)
+    : DomainEventHandlerBase(objectMessageSender, commandBus, idGenerator, ackCacheService, responseCacheAppService),
         ISubscribeSynchronousTo<UserAggregate, UserId, UserCreatedEvent>
 {
+    private readonly ICommandBus _commandBus = commandBus;
+
     public async Task HandleAsync(IDomainEvent<UserAggregate, UserId, UserCreatedEvent> domainEvent,
         CancellationToken cancellationToken)
     {
         if (options.CurrentValue.SetPremiumToTrueAfterUserCreated)
         {
             var command = new UpdateUserPremiumStatusCommand(domainEvent.AggregateIdentity, true);
-            await commandBus.PublishAsync(command, default);
+            await _commandBus.PublishAsync(command, default);
         }
 
         if (!options.CurrentValue.SendWelcomeMessageAfterUserSignIn)
@@ -37,7 +46,7 @@ public class UserDomainEventHandler(
                 welcomeMessage,
                 randomHelper.NextLong());
 
-            await messageAppService.SendMessageAsync(sendMessageInput);
+            await messageAppService.SendMessageAsync([sendMessageInput]);
         }
     }
 }

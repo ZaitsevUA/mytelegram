@@ -12,7 +12,9 @@ public class ChannelAdminRightsEditedEvent(
     ChatAdminRights adminRights,
     string rank,
     bool removeAdminFromList,
-    int date)
+    int date,
+    bool isBroadcast
+    )
     : RequestAggregateEvent2<ChannelAggregate, ChannelId>(requestInfo)
 {
     public ChatAdminRights AdminRights { get; } = adminRights;
@@ -28,7 +30,7 @@ public class ChannelAdminRightsEditedEvent(
 
     public bool RemoveAdminFromList { get; } = removeAdminFromList;
     public int Date { get; } = date;
-
+    public bool IsBroadcast { get; } = isBroadcast;
     public long UserId { get; } = userId;
     public bool IsBot { get; } = isBot;
     public bool IsChannelMember { get; } = isChannelMember;

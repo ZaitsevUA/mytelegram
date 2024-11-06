@@ -28,7 +28,7 @@ namespace MyTelegram.Handlers.Messages;
 /// 403 CHAT_SEND_VOICES_FORBIDDEN You can't send voice recordings in this chat.
 /// 403 CHAT_WRITE_FORBIDDEN You can't write in this chat.
 /// 400 CURRENCY_TOTAL_AMOUNT_INVALID The total amount of all prices is invalid.
-/// 400 DOCUMENT_INVALID The specified document is invalid.
+/// 400 DOCUMENT_INVALID The specified documentItem is invalid.
 /// 400 EMOTICON_INVALID The specified emoji is invalid.
 /// 400 ENTITY_BOUNDS_INVALID A specified <a href="https://corefork.telegram.org/api/entities#entity-length">entity offset or length</a> is invalid, see <a href="https://corefork.telegram.org/api/entities#entity-length">here »</a> for info on how to properly compute the entity offset/length.
 /// 400 EXTERNAL_URL_INVALID External URL invalid.
@@ -82,37 +82,22 @@ namespace MyTelegram.Handlers.Messages;
 /// 400 YOU_BLOCKED_USER You blocked this user.
 /// See <a href="https://corefork.telegram.org/method/messages.sendMedia" />
 ///</summary>
-internal sealed class SendMediaHandler : RpcResultObjectHandler<MyTelegram.Schema.Messages.RequestSendMedia, MyTelegram.Schema.IUpdates>,
-    Messages.ISendMediaHandler
+internal sealed class SendMediaHandler(
+    IMediaHelper mediaHelper,
+    IMessageAppService messageAppService,
+    IPeerHelper peerHelper,
+    IRandomHelper randomHelper,
+    ICommandBus commandBus,
+    IAccessHashHelper accessHashHelper,
+    IPrivacyAppService privacyAppService)
+    : RpcResultObjectHandler<MyTelegram.Schema.Messages.RequestSendMedia, MyTelegram.Schema.IUpdates>,
+        Messages.ISendMediaHandler
 {
-    private readonly IMediaHelper _mediaHelper;
-    private readonly IMessageAppService _messageAppService;
-    private readonly IPeerHelper _peerHelper;
-    private readonly IRandomHelper _randomHelper;
-    private readonly ICommandBus _commandBus;
-    private readonly IAccessHashHelper _accessHashHelper;
-    private readonly IPrivacyAppService _privacyAppService;
-    public SendMediaHandler(IMediaHelper mediaHelper,
-        IMessageAppService messageAppService,
-        IPeerHelper peerHelper,
-        IRandomHelper randomHelper,
-        ICommandBus commandBus,
-        IAccessHashHelper accessHashHelper, IPrivacyAppService privacyAppService)
-    {
-        _mediaHelper = mediaHelper;
-        _messageAppService = messageAppService;
-        _peerHelper = peerHelper;
-        _randomHelper = randomHelper;
-        _commandBus = commandBus;
-        _accessHashHelper = accessHashHelper;
-        _privacyAppService = privacyAppService;
-    }
-
     protected override async Task<IUpdates> HandleCoreAsync(IRequestInput input,
         RequestSendMedia obj)
     {
-        await _accessHashHelper.CheckAccessHashAsync(obj.Peer);
-        await _accessHashHelper.CheckAccessHashAsync(obj.SendAs);
+        await accessHashHelper.CheckAccessHashAsync(obj.Peer);
+        await accessHashHelper.CheckAccessHashAsync(obj.SendAs);
         var needCheckAudioMessagePrivacy = false;
         switch (obj.Media)
         {
@@ -126,28 +111,28 @@ internal sealed class SendMediaHandler : RpcResultObjectHandler<MyTelegram.Schem
 
         if (needCheckAudioMessagePrivacy && obj.Peer is TInputPeerUser inputPeerUser)
         {
-            await _privacyAppService.ApplyPrivacyAsync(input.UserId, inputPeerUser.UserId, () =>
-                {
-                    //ThrowHelper.ThrowUserFriendlyException(RpcErrorMessages.ChatSendVoicesForbidden);
-                    RpcErrors.RpcErrors403.ChatSendVoicesForbidden.ThrowRpcError();
-                },
+            await privacyAppService.ApplyPrivacyAsync(input.UserId, inputPeerUser.UserId, () =>
+            {
+                //ThrowHelper.ThrowUserFriendlyException(RpcErrorMessages.ChatSendVoicesForbidden);
+                RpcErrors.RpcErrors403.ChatSendVoicesForbidden.ThrowRpcError();
+            },
                 new List<PrivacyType>
                 {
                     PrivacyType.VoiceMessages
                 });
         }
 
-        var toPeer = _peerHelper.GetPeer(obj.Peer, input.UserId);
+        var toPeer = peerHelper.GetPeer(obj.Peer, input.UserId);
         long? pollId = null;
         if (obj.Media is TInputMediaPoll inputMediaPoll)
         {
-            pollId = _randomHelper.NextLong();
+            pollId = randomHelper.NextLong();
             inputMediaPoll.Poll.Id = pollId.Value;
 
             await CreatePollAsync(toPeer, inputMediaPoll);
         }
 
-        var media = await _mediaHelper.SaveMediaAsync(obj.Media);
+        var media = await mediaHelper.SaveMediaAsync(obj.Media);
         int? replyToMsgId = null;
         int? topMsgId = null;
         if (obj.ReplyTo is TInputReplyToMessage replyToMessage)
@@ -158,22 +143,26 @@ internal sealed class SendMediaHandler : RpcResultObjectHandler<MyTelegram.Schem
 
         var sendMessageInput = new SendMessageInput(input.ToRequestInfo(),
             input.UserId,
-            _peerHelper.GetPeer(obj.Peer, input.UserId),
+            peerHelper.GetPeer(obj.Peer, input.UserId),
             obj.Message,
             obj.RandomId,
             clearDraft: obj.ClearDraft,
             entities: obj.Entities,
-            media: media.ToBytes(),
+            media: media,
             //replyToMsgId: replyToMsgId,
             inputReplyTo: obj.ReplyTo,
             sendMessageType: SendMessageType.Media,
-            messageType: _mediaHelper.GeMessageType(media),
+            messageType: mediaHelper.GeMessageType(media),
             pollId: pollId,
             topMsgId: topMsgId,
-            sendAs: _peerHelper.GetPeer(obj.SendAs, input.UserId),
-            effect: obj.Effect
+            sendAs: peerHelper.GetPeer(obj.SendAs, input.UserId),
+            effect: obj.Effect,
+            inputQuickReplyShortcut: obj.QuickReplyShortcut,
+            replyMarkup: obj.ReplyMarkup,
+            silent: obj.Silent,
+            scheduleDate: obj.ScheduleDate
         );
-        await _messageAppService.SendMessageAsync(sendMessageInput);
+        await messageAppService.SendMessageAsync([sendMessageInput]);
 
         return null!;
     }
@@ -194,6 +183,6 @@ internal sealed class SendMediaHandler : RpcResultObjectHandler<MyTelegram.Schem
             inputMediaPoll.SolutionEntities.ToBytes(),
             poll.Question.Entities.ToBytes()
         );
-        await _commandBus.PublishAsync(command, default);
+        await commandBus.PublishAsync(command, default);
     }
 }

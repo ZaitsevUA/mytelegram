@@ -154,10 +154,10 @@ public class MessageAggregate : SnapshotAggregateRoot<MessageAggregate, MessageI
         int messageId,
         string newMessage,
         int editDate,
-        byte[]? entities,
-        byte[]? media,
-        byte[]? replyMarkup
-        )
+        TVector<IMessageEntity>? entities,
+        IMessageMedia? media,
+        IReplyMarkup? replyMarkup
+    )
     {
         Specs.AggregateIsCreated.ThrowDomainErrorIfNotSatisfied(this);
 
@@ -166,39 +166,38 @@ public class MessageAggregate : SnapshotAggregateRoot<MessageAggregate, MessageI
             newMessage = _state.MessageItem.Message;
         }
 
-        Emit(new InboxMessageEditedEvent(
+        var oldMessageItem = _state.MessageItem;
+        var newMessageItem = oldMessageItem with
+        {
+            Message = newMessage,
+            Entities = entities,
+            ReplyMarkup = replyMarkup,
+            EditDate = editDate
+        };
+
+        Emit(new InboxMessageEditedEventV2(
             requestInfo,
-            _state.MessageItem.OwnerPeer.PeerId,
-            messageId,
-            newMessage,
-            entities,
-            editDate,
-            _state.MessageItem.ToPeer,
-            media,
-            replyMarkup,
-            _state.GetReactions(),
-            _state.RecentReactions));
+            oldMessageItem,
+            newMessageItem));
     }
 
     public void EditOutboxMessage(RequestInfo requestInfo,
         int messageId,
         string newMessage,
         int editDate,
-        byte[]? entities,
-        byte[]? media,
-        byte[]? replyMarkup
-        )
+        TVector<IMessageEntity>? entities,
+        IMessageMedia? media,
+        IReplyMarkup? replyMarkup
+    )
     {
         Specs.AggregateIsCreated.ThrowDomainErrorIfNotSatisfied(this);
         if (_state.MessageItem.Date + MyTelegramServerDomainConsts.EditTimeLimit < DateTime.UtcNow.ToTimestamp())
         {
-            //ThrowHelper.ThrowUserFriendlyException(RpcErrorMessages.MessageEditTimeExpired);
             RpcErrors.RpcErrors400.MessageEditTimeExpired.ThrowRpcError();
         }
 
         if (!_state.MessageItem.IsOut)
         {
-            //ThrowHelper.ThrowUserFriendlyException(RpcErrorMessages.MessageAuthorRequired);
             RpcErrors.RpcErrors403.MessageAuthorRequired.ThrowRpcError();
         }
 
@@ -207,17 +206,18 @@ public class MessageAggregate : SnapshotAggregateRoot<MessageAggregate, MessageI
             newMessage = _state.MessageItem.Message;
         }
 
-        Emit(new OutboxMessageEditedEvent(requestInfo,
-            _state.InboxItems,
+        var newMessageItem = _state.MessageItem with
+        {
+            Message = newMessage,
+            Entities = entities,
+            Media = media,
+            ReplyMarkup = replyMarkup,
+            EditDate = editDate
+        };
+
+        Emit(new OutboxMessageEditedEventV2(requestInfo,
             _state.MessageItem,
-            _state.MessageItem.MessageId,
-            newMessage,
-            editDate,
-            entities,
-            media,
-            replyMarkup,
-            _state.GetReactions(),
-            _state.RecentReactions
+            newMessageItem
         ));
     }
 

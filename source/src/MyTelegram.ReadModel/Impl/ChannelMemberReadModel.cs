@@ -21,6 +21,7 @@ public class ChannelMemberReadModel : IChannelMemberReadModel,
     public int UntilDate { get; private set; }
     public long UserId { get; private set; }
     public long? ChatInviteId { get; private set; }
+    public bool IsBroadcast { get; private set; }
     public ChatJoinType ChatJoinType { get; private set; }
     public virtual long? Version { get; set; }
 
@@ -34,6 +35,7 @@ public class ChannelMemberReadModel : IChannelMemberReadModel,
         InviterId = domainEvent.AggregateEvent.InviterId;
         Date = domainEvent.AggregateEvent.Date;
         ChatJoinType = ChatJoinType.InvitedByAdmin;
+        IsBroadcast = domainEvent.AggregateEvent.IsBroadcast;
 
         return Task.CompletedTask;
     }
@@ -70,6 +72,7 @@ public class ChannelMemberReadModel : IChannelMemberReadModel,
 
         ChatInviteId = domainEvent.AggregateEvent.ChatInviteId;
         ChatJoinType = domainEvent.AggregateEvent.ChatJoinType;
+        IsBroadcast = domainEvent.AggregateEvent.IsBroadcast;
 
         return Task.CompletedTask;
     }

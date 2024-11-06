@@ -28,10 +28,10 @@ public class PtsReadModelLocator : IPtsReadModelLocator
                 ownerPeerId = ptsUpdatedEvent.PeerId;
                 break;
             case InboxMessageEditCompletedSagaEvent inboxEditCompletedEvent:
-                ownerPeerId = inboxEditCompletedEvent.OwnerPeerId;
+                ownerPeerId = inboxEditCompletedEvent.NewMessageItem.OwnerPeer.PeerId;
                 break;
             case OutboxMessageEditCompletedSagaEvent outboxEditCompletedEvent:
-                ownerPeerId = outboxEditCompletedEvent.OwnerPeerId;
+                ownerPeerId = outboxEditCompletedEvent.NewMessageItem.OwnerPeer.PeerId;
                 break;
             case ReadHistoryPtsIncrementSagaEvent readHistoryPtsIncrementEvent:
                 ownerPeerId = readHistoryPtsIncrementEvent.PeerId;

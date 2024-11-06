@@ -11,7 +11,7 @@ public class SendAppCodeEventHandler(
     public async Task HandleAsync(IDomainEvent<AppCodeAggregate, AppCodeId, AppCodeCreatedEvent> domainEvent,
         CancellationToken cancellationToken)
     {
-        logger.LogInformation("##### Send app code:phoneNumber={PhoneNumber},code={Code}",
+        logger.LogInformation("### Send app code: phoneNumber: {PhoneNumber}, code: {Code}",
             domainEvent.AggregateEvent.PhoneNumber,
             domainEvent.AggregateEvent.Code
         );
@@ -44,7 +44,7 @@ public class SendAppCodeEventHandler(
                 entities: entities
             );
 
-            await messageAppService.SendMessageAsync(sendMessageInput);
+            await messageAppService.SendMessageAsync([sendMessageInput]);
         }
     }
 }

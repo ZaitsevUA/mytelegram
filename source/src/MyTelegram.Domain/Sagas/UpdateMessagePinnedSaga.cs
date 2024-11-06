@@ -18,8 +18,7 @@ public class
         UpdateMessagePinnedSagaState>,
     IApply<UpdateMessagePinnedStartedSagaEvent>,
     IApply<MessagePinnedUpdatedSagaEvent>,
-    IApply<UpdateMessagePinnedCompletedSagaEvent>//,
-                                                 //IApply<UpdateParticipantMessagePinnedCompletedSagaEvent>
+    IApply<UpdateMessagePinnedCompletedSagaEvent>
 {
     public RequestInfo RequestInfo { get; private set; } = default!;
     public IReadOnlyCollection<SimpleMessageItem> MessageItems { get; private set; } = default!;
@@ -245,33 +244,33 @@ public class UpdateMessagePinnedSaga : MyInMemoryAggregateSaga<UpdateMessagePinn
         }
 
         var outMessageId = await _idGenerator.NextIdAsync(IdType.MessageId, ownerPeerId);
-        var aggregateId = MessageId.Create(ownerPeerId, outMessageId);
-        var command = new CreateOutboxMessageCommand(aggregateId,
-            _state.RequestInfo with { RequestId = Guid.NewGuid() },
-            new MessageItem(_state.ToPeer with { PeerId = ownerPeerId },
-                _state.ToPeer,
-                new Peer(PeerType.User, _state.RequestInfo.UserId),
-                _state.RequestInfo.UserId,
-                outMessageId,
-                string.Empty,
-                DateTime.UtcNow.ToTimestamp(),
-                Random.Shared.NextInt64(),
-                true,
-                SendMessageType.MessageService,
-                MessageType.Text,
-                MessageSubType.UpdatePinnedMessage,
-                MessageActionData: BitConverter.ToString(new TMessageActionPinMessage().ToBytes())
-                    .Replace("-", string.Empty),
-                //replyToMsgId: _state.ReplyToMsgId,
-                InputReplyTo: new TInputReplyToMessage
-                {
-                    ReplyToMsgId = replyToMsgId
-                },
-                MessageActionType: MessageActionType.PinMessage,
-                Post: post
-            ),
-            replyToMsgItems: replyToMsgItems
-            );
+
+        var messageItem = new MessageItem(_state.ToPeer with { PeerId = ownerPeerId },
+            _state.ToPeer,
+            new Peer(PeerType.User, _state.RequestInfo.UserId),
+            _state.RequestInfo.UserId,
+            outMessageId,
+            string.Empty,
+            DateTime.UtcNow.ToTimestamp(),
+            Random.Shared.NextInt64(),
+            true,
+            SendMessageType.MessageService,
+            MessageType.Text,
+            MessageSubType.UpdatePinnedMessage,
+            MessageActionData: BitConverter.ToString(new TMessageActionPinMessage().ToBytes())
+                .Replace("-", string.Empty),
+            //replyToMsgId: _state.ReplyToMsgId,
+            InputReplyTo: new TInputReplyToMessage
+            {
+                ReplyToMsgId = replyToMsgId
+            },
+            MessageActionType: MessageActionType.PinMessage,
+            Post: post,
+            ReplyToMsgItems: replyToMsgItems
+        );
+        var command = new StartSendMessageCommand(TempId.New, _state.RequestInfo with { RequestId = Guid.NewGuid() },
+            [new SendMessageItem(messageItem)]);
+
         Publish(command);
     }
 

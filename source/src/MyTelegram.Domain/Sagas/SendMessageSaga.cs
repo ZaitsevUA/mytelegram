@@ -1,6 +1,4 @@
-﻿using MyTelegram.Schema.Extensions;
-
-namespace MyTelegram.Domain.Sagas;
+﻿namespace MyTelegram.Domain.Sagas;
 
 public class ReplyBroadcastChannelCompletedSagaEvent(long channelId, int messageId, MessageReply reply)
     : AggregateEvent<SendMessageSaga, SendMessageSagaId>
@@ -20,7 +18,9 @@ public class PostChannelIdUpdatedSagaEvent(long channelId, int messageId, long p
 }
 
 public class SendMessageSaga : MyInMemoryAggregateSaga<SendMessageSaga, SendMessageSagaId, SendMessageSagaLocator>,
-    ISagaIsStartedBy<MessageAggregate, MessageId, OutboxMessageCreatedEvent>,
+    //ISagaIsStartedBy<MessageAggregate, MessageId, OutboxMessageCreatedEvent>,
+    ISagaIsStartedBy<TempAggregate, TempId, SendMessageStartedEvent>,
+    ISagaHandles<MessageAggregate, MessageId, OutboxMessageCreatedEvent>,
     ISagaHandles<MessageAggregate, MessageId, InboxMessageCreatedEvent>,
     ISagaHandles<MessageAggregate, MessageId, ReplyChannelMessageCompletedEvent>
 {
@@ -32,19 +32,63 @@ public class SendMessageSaga : MyInMemoryAggregateSaga<SendMessageSaga, SendMess
         Register(_state);
     }
 
+    public async Task HandleAsync(IDomainEvent<TempAggregate, TempId, SendMessageStartedEvent> domainEvent, ISagaContext sagaContext, CancellationToken cancellationToken)
+    {
+        var newItems = new List<SendMessageItem>();
+        foreach (var sendMessageItem in domainEvent.AggregateEvent.SendMessageItems)
+        {
+            var messageItem = sendMessageItem.MessageItem;
+            if (messageItem.Pts == 0)
+            {
+                var pts = await _idGenerator.NextIdAsync(IdType.Pts, messageItem.OwnerPeer.PeerId, cancellationToken: cancellationToken);
+                messageItem = messageItem with { Pts = pts };
+                var newItem = sendMessageItem with { MessageItem = messageItem };
+                newItems.Add(newItem);
+            }
+            else
+            {
+                newItems.Add(sendMessageItem);
+            }
+        }
+
+        Emit(new SendMessageStartedSagaEvent(domainEvent.AggregateEvent.RequestInfo,
+            newItems,
+            [],
+            domainEvent.AggregateEvent.ClearDraft,
+            domainEvent.AggregateEvent.IsSendQuickReplyMessages,
+            domainEvent.AggregateEvent.IsSendGroupedMessages
+        ));
+
+        foreach (var item in newItems)
+        {
+            var messageItem = item.MessageItem;
+
+            var command = new CreateOutboxMessageCommand(
+                MessageId.Create(messageItem.OwnerPeer.PeerId,
+                    messageItem.MessageId,
+                    false
+                    ),
+                domainEvent.AggregateEvent.RequestInfo,
+                messageItem,
+                item.MentionedUserIds,
+                messageItem.ReplyToMsgItems,
+                item.ClearDraft,
+                linkedChannelId: messageItem.LinkedChannelId,
+                chatMembers: item.ChatMembers
+            );
+            Publish(command);
+        }
+    }
+
     public async Task HandleAsync(IDomainEvent<MessageAggregate, MessageId, OutboxMessageCreatedEvent> domainEvent, ISagaContext sagaContext, CancellationToken cancellationToken)
     {
-        Emit(new SendMessageSagaStartedSagaEvent(domainEvent.AggregateEvent.RequestInfo,
+        Emit(new OutboxMessageCreatedSagaEvent(domainEvent.AggregateEvent.RequestInfo,
             domainEvent.AggregateEvent.OutboxMessageItem,
             domainEvent.AggregateEvent.MentionedUserIds,
             domainEvent.AggregateEvent.ReplyToMsgItems,
-            domainEvent.AggregateEvent.ClearDraft,
-            domainEvent.AggregateEvent.GroupItemCount,
-            domainEvent.AggregateEvent.LinkedChannelId,
             domainEvent.AggregateEvent.ChatMembers
             ));
-
-        await HandleSendOutboxMessageCompletedAsync();
+        await HandleSendOutboxMessageCompletedAsync(domainEvent.AggregateEvent.OutboxMessageItem);
 
         await CreateInboxMessageAsync(domainEvent.AggregateEvent);
 
@@ -68,14 +112,6 @@ public class SendMessageSaga : MyInMemoryAggregateSaga<SendMessageSaga, SendMess
     {
         var item = domainEvent.AggregateEvent.InboxMessageItem;
 
-        //var command = new AddInboxMessageIdToOutboxMessageCommand(
-        //    MessageId.Create(item.SenderPeer.PeerId,
-        //        domainEvent.AggregateEvent.SenderMessageId),
-        //    _state.RequestInfo,
-        //    item.OwnerPeer.PeerId,
-        //    item.MessageId);
-        //Publish(command);
-
         var command = new ReceiveInboxMessageCommand(
             DialogId.Create(domainEvent.AggregateEvent.InboxMessageItem.OwnerPeer.PeerId,
                 domainEvent.AggregateEvent.InboxMessageItem.ToPeer),
@@ -85,29 +121,27 @@ public class SendMessageSaga : MyInMemoryAggregateSaga<SendMessageSaga, SendMess
             domainEvent.AggregateEvent.InboxMessageItem.ToPeer);
         Publish(command);
 
-        return HandleReceiveInboxMessageCompletedAsync(item);
+        return HandleReceiveInboxMessageCompletedAsync(item, domainEvent.AggregateEvent.SenderMessageId);
     }
 
-    private async Task CreateInboxMessageAsync(OutboxMessageCreatedEvent outbox)
+    private async Task CreateInboxMessageAsync(OutboxMessageCreatedEvent aggregateEvent)
     {
-        switch (outbox.OutboxMessageItem.ToPeer.PeerType)
+        switch (aggregateEvent.OutboxMessageItem.ToPeer.PeerType)
         {
             case PeerType.User:
-                await CreateInboxMessageForUserAsync(outbox.OutboxMessageItem.ToPeer.PeerId);
+                await CreateInboxMessageForUserAsync(aggregateEvent.OutboxMessageItem, aggregateEvent.OutboxMessageItem.ToPeer.PeerId);
                 break;
             case PeerType.Chat:
-                if (outbox.ChatMembers?.Count > 0)
+                if (aggregateEvent.ChatMembers?.Count > 0)
                 {
-                    foreach (var chatMemberUserId in outbox.ChatMembers)
+                    foreach (var chatMemberUserId in aggregateEvent.ChatMembers)
                     {
-                        if (chatMemberUserId == outbox.RequestInfo.UserId)
+                        if (chatMemberUserId == aggregateEvent.RequestInfo.UserId)
                         {
                             continue;
                         }
 
-#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-                        await CreateInboxMessageForUserAsync(chatMemberUserId);
-#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+                        await CreateInboxMessageForUserAsync(aggregateEvent.OutboxMessageItem, chatMemberUserId);
                     }
                 }
 
@@ -115,74 +149,131 @@ public class SendMessageSaga : MyInMemoryAggregateSaga<SendMessageSaga, SendMess
         }
     }
 
-    private async Task HandleReceiveInboxMessageCompletedAsync(MessageItem inboxMessageItem)
+    private async Task HandleReceiveInboxMessageCompletedAsync(MessageItem inboxMessageItem, int senderMessageId)
     {
-        var pts = await _idGenerator.NextIdAsync(IdType.Pts, inboxMessageItem.OwnerPeer.PeerId);
-        Emit(new ReceiveInboxMessageCompletedSagaEvent(inboxMessageItem, pts, string.Empty));
+        var pts = inboxMessageItem.Pts;// await _idGenerator.NextIdAsync(IdType.Pts, inboxMessageItem.OwnerPeer.PeerId);
+        var newInboxMessageItem = inboxMessageItem with { Pts = pts };
+        Emit(new InboxMessageCreatedSagaEvent(_state.RequestInfo, newInboxMessageItem));
+
+        _state.UserInboxItems.TryGetValue(inboxMessageItem.BatchId ?? Guid.Empty, out var inboxItems);
+
+        var command = new AddInboxItemsToOutboxMessageCommand(
+            MessageId.Create(inboxMessageItem.SenderPeer.PeerId,
+                senderMessageId, false),
+            _state.RequestInfo,
+            inboxItems ?? []
+        );
+        Publish(command);
 
         if (_state.IsCreateInboxMessagesCompleted())
         {
-            var item = _state.MessageItem;
-            var command = new AddInboxItemsToOutboxMessageCommand(
-                MessageId.Create(item.SenderPeer.PeerId,
-                    item.MessageId),
-                _state.RequestInfo,
-                _state.InboxItems
-                );
-            Publish(command);
+            Emit(new ReceiveInboxMessageCompletedSagaEvent(_state.InboxMessageItems, _state.IsSendQuickReplyMessages, _state.IsSendGroupedMessages));
 
             await CompleteAsync();
         }
     }
 
-    private async Task HandleSendOutboxMessageCompletedAsync()
+    private async Task HandleSendOutboxMessageCompletedAsync(MessageItem outboxMessageItem)
     {
-        var pts = await _idGenerator.NextIdAsync(IdType.Pts, _state.MessageItem.OwnerPeer.PeerId);
-        var linkedChannelId = _state.LinkedChannelId;
+        var pts = outboxMessageItem.Pts;// await _idGenerator.NextIdAsync(IdType.Pts, _state.MessageItem.OwnerPeer.PeerId);
+        //var linkedChannelId = _state.LinkedChannelId;
         //var globalSeqNo = _state.MessageItem.ToPeer.PeerType == PeerType.Channel ? await _idGenerator.NextLongIdAsync(IdType.GlobalSeqNo) : 0;
 
-        Emit(new SendOutboxMessageCompletedSagaEvent(_state.RequestInfo,
-            _state.MessageItem,
-            _state.MentionedUserIds,
-            pts,
-            _state.GroupItemCount,
-            linkedChannelId,
-            null//,
-                //globalSeqNo
-            /*_state.BotUserIds*/));
+        if (_state.IsSendOutboxMessageCompleted)
+        {
+            Emit(new SendOutboxMessageCompletedSagaEvent(_state.RequestInfo,
+                _state.SendMessageItems.Select(p => p.MessageItem).ToList(),
+                _state.MentionedUserIds,
+                _state.IsSendQuickReplyMessages,
+                _state.IsSendGroupedMessages,
+                []
+                ));
+        }
 
+        var defaultHistoryTtl = outboxMessageItem.IsTtlFromDefaultSetting ? outboxMessageItem.TtlPeriod : null;
         var command = new UpdateDialogCommand(
-            DialogId.Create(_state.MessageItem.SenderUserId, _state.MessageItem.ToPeer),
-            _state.MessageItem.SenderUserId,
-            _state.MessageItem.ToPeer,
-            _state.MessageItem.MessageId,
-            pts
+            DialogId.Create(outboxMessageItem.SenderUserId, outboxMessageItem.ToPeer),
+            _state.RequestInfo with { RequestId = Guid.NewGuid() },
+            outboxMessageItem.SenderUserId,
+            outboxMessageItem.ToPeer,
+            outboxMessageItem.MessageId,
+            pts,
+            defaultHistoryTtl
         );
         Publish(command);
-        if (_state.MessageItem.ToPeer.PeerType == PeerType.Channel)
-        {
-            SetChannelPts(_state.MessageItem.ToPeer.PeerId, pts, _state.MessageItem.MessageId);
 
-            if (_state.LinkedChannelId.HasValue && _state.MessageItem.SendMessageType != SendMessageType.MessageService)
+        if (outboxMessageItem.ToPeer.PeerType == PeerType.Channel)
+        {
+            SetChannelPts(outboxMessageItem);
+
+            if (_state.FirstMessageItem.MessageItem.LinkedChannelId.HasValue && outboxMessageItem.SendMessageType != SendMessageType.MessageService)
             {
-                ForwardBroadcastMessageToLinkedChannel(_state.LinkedChannelId.Value, _state.MessageItem.MessageId);
+                ForwardBroadcastMessageToLinkedChannel(outboxMessageItem);
             }
 
             // handle reply discussion message
-            if (!HandleReplyDiscussionMessage(pts))
+            if (!HandleReplyDiscussionMessage(outboxMessageItem))
             {
                 await CompleteAsync();
             }
         }
     }
-    private bool HandleReplyDiscussionMessage(int pts)
+
+    //public async Task HandleAsync(IDomainEvent<DialogAggregate, DialogId, DialogUpdatedEvent> domainEvent, ISagaContext sagaContext, CancellationToken cancellationToken)
+    //{
+    //    if (domainEvent.AggregateEvent.IsNew)
+    //    {
+    //        if (_state.FirstMessageItem.MessageItem.DefaultHistoryTtl.HasValue)
+    //        {
+    //            var requestInfo = _state.RequestInfo;
+    //            var ownerPeerId = _state.RequestInfo.UserId;
+    //            var ownerPeer = _state.RequestInfo.UserId.ToUserPeer();
+    //            if (domainEvent.AggregateEvent.ToPeer.PeerType == PeerType.Channel)
+    //            {
+    //                ownerPeer = domainEvent.AggregateEvent.ToPeer;
+    //            }
+
+    //            var outMessageId = await _idGenerator.NextIdAsync(IdType.MessageId, ownerPeerId, cancellationToken: cancellationToken);
+    //            var messageItem = new MessageItem(
+    //                ownerPeer,
+    //                domainEvent.AggregateEvent.ToPeer,
+    //                requestInfo.UserId.ToUserPeer(),
+    //                requestInfo.UserId,
+    //                outMessageId,
+    //                string.Empty,
+    //                DateTime.UtcNow.ToTimestamp(),
+    //                Random.Shared.NextInt64(),
+    //                true,
+    //                SendMessageType.MessageService,
+    //                MessageSubType: MessageSubType.SetHistoryTtl,
+    //                MessageActionType: MessageActionType.SetMessagesTtl,
+    //                MessageAction: new TMessageActionSetMessagesTTL
+    //                {
+    //                    Period = _state.FirstMessageItem.MessageItem.DefaultHistoryTtl.Value,
+    //                    AutoSettingFrom = requestInfo.UserId
+    //                }
+    //            );
+
+    //            var command = new StartSendMessageCommand(TempId.New, requestInfo,
+    //                [new SendMessageItem(messageItem)]);
+    //            Publish(command);
+    //        }
+    //    }
+
+    //    if (domainEvent.AggregateEvent.ToPeer.PeerType == PeerType.Channel)
+    //    {
+    //        await CompleteAsync(cancellationToken);
+    //    }
+    //}
+
+    private bool HandleReplyDiscussionMessage(MessageItem outboxMessageItem)
     {
-        if (_state.MessageItem is { InputReplyTo: not null, ToPeer.PeerType: PeerType.Channel })
+        if (outboxMessageItem is { InputReplyTo: not null, ToPeer.PeerType: PeerType.Channel })
         {
-            switch (_state.MessageItem.InputReplyTo)
+            switch (outboxMessageItem.InputReplyTo)
             {
                 case TInputReplyToMessage inputReplyToMessage:
-                    ReplyToMessage(_state.MessageItem.ToPeer.PeerId, inputReplyToMessage.ReplyToMsgId, pts, _state.MessageItem.MessageId);
+                    ReplyToMessage(outboxMessageItem, inputReplyToMessage.ReplyToMsgId);
                     return true;
                 case TInputReplyToStory inputReplyToStory:
                     break;
@@ -193,10 +284,14 @@ public class SendMessageSaga : MyInMemoryAggregateSaga<SendMessageSaga, SendMess
 
         return false;
     }
-    private void ForwardBroadcastMessageToLinkedChannel(long linkedChannelId, int messageId)
+    private void ForwardBroadcastMessageToLinkedChannel(MessageItem outboxMessageItem)
     {
-        var fromPeer = _state.MessageItem!.ToPeer;
-        var toPeer = new Peer(PeerType.Channel, linkedChannelId);
+        if (outboxMessageItem.LinkedChannelId == null)
+        {
+            return;
+        }
+        var fromPeer = outboxMessageItem.ToPeer;
+        var toPeer = new Peer(PeerType.Channel, outboxMessageItem.LinkedChannelId!.Value);
         var command = new StartForwardMessagesCommand(TempId.New,
             _state.RequestInfo,
             false,
@@ -207,36 +302,44 @@ public class SendMessageSaga : MyInMemoryAggregateSaga<SendMessageSaga, SendMess
             false,
             fromPeer,
             toPeer,
-            [messageId],
+            [outboxMessageItem.MessageId],
             [Random.Shared.NextInt64()],
             null,
-            _state.MessageItem.SendAs,
+            outboxMessageItem.SendAs,
             true,
             false
         );
         Publish(command);
     }
 
-    private void ReplyToMessage(long ownerPeerId, int messageId, int repliesPts, int maxMessageId)
+    private void ReplyToMessage(MessageItem outboxMessageItem, int replyToMessageId)
     {
-        var replierPeer = _state.MessageItem.SendAs ?? _state.RequestInfo.UserId.ToUserPeer();
-        var command = new ReplyToMessageCommand(MessageId.Create(ownerPeerId, messageId), _state.RequestInfo, replierPeer, repliesPts, maxMessageId);
+        // long ownerPeerId, int messageId, int repliesPts, int maxMessageId
+        // ReplyToMessage(outboxMessageItem.ToPeer.PeerId, inputReplyToMessage.ReplyToMsgId, outboxMessageItem.Pts, outboxMessageItem.MessageId);
+        var replierPeer = outboxMessageItem.SendAs ?? _state.RequestInfo.UserId.ToUserPeer();
+        var command = new ReplyToMessageCommand(MessageId.Create(outboxMessageItem.ToPeer.PeerId, replyToMessageId),
+            _state.RequestInfo, replierPeer, outboxMessageItem.Pts, outboxMessageItem.MessageId);
         Publish(command);
     }
 
-    private void SetChannelPts(long channelId, int pts, int messageId)
+    private void SetChannelPts(MessageItem outboxMessageItem)
     {
-        var command = new SetChannelPtsCommand(ChannelId.Create(channelId), _state.MessageItem!.SenderPeer.PeerId, pts, messageId, _state.MessageItem.Date);
+        //long channelId, int pts, int messageId
+        var command = new SetChannelPtsCommand(ChannelId.Create(outboxMessageItem.ToPeer.PeerId),
+            outboxMessageItem.SenderPeer.PeerId,
+            outboxMessageItem.Pts,
+            outboxMessageItem.MessageId,
+            outboxMessageItem.Date);
         Publish(command);
     }
-    private async Task CreateInboxMessageForUserAsync(long inboxOwnerUserId)
+    private async Task CreateInboxMessageForUserAsync(MessageItem outboxMessageItem, long inboxOwnerUserId)
     {
-        var outMessageItem = _state.MessageItem!;
+        var outMessageItem = outboxMessageItem;
         var toPeer = outMessageItem.ToPeer.PeerType == PeerType.Chat ? outMessageItem.ToPeer : outMessageItem.OwnerPeer;
 
-        var replyTo = outMessageItem.InputReplyTo.ToBytes().ToTObject<IInputReplyTo>();
-
-        if (_state.ReplyToMsgItems.TryGetValue(inboxOwnerUserId, out var replyToMsgId))
+        var replyTo = outMessageItem.InputReplyTo;
+        var replyToMsgItems = outboxMessageItem.ReplyToMsgItems?.ToDictionary(k => k.UserId, v => v.MessageId) ?? new();
+        if (replyToMsgItems.TryGetValue(inboxOwnerUserId, out var replyToMsgId))
         {
             switch (replyTo)
             {
@@ -249,9 +352,8 @@ public class SendMessageSaga : MyInMemoryAggregateSaga<SendMessageSaga, SendMess
             }
         }
 
-        // Channel only create outbox message,
-        // Use IdType.MessageId and IdType.ChannelMessageId will not be used
         var inboxMessageId = await _idGenerator.NextIdAsync(IdType.MessageId, inboxOwnerUserId);
+        var pts = await _idGenerator.NextIdAsync(IdType.Pts, inboxOwnerUserId);
         var aggregateId = MessageId.Create(inboxOwnerUserId, inboxMessageId);
         var inboxMessageItem = outMessageItem with
         {
@@ -260,6 +362,7 @@ public class SendMessageSaga : MyInMemoryAggregateSaga<SendMessageSaga, SendMess
             MessageId = inboxMessageId,
             IsOut = false,
             InputReplyTo = replyTo,
+            Pts = pts
         };
 
         var command = new CreateInboxMessageCommand(aggregateId, _state.RequestInfo, inboxMessageItem, outMessageItem.MessageId);
@@ -271,9 +374,11 @@ public class SendMessageSaga : MyInMemoryAggregateSaga<SendMessageSaga, SendMess
         if (domainEvent.AggregateEvent.PostChannelId.HasValue && domainEvent.AggregateEvent.PostMessageId.HasValue)
         {
             Emit(new ReplyBroadcastChannelCompletedSagaEvent(domainEvent.AggregateEvent.PostChannelId.Value, domainEvent.AggregateEvent.PostMessageId.Value, domainEvent.AggregateEvent.Reply));
-            Emit(new PostChannelIdUpdatedSagaEvent(_state.MessageItem.OwnerPeer.PeerId, _state.MessageItem.MessageId, domainEvent.AggregateEvent.PostChannelId.Value, domainEvent.AggregateEvent.PostMessageId.Value));
+            Emit(new PostChannelIdUpdatedSagaEvent(_state.FirstMessageItem.MessageItem.OwnerPeer.PeerId, _state.FirstMessageItem.MessageItem.MessageId, domainEvent.AggregateEvent.PostChannelId.Value, domainEvent.AggregateEvent.PostMessageId.Value));
         }
 
         return CompleteAsync(cancellationToken);
     }
+
+
 }

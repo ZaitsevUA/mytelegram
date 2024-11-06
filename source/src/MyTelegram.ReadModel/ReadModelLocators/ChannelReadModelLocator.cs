@@ -13,10 +13,10 @@ public class ChannelReadModelLocator : IChannelReadModelLocator
         {
             switch (aggregateEvent)
             {
-                case DeleteChannelMessagesCompletedEvent deleteChannelMessagesCompletedEvent:
+                case DeleteChannelMessagesCompletedSagaEvent deleteChannelMessagesCompletedEvent:
                     yield return ChannelId.Create(deleteChannelMessagesCompletedEvent.ChannelId).Value;
                     break;
-                case DeleteChannelHistoryCompletedEvent deleteChannelHistoryCompletedEvent:
+                case DeleteChannelHistoryCompletedSagaEvent deleteChannelHistoryCompletedEvent:
                     yield return ChannelId.Create(deleteChannelHistoryCompletedEvent.ChannelId).Value;
                     break;
                 case DeleteReplyMessagesCompletedSagaEvent deleteReplyMessagesCompletedEvent:

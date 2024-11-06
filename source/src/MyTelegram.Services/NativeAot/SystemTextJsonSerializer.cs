@@ -1,11 +1,12 @@
-﻿using EventFlow.Core;
-using System.Text.Json;
+﻿using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Text.Json.Serialization.Metadata;
+using EventFlow.Core;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace MyTelegram.Services.NativeAot;
 
-public class SystemTextJsonSerializer :IJsonSerializer// ISystemTextJsonSerializer
+public class SystemTextJsonSerializer : IJsonSerializer
 {
     private readonly JsonSerializerOptions _optionsIndented = new()
     {
@@ -28,18 +29,49 @@ public class SystemTextJsonSerializer :IJsonSerializer// ISystemTextJsonSerializ
         _optionsNotIndented.WriteIndented = false;
     }
 
-    public string Serialize(object obj, bool indented = false)
-    {
-        return JsonSerializer.Serialize(obj, indented ? _optionsIndented : _optionsNotIndented);
-    }
-
-    public object Deserialize(string json, Type type)
+    public object? Deserialize(string json,
+        Type type)
     {
         return JsonSerializer.Deserialize(json, type, _optionsNotIndented);
     }
 
-    public T Deserialize<T>(string json)
+    public T? Deserialize<T>(string json)
     {
         return JsonSerializer.Deserialize<T>(json, _optionsNotIndented);
+    }
+
+    public TValue? Deserialize<TValue>(string json,
+        JsonTypeInfo<TValue> jsonTypeInfo)
+    {
+        return JsonSerializer.Deserialize(json, jsonTypeInfo);
+    }
+
+    public object? Deserialize(string json,
+        Type typeofTValue,
+        JsonSerializerContext context)
+    {
+        return JsonSerializer.Deserialize(json, typeofTValue, context);
+    }
+
+    public string Serialize(object obj,
+        bool indented = false)
+    {
+        return JsonSerializer.Serialize(obj, indented ? _optionsIndented : _optionsNotIndented);
+    }
+    public string Serialize<TValue>(TValue value,
+        JsonTypeInfo<TValue> jsonTypeInfo)
+    {
+        return JsonSerializer.Serialize(value, jsonTypeInfo);
+    }
+
+    public string Serialize<TValue>(TValue value,
+        Type typeOfTValue,
+        JsonSerializerContext context)
+    {
+        return JsonSerializer.Serialize(value, typeOfTValue, context);
+    }
+    public string Serialize<T>(T value)
+    {
+        return JsonSerializer.Serialize(value, _optionsNotIndented);
     }
 }

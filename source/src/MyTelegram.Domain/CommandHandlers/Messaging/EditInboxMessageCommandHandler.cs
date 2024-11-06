@@ -14,7 +14,7 @@ public class EditInboxMessageCommandHandler : CommandHandler<MessageAggregate, M
             command.Entities,
             command.Media,
             command.ReplyMarkup
-            );
+        );
         return Task.CompletedTask;
     }
 }

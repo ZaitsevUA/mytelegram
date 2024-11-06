@@ -323,7 +323,7 @@ public record GetUsersByPhoneNumberListQuery(List<string> PhoneNumbers) : IQuery
 
 public record GetMaxMessageByChatIdQuery(long SelfUserId, long ChatId) : IQuery<int>;
 
-public record GetMaxMessageIdByUserIdQuery(long UserId) : IQuery<int>;
+public record GetMaxMessageIdByPeerIdQuery(long PeerId) : IQuery<int>;
 public record GetChatAdminListByChannelIdQuery(long PeerId, int Skip, int Limit)
     : IQuery<IReadOnlyCollection<IChatAdminReadModel>>;
 

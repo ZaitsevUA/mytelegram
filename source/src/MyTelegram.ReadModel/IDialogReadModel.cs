@@ -34,7 +34,7 @@ public interface IDialogReadModel : IReadModel
     int UnreadCount { get; }
     bool IsDeleted { get; }
     void SetNewTopMessageId(int topMessageId);
-    int? TtlPeriod { get; }
+    int? TtlPeriod { get; set; }
     int UnreadMentionsCount { get; }
     int UnreadReactionsCount { get; }
     int? FolderId { get; }

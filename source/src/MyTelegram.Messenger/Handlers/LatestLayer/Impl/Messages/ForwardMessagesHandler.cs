@@ -71,7 +71,7 @@ internal sealed class ForwardMessagesHandler(
         var post = false;
         if (toPeer.PeerType == PeerType.Channel)
         {
-            await messageAppService.CheckSendAsync(input.UserId, toPeer, sendAs);
+            await messageAppService.CheckSendAsAsync(input.UserId, toPeer, sendAs);
             //await channelAdminRightsChecker.CheckAdminRightAsync(toPeer.PeerId, input.UserId,
             //    rights => rights.AdminRights.PostMessages, RpcErrors.RpcErrors400.ChatAdminRequired);
 

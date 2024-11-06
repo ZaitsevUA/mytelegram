@@ -35,7 +35,7 @@ public class OtherDomainEventHandler(
         ISubscribeSynchronousTo<PeerNotifySettingsAggregate, PeerNotifySettingsId, PeerNotifySettingsUpdatedEvent>,
         ISubscribeSynchronousTo<UserAggregate, UserId, UserGlobalPrivacySettingsChangedEvent>,
         ISubscribeSynchronousTo<PinForwardedChannelMessageSaga, PinForwardedChannelMessageSagaId,
-            PinChannelMessagePtsIncrementedEvent>,
+            PinChannelMessagePtsIncrementedSagaEvent>,
         ISubscribeSynchronousTo<UpdatePinnedMessageSaga, UpdatePinnedMessageSagaId, UpdateSavedMessagesPinnedCompletedSagaEvent>//,
                                                                                                                             //ISubscribeSynchronousTo<UnpinAllMessagesSaga, UnpinAllMessagesSagaId, UnpinAllMessagesCompletedSagaEvent>,
                                                                                                                             //ISubscribeSynchronousTo<UnpinAllMessagesSaga, UnpinAllMessagesSagaId, UnpinAllParticipantMessagesCompletedSagaEvent>
@@ -265,7 +265,7 @@ public class OtherDomainEventHandler(
             pts: domainEvent.AggregateEvent.Pts, layeredData: layeredUpdates);
     }
 
-    public Task HandleAsync(IDomainEvent<PinForwardedChannelMessageSaga, PinForwardedChannelMessageSagaId, PinChannelMessagePtsIncrementedEvent> domainEvent, CancellationToken cancellationToken)
+    public Task HandleAsync(IDomainEvent<PinForwardedChannelMessageSaga, PinForwardedChannelMessageSagaId, PinChannelMessagePtsIncrementedSagaEvent> domainEvent, CancellationToken cancellationToken)
     {
         var updateShort = new TUpdateShort
         {

@@ -29,3 +29,9 @@ public class OutboxMessageEditedEvent(
     //public List<long>? ChatMembers { get; }
     public int EditDate { get; } = editDate;
 }
+
+public class OutboxMessageEditedEventV2(RequestInfo requestInfo, MessageItem oldMessageItem, MessageItem newMessageItem) : RequestAggregateEvent2<MessageAggregate, MessageId>(requestInfo)
+{
+    public MessageItem OldMessageItem { get; } = oldMessageItem;
+    public MessageItem NewMessageItem { get; } = newMessageItem;
+}

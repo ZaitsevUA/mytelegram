@@ -44,16 +44,7 @@ public class ContactAppService(
 
             var photos = await photoAppService.GetPhotosAsync(allUserReadModels, contactReadModels);
 
-            var privacyReadModels = await queryProcessor.ProcessAsync(new GetPrivacyListQuery(allUserReadModels.Select(p => p.UserId).ToList(), new List<PrivacyType>
-            {
-                PrivacyType.PhoneNumber,
-                PrivacyType.PhoneCall,
-                PrivacyType.VoiceMessages,
-                PrivacyType.ProfilePhoto,
-                PrivacyType.StatusTimestamp,
-                PrivacyType.Birthday,
-                PrivacyType.About
-            }));
+            var privacyReadModels = await privacyAppService.GetPrivacyListAsync(allUserReadModels.Select(p => p.UserId).ToList());
 
             return new SearchContactOutput(selfUserId,
                 allUserReadModels,

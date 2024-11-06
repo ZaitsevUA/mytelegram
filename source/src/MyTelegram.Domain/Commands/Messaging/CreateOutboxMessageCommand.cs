@@ -12,18 +12,11 @@ public class CreateOutboxMessageCommand(
     List<long>? chatMembers = null)
     : RequestCommand2<MessageAggregate, MessageId, IExecutionResult>(aggregateId, requestInfo)
 {
-    //IReplyTo? replyTo = null,
-    //IInputReplyTo? inputReplyTo = null,
-    //InputReplyTo = inputReplyTo;
-
-    //public long ReqMsgId { get; }
     public MessageItem OutboxMessageItem { get; } = outboxMessageItem;
     public List<long>? MentionedUserIds { get; } = mentionedUserIds;
 
     public List<ReplyToMsgItem>? ReplyToMsgItems { get; } = replyToMsgItems;
 
-    //public IInputReplyTo? InputReplyTo { get; }
-    //public IReplyTo? ReplyTo { get; }
     public bool ClearDraft { get; } = clearDraft;
     public int GroupItemCount { get; } = groupItemCount;
     public long? LinkedChannelId { get; } = linkedChannelId;

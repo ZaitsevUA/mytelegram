@@ -138,13 +138,14 @@ public class MessageSagaIntegrationTests : IntegrationTest
     private Task SendMessageToPeerAsync(Peer senderPeer, Peer toPeer, string message)
     {
         var randomId = A<long>();
-        var aggregateId = MessageId.CreateWithRandomId(senderPeer.PeerId, randomId);
+        var messageId = A<int>();
+        var aggregateId = MessageId.Create(senderPeer.PeerId, messageId);
         var item = new MessageItem(
             toPeer.PeerType == PeerType.Channel ? toPeer : senderPeer,
             toPeer,
             senderPeer,
             senderPeer.PeerId,
-            0,
+            messageId,
             message,
             A<int>(),
             randomId,

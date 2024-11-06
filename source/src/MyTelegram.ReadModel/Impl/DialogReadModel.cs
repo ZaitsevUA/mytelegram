@@ -59,7 +59,7 @@ public class DialogReadModel : IDialogReadModel,
     public virtual int UnreadCount { get; private set; }
     public virtual long? Version { get; set; }
     public virtual bool IsDeleted { get; private set; }
-    public int? TtlPeriod { get; private set; }
+    public int? TtlPeriod { get; set; }
     public int UnreadMentionsCount { get; private set; }
     public int UnreadReactionsCount { get; private set; }
     public int? FolderId { get; private set; }
@@ -220,7 +220,7 @@ public class DialogReadModel : IDialogReadModel,
         CancellationToken cancellationToken)
     {
         Id = domainEvent.AggregateIdentity.Value;
-        TopMessage= domainEvent.AggregateEvent.MessageId;
+        TopMessage = domainEvent.AggregateEvent.MessageId;
         //OwnerId = domainEvent.AggregateEvent.OwnerPeerId;
         //TopMessage = domainEvent.AggregateEvent.MessageId;
         ////TopMessageBoxId = domainEvent.AggregateEvent.MessageBoxId.Value;
@@ -320,10 +320,11 @@ public class DialogReadModel : IDialogReadModel,
         Id = DialogId.Create(domainEvent.AggregateEvent.MessageItem.SenderPeer.PeerId,
             domainEvent.AggregateEvent.MessageItem.ToPeer).Value;
 
-        Pts = domainEvent.AggregateEvent.Pts;
+        Pts = domainEvent.AggregateEvent.MessageItem.Pts;
 
         return Task.CompletedTask;
     }
+
     public Task ApplyAsync(IReadModelContext context, IDomainEvent<DialogAggregate, DialogId, UpdateReadChannelOutboxEvent> domainEvent, CancellationToken cancellationToken)
     {
         Id = DialogId.Create(domainEvent.AggregateEvent.MessageSenderUserId, PeerType.Channel, domainEvent.AggregateEvent.ChannelId).Value;
@@ -336,6 +337,7 @@ public class DialogReadModel : IDialogReadModel,
     public Task ApplyAsync(IReadModelContext context, IDomainEvent<DialogAggregate, DialogId, ReadInboxMaxIdUpdatedEvent> domainEvent, CancellationToken cancellationToken)
     {
         ReadInboxMaxId = domainEvent.AggregateEvent.ReadInboxMaxId;
+        UnreadCount = domainEvent.AggregateEvent.UnreadCount;
 
         return Task.CompletedTask;
     }
@@ -360,6 +362,7 @@ public class DialogReadModel : IDialogReadModel,
 
         return Task.CompletedTask;
     }
+
     public Task ApplyAsync(IReadModelContext context, IDomainEvent<DialogAggregate, DialogId, DialogFolderUpdatedEvent> domainEvent, CancellationToken cancellationToken)
     {
         FolderId = domainEvent.AggregateEvent.FolderId;

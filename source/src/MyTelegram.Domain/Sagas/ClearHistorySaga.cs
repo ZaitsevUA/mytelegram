@@ -133,7 +133,7 @@ public class ClearHistorySaga : MyInMemoryAggregateSaga<ClearHistorySaga, ClearH
                 // after messages cleared should send history cleared service message
                 var ownerPeerId = _state.RequestInfo.UserId;
                 var outMessageId = await _idGenerator.NextIdAsync(IdType.MessageId, ownerPeerId);
-                var aggregateId = MessageId.Create(ownerPeerId, outMessageId);
+                //var aggregateId = MessageId.Create(ownerPeerId, outMessageId);
                 var messageItem = new MessageItem(
                     new Peer(PeerType.User, ownerPeerId),
                     _state.ToPeer,
@@ -148,7 +148,11 @@ public class ClearHistorySaga : MyInMemoryAggregateSaga<ClearHistorySaga, ClearH
                     MessageSubType: MessageSubType.ClearHistory,
                     MessageActionData: _state.MessageActionData,
                     MessageActionType: MessageActionType.HistoryClear);
-                var command = new CreateOutboxMessageCommand(aggregateId, _state.RequestInfo with { RequestId = Guid.NewGuid() }, messageItem);
+                //var command = new CreateOutboxMessageCommand(aggregateId, _state.RequestInfo with { RequestId = Guid.NewGuid() }, messageItem);
+                var command = new StartSendMessageCommand(TempId.New,
+                    _state.RequestInfo with { RequestId = Guid.NewGuid() },
+                    [new SendMessageItem(messageItem)]
+                );
                 Publish(command);
 
                 Emit(new ClearHistorySagaCompletedSagaEvent());

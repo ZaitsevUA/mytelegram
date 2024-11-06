@@ -1,24 +1,18 @@
 ﻿namespace MyTelegram.Domain.Sagas.Events;
 
-public class SendOutboxMessageCompletedSagaEvent(
-    RequestInfo requestInfo,
-    MessageItem messageItem,
+public class SendOutboxMessageCompletedSagaEvent(RequestInfo requestInfo,
+    List<MessageItem> messageItems,
     List<long>? mentionedUserIds,
-    int pts,
-    int groupItemCount,
-    long? linkedChannelId,
-    IReadOnlyCollection<long>? botUserIds)
-    : RequestAggregateEvent2<SendMessageSaga, SendMessageSagaId>(requestInfo)
+    bool isSendQuickReplyMessages,
+    bool isSendGroupedMessages,
+    IReadOnlyCollection<long>? botUserIds) :
+    RequestAggregateEvent2<SendMessageSaga, SendMessageSagaId>(requestInfo)
 {
-    public MessageItem MessageItem { get; } = messageItem;
+    public MessageItem MessageItem => MessageItems.Last();
+
+    public List<MessageItem> MessageItems { get; } = messageItems;
     public List<long>? MentionedUserIds { get; } = mentionedUserIds;
-    public int Pts { get; } = pts;
-    public int GroupItemCount { get; } = groupItemCount;
-    public long? LinkedChannelId { get; } = linkedChannelId;
-
+    public bool IsSendQuickReplyMessages { get; } = isSendQuickReplyMessages;
+    public bool IsSendGroupedMessages { get; } = isSendGroupedMessages;
     public IReadOnlyCollection<long>? BotUserIds { get; } = botUserIds;
-    //public long GlobalSeqNo { get; }
-
-    /*, long globalSeqNo*/
-    //GlobalSeqNo = globalSeqNo;
 }

@@ -6,12 +6,15 @@ public class
         RequestInfo requestInfo,
         long channelId,
         long userId,
-        int date)
+        int date,
+        bool isBroadcast
+        )
     : RequestCommand2<ChannelMemberAggregate, ChannelMemberId, IExecutionResult>(aggregateId, requestInfo)
 {
     public long ChannelId { get; } = channelId;
 
     //public int InviterId { get; }
     public int Date { get; } = date;
+    public bool IsBroadcast { get; } = isBroadcast;
     public long UserId { get; } = userId;
 }

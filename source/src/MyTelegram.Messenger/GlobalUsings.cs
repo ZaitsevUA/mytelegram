@@ -85,3 +85,4 @@ global using System.Threading.Tasks;
 global using MyTelegram.Domain.Aggregates.ChatInvite;
 global using MyTelegram.Domain.Events.ChatInvite;
 global using MyTelegram.Domain.Commands.ChatInvite;
+global using MyTelegram.Messenger.DataConverters;

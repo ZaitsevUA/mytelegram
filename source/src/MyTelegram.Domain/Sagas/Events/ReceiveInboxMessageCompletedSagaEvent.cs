@@ -1,9 +1,15 @@
 ﻿namespace MyTelegram.Domain.Sagas.Events;
 
-public class ReceiveInboxMessageCompletedSagaEvent(MessageItem messageItem, int pts, string? chatTitle)
+public class ReceiveInboxMessageCompletedSagaEvent(List<MessageItem> messageItems,
+    bool isSendQuickReplyMessages,
+    bool isSendGroupedMessages
+)
     : AggregateEvent<SendMessageSaga, SendMessageSagaId>
 {
-    public MessageItem MessageItem { get; } = messageItem;
-    public int Pts { get; } = pts;
-    public string? ChatTitle { get; } = chatTitle;
+    public MessageItem MessageItem => MessageItems.Last();
+    public List<MessageItem> MessageItems { get; } = messageItems;
+
+    public bool IsSendQuickReplyMessages { get; } = isSendQuickReplyMessages;
+
+    public bool IsSendGroupedMessages { get; } = isSendGroupedMessages;
 }

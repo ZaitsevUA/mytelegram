@@ -154,30 +154,29 @@ public class UpdatePinnedMessageSaga : MyInMemoryAggregateSaga<UpdatePinnedMessa
                 var ownerPeerId = _state.StartUpdatePinnedOwnerPeerId;
                 var outMessageId = await _idGenerator.NextIdAsync(IdType.MessageId, ownerPeerId);
 
-                var aggregateId = MessageId.Create(ownerPeerId, outMessageId);
-                var command = new CreateOutboxMessageCommand(aggregateId,
-                    _state.RequestInfo with { RequestId = Guid.NewGuid() },
-                    new MessageItem(new Peer(PeerType.User, ownerPeerId),
-                        _state.ToPeer,
-                        new Peer(PeerType.User, ownerPeerId),
-                        ownerPeerId,
-                        outMessageId,
-                        string.Empty,
-                        DateTime.UtcNow.ToTimestamp(),
-                        _state.RandomId,
-                        true,
-                        SendMessageType.MessageService,
-                        MessageType.Text,
-                        MessageSubType.UpdatePinnedMessage,
-                        MessageActionData: _state.MessageActionData,
-                        //replyToMsgId: _state.ReplyToMsgId,
-                        InputReplyTo: new TInputReplyToMessage
-                        {
-                            ReplyToMsgId = _state.ReplyToMsgId
-                        },
-                        MessageActionType: MessageActionType.PinMessage,
-                        Post: _state.Post
-                        ));
+                var messageItem = new MessageItem(new Peer(PeerType.User, ownerPeerId),
+                    _state.ToPeer,
+                    new Peer(PeerType.User, ownerPeerId),
+                    ownerPeerId,
+                    outMessageId,
+                    string.Empty,
+                    DateTime.UtcNow.ToTimestamp(),
+                    _state.RandomId,
+                    true,
+                    SendMessageType.MessageService,
+                    MessageType.Text,
+                    MessageSubType.UpdatePinnedMessage,
+                    MessageActionData: _state.MessageActionData,
+                    //replyToMsgId: _state.ReplyToMsgId,
+                    InputReplyTo: new TInputReplyToMessage
+                    {
+                        ReplyToMsgId = _state.ReplyToMsgId
+                    },
+                    MessageActionType: MessageActionType.PinMessage,
+                    Post: _state.Post
+                );
+                var command = new StartSendMessageCommand(TempId.New, _state.RequestInfo with { RequestId = Guid.NewGuid() },
+                    [new SendMessageItem(messageItem)]);
 
                 Publish(command);
             }

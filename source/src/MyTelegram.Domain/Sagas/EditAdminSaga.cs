@@ -20,7 +20,8 @@ public class EditAdminSaga(
                 domainEvent.AggregateEvent.PromotedBy,
                 DateTime.UtcNow.ToTimestamp(),
                 true,
-                null
+                null,
+                domainEvent.AggregateEvent.IsBroadcast
                 );
             Publish(command);
 

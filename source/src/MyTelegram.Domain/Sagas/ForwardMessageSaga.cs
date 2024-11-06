@@ -1,6 +1,6 @@
 ﻿namespace MyTelegram.Domain.Sagas;
 
-public class MessageReplyCreatedEvent(long postChannelId, int postMessageId, long channelId, int messageId)
+public class MessageReplyCreatedSagaEvent(long postChannelId, int postMessageId, long channelId, int messageId)
     : AggregateEvent<ForwardMessageSaga, ForwardMessageSagaId>
 {
     public long PostChannelId { get; } = postChannelId;
@@ -30,8 +30,8 @@ public class ForwardMessageSaga : MyInMemoryAggregateSaga<ForwardMessageSaga, Fo
         Emit(new ForwardSingleMessageSuccessSagaEvent());
         if (_state.ForwardFromLinkedChannel)
         {
-            Emit(new MessageReplyCreatedEvent(domainEvent.AggregateEvent.OriginalMessageItem.ToPeer.PeerId, domainEvent.AggregateEvent.OriginalMessageItem.MessageId, _state.ToPeer.PeerId, outMessageId));
-            PinForwardedChannelMessage(_state.ToPeer.PeerId, outMessageId);
+            Emit(new MessageReplyCreatedSagaEvent(domainEvent.AggregateEvent.OriginalMessageItem.ToPeer.PeerId, domainEvent.AggregateEvent.OriginalMessageItem.MessageId, _state.ToPeer.PeerId, outMessageId));
+            //PinForwardedChannelMessage(_state.ToPeer.PeerId, outMessageId);
         }
 
         await HandleForwardCompletedAsync();
@@ -51,7 +51,8 @@ public class ForwardMessageSaga : MyInMemoryAggregateSaga<ForwardMessageSaga, Fo
             domainEvent.AggregateEvent.MessageIds,
             domainEvent.AggregateEvent.RandomIds,
             domainEvent.AggregateEvent.ForwardFromLinkedChannel,
-            domainEvent.AggregateEvent.Post
+            domainEvent.AggregateEvent.Post,
+            null
         ));
         ForwardMessage(domainEvent.AggregateEvent);
         return Task.CompletedTask;
@@ -91,7 +92,6 @@ public class ForwardMessageSaga : MyInMemoryAggregateSaga<ForwardMessageSaga, Fo
             ? _state.ToPeer.PeerId
             : selfUserId;
 
-        var outMessageId = 0;
         var fromId = _state.FromPeer;
         var channelPost = _state.FromPeer.PeerType == PeerType.Channel ? aggregateEvent.OriginalMessageItem.MessageId : 0;
         var senderPeer = new Peer(PeerType.User, _state.RequestInfo.UserId);
@@ -102,6 +102,7 @@ public class ForwardMessageSaga : MyInMemoryAggregateSaga<ForwardMessageSaga, Fo
         MessageReply? reply = null;
         long? postChannelId = null;
         int? postMessageId = null;
+        Peer? sendAs = null;
         if (_state.ForwardFromLinkedChannel)
         {
             savedFromPeer = _state.FromPeer;
@@ -111,6 +112,7 @@ public class ForwardMessageSaga : MyInMemoryAggregateSaga<ForwardMessageSaga, Fo
             reply = aggregateEvent.OriginalMessageItem.Reply;
             postChannelId = aggregateEvent.OriginalMessageItem.ToPeer.PeerId;
             postMessageId = aggregateEvent.OriginalMessageItem.MessageId;
+            sendAs = aggregateEvent.OriginalMessageItem.SendAs;
         }
         var fwdHeader = new MessageFwdHeader(
             false,
@@ -118,51 +120,60 @@ public class ForwardMessageSaga : MyInMemoryAggregateSaga<ForwardMessageSaga, Fo
             fromId,
             null,
             channelPost,
-            null,
+            aggregateEvent.OriginalMessageItem.PostAuthor,
             DateTime.UtcNow.ToTimestamp(),
             savedFromPeer,
             savedFromMsgId, null, null, null, null, _state.ForwardFromLinkedChannel);
 
-        outMessageId = await _idGenerator.NextIdAsync(IdType.MessageId, ownerPeerId);
-        var aggregateId = MessageId.Create(ownerPeerId, outMessageId);
-
+        var outMessageId = await _idGenerator.NextIdAsync(IdType.MessageId, ownerPeerId);
 
         var ownerPeer = _state.ToPeer.PeerType == PeerType.Channel
             ? _state.ToPeer
             : senderPeer;
         var toPeer = _state.ToPeer;
         var item = aggregateEvent.OriginalMessageItem;
-        var command = new CreateOutboxMessageCommand(aggregateId, aggregateEvent.RequestInfo,
-            new MessageItem(
-                ownerPeer,
-                toPeer,
-                senderPeer,
-                aggregateEvent.OriginalMessageItem.SenderUserId,
-                outMessageId,
-                item.Message,
-                DateTime.UtcNow.ToTimestamp(),
-                aggregateEvent.RandomId,
-                isOut,
-                SendMessageType.Text,
-                MessageType.Text,
-                MessageSubType.ForwardMessage,
-                InputReplyTo: item.InputReplyTo,
-                Entities: item.Entities,
-                Media: item.Media,
-                FwdHeader: fwdHeader,
-                Views: item.Views,
-                PollId: item.PollId,
-                EditHide: _state.ForwardFromLinkedChannel,
-                Reply: reply,
-                IsForwardFromChannelPost: _state.ForwardFromLinkedChannel,
-                PostChannelId: postChannelId,
-                PostMessageId: postMessageId,
-                Post: _state.Post
-            )
+
+        var messageItem = new MessageItem(
+            ownerPeer,
+            toPeer,
+            senderPeer,
+            aggregateEvent.OriginalMessageItem.SenderUserId,
+            outMessageId,
+            item.Message,
+            DateTime.UtcNow.ToTimestamp(),
+            aggregateEvent.RandomId,
+            isOut,
+            SendMessageType.Text,
+            MessageType.Text,
+            MessageSubType.ForwardMessage,
+            InputReplyTo: item.InputReplyTo,
+            Entities: item.Entities,
+            Media: item.Media,
+            FwdHeader: fwdHeader,
+            Views: item.Views,
+            PollId: item.PollId,
+            EditHide: _state.ForwardFromLinkedChannel,
+            Reply: reply,
+            IsForwardFromChannelPost: _state.ForwardFromLinkedChannel,
+            PostChannelId: postChannelId,
+            PostMessageId: postMessageId,
+            Post: _state.Post,
+            SendAs: sendAs,
+            Pinned: true,
+            Silent: aggregateEvent.OriginalMessageItem.Silent
         );
+
+        var command = new StartSendMessageCommand(TempId.New, aggregateEvent.RequestInfo with
+        {
+            RequestId = Guid.NewGuid(),
+            ReqMsgId = 0
+        },
+            [new SendMessageItem(messageItem)]);
 
         Publish(command);
 
         return outMessageId;
     }
+
+
 }

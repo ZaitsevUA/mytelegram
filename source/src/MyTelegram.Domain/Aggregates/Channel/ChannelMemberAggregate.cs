@@ -17,6 +17,7 @@ public class ChannelMemberAggregate : SnapshotAggregateRoot<ChannelMemberAggrega
         int date,
         bool isBot,
         long? chatInviteId,
+        bool isBroadcast,
         ChatJoinType chatJoinType
         )
     {
@@ -43,6 +44,7 @@ public class ChannelMemberAggregate : SnapshotAggregateRoot<ChannelMemberAggrega
             _state.BannedRights,
             isBot,
             chatInviteId,
+            isBroadcast,
             chatJoinType
             ));
     }
@@ -50,14 +52,17 @@ public class ChannelMemberAggregate : SnapshotAggregateRoot<ChannelMemberAggrega
     public void CreateCreator(RequestInfo requestInfo,
         long channelId,
         long userId,
-        int date)
+        int date,
+        bool isBroadcast)
     {
         Specs.AggregateIsNew.ThrowDomainErrorIfNotSatisfied(this);
         Emit(new ChannelCreatorCreatedEvent(requestInfo,
             channelId,
             userId,
             userId,
-            date));
+            date,
+            isBroadcast
+            ));
     }
 
     public void EditBanned(RequestInfo requestInfo,

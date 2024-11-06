@@ -5,7 +5,7 @@
 public class PinForwardedChannelMessageSagaId(string value) : Identity<PinForwardedChannelMessageSagaId>(value), ISagaId;
 
 public class
-    PinChannelMessagePtsIncrementedEvent(long channelId, int messageId, int pts) : AggregateEvent<PinForwardedChannelMessageSaga,
+    PinChannelMessagePtsIncrementedSagaEvent(long channelId, int messageId, int pts) : AggregateEvent<PinForwardedChannelMessageSaga,
         PinForwardedChannelMessageSagaId>
 {
     public long ChannelId { get; private set; } = channelId;
@@ -25,7 +25,7 @@ public class
 public class PinForwardedChannelMessageSaga(PinForwardedChannelMessageSagaId id, IEventStore eventStore, IIdGenerator idGenerator) : MyInMemoryAggregateSaga<PinForwardedChannelMessageSaga,
     PinForwardedChannelMessageSagaId, PinForwardedChannelMessageSagaLocator>(id, eventStore),
     ISagaIsStartedBy<MessageAggregate, MessageId, ChannelMessagePinnedEvent>,
-    IApply<PinChannelMessagePtsIncrementedEvent>
+    IApply<PinChannelMessagePtsIncrementedSagaEvent>
 {
     public async Task HandleAsync(IDomainEvent<MessageAggregate, MessageId, ChannelMessagePinnedEvent> domainEvent, ISagaContext sagaContext, CancellationToken cancellationToken)
     {
@@ -35,10 +35,10 @@ public class PinForwardedChannelMessageSaga(PinForwardedChannelMessageSagaId id,
     private async Task IncrementPtsAsync(long channelId, int messageId)
     {
         var pts = await idGenerator.NextIdAsync(IdType.Pts, channelId);
-        Emit(new PinChannelMessagePtsIncrementedEvent(channelId, messageId, pts));
+        Emit(new PinChannelMessagePtsIncrementedSagaEvent(channelId, messageId, pts));
     }
 
-    public void Apply(PinChannelMessagePtsIncrementedEvent aggregateEvent)
+    public void Apply(PinChannelMessagePtsIncrementedSagaEvent aggregateEvent)
     {
         CompleteAsync();
     }

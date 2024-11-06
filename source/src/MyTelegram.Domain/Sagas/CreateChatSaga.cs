@@ -12,7 +12,6 @@ public class CreateChatSaga(CreateChatSagaId id, IEventStore eventStore, IIdGene
         var chatId = domainEvent.AggregateEvent.ChatId;
         var outMessageId = await idGenerator.NextIdAsync(IdType.MessageId, ownerPeerId, cancellationToken: cancellationToken);
 
-        var aggregateId = MessageId.Create(ownerPeerId, outMessageId);
         var messageItem = new MessageItem(
             new Peer(PeerType.User, ownerPeerId),
             new Peer(PeerType.Chat, chatId),
@@ -28,13 +27,19 @@ public class CreateChatSaga(CreateChatSagaId id, IEventStore eventStore, IIdGene
             MessageSubType.CreateChat,
             null,
             domainEvent.AggregateEvent.MessageActionData,
-            MessageActionType.ChatCreate
+            MessageActionType.ChatCreate,
+            TtlPeriod: domainEvent.AggregateEvent.TtlPeriod,
+            IsTtlFromDefaultSetting: false
         );
-        var command = new CreateOutboxMessageCommand(aggregateId,
+
+        var command = new StartSendMessageCommand(TempId.New,
             domainEvent.AggregateEvent.RequestInfo with { RequestId = Guid.NewGuid() },
-            messageItem,
-            chatMembers: domainEvent.AggregateEvent.MemberUidList.Select(p => p.UserId).ToList()
-            );
+            [
+                new SendMessageItem(messageItem,
+                    ChatMembers: domainEvent.AggregateEvent.MemberUidList.Select(p => p.UserId).ToList())
+            ]
+        );
+
         Publish(command);
         await CompleteAsync(cancellationToken);
     }

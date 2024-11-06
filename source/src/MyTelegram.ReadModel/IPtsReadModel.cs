@@ -10,4 +10,5 @@ public interface IPtsReadModel : IReadModel
     int Pts { get; }
     int Qts { get; }
     int UnreadCount { get; }
+    int MaxMessageId { get; }
 }

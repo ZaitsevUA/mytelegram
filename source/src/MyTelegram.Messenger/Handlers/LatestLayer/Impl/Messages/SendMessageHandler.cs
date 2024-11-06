@@ -109,14 +109,17 @@ internal sealed class SendMessageHandler : RpcResultObjectHandler<MyTelegram.Sch
             //replyToMsgId,
             obj.ReplyTo,
             obj.ClearDraft,
-            media: media.ToBytes(),
-            replyMarkup: obj.ReplyMarkup.ToBytes(),
+            media: media,
+            replyMarkup: obj.ReplyMarkup,
             topMsgId: topMsgId,
             sendAs: sendAs,
-            effect: obj.Effect
+            effect: obj.Effect,
+            inputQuickReplyShortcut: obj.QuickReplyShortcut,
+            silent: obj.Silent,
+            scheduleDate: obj.ScheduleDate
         );
 
-        await _messageAppService.SendMessageAsync(sendMessageInput);
+        await _messageAppService.SendMessageAsync([sendMessageInput]);
 
         return null!;
     }

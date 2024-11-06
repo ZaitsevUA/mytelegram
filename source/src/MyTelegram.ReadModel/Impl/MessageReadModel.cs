@@ -1,15 +1,12 @@
-﻿using MyTelegram.Schema;
-using MyTelegram.Schema.Extensions;
+﻿using MyTelegram.Schema.Extensions;
 
 namespace MyTelegram.ReadModel.Impl;
 
 public class MessageReadModel : IMessageReadModel,
     IAmReadModelFor<MessageAggregate, MessageId, OutboxMessageCreatedEvent>,
     IAmReadModelFor<MessageAggregate, MessageId, InboxMessageCreatedEvent>,
-    IAmReadModelFor<MessageAggregate, MessageId, OutboxMessageEditedEvent>,
-    IAmReadModelFor<MessageAggregate, MessageId, InboxMessageEditedEvent>,
-    //IAmReadModelFor<MessageSaga, MessageSagaId, SendOutboxMessageCompletedEvent>,
-    //IAmReadModelFor<MessageSaga, MessageSagaId, ReceiveInboxMessageCompletedEvent>,
+    IAmReadModelFor<MessageAggregate, MessageId, OutboxMessageEditedEventV2>,
+    IAmReadModelFor<MessageAggregate, MessageId, InboxMessageEditedEventV2>,
     IAmReadModelFor<MessageAggregate, MessageId, InboxMessagePinnedUpdatedEvent>,
     IAmReadModelFor<MessageAggregate, MessageId, OutboxMessagePinnedUpdatedEvent>,
     IAmReadModelFor<MessageAggregate, MessageId, UpdatePinnedMessageStartedEvent>,
@@ -17,27 +14,30 @@ public class MessageReadModel : IMessageReadModel,
     IAmReadModelFor<MessageAggregate, MessageId, OutboxMessageDeletedEvent>,
     IAmReadModelFor<MessageAggregate, MessageId, InboxMessageDeletedEvent>,
     IAmReadModelFor<MessageAggregate, MessageId, SelfMessageDeletedEvent>,
-    IAmReadModelFor<SendMessageSaga, SendMessageSagaId, SendOutboxMessageCompletedSagaEvent>,
-    IAmReadModelFor<SendMessageSaga, SendMessageSagaId, ReceiveInboxMessageCompletedSagaEvent>,
+    //IAmReadModelFor<SendMessageSaga, SendMessageSagaId, SendOutboxMessageCompletedEvent>,
+    //IAmReadModelFor<SendMessageSaga, SendMessageSagaId, ReceiveInboxMessageCompletedEvent>,
     IAmReadModelFor<MessageAggregate, MessageId, MessageDeleted4Event>,
     IAmReadModelFor<MessageAggregate, MessageId, ReplyChannelMessageCompletedEvent>,
     IAmReadModelFor<MessageAggregate, MessageId, ChannelMessagePinnedEvent>,
     IAmReadModelFor<MessageAggregate, MessageId, MessageReplyUpdatedEvent>,
     IAmReadModelFor<MessageAggregate, MessageId, ChannelMessageDeletedEvent>,
     IAmReadModelFor<SendMessageSaga, SendMessageSagaId, PostChannelIdUpdatedSagaEvent>,
-    IAmReadModelFor<MessageAggregate,MessageId, MessageUnpinnedEvent>,
-    IAmReadModelFor<MessageAggregate,MessageId, MessagePinnedUpdatedEvent>
+    IAmReadModelFor<MessageAggregate, MessageId, MessageUnpinnedEvent>,
+    IAmReadModelFor<MessageAggregate, MessageId, MessagePinnedUpdatedEvent>
 {
     public int Date { get; private set; }
     public int? EditDate { get; private set; }
     public bool EditHide { get; private set; }
     public byte[]? Entities { get; private set; }
+    public TVector<IMessageEntity>? Entities2 { get; private set; }
     public MessageFwdHeader? FwdHeader { get; private set; }
     public long? GroupedId { get; private set; }
     public string Id { get; private set; } = default!;
     public byte[]? Media { get; private set; }
+    public IMessageMedia? Media2 { get; private set; }
     public string Message { get; private set; } = default!;
     public string? MessageActionData { get; private set; }
+    public IMessageAction? MessageAction { get; private set; }
     public MessageActionType MessageActionType { get; private set; }
     public MessageType MessageType { get; private set; }
     public int MessageId { get; private set; }
@@ -65,22 +65,28 @@ public class MessageReadModel : IMessageReadModel,
     public virtual long? Version { get; set; }
     public long? PollId { get; private set; }
     public byte[]? ReplyMarkup { get; private set; }
+    public IReplyMarkup? ReplyMarkup2 { get; private set; }
     public IInputReplyTo? ReplyTo { get; private set; }
     public Peer? SendAs { get; private set; }
     public MessageReply? Reply { get; private set; }
     public long? PostChannelId { get; private set; }
     public int? PostMessageId { get; private set; }
-    public bool HasQuickReplyShortcut { get; private set; }
-    public string? QuickReplyShortcut { get; private set; }
+    public bool IsQuickReplyMessage { get; private set; }
+    public int? ShortcutId { get; private set; }
     public Guid BatchId { get; private set; }
-    public long? Effect { get; private set; }
-    //public long RandomId { get; private set; }
 
+    public long? Effect { get; private set; }
+
+    public bool FromScheduled { get; private set; }
+
+    public int? ScheduleDate { get; private set; }
+    public int? TtlPeriod { get; private set; }
     public List<UserReaction>? UserReactions { get; set; }
-    //public List<long>? ReactionUserIds { get; private set; }
     public List<ReactionCount>? Reactions { get; private set; }
     public List<Reaction>? RecentReactions { get; private set; }
     public bool CanSeeList { get; private set; }
+
+    public int? ExpirationTime { get; private set; }
 
     public Task ApplyAsync(IReadModelContext context,
         IDomainEvent<MessageAggregate, MessageId, OutboxMessageCreatedEvent> domainEvent,
@@ -96,7 +102,7 @@ public class MessageReadModel : IMessageReadModel,
         MessageType = messageItem.MessageType;
         MessageId = messageItem.MessageId;
         Message = messageItem.Message;
-        Entities = messageItem.Entities;
+        Entities2 = messageItem.Entities;
         Date = messageItem.Date;
         SenderMessageId = messageItem.MessageId;
         MessageActionData = messageItem.MessageActionData;
@@ -105,7 +111,7 @@ public class MessageReadModel : IMessageReadModel,
         TopMsgId = messageItem.TopMsgId;
         FwdHeader = messageItem.FwdHeader;
         SendMessageType = messageItem.SendMessageType;
-        Media = messageItem.Media;
+        Media2 = messageItem.Media;
         GroupedId = messageItem.GroupId;
         Out = messageItem.IsOut;
         Views = messageItem.Views;
@@ -125,7 +131,7 @@ public class MessageReadModel : IMessageReadModel,
 
         Silent = false;
         PollId = messageItem.PollId;
-        ReplyMarkup = messageItem.ReplyMarkup;
+        ReplyMarkup2 = messageItem.ReplyMarkup;
         ReplyTo = messageItem.InputReplyTo;
         ReplyToMsgId = messageItem.InputReplyTo.ToReplyToMsgId();
         SendAs = messageItem.SendAs;
@@ -133,15 +139,23 @@ public class MessageReadModel : IMessageReadModel,
         EditHide = messageItem.EditHide;
         PostChannelId = messageItem.PostChannelId;
         PostMessageId = messageItem.PostMessageId;
-        HasQuickReplyShortcut = !string.IsNullOrEmpty(messageItem.QuickReplyShortcut);
-        QuickReplyShortcut = messageItem.QuickReplyShortcut;
-        //RandomId= messageItem.RandomId;
         if (messageItem.BatchId.HasValue)
         {
             BatchId = messageItem.BatchId.Value;
         }
 
         Effect = messageItem.Effect;
+        MessageAction = messageItem.MessageAction;
+        Pts = messageItem.Pts;
+        FromScheduled = messageItem.ScheduleDate.HasValue;
+        ScheduleDate = messageItem.ScheduleDate;
+        TtlPeriod = messageItem.TtlPeriod;
+        if (messageItem.TtlPeriod.HasValue && messageItem.TtlPeriod != 0)
+        {
+            ExpirationTime = messageItem.Date + messageItem.TtlPeriod.Value;
+        }
+        Pinned = messageItem.Pinned;
+
         return Task.CompletedTask;
     }
 
@@ -159,7 +173,7 @@ public class MessageReadModel : IMessageReadModel,
         MessageType = messageItem.MessageType;
         MessageId = messageItem.MessageId;
         Message = messageItem.Message;
-        Entities = messageItem.Entities;
+        Entities2 = messageItem.Entities;
         Date = messageItem.Date;
         SenderMessageId = domainEvent.AggregateEvent.SenderMessageId;
         MessageActionData = messageItem.MessageActionData;
@@ -167,14 +181,14 @@ public class MessageReadModel : IMessageReadModel,
         //ReplyToMsgId = messageItem.ReplyToMsgId;
         FwdHeader = messageItem.FwdHeader;
         SendMessageType = messageItem.SendMessageType;
-        Media = messageItem.Media;
+        Media2 = messageItem.Media;
         GroupedId = messageItem.GroupId;
         Out = messageItem.IsOut;
         Views = messageItem.Views;
 
         Silent = false;
         PollId = messageItem.PollId;
-        ReplyMarkup = messageItem.ReplyMarkup;
+        ReplyMarkup2 = messageItem.ReplyMarkup;
         ReplyTo = messageItem.InputReplyTo;
         ReplyToMsgId = messageItem.InputReplyTo.ToReplyToMsgId();
         //RandomId = messageItem.RandomId;
@@ -183,32 +197,49 @@ public class MessageReadModel : IMessageReadModel,
             BatchId = messageItem.BatchId.Value;
         }
         Effect = messageItem.Effect;
+        MessageAction = messageItem.MessageAction;
+        Pts = messageItem.Pts;
+        FromScheduled = messageItem.ScheduleDate.HasValue;
+        ScheduleDate = messageItem.ScheduleDate;
+        TtlPeriod = messageItem.TtlPeriod;
+        if (messageItem.TtlPeriod.HasValue && messageItem.TtlPeriod != 0)
+        {
+            ExpirationTime = messageItem.Date + messageItem.TtlPeriod.Value;
+        }
 
         return Task.CompletedTask;
     }
 
     public Task ApplyAsync(IReadModelContext context,
-        IDomainEvent<MessageAggregate, MessageId, OutboxMessageEditedEvent> domainEvent,
+        IDomainEvent<MessageAggregate, MessageId, OutboxMessageEditedEventV2> domainEvent,
         CancellationToken cancellationToken)
     {
-        Message = domainEvent.AggregateEvent.NewMessage;
-        Entities = domainEvent.AggregateEvent.Entities;
-        EditDate = domainEvent.AggregateEvent.EditDate;
+        var item = domainEvent.AggregateEvent.NewMessageItem;
+        Message = item.Message;
+        Entities2 = item.Entities;
+        EditDate = item.EditDate;
+        ReplyMarkup2 = item.ReplyMarkup;
+        Media2 = item.Media;
+
         return Task.CompletedTask;
     }
 
     public Task ApplyAsync(IReadModelContext context,
-        IDomainEvent<MessageAggregate, MessageId, InboxMessageEditedEvent> domainEvent,
+        IDomainEvent<MessageAggregate, MessageId, InboxMessageEditedEventV2> domainEvent,
         CancellationToken cancellationToken)
     {
-        Message = domainEvent.AggregateEvent.NewMessage;
-        Entities = domainEvent.AggregateEvent.Entities;
-        EditDate = domainEvent.AggregateEvent.EditDate;
+        var item = domainEvent.AggregateEvent.NewMessageItem;
+        Message = item.Message;
+        Entities2 = item.Entities;
+        EditDate = item.EditDate;
+        ReplyMarkup2 = item.ReplyMarkup;
+        Media2 = item.Media;
+
         return Task.CompletedTask;
     }
 
     //public Task ApplyAsync(IReadModelContext context,
-    //    IDomainEvent<MessageSaga, MessageSagaId, SendOutboxMessageCompletedEvent> domainEvent,
+    //    IDomainEvent<SendMessageSaga, SendMessageSagaId, SendOutboxMessageCompletedEvent> domainEvent,
     //    CancellationToken cancellationToken)
     //{
     //    if (string.IsNullOrEmpty(Id))
@@ -222,7 +253,7 @@ public class MessageReadModel : IMessageReadModel,
     //}
 
     //public Task ApplyAsync(IReadModelContext context,
-    //    IDomainEvent<MessageSaga, MessageSagaId, ReceiveInboxMessageCompletedEvent> domainEvent,
+    //    IDomainEvent<SendMessageSaga, SendMessageSagaId, ReceiveInboxMessageCompletedEvent> domainEvent,
     //    CancellationToken cancellationToken)
     //{
     //    if (string.IsNullOrEmpty(Id))
@@ -234,34 +265,6 @@ public class MessageReadModel : IMessageReadModel,
     //    Pts = domainEvent.AggregateEvent.Pts;
     //    return Task.CompletedTask;
     //}
-
-    public Task ApplyAsync(IReadModelContext context,
-        IDomainEvent<SendMessageSaga, SendMessageSagaId, SendOutboxMessageCompletedSagaEvent> domainEvent,
-        CancellationToken cancellationToken)
-    {
-        if (string.IsNullOrEmpty(Id))
-        {
-            Id = MyTelegram.Domain.Aggregates.Messaging.MessageId.Create(
-                domainEvent.AggregateEvent.MessageItem.OwnerPeer.PeerId,
-                domainEvent.AggregateEvent.MessageItem.MessageId).Value;
-        }
-        Pts = domainEvent.AggregateEvent.Pts;
-        return Task.CompletedTask;
-    }
-
-    public Task ApplyAsync(IReadModelContext context,
-        IDomainEvent<SendMessageSaga, SendMessageSagaId, ReceiveInboxMessageCompletedSagaEvent> domainEvent,
-        CancellationToken cancellationToken)
-    {
-        if (string.IsNullOrEmpty(Id))
-        {
-            Id = MyTelegram.Domain.Aggregates.Messaging.MessageId.Create(
-                domainEvent.AggregateEvent.MessageItem.OwnerPeer.PeerId,
-                domainEvent.AggregateEvent.MessageItem.MessageId).Value;
-        }
-        Pts = domainEvent.AggregateEvent.Pts;
-        return Task.CompletedTask;
-    }
 
     public Task ApplyAsync(IReadModelContext context,
         IDomainEvent<MessageAggregate, MessageId, InboxMessagePinnedUpdatedEvent> domainEvent,
@@ -364,6 +367,7 @@ public class MessageReadModel : IMessageReadModel,
 
         return Task.CompletedTask;
     }
+
     public Task ApplyAsync(IReadModelContext context, IDomainEvent<MessageAggregate, MessageId, MessageUnpinnedEvent> domainEvent, CancellationToken cancellationToken)
     {
         Pinned = false;
@@ -377,4 +381,4 @@ public class MessageReadModel : IMessageReadModel,
 
         return Task.CompletedTask;
     }
-    }
+}

@@ -13,7 +13,7 @@ public class EditOutboxMessageCommandHandler : CommandHandler<MessageAggregate, 
             command.Entities,
             command.Media,
             command.ReplyMarkup
-            );
+        );
 
         return Task.CompletedTask;
     }

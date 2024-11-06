@@ -94,7 +94,8 @@ public static class MyTelegramServerReadModelMongoDbExtensions
 
             .UseMongoDbReadModel<ContactAggregate, ContactId, ContactReadModel>()
             .UseMongoDbReadModel<ImportedContactAggregate, ImportedContactId, ImportedContactReadModel>()
-
+            .UseMongoDbReadModel<PtsAggregate, PtsId, PtsReadModel>()
+            .UseMongoDbReadModel<PtsAggregate, PtsId, PtsForAuthKeyIdReadModel>()
             ;
     }
 }

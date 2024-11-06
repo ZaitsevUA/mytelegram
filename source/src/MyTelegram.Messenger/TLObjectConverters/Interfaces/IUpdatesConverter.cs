@@ -22,11 +22,6 @@ public interface IUpdatesConverter : ILayeredConverter
         DeletedBoxItem item,
         int date);
 
-    IUpdates ToEditUpdates(OutboxMessageEditCompletedSagaEvent aggregateEvent,
-        long selfUserId);
-
-    IUpdates ToEditUpdates(InboxMessageEditCompletedSagaEvent aggregateEvent);
-
     IUpdates ToInboxForwardMessageUpdates(ReceiveInboxMessageCompletedSagaEvent aggregateEvent);
 
     IUpdates ToInviteToChannelUpdates(SendOutboxMessageCompletedSagaEvent aggregateEvent,
@@ -35,16 +30,9 @@ public interface IUpdatesConverter : ILayeredConverter
         IChannelReadModel channelReadModel,
         bool createUpdatesForSelf);
 
-    IUpdates ToInviteToChannelUpdates(IChat channel,
-        IUserReadModel senderUserReadModel,
-        int date);
-
     IUpdates ToReadHistoryUpdates(ReadHistoryCompletedSagaEvent eventData);
     IUpdates ToReadHistoryUpdates(UpdateOutboxMaxIdCompletedSagaEvent eventData);
-    IUpdates ToSelfOtherDeviceUpdates(SendOutboxMessageCompletedSagaEvent aggregateEvent);
-
     IUpdates ToSelfUpdatePinnedMessageUpdates(UpdatePinnedMessageCompletedSagaEvent aggregateEvent);
-    IUpdates ToSelfUpdates(SendOutboxMessageCompletedSagaEvent aggregateEvent);
     IUpdates ToUpdatePinnedMessageServiceUpdates(SendOutboxMessageCompletedSagaEvent aggregateEvent);
 
     IUpdates ToUpdatePinnedMessageUpdates(UpdatePinnedMessageCompletedSagaEvent aggregateEvent);
@@ -52,8 +40,6 @@ public interface IUpdatesConverter : ILayeredConverter
     IUpdates ToUpdatePinnedMessageUpdates(SendOutboxMessageCompletedSagaEvent aggregateEvent);
 
     IUpdates ToUpdatePinnedMessageUpdates(ReceiveInboxMessageCompletedSagaEvent aggregateEvent);
-
-    IUpdates ToUpdates(ReceiveInboxMessageCompletedSagaEvent aggregateEvent);
 
     IUpdates ToDraftsUpdates(IReadOnlyCollection<IDraftReadModel> draftReadModels);
 

@@ -22,6 +22,7 @@ public class DialogReadModelLocator : IDialogReadModelLocator
                     //yield return outboxCreatedEvent.DialogId.Value;
                     yield return DialogId.Create(outboxCreatedEvent.RequestInfo.UserId,
                         outboxCreatedEvent.OutboxMessageItem.ToPeer).Value;
+
                     break;
 
                 case InboxMessageCreatedEvent inboxMessageCreatedEvent:
@@ -53,7 +54,7 @@ public class DialogReadModelLocator : IDialogReadModelLocator
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(
-                        $"Not supported domain event:{aggregateEvent.GetType().Name} for DialogReadModelLocator");
+                        $"Not supported domain event: {aggregateEvent.GetType().Name} for DialogReadModelLocator");
             }
         }
     }

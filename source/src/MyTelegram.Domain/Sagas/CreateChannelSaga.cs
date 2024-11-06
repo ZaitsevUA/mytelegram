@@ -24,7 +24,6 @@ public class CreateChannelSaga :
         var creatorId = domainEvent.AggregateEvent.RequestInfo.UserId;
         var outMessageId =
             await _idGenerator.NextIdAsync(IdType.MessageId, ownerPeerId, cancellationToken: cancellationToken);
-        var aggregateId = MessageId.Create(ownerPeerId, outMessageId);
         var subType = _state.MigratedFromChat ? MessageSubType.MigrateChat : MessageSubType.CreateChannel;
         if (_state.AutoCreateFromChat)
         {
@@ -44,11 +43,21 @@ public class CreateChannelSaga :
             MessageType.Text,
             subType,
             null,
-            _state.MessageActionData,
-            MessageActionType.ChannelCreate,
-            Post: _state.Broadcast
+            //_state.MessageActionData,
+            MessageActionType: MessageActionType.ChannelCreate,
+            MessageAction: new TMessageActionChannelCreate
+            {
+                Title = _state.Title
+            },
+            Post: _state.Broadcast//,
+                                  //TtlPeriod: _state.TtlPeriod,
+                                  //IsTtlFromDefaultSetting: _state.IsTtlFromDefaultSetting
         );
-        var command = new CreateOutboxMessageCommand(aggregateId, _state.RequestInfo, messageItem);
+
+        var command = new StartSendMessageCommand(TempId.New,
+            _state.RequestInfo,
+            [new SendMessageItem(messageItem)]
+        );
 
         Publish(command);
 
@@ -60,11 +69,15 @@ public class CreateChannelSaga :
         CancellationToken cancellationToken)
     {
         Emit(new CreateChannelSagaStartedSagaEvent(domainEvent.AggregateEvent.RequestInfo,
+            domainEvent.AggregateEvent.ChannelId,
+            domainEvent.AggregateEvent.Title,
             domainEvent.AggregateEvent.Broadcast,
-            domainEvent.AggregateEvent.MessageActionData, domainEvent.AggregateEvent.RandomId,
+            domainEvent.AggregateEvent.RandomId,
             domainEvent.AggregateEvent.MigratedFromChat,
-            domainEvent.AggregateEvent.AutoCreateFromChat
-            ));
+            domainEvent.AggregateEvent.AutoCreateFromChat,
+            domainEvent.AggregateEvent.TtlPeriod,
+            domainEvent.AggregateEvent.TtlFromDefaultSetting
+        ));
         var ownerPeerId = domainEvent.AggregateEvent.ChannelId;
         await _idGenerator.NextIdAsync(IdType.Pts, ownerPeerId, cancellationToken: cancellationToken);
 
@@ -86,7 +99,9 @@ public class CreateChannelSaga :
             domainEvent.AggregateEvent.RequestInfo,
             domainEvent.AggregateEvent.ChannelId,
             domainEvent.AggregateEvent.CreatorId,
-            domainEvent.AggregateEvent.Date);
+            domainEvent.AggregateEvent.Date,
+            domainEvent.AggregateEvent.Broadcast
+            );
         Publish(createMemberCommand);
 
         // Export default chat invite after channel created

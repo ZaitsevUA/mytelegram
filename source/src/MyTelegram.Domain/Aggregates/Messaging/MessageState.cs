@@ -27,7 +27,9 @@ public class MessageState : AggregateState<MessageAggregate, MessageId, MessageS
     IApply<ChannelMessageDeletedEvent>,
     IApply<MessageReplyUpdatedEvent>,
     IApply<MessageUnpinnedEvent>,
-    IApply<MessagePinnedUpdatedEvent>
+    IApply<MessagePinnedUpdatedEvent>,
+    IApply<OutboxMessageEditedEventV2>,
+    IApply<InboxMessageEditedEventV2>
 
 {
     public MessageItem MessageItem { get; private set; } = null!;
@@ -264,5 +266,21 @@ public class MessageState : AggregateState<MessageAggregate, MessageId, MessageS
     public void Apply(MessagePinnedUpdatedEvent aggregateEvent)
     {
         Pinned = aggregateEvent.Pinned;
+    }
+
+    public void Apply(OutboxMessageEditedEventV2 aggregateEvent)
+    {
+        EditDate = aggregateEvent.NewMessageItem.EditDate ?? 0;
+        Edited = true;
+
+        MessageItem = aggregateEvent.NewMessageItem;
+    }
+
+    public void Apply(InboxMessageEditedEventV2 aggregateEvent)
+    {
+        EditDate = aggregateEvent.NewMessageItem.EditDate ?? 0;
+        Edited = true;
+
+        MessageItem = aggregateEvent.NewMessageItem;
     }
 }

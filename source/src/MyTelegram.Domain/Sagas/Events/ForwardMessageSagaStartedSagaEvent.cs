@@ -7,7 +7,8 @@ public class ForwardMessageSagaStartedSagaEvent(
     IReadOnlyList<int> idList,
     IReadOnlyList<long> randomIdList,
     bool forwardFromLinkedChannel,
-    bool post
+    bool post,
+    int? ttlPeriod
     )
     : RequestAggregateEvent2<ForwardMessageSaga, ForwardMessageSagaId>(requestInfo)
 {
@@ -16,6 +17,6 @@ public class ForwardMessageSagaStartedSagaEvent(
     public IReadOnlyList<long> RandomIdList { get; } = randomIdList;
     public bool ForwardFromLinkedChannel { get; } = forwardFromLinkedChannel;
     public bool Post { get; } = post;
-
+    public int? TtlPeriod { get; } = ttlPeriod;
     public Peer ToPeer { get; } = toPeer;
 }

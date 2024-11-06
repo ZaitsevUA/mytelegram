@@ -3,10 +3,8 @@
 public class ForwardMessageState : AggregateState<ForwardMessageSaga, ForwardMessageSagaId, ForwardMessageState>,
     IApply<ForwardMessageSagaStartedSagaEvent>,
     IApply<ForwardSingleMessageSuccessSagaEvent>,
-    IApply<MessageReplyCreatedEvent>
+    IApply<MessageReplyCreatedSagaEvent>
 {
-    public Guid CorrelationId { get; private set; }
-
     public int ForwardCount { get; private set; }
     public Peer FromPeer { get; private set; } = null!;
     public IReadOnlyList<int> IdList { get; private set; } = null!;
@@ -17,6 +15,7 @@ public class ForwardMessageState : AggregateState<ForwardMessageSaga, ForwardMes
     public Peer ToPeer { get; private set; } = null!;
     public bool ForwardFromLinkedChannel { get; private set; }
     public bool Post { get; private set; }
+    public int? TtlPeriod { get; private set; }
 
     public void Apply(ForwardMessageSagaStartedSagaEvent aggregateEvent)
     {
@@ -27,6 +26,7 @@ public class ForwardMessageState : AggregateState<ForwardMessageSaga, ForwardMes
         RandomIdList = aggregateEvent.RandomIdList;
         ForwardFromLinkedChannel = aggregateEvent.ForwardFromLinkedChannel;
         Post = aggregateEvent.Post;
+        TtlPeriod = aggregateEvent.TtlPeriod;
     }
 
     public void Apply(ForwardSingleMessageSuccessSagaEvent aggregateEvent)
@@ -34,8 +34,7 @@ public class ForwardMessageState : AggregateState<ForwardMessageSaga, ForwardMes
         ForwardCount++;
     }
 
-    public void Apply(MessageReplyCreatedEvent aggregateEvent)
+    public void Apply(MessageReplyCreatedSagaEvent aggregateEvent)
     {
-        //throw new NotImplementedException();
     }
 }

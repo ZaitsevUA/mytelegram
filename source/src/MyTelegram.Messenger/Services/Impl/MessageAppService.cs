@@ -81,7 +81,7 @@ public class MessageAppService(
         }
     }
 
-    public async Task CheckSendAsync(long requestUserId, Peer toPeer, Peer? sendAs)
+    public async Task CheckSendAsAsync(long requestUserId, Peer toPeer, Peer? sendAs)
     {
         if (sendAs != null)
         {
@@ -116,7 +116,7 @@ public class MessageAppService(
 
     private Task CheckSendAsAsync(SendMessageInput input)
     {
-        return CheckSendAsync(input.RequestInfo.UserId, input.ToPeer, input.SendAs);
+        return CheckSendAsAsync(input.RequestInfo.UserId, input.ToPeer, input.SendAs);
     }
 
     private async Task<IChannelReadModel?> CheckChannelBannedRightsAsync(SendMessageInput input)
@@ -235,7 +235,32 @@ public class MessageAppService(
         return chatReadModel!.ChatMembers.Select(p => p.UserId).ToList();
     }
 
-    public async Task SendMessageAsync(SendMessageInput input)
+    public async Task SendMessageAsync(List<SendMessageInput> inputs)
+    {
+        if (!inputs.Any())
+        {
+            throw new ArgumentException();
+        }
+
+        List<SendMessageItem> sendMessageItems = [];
+        var firstInput = inputs.First();
+        var requestInfo = firstInput.RequestInfo;
+        foreach (var input in inputs)
+        {
+            var item = await CreateSendMessageItemAsync(input);
+            sendMessageItems.Add(item);
+        }
+
+        var command = new StartSendMessageCommand(TempId.New, requestInfo,
+            sendMessageItems,
+            firstInput.ClearDraft,
+            firstInput.IsSendGroupedMessage,
+            firstInput.IsSendQuickReplyMessage);
+
+        await commandBus.PublishAsync(command);
+    }
+
+    private async Task<SendMessageItem> CreateSendMessageItemAsync(SendMessageInput input)
     {
         //await CheckAccessHashAsync(input);
         await CheckSendAsAsync(input);
@@ -245,25 +270,33 @@ public class MessageAppService(
 
         var item = await GetMessageEntitiesAsync(input);
         var ownerPeerId = input.ToPeer.PeerType == PeerType.Channel ? input.ToPeer.PeerId : input.SenderUserId;
-        int? replyToMsgId = input.InputReplyTo.ToReplyToMsgId();
+        var replyToMsgId = input.InputReplyTo.ToReplyToMsgId();
 
         // Reply to group: ToPeerId=input.ToPeerId,SenderUserId=input.UserId
         // Reply to user:  ToPeerId=Input.UserId,OwnerPeerId=input.ToPeerId,MessageId=replyToMsgId
 
         var replyToMsgItems =
-            await queryProcessor.ProcessAsync(new GetReplyToMsgIdListQuery(input.ToPeer, input.SenderUserId, replyToMsgId));
-        //var idType = input.ToPeer.PeerType == PeerType.Channel ? IdType.ChannelMessageId : IdType.MessageId;
+            await queryProcessor.ProcessAsync(new GetReplyToMsgIdListQuery(input.ToPeer, input.SenderUserId,
+                replyToMsgId));
         var idType = IdType.MessageId;
+        var subType = MessageSubType.Normal;
+        var messageAction = MessageActionType.None;
         var post = channelReadModel?.Broadcast ?? false;
         var linkedChannelId = channelReadModel?.Broadcast ?? false ? channelReadModel.LinkedChatId : null;
         string? postAuthor = null;
 
         if (post && channelReadModel!.Signatures)
         {
-            var user = await queryProcessor.ProcessAsync(new GetUserByIdQuery(input.RequestInfo.UserId));
-            postAuthor = $"{user!.FirstName} {user.LastName}";
+            if (input.SendAs?.PeerType != PeerType.Channel)
+            {
+                var user = await queryProcessor.ProcessAsync(
+                    new GetUserByIdQuery(input.SendAs?.PeerId ?? input.RequestInfo.UserId));
+                postAuthor = $"{user!.FirstName} {user.LastName}";
+            }
         }
 
+        var pts = await idGenerator.NextIdAsync(IdType.Pts, ownerPeerId); ;
+       
         MessageReply? reply = null;
         if (post && linkedChannelId.HasValue)
         {
@@ -274,7 +307,7 @@ public class MessageAppService(
 
         var date = CurrentDate;
         var messageItem = new MessageItem(
-            input.ToPeer with { PeerId = ownerPeerId/*, AccessHash = 0 */},
+            input.ToPeer with { PeerId = ownerPeerId /*, AccessHash = 0 */ },
             input.ToPeer,
             new Peer(PeerType.User, input.SenderUserId),
             input.SenderUserId,
@@ -285,11 +318,11 @@ public class MessageAppService(
             true,
             input.SendMessageType,
             (MessageType)input.SendMessageType,
-            MessageSubType.Normal,
+            subType,
             input.InputReplyTo,
             input.MessageActionData,
-            MessageActionType.None,
-            item.entities.ToBytes(),
+            messageAction,
+            item.entities,
             input.Media,
             input.GroupId,
             PollId: input.PollId,
@@ -298,23 +331,17 @@ public class MessageAppService(
             TopMsgId: input.TopMsgId,
             PostAuthor: postAuthor,
             SendAs: input.SendAs,
-            QuickReplyShortcut: input.QuickReplyShortcut,
             Effect: input.Effect,
+            ReplyToMsgItems: replyToMsgItems?.ToList(),
+            LinkedChannelId: linkedChannelId,
+            Pts: pts,
+            Silent: input.Silent,
             Reply: reply
         );
 
-        var command = new CreateOutboxMessageCommand(MessageId.Create(ownerPeerId, messageId),
-            input.RequestInfo,
-            messageItem,
-            item.mentionedUserIds,
-            replyToMsgItems?.ToList(),
-            //input.InputReplyTo,
-            input.ClearDraft,
-            input.GroupItemCount,
-            linkedChannelId,
-            chatMembers
-            );
-        await commandBus.PublishAsync(command);
+        var sendMessageItem = new SendMessageItem(messageItem, input.ClearDraft, item.mentionedUserIds, chatMembers);
+
+        return sendMessageItem;
     }
 
     private (List<TMessageEntityMention> mentions, List<string> userNameList) GetMentions(string message)

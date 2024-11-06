@@ -19,8 +19,8 @@ public class ChannelReadModel : IChannelReadModel,
     IAmReadModelFor<ChannelAggregate, ChannelId, ChannelColorUpdatedEvent>,
     IAmReadModelFor<ChannelAggregate,ChannelId, LinkedChannelChangedEvent>,
 
-    IAmReadModelFor<DeleteChannelMessagesSaga,DeleteChannelMessagesSagaId, DeleteChannelMessagesCompletedEvent>,
-    IAmReadModelFor<DeleteChannelMessagesSaga,DeleteChannelMessagesSagaId, DeleteChannelHistoryCompletedEvent>,
+    IAmReadModelFor<DeleteChannelMessagesSaga,DeleteChannelMessagesSagaId, DeleteChannelMessagesCompletedSagaEvent>,
+    IAmReadModelFor<DeleteChannelMessagesSaga,DeleteChannelMessagesSagaId, DeleteChannelHistoryCompletedSagaEvent>,
     IAmReadModelFor<DeleteReplyMessagesSaga, DeleteReplyMessagesSagaId, DeleteReplyMessagesCompletedSagaEvent>,
     IAmReadModelFor<ChannelAggregate, ChannelId, ChannelDeletedEvent>,
     IAmReadModelFor<ChannelMemberAggregate, ChannelMemberId, ChannelMemberCreatedEvent>,
@@ -342,7 +342,7 @@ public class ChannelReadModel : IChannelReadModel,
         return Task.CompletedTask;
     }
 
-    public Task ApplyAsync(IReadModelContext context, IDomainEvent<DeleteChannelMessagesSaga, DeleteChannelMessagesSagaId, DeleteChannelMessagesCompletedEvent> domainEvent, CancellationToken cancellationToken)
+    public Task ApplyAsync(IReadModelContext context, IDomainEvent<DeleteChannelMessagesSaga, DeleteChannelMessagesSagaId, DeleteChannelMessagesCompletedSagaEvent> domainEvent, CancellationToken cancellationToken)
     {
         TopMessageId = domainEvent.AggregateEvent.NewTopMessageId;
 
@@ -356,7 +356,7 @@ public class ChannelReadModel : IChannelReadModel,
         return Task.CompletedTask;
     }
 
-    public Task ApplyAsync(IReadModelContext context, IDomainEvent<DeleteChannelMessagesSaga, DeleteChannelMessagesSagaId, DeleteChannelHistoryCompletedEvent> domainEvent, CancellationToken cancellationToken)
+    public Task ApplyAsync(IReadModelContext context, IDomainEvent<DeleteChannelMessagesSaga, DeleteChannelMessagesSagaId, DeleteChannelHistoryCompletedSagaEvent> domainEvent, CancellationToken cancellationToken)
     {
         if (domainEvent.AggregateEvent.NewTopMessageId != 0)
         {

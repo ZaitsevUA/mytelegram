@@ -20,23 +20,21 @@ public class UpdateContactProfilePhotoSaga(
             var ownerPeer = new Peer(PeerType.User, ownerPeerId);
             var senderPeer = new Peer(PeerType.User, ownerPeerId);
             var toPeer = new Peer(PeerType.User, domainEvent.AggregateEvent.TargetUserId);
+            var messageItem = new MessageItem(ownerPeer, toPeer, senderPeer,
+                senderPeer.PeerId,
+                outMessageId,
+                string.Empty,
+                DateTime.UtcNow.ToTimestamp(),
+                randomId,
+                true,
+                SendMessageType.MessageService,
+                MessageType.Text,
+                MessageSubType.None,
+                MessageActionData: domainEvent.AggregateEvent.MessageActionData
+            );
+            var command = new StartSendMessageCommand(TempId.New, domainEvent.AggregateEvent.RequestInfo with { RequestId = Guid.NewGuid() },
+                [new SendMessageItem(messageItem)]);
 
-            var command = new CreateOutboxMessageCommand(
-                aggregateId,
-                domainEvent.AggregateEvent.RequestInfo with { RequestId = Guid.NewGuid() },
-                new MessageItem(ownerPeer, toPeer, senderPeer,
-                    senderPeer.PeerId,
-                    outMessageId,
-                    string.Empty,
-                    DateTime.UtcNow.ToTimestamp(),
-                    randomId,
-                    true,
-                    SendMessageType.MessageService,
-                    MessageType.Text,
-                    MessageSubType.None,
-                    MessageActionData: domainEvent.AggregateEvent.MessageActionData
-                    )
-                );
             Publish(command);
         }
 

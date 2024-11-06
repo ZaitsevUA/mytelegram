@@ -34,10 +34,10 @@ public class ReplyReadModelLocator : IReplyReadModelLocator
             case ReplyChannelMessageCompletedEvent replyChannelMessageCompletedEvent:
                 yield return ReplyId.Create(replyChannelMessageCompletedEvent.ChannelId, replyChannelMessageCompletedEvent.ReplyToMessageId).Value;
                 break;
-            case MessageReplyCreatedEvent messageReplyCreatedEvent:
+            case MessageReplyCreatedSagaEvent messageReplyCreatedSagaEvent:
 
                 yield return ReplyId
-                    .Create(messageReplyCreatedEvent.ChannelId, messageReplyCreatedEvent.MessageId).Value;
+                    .Create(messageReplyCreatedSagaEvent.ChannelId, messageReplyCreatedSagaEvent.MessageId).Value;
                 break;
 
         }

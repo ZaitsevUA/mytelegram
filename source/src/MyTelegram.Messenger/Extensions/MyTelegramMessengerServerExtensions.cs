@@ -1,4 +1,5 @@
-﻿using EventFlow.MongoDB.Extensions;
+﻿using EventFlow.Core.Caching;
+using EventFlow.MongoDB.Extensions;
 using EventFlow.Sagas;
 using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Serializers;
@@ -54,6 +55,13 @@ public static class MyTelegramMessengerServerExtensions
             options.AddMongoDbQueryHandlers();
 
             configure?.Invoke(options);
+
+            options.AddSystemTextJson(jsonSerializerOptions =>
+            {
+                jsonSerializerOptions.AddSingleValueObjects(
+                    new EventFlow.SystemTextJsonSingleValueObjectConverter<CacheKey>());
+                jsonSerializerOptions.TypeInfoResolverChain.Add(MyMessengerJsonContext.Default);
+            });
         })
             .AddMyTelegramCoreServices()
             .AddMyTelegramHandlerServices()
@@ -83,6 +91,7 @@ public static class MyTelegramMessengerServerExtensions
     {
         services.RegisterMongoDbSerializer();
         services.AddLayeredServices();
+        services.AddLayeredResultConverters();
 
         //services.AddSingleton<IJsonContextProvider, MyJsonContextProvider>();
         services.AddSingleton<IMediaHelper, NullMediaHelper>();
