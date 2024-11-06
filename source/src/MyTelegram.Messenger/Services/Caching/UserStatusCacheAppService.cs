@@ -1,7 +1,7 @@
 ﻿namespace MyTelegram.Messenger.Services.Caching;
 
 public class UserStatusCacheAppService(IInMemoryRepository<UserStatus, long> inMemoryRepository)
-    : IUserStatusCacheAppService
+    : IUserStatusCacheAppService, ISingletonDependency
 {
     public IUserStatus GetUserStatus(long userId)
     {

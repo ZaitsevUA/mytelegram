@@ -5,7 +5,7 @@ namespace MyTelegram.Messenger.Services.Impl;
 public class MediaHelper(
     IOptionsMonitor<MyTelegramMessengerServerOptions> options,
     ILogger<MediaHelper> logger)
-    : IMediaHelper
+    : IMediaHelper, ITransientDependency
 {
     public async Task<IEncryptedFile> SaveEncryptedFileAsync(long reqMsgId,
         IInputEncryptedFile encryptedFile)

@@ -1,6 +1,6 @@
 ﻿namespace MyTelegram.GatewayServer.Services;
 
-public class ClientManager : IClientManager
+public class ClientManager : IClientManager, ISingletonDependency
 {
     private readonly ConcurrentDictionary<string, ClientData> _clients = new();
 

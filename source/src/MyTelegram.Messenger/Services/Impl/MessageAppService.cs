@@ -10,7 +10,7 @@ public class MessageAppService(
     IPrivacyAppService privacyAppService,
     IOffsetHelper offsetHelper,
     IIdGenerator idGenerator)
-    : BaseAppService, IMessageAppService
+    : BaseAppService, IMessageAppService, ITransientDependency
 {
     public async Task<GetMessageOutput> GetChannelDifferenceAsync(GetDifferenceInput input)
     {
@@ -296,7 +296,7 @@ public class MessageAppService(
         }
 
         var pts = await idGenerator.NextIdAsync(IdType.Pts, ownerPeerId); ;
-       
+
         MessageReply? reply = null;
         if (post && linkedChannelId.HasValue)
         {

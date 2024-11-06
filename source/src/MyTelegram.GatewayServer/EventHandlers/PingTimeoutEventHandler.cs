@@ -1,6 +1,6 @@
 ﻿namespace MyTelegram.GatewayServer.EventHandlers;
 
-public class PingTimeoutEventHandler(IClientManager clientManager) : IEventHandler<PingTimeoutEvent>
+public class PingTimeoutEventHandler(IClientManager clientManager) : IEventHandler<PingTimeoutEvent>, ITransientDependency
 {
     public Task HandleEventAsync(PingTimeoutEvent eventData)
     {

@@ -8,7 +8,7 @@ public class DistributedDomainEventHandler(
     ILogger<DistributedDomainEventHandler> logger,
     IDispatchToReadStores dispatchToReadStores,
     IChatEventCacheHelper chatEventCacheHelper)
-    : IEventHandler<DomainEventMessage>
+    : IEventHandler<DomainEventMessage>, ITransientDependency
 {
     public Task HandleEventAsync(DomainEventMessage eventData)
     {
@@ -25,7 +25,7 @@ public class DistributedDomainEventHandler(
 
                 if (totalMilliseconds > maxMillSeconds)
                 {
-                    logger.LogInformation("Process domain event '{DomainEvent}' is too slow,time={Timespan}ms,reqMsgId={ReqMsgId}",
+                    logger.LogInformation("Process domain event '{DomainEvent}' is too slow, time: {Timespan}ms, reqMsgId: {ReqMsgId}",
                         domainEvent.GetAggregateEvent().GetType().Name,
                         totalMilliseconds,
                         hasRequestInfo.RequestInfo.ReqMsgId);
@@ -51,7 +51,7 @@ public class DistributedDomainEventHandler(
 
             if (sw.Elapsed.TotalMilliseconds > maxMillSeconds)
             {
-                logger.LogInformation("Process domain event '{DomainEvent}' is too slow,time={Timespan}ms",
+                logger.LogInformation("Process domain event '{DomainEvent}' is too slow, time {Timespan}ms",
                     domainEvent.GetAggregateEvent().GetType().Name,
                     sw.Elapsed);
             }

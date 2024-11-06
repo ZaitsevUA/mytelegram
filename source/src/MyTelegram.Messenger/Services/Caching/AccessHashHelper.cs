@@ -3,7 +3,7 @@
 internal sealed class AccessHashHelper(
     IQueryProcessor queryProcessor,
     IPeerHelper peerHelper)
-    : IAccessHashHelper
+    : IAccessHashHelper, ISingletonDependency
 {
     private readonly ConcurrentDictionary<long, long> _accessHashCaches = new();
 

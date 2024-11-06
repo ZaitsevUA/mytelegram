@@ -3,7 +3,7 @@ using System.Text;
 
 namespace MyTelegram.Services.Services;
 
-public class CacheSerializer(IJsonSerializer jsonSerializer) : ICacheSerializer
+public class CacheSerializer(IJsonSerializer jsonSerializer) : ICacheSerializer, ITransientDependency
 {
     public byte[] Serialize<T>(T obj)
     {

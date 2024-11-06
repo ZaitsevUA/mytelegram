@@ -5,7 +5,7 @@ public class ContactAppService(
     IPhotoAppService photoAppService,
     IOptionsMonitor<MyTelegramMessengerServerOptions> options,
     IPrivacyAppService privacyAppService)
-    : BaseAppService, IContactAppService
+    : BaseAppService, IContactAppService, ITransientDependency
 {
     public async Task<SearchContactOutput> SearchAsync(long selfUserId,
         string keyword)

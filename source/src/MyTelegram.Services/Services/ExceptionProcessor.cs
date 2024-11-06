@@ -1,5 +1,4 @@
 ﻿using EventFlow.Exceptions;
-using Microsoft.Extensions.Logging;
 using MyTelegram.Schema;
 
 namespace MyTelegram.Services.Services;
@@ -8,7 +7,7 @@ public class ExceptionProcessor(
     ILogger<ExceptionProcessor> logger,
     IObjectMessageSender objectMessageSender,
     IEventBus eventBus)
-    : IExceptionProcessor //, ISingletonDependency
+    : IExceptionProcessor, ITransientDependency
 {
     //private const int BufferSize = 1024 * 4;
 

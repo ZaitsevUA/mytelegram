@@ -2,7 +2,7 @@
 
 namespace MyTelegram.Messenger.Services;
 
-public class LanguageManager : ILanguageManager
+public class LanguageManager : ILanguageManager, ISingletonDependency
 {
     private readonly ConcurrentDictionary<string, ConcurrentDictionary<string, List<LangItem>>> _languages = new();
 
@@ -106,7 +106,7 @@ public class LanguageManager : ILanguageManager
         {
             langDict.TryAdd(langPack, languageItems);
         }
-		return languageItems;
+        return languageItems;
     }
 
     private List<LangItem> GetXmlLanguagePacks(string fileName)

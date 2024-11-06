@@ -1,6 +1,6 @@
 ﻿namespace MyTelegram.Messenger.Services.Impl;
 
-public class VerificationCodeGenerator(IOptionsMonitor<MyTelegramMessengerServerOptions> options, IRandomHelper randomHelper) : IVerificationCodeGenerator
+public class VerificationCodeGenerator(IOptionsMonitor<MyTelegramMessengerServerOptions> options, IRandomHelper randomHelper) : IVerificationCodeGenerator, ITransientDependency
 {
     public string Generate()
     {

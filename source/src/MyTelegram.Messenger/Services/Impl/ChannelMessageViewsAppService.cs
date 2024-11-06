@@ -8,7 +8,7 @@ public class ChannelMessageViewsAppService(
     IQueryProcessor queryProcessor,
     ICommandBus commandBus,
     ICuckooFilter cuckooFilter)
-    : IChannelMessageViewsAppService //, ISingletonDependency
+    : IChannelMessageViewsAppService, ITransientDependency
 {
     //private readonly IBloomFilter _bloomFilter;
 

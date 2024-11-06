@@ -1,16 +1,15 @@
-﻿using System.Collections.Concurrent;
+﻿using MyTelegram.Schema;
+using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
-using Microsoft.Extensions.Logging;
-using MyTelegram.Schema;
 
 namespace MyTelegram.Services.Services;
 
 public class HandlerHelper(
     IServiceProvider serviceProvider,
     ILogger<HandlerHelper> logger)
-    : IHandlerHelper
+    : IHandlerHelper, ISingletonDependency
 {
     private static readonly ConcurrentDictionary<uint, IObjectHandler> Handlers = new();
 

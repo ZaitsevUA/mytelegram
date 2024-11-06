@@ -79,9 +79,7 @@ public static class MyTelegramMessengerServerExtensions
         services.AddSingleton<IHiLoValueGeneratorCache, HiLoValueGeneratorCache>();
         services.AddTransient<IHiLoValueGeneratorFactory, HiLoValueGeneratorFactory>();
         services.AddSingleton<IHiLoStateBlockSizeHelper, HiLoStateBlockSizeHelper>();
-        //services.AddSingleton<IHiLoHighValueGenerator, HiLoHighValueGenerator>();
         services.AddSingleton<IRedisIdGenerator, RedisIdGenerator>();
-        //services.AddSingleton<IHiLoHighValueGenerator, RedisHighValueGenerator>();
         services.AddTransient<IHiLoHighValueGenerator, MongoDbHighValueGenerator>();
         services.AddSingleton<IMongoDbIdGenerator, MongoDbIdGenerator>();
         return services;
@@ -90,57 +88,15 @@ public static class MyTelegramMessengerServerExtensions
     public static IServiceCollection AddMyTelegramMessengerServices(this IServiceCollection services)
     {
         services.RegisterMongoDbSerializer();
+        services.RegisterServices();
+
         services.AddLayeredServices();
         services.AddLayeredResultConverters();
-
-        //services.AddSingleton<IJsonContextProvider, MyJsonContextProvider>();
-        services.AddSingleton<IMediaHelper, NullMediaHelper>();
-
-        services.AddSingleton<IResponseCacheAppService, ResponseCacheAppService>();
-        services.AddSingleton<IUserStatusCacheAppService, UserStatusCacheAppService>();
-
-        //services.AddSingleton<ISrpHelper, SrpHelper>();
-        services.AddSingleton<IPrivacyHelper, PrivacyHelper>();
-        services.AddSingleton<IPrivacyAppService, PrivacyAppService>();
-        //services.AddSingleton<IPasswordAppService, PasswordAppService>();
-        services.AddSingleton<IDataCenterHelper, DataCenterHelper>();
-        services.AddSingleton<IDataSeeder, DataSeeder>();
-        services.AddSingleton<IDialogAppService, DialogAppService>();
-        services.AddSingleton<IMessageAppService, MessageAppService>();
-        services.AddSingleton<IContactAppService, ContactAppService>();
-        services.AddSingleton<IPeerSettingsAppService, PeerSettingsAppService>();
-        services.AddSingleton<IChannelMessageViewsAppService, ChannelMessageViewsAppService>();
-        services.AddSingleton<IChatEventCacheHelper, ChatEventCacheHelper>();
-
-        services.AddSingleton<IPtsHelper, PtsHelper>();
-
-        // Filter services
-        services.AddSingleton<IBloomFilter, MyBloomFilter>();
-        services.AddSingleton<ICuckooFilter, MyCuckooFilter>();
-        services.AddTransient<IInMemoryFilterDataLoader, InMemoryFilterDataLoader>();
-
         services.RegisterHandlers(typeof(MyTelegramMessengerServerExtensions).Assembly);
         services.RegisterAllMappers();
-
-
-        services.AddTransient<IMediaHelper, MediaHelper>();
-        services.AddTransient<IIdGenerator, IdGenerator>();
-
-
         services.AddSingleton<ISagaStore, MySagaAggregateStore>();
 
         services.AddSingleton(typeof(IDomainEventCacheHelper<>), typeof(DomainEventCacheHelper<>));
-        services.AddSingleton<IAccessHashHelper, AccessHashHelper>();
-        services.AddSingleton<ILanguageManager, LanguageManager>();
-        services.AddTransient<IPhotoAppService, PhotoAppService>();
-
-        services.AddTransient<IDomainEventMessageFactory, DomainEventMessageFactory>();
-
-        services.AddTransient<IOffsetHelper, OffsetHelper>();
-        //services.AddTransient<IReadModelCacheStrategy, MyTelegramReadModelCacheStrategy>();
-        services.AddSingleton<IBlockCacheAppService, BlockCacheAppService>();
-        services.AddSingleton<IChannelAdminRightsChecker, ChannelAdminRightsChecker>();
-        services.AddTransient<IVerificationCodeGenerator, VerificationCodeGenerator>();
         services.AddSingleton<ICountryHelper, CountryHelper>();
 
         return services;

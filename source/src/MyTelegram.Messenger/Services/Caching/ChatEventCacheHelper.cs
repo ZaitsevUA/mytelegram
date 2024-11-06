@@ -1,6 +1,6 @@
 ﻿namespace MyTelegram.Messenger.Services.Caching;
 
-public class ChatEventCacheHelper : IChatEventCacheHelper
+public class ChatEventCacheHelper : IChatEventCacheHelper, ISingletonDependency
 {
     private readonly ConcurrentDictionary<long, ChannelCreatedEvent> _channelCreatedEvents = new();
     private readonly ConcurrentDictionary<long, ChatCreatedEvent> _createdEvents = new();

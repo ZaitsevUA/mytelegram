@@ -5,7 +5,7 @@ using MyTelegram.Schema;
 
 namespace MyTelegram.Services.Services;
 
-public class InvokeAfterMsgProcessor(IHandlerHelper handlerHelper) : IInvokeAfterMsgProcessor //, ISingletonDependency
+public class InvokeAfterMsgProcessor(IHandlerHelper handlerHelper) : IInvokeAfterMsgProcessor, ISingletonDependency
 {
     //private readonly ConcurrentDictionary<long, int> _recentMessageIds = new();
     private readonly CircularBuffer<long> _recentMessageIds = new(50000);

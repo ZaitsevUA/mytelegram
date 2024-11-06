@@ -10,7 +10,8 @@ public class ReqDhParamsHandler(
         RequestReqDHParams obj)
     {
         var dto = await step2ServerHelper.GetServerDhParamsAsync(obj);
-        logger.LogDebug("[Step2] ConnectionId={ConnectionId} Create new nonce,reqMsgId={ReqMsgId}", input.ConnectionId, input.ReqMsgId);
+        logger.LogDebug("[Step2] ServerDHParams created, connectionId: {ConnectionId}, reqMsgId: {ReqMsgId}", input.ConnectionId, input.ReqMsgId);
+
         return dto.ServerDhParams;
     }
 }

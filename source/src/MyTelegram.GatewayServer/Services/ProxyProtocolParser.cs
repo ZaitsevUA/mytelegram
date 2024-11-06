@@ -5,7 +5,7 @@ namespace MyTelegram.GatewayServer.Services;
 
 // https://github.com/aspnet/AspLabs/blob/main/src/ProxyProtocol/ProxyProtocol.Sample/ProxyProtocol.cs
 // https://github.com/OnKey/ProxyProtocol/blob/main/ProxyProtocol/ProxyProtocol.cs
-public class ProxyProtocolParser : IProxyProtocolParser
+public class ProxyProtocolParser : IProxyProtocolParser, ITransientDependency
 {
     private const int Ipv4Length = 4;
     private const int Ipv6Length = 16;

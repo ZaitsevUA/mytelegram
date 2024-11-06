@@ -6,7 +6,7 @@ public class IdGenerator(
     IQueryProcessor queryProcessor,
     IHiLoStateBlockSizeHelper stateBlockSizeHelper,
     ILogger<IdGenerator> logger)
-    : IIdGenerator
+    : IIdGenerator, ITransientDependency
 {
     public async Task<int> NextIdAsync(IdType idType,
         long id,

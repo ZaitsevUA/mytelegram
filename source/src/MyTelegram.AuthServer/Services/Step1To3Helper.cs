@@ -13,7 +13,7 @@ public class Step1To3Helper
         if (!expected.SequenceEqual(actual))
         {
             throw new ArgumentException(
-                $"Invalid {message},expected:{expected.ToArray().ToHexString()} actual:{actual.ToArray().ToHexString()}");
+                $"Invalid {message}, expected: {expected.ToArray().ToHexString()} actual: {actual.ToArray().ToHexString()}");
         }
     }
 

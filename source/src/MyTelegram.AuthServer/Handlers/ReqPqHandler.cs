@@ -8,8 +8,6 @@ public class ReqPqHandler(
     : BaseObjectHandler<RequestReqPq, IResPQ>,
         IReqPqHandler
 {
-    private readonly IHashHelper _hashHelper = hashHelper;
-
     protected override async Task<IResPQ> HandleCoreAsync(IRequestInput input,
         RequestReqPq obj)
     {
@@ -23,7 +21,7 @@ public class ReqPqHandler(
         var key = AuthCacheItem.GetCacheKey(dto.ServerNonce);
 
         await cacheManager.SetAsync(key, authCacheItem, MyTelegramServerDomainConsts.AuthKeyExpireSeconds);
-        logger.LogDebug("[Step1] ConnectionId={ConnectionId} Create resPq,reqMsgId={ReqMsgId}", input.ConnectionId, input.ReqMsgId);
+        logger.LogDebug("[Step1] ResPQ created, connectionId: {ConnectionId}, reqMsgId: {ReqMsgId}", input.ConnectionId, input.ReqMsgId);
 
         return dto.ResPq;
     }

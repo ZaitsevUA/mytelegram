@@ -5,7 +5,7 @@ using Twilio.Types;
 
 namespace MyTelegram.SmsSender;
 
-public class TwilioSmsSender : ISmsSender
+public class TwilioSmsSender : ISmsSender, ITransientDependency
 {
     private readonly ILogger<TwilioSmsSender> _logger;
     private readonly IOptionsSnapshot<TwilioSmsOptions> _optionsSnapshot;
@@ -26,7 +26,7 @@ public class TwilioSmsSender : ISmsSender
     {
         if (!_optionsSnapshot.Value.Enabled)
         {
-            _logger.LogWarning("Twilio sms sender disabled,the code will not be sent.PhoneNumber:{To} Text:{Text}",
+            _logger.LogWarning("Twilio sms sender disabled, the code will not be sent. PhoneNumber: {To} Text: {Text}",
                 smsMessage.PhoneNumber, smsMessage.Text);
             return;
         }
@@ -53,9 +53,9 @@ public class TwilioSmsSender : ISmsSender
                         body: smsMessage.Text)
             ;
 
-        _logger.LogDebug("Send SMS result:{@Resource}", resource);
+        _logger.LogDebug("Send SMS result: {@Resource}", resource);
         _logger.LogInformation(
-            "Send SMS completed,To={To},Status={Status} DateSent={DateSent} ErrorCode={ErrorCode} ErrorMessage={ErrorMessage} ",
+            "Send SMS completed, To={To}, Status={Status} DateSent={DateSent} ErrorCode={ErrorCode} ErrorMessage={ErrorMessage} ",
             resource.To,
             resource.Status,
             resource.DateSent,

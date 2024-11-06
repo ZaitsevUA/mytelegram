@@ -1,6 +1,6 @@
 ﻿namespace MyTelegram.Messenger.Services.Impl;
 
-public class PeerSettingsAppService(IQueryProcessor queryProcessor, IPeerHelper peerHelper) : IPeerSettingsAppService //, ISingletonDependency
+public class PeerSettingsAppService(IQueryProcessor queryProcessor, IPeerHelper peerHelper) : IPeerSettingsAppService, ITransientDependency
 {
     public async Task<PeerSettings> GetAsync(long userId,
         Peer peer)

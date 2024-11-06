@@ -1,27 +1,13 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using MyTelegram.Schema;
-using MyTelegram.Services.Exceptions;
-using MyTelegram.Services.Extensions;
+﻿using MyTelegram.Schema;
+using System.Diagnostics.CodeAnalysis;
 
 namespace MyTelegram.Services.Services;
 
-public class PeerHelper : IPeerHelper //, ISingletonDependency
+public class PeerHelper : IPeerHelper, ITransientDependency
 {
-    //public const long UserIdInitId =  6000000;
-    //public const long ChatIdInitId =  50000000000;
-    //public const long ChannelInitId = 800000000000;
-    //public const long BotUserInitId = 90000000000000;
-
     public Peer GetChannel(IInputChannel channel)
     {
         return channel.ToChannelPeer();
-        //if (channel is TInputChannel inputChannel)
-        //{
-        //    return new Peer(PeerType.Channel, inputChannel.ChannelId, inputChannel.AccessHash);
-        //}
-
-        //throw new BadRequestException("CHANNEL_INVALID");
-        ////ThrowHelper.ThrowUserFriendlyException("CHANNEL_INVALID");
     }
 
     [return: NotNullIfNotNull(nameof(peer))]
@@ -29,81 +15,12 @@ public class PeerHelper : IPeerHelper //, ISingletonDependency
         long selfUserId = 0)
     {
         return peer?.ToPeer(selfUserId);
-        //PeerType peerType;
-        //long peerId;
-        //long accessHash = 0;
-
-        //switch (peer)
-        //{
-        //    case TInputPeerChannel inputPeerChannel:
-        //        peerType = PeerType.Channel;
-        //        peerId = inputPeerChannel.ChannelId;
-        //        accessHash = inputPeerChannel.AccessHash;
-        //        break;
-        //        //case TInputPeerChannelFromMessage inputPeerChannelFromMessage:
-        //        //    peerType = PeerType.Channel;
-        //        //    peerId = inputPeerChannelFromMessage.ChannelId;
-
-        //        break;
-        //    case TInputPeerChat inputPeerChat:
-        //        peerType = PeerType.Chat;
-        //        peerId = inputPeerChat.ChatId;
-        //        break;
-        //    case TInputPeerEmpty:
-        //        peerType = PeerType.Empty;
-        //        peerId = selfUserId;
-        //        break;
-        //    case TInputPeerSelf _:
-        //        peerType = PeerType.Self;
-        //        peerId = selfUserId;
-        //        break;
-        //    case TInputPeerUser inputPeerUser:
-        //        peerType = PeerType.User;
-        //        peerId = inputPeerUser.UserId;
-        //        accessHash = inputPeerUser.AccessHash;
-        //        break;
-        //    //case TInputPeerUserFromMessage inputPeerUserFromMessage:
-        //    //break;
-        //    default:
-        //        throw new NotSupportedException(peer.GetType().Name);
-        //}
-
-        //if (peerType == PeerType.User && peerId == selfUserId)
-        //{
-        //    peerType = PeerType.Self;
-        //}
-
-        //return new Peer(peerType, peerId, accessHash);
     }
 
     public Peer GetPeer(IInputUser userPeer,
         long selfUserId)
     {
         return userPeer.ToPeer(selfUserId);
-        //var peerId = 0L;
-        //var peerType = PeerType.User;
-        //var accessHash = 0L;
-        //switch (userPeer)
-        //{
-        //    case TInputUser inputUser:
-        //        peerId = inputUser.UserId;
-        //        accessHash = inputUser.AccessHash;
-        //        break;
-        //    case TInputUserEmpty:
-        //        break;
-        //    case TInputUserFromMessage inputUserFromMessage:
-        //        peerId = inputUserFromMessage.UserId;
-
-        //        break;
-        //    case TInputUserSelf:
-        //        peerType = PeerType.Self;
-        //        peerId = selfUserId;
-        //        break;
-        //    default:
-        //        throw new ArgumentOutOfRangeException(nameof(userPeer));
-        //}
-
-        //return new Peer(peerType, peerId, accessHash);
     }
 
     public bool IsChannelPeer(long peerId)

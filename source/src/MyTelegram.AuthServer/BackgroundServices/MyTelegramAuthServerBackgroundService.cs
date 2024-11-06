@@ -8,7 +8,7 @@ public class MyTelegramAuthServerBackgroundService(
     protected override Task ExecuteAsync(CancellationToken stoppingToken)
     {
         handlerHelper.InitAllHandlers(typeof(MyTelegramAuthServerExtensions).Assembly, 5);
-        logger.LogInformation("My telegram auth server init ok");
+        logger.LogInformation("MyTelegram auth server started");
 
         return Task.CompletedTask;
     }

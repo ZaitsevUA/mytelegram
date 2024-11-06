@@ -5,13 +5,13 @@ public class ClientDataSender(
     ILogger<ClientDataSender> logger,
     IMessageQueueProcessor<ClientDisconnectedEvent> messageQueueProcessor,
     IMtpMessageEncoder messageEncoder)
-    : IClientDataSender
+    : IClientDataSender, ITransientDependency
 {
     public Task SendAsync(MTProto.UnencryptedMessageResponse data)
     {
         if (!clientManager.TryGetClientData(data.ConnectionId, out var d))
         {
-            logger.LogWarning("[0]Can not find cached client info,skip sending message,connectionId={ConnectionId}", data.ConnectionId);
+            logger.LogWarning("[0] Cannot find cached client info, skip sending message, connectionId: {ConnectionId}", data.ConnectionId);
             return Task.CompletedTask;
         }
 
@@ -32,7 +32,7 @@ public class ClientDataSender(
     {
         if (!clientManager.TryGetClientData(data.ConnectionId, out var d))
         {
-            logger.LogWarning("Can not find cached client info,skip sending message,connectionId={ConnectionId},authKeyId={AuthKeyId}",
+            logger.LogWarning("Cannot find cached client info, skip sending message, connectionId: {ConnectionId}, authKeyId: {AuthKeyId}",
                 data.ConnectionId,
                 data.AuthKeyId
                 );

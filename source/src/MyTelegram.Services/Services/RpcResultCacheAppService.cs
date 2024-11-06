@@ -1,13 +1,12 @@
-﻿using System.Collections.Concurrent;
-using System.Diagnostics.CodeAnalysis;
-using HWT;
-using Microsoft.Extensions.Logging;
+﻿using HWT;
 using MyTelegram.Schema;
+using System.Collections.Concurrent;
+using System.Diagnostics.CodeAnalysis;
 
 namespace MyTelegram.Services.Services;
 
 public class RpcResultCacheAppService(ILogger<RpcResultCacheAppService> logger)
-    : IRpcResultCacheAppService //, ISingletonDependency
+    : IRpcResultCacheAppService, ISingletonDependency
 {
     //private readonly IMemoryCache _memoryCache;
     private readonly TimeSpan _cacheExpireTimeSpan =
@@ -23,8 +22,6 @@ public class RpcResultCacheAppService(ILogger<RpcResultCacheAppService> logger)
         long reqMsgId,
         [NotNullWhen(true)] out IObject? rpcResult)
     {
-        //return _memoryCache.TryGetValue(GetCacheKey(userId, reqMsgId), out rpcResult);
-
         return _rpcResults.TryGetValue(reqMsgId, out rpcResult);
     }
 
@@ -58,28 +55,5 @@ public class RpcResultCacheAppService(ILogger<RpcResultCacheAppService> logger)
             _cacheExpireTimeSpan);
         Interlocked.Increment(ref _totalCount);
         return _rpcResults.TryAdd(reqMsgId, rpcResult);
-
-        //Console.WriteLine("Current count is:{0}",((MemoryCache)(_memoryCache)).Count);
-        //var key = GetCacheKey(userId, reqMsgId);
-        //using var entry = _memoryCache.CreateEntry(key);
-        //entry.Value = rpcResult;
-
-        //var expireToken = new CancellationChangeToken(new CancellationTokenSource(_cacheExpireTimeSpan).Token);
-        //entry.AddExpirationToken(expireToken);
-        //entry.RegisterPostEvictionCallback((a,
-        //    b,
-        //    c,
-        //    d) =>
-        //{
-        //    Console.WriteLine($"#############[Remove Cache]{a} {c}  current count:{((MemoryCache)(_memoryCache)).Count}");
-        //});
-
-        //return true;
     }
-
-    //private string GetCacheKey(long userId,
-    //    long reqMsgId)
-    //{
-    //    return $"{userId}_{reqMsgId}";
-    //}
 }

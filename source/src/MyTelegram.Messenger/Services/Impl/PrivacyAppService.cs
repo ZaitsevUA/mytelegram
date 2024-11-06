@@ -3,7 +3,7 @@
 public class PrivacyAppService(
     ICacheManager<GlobalPrivacySettingsCacheItem> cacheManager,
     IQueryProcessor queryProcessor)
-    : BaseAppService, IPrivacyAppService
+    : BaseAppService, IPrivacyAppService, ITransientDependency
 {
     public Task<IReadOnlyCollection<IPrivacyReadModel>> GetPrivacyListAsync(IReadOnlyList<long> userIds)
     {

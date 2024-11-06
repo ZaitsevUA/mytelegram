@@ -7,7 +7,7 @@ public interface IScheduleAppService
     Task<Timeout> ExecuteAsync(Action action, TimeSpan timeSpan);
 }
 
-public class ScheduleAppService : IScheduleAppService
+public class ScheduleAppService : IScheduleAppService, ISingletonDependency
 {
 
     private readonly HashedWheelTimer _timer = new(TimeSpan.FromMilliseconds(100),

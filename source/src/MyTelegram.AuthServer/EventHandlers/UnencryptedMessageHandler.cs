@@ -4,7 +4,7 @@ public class UnencryptedMessageHandler(
     ILogger<UnencryptedMessageHandler> logger,
     IHandlerHelper handlerHelper,
     IEventBus eventBus)
-    : IEventHandler<UnencryptedMessage>
+    : IEventHandler<UnencryptedMessage>, ITransientDependency
 {
     public async Task HandleEventAsync(UnencryptedMessage eventData)
     {
@@ -13,9 +13,9 @@ public class UnencryptedMessageHandler(
             if (!handlerHelper.TryGetHandler(eventData.ObjectId, out var handler))
             {
                 logger.LogWarning(
-                    "ConnectionId={ConnectionId} Can not find object handler for objectId={ObjectId:x2}",
-                    eventData.ConnectionId,
-                    eventData.ObjectId);
+                    "Cannot find a handler with objectId {ObjectId:x2}, connectionId: {ConnectionId}",
+                    eventData.ObjectId,
+                    eventData.ConnectionId);
 
                 return;
             }
@@ -23,7 +23,7 @@ public class UnencryptedMessageHandler(
             if (logger.IsEnabled(LogLevel.Trace))
             {
                 logger.LogTrace(
-                    "Start process unencrypted message,connectionId={ConnectionId} [req]#{ObjectId:x2} {Handler} reqMsgId={ReqMsgId}",
+                    "Processing unencrypted message, connectionId: {ConnectionId}, [objectId]: {ObjectId:x2}, handler: {Handler}, reqMsgId: {ReqMsgId}",
                     eventData.ConnectionId,
                     eventData.ObjectId,
                     handler.GetType().Name,
@@ -56,13 +56,13 @@ public class UnencryptedMessageHandler(
         }
         catch (Exception ex)
         {
-            logger.LogError("ConnectionId={ConnectionId} process request failed,reqMsgId={ReqMsgId},error={Error}",
+            logger.LogError("Process request failed, connectionId: {ConnectionId}, reqMsgId: {ReqMsgId}, error: {Error}",
                 eventData.ConnectionId, eventData.MessageId, ex);
         }
 
         if (logger.IsEnabled(LogLevel.Trace))
         {
-            logger.LogTrace("Process unencrypted message completed,reqMsgId={ReqMsgId}", eventData.MessageId);
+            logger.LogTrace("Process unencrypted message completed, reqMsgId: {ReqMsgId}", eventData.MessageId);
         }
     }
 }

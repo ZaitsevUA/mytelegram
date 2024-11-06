@@ -6,7 +6,8 @@ public class MessengerEventHandler(
     ILogger<MessengerEventHandler> logger)
     :
         IEventHandler<MessengerQueryDataReceivedEvent>,
-        IEventHandler<StickerDataReceivedEvent>
+        IEventHandler<StickerDataReceivedEvent>,
+	    ITransientDependency
 {
     public Task HandleEventAsync(MessengerQueryDataReceivedEvent eventData)
     {

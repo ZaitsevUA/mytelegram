@@ -2,7 +2,7 @@
 
 namespace MyTelegram.Messenger.Services.Caching;
 
-public class PtsHelper(IQueryProcessor queryProcessor) : IPtsHelper
+public class PtsHelper(IQueryProcessor queryProcessor) : IPtsHelper, ISingletonDependency
 {
     private readonly ConcurrentDictionary<long, PtsCacheItem> _ownerToPtsDict = new();
     private readonly ConcurrentDictionary<long, PtsCacheItem> _permAuthKeyIdToPtsDict = new();

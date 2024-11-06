@@ -8,7 +8,7 @@ public class Step2Helper(
     IMyRsaHelper myRsaHelper,
     ICacheManager<AuthCacheItem> cacheManager,
     IRsaKeyProvider rsaKeyProvider)
-    : Step1To3Helper, IStep2Helper
+    : Step1To3Helper, IStep2Helper, ISingletonDependency
 {
     public async Task<Step2Output> GetServerDhParamsAsync(RequestReqDHParams req)
     {
@@ -17,7 +17,7 @@ public class Step2Helper(
         if (cachedAuthKey == null)
         {
             throw new InvalidOperationException(
-                $"GetServerDhParamsAsync:can not find cached auth key info,nonce={req.Nonce.ToHexString()}");
+                $"GetServerDhParamsAsync: can not find cached auth key info, nonce={req.Nonce.ToHexString()}");
         }
 
         #region check request
@@ -110,11 +110,10 @@ public class Step2Helper(
         var length = (int)reader.Consumed;
         var realInnerData = innerData[..length];
 
-        var realHash = hashHelper.Sha1(realInnerData.ToArray());
-        if (!shaHash.SequenceEqual(realHash))
+        var calculatedHash = hashHelper.Sha1(realInnerData.ToArray());
+        if (!shaHash.SequenceEqual(calculatedHash))
         {
-            logger.LogWarning(
-                $"Invalid data sha hash.request hash:{shaHash.ToArray().ToHexString()},calc hash:{realHash.ToArray().ToHexString()}");
+            logger.LogWarning("PQInnerData hash mismatch, client sha1 hash: {RequestHash}, server calculated sha1 hash: {ServerCalculatedHash}", shaHash.ToArray().ToHexString(), calculatedHash.ToArray().ToHexString());
         }
 
         return tPqInnerData;
@@ -151,14 +150,14 @@ public class Step2Helper(
         var hash = dataWithHash[^32..];
         dataPaddingReversed.AsSpan().Reverse();
         var dataWithPadding = dataPaddingReversed;
-        var calcHash = hashHelper.Sha256(tempKey, dataWithPadding);
-        if (!hash.SequenceEqual(calcHash))
+        var calculatedHash = hashHelper.Sha256(tempKey, dataWithPadding);
+        if (!hash.SequenceEqual(calculatedHash))
         {
-            logger.LogWarning("Invalid hash,req hash={ReqHash},calc hash={CalcHash}",
+            logger.LogWarning("PQInnerData hash mismatch, client sha1 hash: {RequestHash}, server calculated sha1 hash: {ServerCalculatedHash}",
                 hash.ToHexString(),
-                calcHash.ToHexString());
+                calculatedHash.ToHexString());
 
-            throw new ArgumentException("Invalid hash");
+            throw new ArgumentException("PQInnerData hash mismatch");
         }
 
         var tPqInnerData = dataWithPadding.ToTObject<IPQInnerData>();

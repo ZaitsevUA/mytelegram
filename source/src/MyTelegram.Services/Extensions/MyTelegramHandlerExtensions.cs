@@ -1,8 +1,6 @@
-﻿using System.Reflection;
-using Microsoft.Extensions.DependencyInjection;
-using MyTelegram.Core;
-using MyTelegram.Services.NativeAot;
+﻿using Microsoft.Extensions.DependencyInjection;
 using MyTelegram.Services.Services;
+using System.Reflection;
 
 namespace MyTelegram.Services.Extensions
 {
@@ -10,27 +8,15 @@ namespace MyTelegram.Services.Extensions
     {
         public static IServiceCollection AddMyTelegramHandlerServices(this IServiceCollection services)
         {
-            services.AddSingleton<IAckCacheService, AckCacheService>();
-            services.AddTransient<IGZipHelper, GZipHelper>();
-            services.AddSingleton<IMessageIdGenerator, MessageIdGenerator>();
-            services.AddSingleton<IScheduleAppService, ScheduleAppService>();
-            services.AddSingleton<IObjectMessageSender, QueuedObjectMessageSender>();
-
-            services.AddTransient<IExceptionProcessor, ExceptionProcessor>();
-            services.AddTransient<IPeerHelper, PeerHelper>();
-            services.AddSingleton<IHandlerHelper, HandlerHelper>();
-            services.AddSingleton<IRpcResultCacheAppService, RpcResultCacheAppService>();
+            services.RegisterServices();
 
             services.AddSingleton(typeof(IInMemoryRepository<,>), typeof(InMemoryRepository<,>));
             services.AddTransient(typeof(IDataProcessor<>), typeof(DefaultDataProcessor<>));
             services.AddSingleton(typeof(IMessageQueueProcessor<>), typeof(MessageQueueProcessor2<>));
             services.AddTransient<IDataProcessor<ISessionMessage>, SessionMessageDataProcessor>();
 
-            services.AddSingleton<ICacheSerializer, CacheSerializer>();
-            services.AddSingleton<IInvokeAfterMsgProcessor, InvokeAfterMsgProcessor>();
             services.AddSystemTextJson();
 
-            services.AddSingleton<IMtpHelper, MtpHelper>();
             services.AddSingleton(typeof(ICacheHelper<,>),typeof(CacheHelper<,>));
             services.AddTransient<IHashCalculator, HashCalculator>();
             services.AddSingleton(typeof(IQueuedCommandExecutor<,,>), typeof(QueuedCommandExecutor<,,>));

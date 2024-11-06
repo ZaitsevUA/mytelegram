@@ -45,18 +45,15 @@ public class ProxyProtocol
                 if (proxyProtocolFeature != null)
                 {
                     connection.Features.Set(proxyProtocolFeature);
-                    //logger.LogInformation("Parse proxy protocol success,remoteIp:{remoteIp}",
-                    //    proxyProtocolFeature.SourceIp);
                 }
                 else
                 {
                     var localEndPoint = connection.LocalEndPoint as IPEndPoint;
                     var remoteEndPoint = connection.RemoteEndPoint as IPEndPoint;
                     logger.LogWarning(
-                        "Parse proxy protocol failed,localEndPoint{@LocalAddress}:{Port},remoteEndPoint:{@RemoteAddress}:{RemotePort}",
+                        "Parse proxy protocol failed, localEndPoint: {@LocalAddress}:{Port}, remoteEndPoint: {@RemoteAddress}:{RemotePort}",
                         localEndPoint?.Address, localEndPoint?.Port, remoteEndPoint?.Address, remoteEndPoint?.Port);
                 }
-
 
                 break;
             }

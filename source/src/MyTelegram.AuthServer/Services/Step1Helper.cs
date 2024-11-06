@@ -1,6 +1,6 @@
 ﻿namespace MyTelegram.AuthServer.Services;
 
-public class Step1Helper(IFingerprintHelper fingerprintHelper) : IStep1Helper
+public class Step1Helper(IFingerprintHelper fingerprintHelper) : IStep1Helper, ISingletonDependency
 {
     public Step1Output GetResponse(byte[] nonce)
     {
@@ -8,7 +8,7 @@ public class Step1Helper(IFingerprintHelper fingerprintHelper) : IStep1Helper
         var q = AuthConsts.Q;
 
         var serverNonce = RandomNumberGenerator.GetBytes(16);
-        
+
         var publicKeyFingerprint = fingerprintHelper.GetFingerprint();
         var pq = AuthConsts.Pq;
         var resPq = new TResPQ

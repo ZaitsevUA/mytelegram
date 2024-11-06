@@ -1,6 +1,6 @@
 ﻿namespace MyTelegram.Services.Services;
 
-public class MessageIdGenerator : IMessageIdGenerator
+public class MessageIdGenerator : IMessageIdGenerator, ISingletonDependency
 {
     private long _lastMessageId;
     //private readonly long _timeDelta;

@@ -5,7 +5,7 @@ public class DataSeeder(
     IRandomHelper randomHelper,
     IEventStore eventStore,
     ISnapshotStore snapshotStore)
-    : IDataSeeder
+    : IDataSeeder, ITransientDependency
 {
     public async Task SeedAsync()
     {

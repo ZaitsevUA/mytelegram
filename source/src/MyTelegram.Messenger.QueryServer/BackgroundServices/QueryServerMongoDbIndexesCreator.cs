@@ -8,7 +8,7 @@ public class QueryServerMongoDbIndexesCreator(
     IMongoDatabase database,
     IReadModelDescriptionProvider descriptionProvider,
     IMongoDbEventPersistenceInitializer eventPersistenceInitializer)
-    : MongoDbIndexesCreatorBase(database, descriptionProvider, eventPersistenceInitializer)
+    : MongoDbIndexesCreatorBase(database, descriptionProvider, eventPersistenceInitializer), ITransientDependency
 {
     protected override async Task CreateAllIndexesCoreAsync()
     {

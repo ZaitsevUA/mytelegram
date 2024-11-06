@@ -1,7 +1,7 @@
 ﻿namespace MyTelegram.SmsSender.EventHandlers;
 
 public class AppCodeEventHandler(ISmsSenderFactory smsSenderFactory, ILogger<AppCodeEventHandler> logger)
-    : IEventHandler<AppCodeCreatedIntegrationEvent>
+    : IEventHandler<AppCodeCreatedIntegrationEvent>, ITransientDependency
 {
     public async Task HandleEventAsync(AppCodeCreatedIntegrationEvent eventData)
     {
@@ -14,7 +14,7 @@ public class AppCodeEventHandler(ISmsSenderFactory smsSenderFactory, ILogger<App
         var now = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
         if (eventData.Expire < now)
         {
-            logger.LogWarning("App code expired,data={@Data}", eventData);
+            logger.LogWarning("App code expired, data={@Data}", eventData);
             return;
         }
 
@@ -25,7 +25,7 @@ public class AppCodeEventHandler(ISmsSenderFactory smsSenderFactory, ILogger<App
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Send sms failed,data={@Data}", eventData);
+            logger.LogError(ex, "Send sms failed, data={@Data}", eventData);
         }
     }
 }

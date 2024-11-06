@@ -2,9 +2,7 @@
 using EventFlow.Core;
 using Microsoft.Extensions.DependencyInjection;
 using MyTelegram.Services.NativeAot;
-using System.Collections;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 
 namespace MyTelegram.Services.Extensions;
 

@@ -4,7 +4,7 @@ public class InMemoryFilterDataLoader(
     ICuckooFilter cuckooFilter,
     IQueryProcessor queryProcessor,
     ILogger<InMemoryFilterDataLoader> logger)
-    : IInMemoryFilterDataLoader
+    : IInMemoryFilterDataLoader, ITransientDependency
 {
     //private readonly IBloomFilter _bloomFilter;
     private readonly int _pageSize = 1000;

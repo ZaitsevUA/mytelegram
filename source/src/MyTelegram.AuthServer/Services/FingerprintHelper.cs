@@ -3,7 +3,7 @@
 public class FingerprintHelper(
     IRsaKeyProvider rsaKeyProvider,
     IMyRsaHelper rsaHelper)
-    : IFingerprintHelper
+    : IFingerprintHelper, ISingletonDependency
 {
     private long _fingerprint;
 

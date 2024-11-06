@@ -1,7 +1,7 @@
 ﻿namespace MyTelegram.Messenger.Services.Impl;
 
 public class DataCenterHelper(IOptions<MyTelegramMessengerServerOptions> options)
-    : IDataCenterHelper
+    : IDataCenterHelper, ITransientDependency
 {
     public int GetMediaDcId()
     {

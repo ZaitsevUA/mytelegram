@@ -3,7 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace MyTelegram.Services.Services;
 
-public class AckCacheService(IScheduleAppService scheduleAppService) : IAckCacheService
+public class AckCacheService(IScheduleAppService scheduleAppService) : IAckCacheService, ISingletonDependency
 {
     private readonly ConcurrentDictionary<long, AckCacheItem> _msgIdToPtsDict = new();
     private readonly ConcurrentDictionary<long, long> _msgIdToReqMsgIdDict = new();

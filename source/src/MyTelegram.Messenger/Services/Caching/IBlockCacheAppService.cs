@@ -16,7 +16,7 @@ public interface IBlockCacheAppService
     //Task LoadAllBlockedAsync();
 }
 
-public class BlockCacheAppService : IBlockCacheAppService
+public class BlockCacheAppService : IBlockCacheAppService, ISingletonDependency
 {
     public Task BlockAsync(long userId, long targetPeerId)
     {
