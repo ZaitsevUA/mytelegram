@@ -1,23 +1,33 @@
-﻿using HWT;
-using Timeout = HWT.Timeout;
+﻿using Cube.Timer;
 
 namespace MyTelegram.Services.Services;
 public interface IScheduleAppService
 {
-    Task<Timeout> ExecuteAsync(Action action, TimeSpan timeSpan);
+    Task<TimerTaskHandle> ExecuteAsync(Func<Task> func, TimeSpan timeSpan);
+
+    TimerTaskHandle Execute(Action action, TimeSpan delayTimeSpan);
 }
 
-public class ScheduleAppService : IScheduleAppService, ISingletonDependency
+public class ScheduleAppService : IScheduleAppService, ITransientDependency
 {
+    private readonly HashedWheelTimer _timer = new();
 
-    private readonly HashedWheelTimer _timer = new(TimeSpan.FromMilliseconds(100),
-        100000,
-        0);
-
-    public Task<Timeout> ExecuteAsync(Action action, TimeSpan timeSpan)
+    public Task<TimerTaskHandle> ExecuteAsync(Func<Task> func, TimeSpan timeSpan)
     {
-        var timeout = _timer.NewTimeout(new ActionTimeTask(action), timeSpan);
+        var result = _timer.AddTask(timeSpan, new TimerTask(func));
+        return Task.FromResult(result);
+    }
 
-        return Task.FromResult(timeout);
+    public TimerTaskHandle Execute(Action action, TimeSpan delayTimeSpan)
+    {
+        return _timer.AddTask(delayTimeSpan, action);
+    }
+}
+
+public class TimerTask(Func<Task> func) : ITimerTask
+{
+    public Task RunAsync()
+    {
+        return func();
     }
 }

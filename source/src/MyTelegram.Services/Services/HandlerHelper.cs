@@ -84,7 +84,7 @@ public class HandlerHelper(
         }
 
         AllHandlers.TryGetValue(objectId, out var typeName);
-        logger.LogWarning("****************** Unsupported request,objectId={ObjectId:x2},handler={Handler}",
+        logger.LogWarning("****************** Unsupported request, objectId: {ObjectId:x2}, handler: {Handler}",
             objectId,
             typeName
         );
@@ -153,7 +153,7 @@ public class HandlerHelper(
         //#endif
 
         //Console.WriteLine(sb);
-        logger.LogInformation("All handlers count:{AllHandlersCount}", AllHandlers.Count);
+        logger.LogInformation("All handlers count: {AllHandlersCount}", AllHandlers.Count);
 
         foreach (var typeInfo in types)
         {
@@ -176,7 +176,7 @@ public class HandlerHelper(
                             logger.LogWarning("Can not find service for Handler {Name}", typeInfo.FullName);
                         }
 
-                        logger.LogInformation("Create handler:{Name}", typeInfo.FullName);
+                        logger.LogDebug("Create handler:{Name}", typeInfo.FullName);
                         HandlerTypes.TryAdd(attr.ConstructorId, typeInfo);
                     }
                 }
@@ -186,7 +186,7 @@ public class HandlerHelper(
         sw.Stop();
 
         logger.LogInformation(
-            "Init handlers ok.Elapsed={Elapsed} count={TotalHandlerCount}/{totalCount} ({Percentage})%",
+            "Create handlers successfully. Elapsed: {Elapsed} count: {TotalHandlerCount}/{totalCount} ({Percentage}%)",
             sw.Elapsed,
             Handlers.Count,
             types.Count,

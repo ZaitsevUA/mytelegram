@@ -29,8 +29,6 @@ internal sealed class ExportLoginTokenHandler(
     {
         if (cacheHelper.TryRemove(input.AuthKeyId, out var userId))
         {
-            logger.LogInformation("User {UserId} login using QRCode", userId);
-
             await eventBus
                 .PublishAsync(new BindUidToSessionEvent(userId, input.AuthKeyId, input.PermAuthKeyId));
 

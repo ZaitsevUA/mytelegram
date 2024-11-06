@@ -7,13 +7,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Cube.Timer" />
     <ProjectReference Include="..\MyTelegram.Core\MyTelegram.Core.csproj" />
     <ProjectReference Include="..\MyTelegram.Domain.Shared\MyTelegram.Domain.Shared.csproj" />
     <ProjectReference Include="..\MyTelegram.EventBus\MyTelegram.EventBus.csproj" />
     <ProjectReference Include="..\MyTelegram.Schema\MyTelegram.Schema.csproj" />
 
     <PackageReference Include="EventFlow" />
-    <PackageReference Include="HashedWheelTimer" />
     <PackageReference Include="SharpZipLib" />
   </ItemGroup>
 

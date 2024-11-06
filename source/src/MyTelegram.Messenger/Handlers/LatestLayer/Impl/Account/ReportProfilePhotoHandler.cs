@@ -23,7 +23,7 @@ internal sealed class ReportProfilePhotoHandler(ILogger<ReportProfilePhotoHandle
 
                 break;
         }
-        logger.LogInformation("ReportProfilePhotoHandler peer:{Peer},photoId:{PhotoId},reason:{@Reason},message:{Message}", obj.Peer, photoId, obj.Reason, obj.Message);
+        logger.LogInformation("ReportProfilePhotoHandler peer: {Peer}, photoId: {PhotoId}, reason: {@Reason}, message: {Message}", obj.Peer, photoId, obj.Reason, obj.Message);
 
         return Task.FromResult<IBool>(new TBoolTrue());
     }

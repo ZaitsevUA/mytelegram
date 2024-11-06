@@ -26,27 +26,12 @@ public class OtherDomainEventHandler(
             responseCacheAppService),
         ISubscribeSynchronousTo<SignInSaga, SignInSagaId, SignInSuccessSagaEvent>,
         ISubscribeSynchronousTo<SignInSaga, SignInSagaId, SignUpRequiredSagaEvent>,
-        //ISubscribeSynchronousTo<AppCodeAggregate, AppCodeId, SignUpRequiredEvent>,
-        //ISubscribeSynchronousTo<UpdatePinnedMessageSaga, UpdatePinnedMessageSagaId, UpdatePinnedMessageCompletedEvent>,
-        //ISubscribeSynchronousTo<DeleteMessageSaga, DeleteMessageSagaId, DeleteMessagesCompletedEvent>,
-        //ISubscribeSynchronousTo<DeleteMessageSaga2, DeleteMessageSaga2Id, DeleteMessagesCompletedEvent2>,
         ISubscribeSynchronousTo<ClearHistorySaga, ClearHistorySagaId, ClearSingleUserHistoryCompletedSagaEvent>,
-        //ISubscribeSynchronousTo<DeleteParticipantHistorySaga, DeleteParticipantHistorySagaId, DeleteParticipantHistoryCompletedEvent>,
         ISubscribeSynchronousTo<PeerNotifySettingsAggregate, PeerNotifySettingsId, PeerNotifySettingsUpdatedEvent>,
         ISubscribeSynchronousTo<UserAggregate, UserId, UserGlobalPrivacySettingsChangedEvent>,
         ISubscribeSynchronousTo<PinForwardedChannelMessageSaga, PinForwardedChannelMessageSagaId,
             PinChannelMessagePtsIncrementedSagaEvent>,
-        ISubscribeSynchronousTo<UpdatePinnedMessageSaga, UpdatePinnedMessageSagaId, UpdateSavedMessagesPinnedCompletedSagaEvent>//,
-                                                                                                                            //ISubscribeSynchronousTo<UnpinAllMessagesSaga, UnpinAllMessagesSagaId, UnpinAllMessagesCompletedSagaEvent>,
-                                                                                                                            //ISubscribeSynchronousTo<UnpinAllMessagesSaga, UnpinAllMessagesSagaId, UnpinAllParticipantMessagesCompletedSagaEvent>
-
-//,
-//ISubscribeSynchronousTo<DeleteMessagesSaga4, DeleteMessagesSaga4Id, DeleteSelfMessagesCompletedEvent4>,
-//ISubscribeSynchronousTo<DeleteMessagesSaga4, DeleteMessagesSaga4Id, DeleteOtherParticipantMessagesCompletedEvent4>,
-//ISubscribeSynchronousTo<DeleteMessagesSaga4, DeleteMessagesSaga4Id, DeleteSelfHistoryCompletedEvent4>,
-//ISubscribeSynchronousTo<DeleteMessagesSaga4, DeleteMessagesSaga4Id, DeleteOtherParticipantHistoryCompletedEvent4>,
-//ISubscribeSynchronousTo<DeleteChannelMessagesSaga,DeleteChannelMessagesSagaId, DeleteChannelMessagesCompletedEvent>
-
+        ISubscribeSynchronousTo<UpdatePinnedMessageSaga, UpdatePinnedMessageSagaId, UpdateSavedMessagesPinnedCompletedSagaEvent>
 {
     private readonly IObjectMessageSender _objectMessageSender = objectMessageSender;
 
@@ -127,25 +112,10 @@ public class OtherDomainEventHandler(
                 tempAuthKeyId,
                 domainEvent.AggregateEvent.PermAuthKeyId,
                 domainEvent.AggregateEvent.UserId,
-                domainEvent.AggregateEvent.HasPassword ? PasswordState.WaitingForVerify : PasswordState.None))
-     ;
-        logger.LogDebug(
-            "########################### User sign in success:{UserId} with tempAuthKeyId:{TempAuthKeyId} permAuthKeyId:{PermAuthKeyId} layer:{Layer}",
-            domainEvent.AggregateEvent.UserId,
-            domainEvent.AggregateEvent.TempAuthKeyId,
-            domainEvent.AggregateEvent.PermAuthKeyId,
-            domainEvent.AggregateEvent.RequestInfo.Layer
-            );
-
+                domainEvent.AggregateEvent.HasPassword ? PasswordState.WaitingForVerify : PasswordState.None));
 
         if (domainEvent.AggregateEvent.HasPassword)
         {
-            //var rpcError = new TRpcError
-            //{
-            //    ErrorCode = MyTelegramServerDomainConsts.BadRequestErrorCode,
-            //    ErrorMessage = RpcErrors.RpcErrors401.SessionPasswordNeeded.Message,
-            //};
-
             await SendRpcMessageToClientAsync(domainEvent.AggregateEvent.RequestInfo, RpcErrors.RpcErrors401.SessionPasswordNeeded.ToRpcError());
             return;
         }
@@ -183,7 +153,6 @@ public class OtherDomainEventHandler(
                 r,
                 domainEvent.AggregateEvent.SenderPeerId,
                 domainEvent.AggregateEvent.Pts,
-                //PtsType.OtherUpdates,
                 domainEvent.AggregateEvent.ToPeer.PeerType
             );
             var layeredData =
@@ -196,20 +165,16 @@ public class OtherDomainEventHandler(
                 layeredData: layeredData);
         }
 
-        //else
-        {
-
-            await PushUpdatesToPeerAsync(
-                domainEvent.AggregateEvent.ToPeer.PeerType == PeerType.Channel
-                    ? new Peer(PeerType.Channel, domainEvent.AggregateEvent.OwnerPeerId)
-                    : new Peer(PeerType.User, domainEvent.AggregateEvent.OwnerPeerId),
-                layeredUpdatesService.Converter.ToUpdatePinnedMessageUpdates(domainEvent.AggregateEvent),
-                excludeUserId: domainEvent.AggregateEvent.SenderPeerId,
-                pts: domainEvent.AggregateEvent.Pts,
-                layeredData: layeredUpdatesService.GetLayeredData(c =>
-                    c.ToUpdatePinnedMessageUpdates(domainEvent.AggregateEvent))
-            );
-        }
+        await PushUpdatesToPeerAsync(
+            domainEvent.AggregateEvent.ToPeer.PeerType == PeerType.Channel
+                ? new Peer(PeerType.Channel, domainEvent.AggregateEvent.OwnerPeerId)
+                : new Peer(PeerType.User, domainEvent.AggregateEvent.OwnerPeerId),
+            layeredUpdatesService.Converter.ToUpdatePinnedMessageUpdates(domainEvent.AggregateEvent),
+            excludeUserId: domainEvent.AggregateEvent.SenderPeerId,
+            pts: domainEvent.AggregateEvent.Pts,
+            layeredData: layeredUpdatesService.GetLayeredData(c =>
+                c.ToUpdatePinnedMessageUpdates(domainEvent.AggregateEvent))
+        );
     }
 
     public Task HandleAsync(IDomainEvent<PeerNotifySettingsAggregate, PeerNotifySettingsId, PeerNotifySettingsUpdatedEvent> domainEvent, CancellationToken cancellationToken)

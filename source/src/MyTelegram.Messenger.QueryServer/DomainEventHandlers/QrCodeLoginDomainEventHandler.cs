@@ -32,7 +32,7 @@ public class QrCodeLoginDomainEventHandler(
         if (deviceReadModel == null)
         {
             logger.LogWarning(
-                "Get device info failed.perm authKeyId={PermAuthKeyId:x2}",
+                "Get device info failed, PermAuthKeyId: {PermAuthKeyId:x2}",
                 domainEvent.AggregateEvent.QrCodeLoginRequestPermAuthKeyId);
             return;
         }
@@ -46,10 +46,6 @@ public class QrCodeLoginDomainEventHandler(
         await _objectMessageSender
             .PushSessionMessageToAuthKeyIdAsync(domainEvent.AggregateEvent.QrCodeLoginRequestTempAuthKeyId,
                 updateShortForLoginWithTokenRequestOwner);
-
-        logger.LogDebug("Accept qr code login token,userId={UserId},qr code client authKeyId={AuthKeyId}",
-            domainEvent.AggregateEvent.UserId,
-            domainEvent.AggregateEvent.QrCodeLoginRequestTempAuthKeyId);
     }
 
     public async Task HandleAsync(

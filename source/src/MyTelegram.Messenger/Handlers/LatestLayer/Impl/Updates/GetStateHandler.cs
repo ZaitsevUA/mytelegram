@@ -37,8 +37,6 @@ internal sealed class GetStateHandler(
             UnreadCount = cacheItem.UnreadCount,
         };
 
-        logger.LogInformation("[{UserId}]Get state:{@state} {@PtsReadModel}", input.UserId, state, cacheItem);
-
         return state;
 
     }

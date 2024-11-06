@@ -73,10 +73,6 @@ public class MessengerEventHandler(
 
     public Task HandleEventAsync(UserIsOnlineEvent eventData)
     {
-        logger.LogDebug("User {UserId} is online,tempAuthKeyId={TempAuthKeyId:x2},permAuthKeyId={PermAuthKeyId:x2}",
-            eventData.UserId,
-            eventData.TempAuthKeyId,
-            eventData.PermAuthKeyId);
         var updatesTooLong = new TUpdatesTooLong();
         return objectMessageSender.PushSessionMessageToAuthKeyIdAsync(eventData.TempAuthKeyId, updatesTooLong);
     }

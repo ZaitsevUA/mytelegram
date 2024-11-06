@@ -9,7 +9,7 @@ public class SignUpEventHandler(
         CancellationToken cancellationToken)
     {
         logger.LogDebug(
-            "User sign up success,phoneNumber={PhoneNumber} userId={UserId} firstName={FirstName} lastName={LastName} tempAuthKeyId={TempAuthKeyId} permAuthKeyId={PermAuthKeyId}",
+            "User created successfully, phoneNumber: {PhoneNumber} userId: {UserId} firstName: {FirstName} lastName: {LastName} tempAuthKeyId: {TempAuthKeyId} permAuthKeyId: {PermAuthKeyId}",
             domainEvent.AggregateEvent.PhoneNumber,
             domainEvent.AggregateEvent.UserId,
             domainEvent.AggregateEvent.FirstName,

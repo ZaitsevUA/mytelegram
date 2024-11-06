@@ -28,7 +28,7 @@ public class ExceptionProcessor(
         )
     {
         logger.LogError(ex,
-            "Process request {ReqMsgId} {IsInMsgContainer} failed,handler={HandlerName},userId={UserId},authKeyId={AuthKeyId:x2},deviceType={DeviceType}",
+            "Process request {ReqMsgId} {IsInMsgContainer} failed, handler: {HandlerName}, userId: {UserId}, authKeyId: {AuthKeyId:x2}, deviceType: {DeviceType}",
             reqMsgId,
             isInMsgContainer ? "in msgContainer" : string.Empty,
             handlerName,
@@ -44,7 +44,7 @@ public class ExceptionProcessor(
     public Task HandleExceptionAsync(Exception ex, IRequestInput input, IObject? requestData, string? handlerName)
     {
         logger.LogError(ex,
-            "Process request failed,handler={HandlerName},userId={UserId},requestInput={@RequestInput},requestData={@RequestData}",
+            "Process request failed, handler: {HandlerName}, userId: {UserId}, requestInput: {@RequestInput}, requestData: {@RequestData}",
             handlerName,
             input.UserId,
             input,

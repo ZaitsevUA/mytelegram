@@ -43,7 +43,7 @@ public class PeerHelper : IPeerHelper, ITransientDependency
             PeerType.Chat => new TPeerChat { ChatId = peerId },
             PeerType.Channel => new TPeerChannel { ChannelId = peerId },
             _ => throw new ArgumentOutOfRangeException(nameof(peerType),
-                $"Peer({peerType} {peerId}) can not convert to IPeer")
+                $"Unable to convert Peer(PeerType= {peerType}, PeerId= {peerId}) to IPeer")
         };
     }
 

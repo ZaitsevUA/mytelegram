@@ -16,7 +16,7 @@ internal sealed class ReportPeerHandler(ILogger<ReportPeerHandler> logger) : Rpc
     protected override Task<IBool> HandleCoreAsync(IRequestInput input,
         MyTelegram.Schema.Account.RequestReportPeer obj)
     {
-        logger.LogInformation("ReportPeerHandler peer:{Peer},reason:{@Reason},message:{Message}", obj.Peer,obj.Reason,obj.Message);
+        logger.LogInformation("ReportPeerHandler peer: {Peer}, reason: {@Reason}, message: {Message}", obj.Peer,obj.Reason,obj.Message);
 
         return Task.FromResult<IBool>(new TBoolTrue());
     }

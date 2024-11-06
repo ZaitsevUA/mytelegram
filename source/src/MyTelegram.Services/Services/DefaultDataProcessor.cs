@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
-using MyTelegram.Schema;
+﻿using MyTelegram.Schema;
 using MyTelegram.Schema.Extensions;
 using System.Diagnostics;
 
@@ -25,15 +24,6 @@ public class DefaultDataProcessor<TData>(
                 if (rpcResultCacheAppService.TryGetRpcResult(obj.UserId, obj.ReqMsgId, out var rpcResult))
                 {
                     sw.Stop();
-                    logger.LogInformation(
-                        "UserId={UserId} reqMsgId={ReqMsgId} handler={Handler},returns data from cache. {Elapsed}ms",
-                        obj.UserId,
-                        obj.ReqMsgId,
-                        handler.GetType().Name,
-                        sw.Elapsed.TotalMilliseconds
-                        );
-
-                    //await _objectMessageSender.SendMessageToPeerAsync(obj.ReqMsgId, rpcResult);
                     await SendMessageToPeerAsync(obj.ReqMsgId, rpcResult);
                     return;
                 }
@@ -49,21 +39,16 @@ public class DefaultDataProcessor<TData>(
                         handlerName = handlerHelper.GetHandlerFullName(data);
                     }
                     var r = await handler.HandleAsync(req, data);
-
+                    sw.Stop();
 
                     logger.LogInformation(
-                        "UserId={UserId} authKeyId={AuthKeyId:x2} reqMsgId={ReqMsgId} layer={Layer} handler={Handler} {DeviceType}. {Elapsed}ms",
+                        "User {UserId} {Handler} {DeviceType}[{Layer}] {Timespan}ms",
                         obj.UserId,
-                        obj.AuthKeyId,
-                        obj.ReqMsgId,
-                        obj.Layer,
                         handlerName,
                         obj.DeviceType,
+                        obj.Layer,
                         sw.Elapsed.TotalMilliseconds
                     );
-                    // _logger.LogInformation("Request:{Handler},RequestData={@RequestData},Response={@Response}", handlerName, data, r);
-
-
 
                     if (r != null!)
                     {
@@ -87,18 +72,6 @@ public class DefaultDataProcessor<TData>(
     {
         return obj.Data.ToTObject<IObject>();
     }
-
-    //private async Task SendAckAsync(uint objectId, int seqNo, long reqMsgId)
-    //{
-    //    if (seqNo % 2 == 1 && !ObjectIdConsts.NotNeedAckObjectIdToNames.ContainsKey(objectId))
-    //    {
-    //        var ack = new TMsgsAck
-    //        {
-    //            MsgIds = new TVector<long>(reqMsgId)
-    //        };
-    //        //await _objectMessageSender.PushMessageToPeerAsync();
-    //    }
-    //}
 
     protected virtual IRequestInput GetRequestInput(TData obj)
     {
