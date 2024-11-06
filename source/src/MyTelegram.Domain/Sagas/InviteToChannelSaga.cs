@@ -4,7 +4,7 @@ public class InviteToChannelSaga :
     MyInMemoryAggregateSaga<InviteToChannelSaga, InviteToChannelSagaId, InviteToChannelSagaLocator>,
     ISagaIsStartedBy<ChannelAggregate, ChannelId, StartInviteToChannelEvent>,
     ISagaHandles<ChannelMemberAggregate, ChannelMemberId, ChannelMemberCreatedEvent>,
-    IApply<InviteToChannelCompletedEvent>
+    IApply<InviteToChannelCompletedSagaEvent>
 {
     private readonly IIdGenerator _idGenerator;
     private readonly InviteToChannelSagaState _state = new();
@@ -15,7 +15,7 @@ public class InviteToChannelSaga :
         Register(_state);
     }
 
-    public void Apply(InviteToChannelCompletedEvent aggregateEvent)
+    public void Apply(InviteToChannelCompletedSagaEvent aggregateEvent)
     {
         CompleteAsync();
     }
@@ -25,7 +25,7 @@ public class InviteToChannelSaga :
         ISagaContext sagaContext,
         CancellationToken cancellationToken)
     {
-        Emit(new InviteToChannelSagaMemberCreatedEvent());
+        Emit(new InviteToChannelSagaMemberCreatedSagaEvent());
         var command = new IncrementParticipantCountCommand(ChannelId.Create(domainEvent.AggregateEvent.ChannelId));
         Publish(command);
 
@@ -50,7 +50,7 @@ public class InviteToChannelSaga :
         ISagaContext sagaContext,
         CancellationToken cancellationToken)
     {
-        Emit(new InviteToChannelSagaStartEvent(
+        Emit(new InviteToChannelSagaStartSagaEvent(
             domainEvent.AggregateEvent.RequestInfo,
             domainEvent.AggregateEvent.ChannelId,
             domainEvent.AggregateEvent.InviterId,
@@ -123,7 +123,7 @@ public class InviteToChannelSaga :
                 Publish(command);
             }
 
-            Emit(new InviteToChannelCompletedEvent(_state.RequestInfo,
+            Emit(new InviteToChannelCompletedSagaEvent(_state.RequestInfo,
                 _state.ChannelId,
                 _state.InviterId,
                 _state.Broadcast,

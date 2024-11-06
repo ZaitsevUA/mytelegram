@@ -1,9 +1,9 @@
 ﻿namespace MyTelegram.Domain.Sagas.States;
 
 public class VoteState : AggregateState<VoteSaga, VoteSagaId, VoteState>,
-    IApply<VoteSagaCompletedEvent>
+    IApply<VoteSagaCompletedSagaEvent>
 {
-    public void Apply(VoteSagaCompletedEvent aggregateEvent)
+    public void Apply(VoteSagaCompletedSagaEvent aggregateEvent)
     {
         //throw new NotImplementedException();
     }

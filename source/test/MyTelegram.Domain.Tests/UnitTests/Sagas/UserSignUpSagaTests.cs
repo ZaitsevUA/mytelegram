@@ -27,6 +27,6 @@ public class UserSignUpSagaTests : TestsFor<UserSignUpSaga>
 
         await Sut.HandleAsync(domainEvent, _sagaContext.Object, CancellationToken.None).ConfigureAwait(false);
 
-        Sut.UncommittedEvents.Single().AggregateEvent.ShouldBeOfType<UserSignUpSuccessEvent>();
+        Sut.UncommittedEvents.Single().AggregateEvent.ShouldBeOfType<UserSignUpSuccessSagaEvent>();
     }
 }

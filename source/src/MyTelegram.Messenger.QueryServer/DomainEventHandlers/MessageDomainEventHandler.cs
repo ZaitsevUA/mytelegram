@@ -25,17 +25,17 @@ public class MessageDomainEventHandler(
             idGenerator,
             ackCacheService,
             responseCacheAppService),
-        ISubscribeSynchronousTo<EditMessageSaga, EditMessageSagaId, OutboxMessageEditCompletedEvent>,
-        ISubscribeSynchronousTo<EditMessageSaga, EditMessageSagaId, InboxMessageEditCompletedEvent>,
-        ISubscribeSynchronousTo<SendMessageSaga, SendMessageSagaId, SendOutboxMessageCompletedEvent>,
-        ISubscribeSynchronousTo<SendMessageSaga, SendMessageSagaId, ReceiveInboxMessageCompletedEvent>,
+        ISubscribeSynchronousTo<EditMessageSaga, EditMessageSagaId, OutboxMessageEditCompletedSagaEvent>,
+        ISubscribeSynchronousTo<EditMessageSaga, EditMessageSagaId, InboxMessageEditCompletedSagaEvent>,
+        ISubscribeSynchronousTo<SendMessageSaga, SendMessageSagaId, SendOutboxMessageCompletedSagaEvent>,
+        ISubscribeSynchronousTo<SendMessageSaga, SendMessageSagaId, ReceiveInboxMessageCompletedSagaEvent>,
         ISubscribeSynchronousTo<MessageAggregate, MessageId, ChannelMessagePinnedEvent>,
         ISubscribeSynchronousTo<MessageAggregate, MessageId, MessageReplyUpdatedEvent>
 
 
 {
     public Task HandleAsync(
-        IDomainEvent<EditMessageSaga, EditMessageSagaId, InboxMessageEditCompletedEvent> domainEvent,
+        IDomainEvent<EditMessageSaga, EditMessageSagaId, InboxMessageEditCompletedSagaEvent> domainEvent,
         CancellationToken cancellationToken)
     {
         var toPeer = new Peer(PeerType.User, domainEvent.AggregateEvent.OwnerPeerId);
@@ -50,7 +50,7 @@ public class MessageDomainEventHandler(
     }
 
     public async Task HandleAsync(
-        IDomainEvent<EditMessageSaga, EditMessageSagaId, OutboxMessageEditCompletedEvent> domainEvent,
+        IDomainEvent<EditMessageSaga, EditMessageSagaId, OutboxMessageEditCompletedSagaEvent> domainEvent,
         CancellationToken cancellationToken)
     {
         var updates =
@@ -126,14 +126,14 @@ public class MessageDomainEventHandler(
     }
 
     public Task HandleAsync(
-        IDomainEvent<SendMessageSaga, SendMessageSagaId, ReceiveInboxMessageCompletedEvent> domainEvent,
+        IDomainEvent<SendMessageSaga, SendMessageSagaId, ReceiveInboxMessageCompletedSagaEvent> domainEvent,
         CancellationToken cancellationToken)
     {
         return HandleReceiveMessageCompletedAsync(domainEvent.AggregateEvent);
     }
 
     public Task HandleAsync(
-        IDomainEvent<SendMessageSaga, SendMessageSagaId, SendOutboxMessageCompletedEvent> domainEvent,
+        IDomainEvent<SendMessageSaga, SendMessageSagaId, SendOutboxMessageCompletedSagaEvent> domainEvent,
         CancellationToken cancellationToken)
     {
         return HandleSendOutboxMessageCompletedAsync(domainEvent.AggregateEvent);
@@ -156,7 +156,7 @@ public class MessageDomainEventHandler(
         return userLayeredService.Converter.ToUser(selfUserId, userReadModel!, photos, privacies: privacyList);
     }
 
-    private async Task HandleCreateChannelAsync(SendOutboxMessageCompletedEvent aggregateEvent)
+    private async Task HandleCreateChannelAsync(SendOutboxMessageCompletedSagaEvent aggregateEvent)
     {
         if (chatEventCacheHelper.TryRemoveChannelCreatedEvent(aggregateEvent.MessageItem.ToPeer.PeerId,
                 out var eventData))
@@ -200,7 +200,7 @@ public class MessageDomainEventHandler(
         }
     }
 
-    private async Task HandleCreateChatAsync(SendOutboxMessageCompletedEvent aggregateEvent)
+    private async Task HandleCreateChatAsync(SendOutboxMessageCompletedSagaEvent aggregateEvent)
     {
         if (chatEventCacheHelper.TryGetChatCreatedEvent(aggregateEvent.MessageItem.ToPeer.PeerId, out var eventData))
         {
@@ -231,7 +231,7 @@ public class MessageDomainEventHandler(
         }
     }
 
-    private async Task HandleCreateChatAsync(ReceiveInboxMessageCompletedEvent aggregateEvent)
+    private async Task HandleCreateChatAsync(ReceiveInboxMessageCompletedSagaEvent aggregateEvent)
     {
         if (chatEventCacheHelper.TryGetChatCreatedEvent(aggregateEvent.MessageItem.ToPeer.PeerId, out var eventData))
         {
@@ -249,7 +249,7 @@ public class MessageDomainEventHandler(
         }
     }
 
-    private Task HandleForwardMessageAsync(ReceiveInboxMessageCompletedEvent aggregateEvent)
+    private Task HandleForwardMessageAsync(ReceiveInboxMessageCompletedSagaEvent aggregateEvent)
     {
         var updates = updatesLayeredService.Converter.ToInboxForwardMessageUpdates(aggregateEvent);
         var layeredData = updatesLayeredService.GetLayeredData(c => c.ToInboxForwardMessageUpdates(aggregateEvent));
@@ -259,7 +259,7 @@ public class MessageDomainEventHandler(
             layeredData: layeredData);
     }
 
-    private async Task HandleInviteToChannelAsync(SendOutboxMessageCompletedEvent aggregateEvent)
+    private async Task HandleInviteToChannelAsync(SendOutboxMessageCompletedSagaEvent aggregateEvent)
     {
         if (chatEventCacheHelper.TryRemoveStartInviteToChannelEvent(aggregateEvent.MessageItem.ToPeer.PeerId,
                 out var startInviteToChannelEvent))
@@ -306,7 +306,7 @@ public class MessageDomainEventHandler(
         }
     }
 
-    private async Task HandleMigrateChatAsync(SendOutboxMessageCompletedEvent aggregateEvent)
+    private async Task HandleMigrateChatAsync(SendOutboxMessageCompletedSagaEvent aggregateEvent)
     {
         var chatId = aggregateEvent.MessageItem.ToPeer.PeerId;
         if (chatEventCacheHelper.TryGetMigrateChannelId(chatId, out var channelId))
@@ -354,7 +354,7 @@ public class MessageDomainEventHandler(
         }
     }
 
-    private async Task HandleMigrateChatAsync(ReceiveInboxMessageCompletedEvent aggregateEvent)
+    private async Task HandleMigrateChatAsync(ReceiveInboxMessageCompletedSagaEvent aggregateEvent)
     {
         if (chatEventCacheHelper.TryGetMigrateChannelId(aggregateEvent.MessageItem.ToPeer.PeerId, out var channelId))
         {
@@ -401,7 +401,7 @@ public class MessageDomainEventHandler(
         }
     }
 
-    private async Task HandleReceiveMessageAsync(ReceiveInboxMessageCompletedEvent aggregateEvent)
+    private async Task HandleReceiveMessageAsync(ReceiveInboxMessageCompletedSagaEvent aggregateEvent)
     {
         var updates = updatesLayeredService.Converter.ToUpdates(aggregateEvent);
 
@@ -414,7 +414,7 @@ public class MessageDomainEventHandler(
         );
     }
 
-    private Task HandleReceiveMessageCompletedAsync(ReceiveInboxMessageCompletedEvent aggregateEvent)
+    private Task HandleReceiveMessageCompletedAsync(ReceiveInboxMessageCompletedSagaEvent aggregateEvent)
     {
         return aggregateEvent.MessageItem.MessageSubType switch
         {
@@ -426,7 +426,7 @@ public class MessageDomainEventHandler(
         };
     }
 
-    private async Task HandleSendMessageAsync(SendOutboxMessageCompletedEvent aggregateEvent)
+    private async Task HandleSendMessageAsync(SendOutboxMessageCompletedSagaEvent aggregateEvent)
     {
         var item = aggregateEvent.MessageItem;
         if (item.ToPeer.PeerType == PeerType.Channel)
@@ -483,7 +483,7 @@ public class MessageDomainEventHandler(
         );
     }
 
-    private async Task HandleSendMessageToChannelAsync(SendOutboxMessageCompletedEvent aggregateEvent)
+    private async Task HandleSendMessageToChannelAsync(SendOutboxMessageCompletedSagaEvent aggregateEvent)
     {
         var item = aggregateEvent.MessageItem;
         var selfUpdates = updatesLayeredService.GetConverter(aggregateEvent.RequestInfo.Layer)
@@ -618,7 +618,7 @@ public class MessageDomainEventHandler(
             ;
     }
 
-    private Task HandleSendOutboxMessageCompletedAsync(SendOutboxMessageCompletedEvent aggregateEvent)
+    private Task HandleSendOutboxMessageCompletedAsync(SendOutboxMessageCompletedSagaEvent aggregateEvent)
     {
         return aggregateEvent.MessageItem.MessageSubType switch
         {
@@ -631,7 +631,7 @@ public class MessageDomainEventHandler(
             _ => HandleSendMessageAsync(aggregateEvent)
         };
     }
-    private Task HandleUpdatePinnedMessageAsync(ReceiveInboxMessageCompletedEvent aggregateEvent)
+    private Task HandleUpdatePinnedMessageAsync(ReceiveInboxMessageCompletedSagaEvent aggregateEvent)
     {
         var updates = updatesLayeredService.Converter.ToUpdatePinnedMessageUpdates(aggregateEvent);
 
@@ -640,7 +640,7 @@ public class MessageDomainEventHandler(
             pts: aggregateEvent.Pts);
     }
 
-    private async Task HandleUpdatePinnedMessageAsync(SendOutboxMessageCompletedEvent aggregateEvent)
+    private async Task HandleUpdatePinnedMessageAsync(SendOutboxMessageCompletedSagaEvent aggregateEvent)
     {
         var updates = updatesLayeredService.GetConverter(aggregateEvent.RequestInfo.Layer)
             .ToUpdatePinnedMessageUpdates(aggregateEvent);

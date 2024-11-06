@@ -17,14 +17,14 @@ public class MessageReadModel : IMessageReadModel,
     IAmReadModelFor<MessageAggregate, MessageId, OutboxMessageDeletedEvent>,
     IAmReadModelFor<MessageAggregate, MessageId, InboxMessageDeletedEvent>,
     IAmReadModelFor<MessageAggregate, MessageId, SelfMessageDeletedEvent>,
-    IAmReadModelFor<SendMessageSaga, SendMessageSagaId, SendOutboxMessageCompletedEvent>,
-    IAmReadModelFor<SendMessageSaga, SendMessageSagaId, ReceiveInboxMessageCompletedEvent>,
+    IAmReadModelFor<SendMessageSaga, SendMessageSagaId, SendOutboxMessageCompletedSagaEvent>,
+    IAmReadModelFor<SendMessageSaga, SendMessageSagaId, ReceiveInboxMessageCompletedSagaEvent>,
     IAmReadModelFor<MessageAggregate, MessageId, MessageDeleted4Event>,
     IAmReadModelFor<MessageAggregate, MessageId, ReplyChannelMessageCompletedEvent>,
     IAmReadModelFor<MessageAggregate, MessageId, ChannelMessagePinnedEvent>,
     IAmReadModelFor<MessageAggregate, MessageId, MessageReplyUpdatedEvent>,
     IAmReadModelFor<MessageAggregate, MessageId, ChannelMessageDeletedEvent>,
-    IAmReadModelFor<SendMessageSaga, SendMessageSagaId, PostChannelIdUpdatedEvent>,
+    IAmReadModelFor<SendMessageSaga, SendMessageSagaId, PostChannelIdUpdatedSagaEvent>,
     IAmReadModelFor<MessageAggregate,MessageId, MessageUnpinnedEvent>,
     IAmReadModelFor<MessageAggregate,MessageId, MessagePinnedUpdatedEvent>
 {
@@ -236,7 +236,7 @@ public class MessageReadModel : IMessageReadModel,
     //}
 
     public Task ApplyAsync(IReadModelContext context,
-        IDomainEvent<SendMessageSaga, SendMessageSagaId, SendOutboxMessageCompletedEvent> domainEvent,
+        IDomainEvent<SendMessageSaga, SendMessageSagaId, SendOutboxMessageCompletedSagaEvent> domainEvent,
         CancellationToken cancellationToken)
     {
         if (string.IsNullOrEmpty(Id))
@@ -250,7 +250,7 @@ public class MessageReadModel : IMessageReadModel,
     }
 
     public Task ApplyAsync(IReadModelContext context,
-        IDomainEvent<SendMessageSaga, SendMessageSagaId, ReceiveInboxMessageCompletedEvent> domainEvent,
+        IDomainEvent<SendMessageSaga, SendMessageSagaId, ReceiveInboxMessageCompletedSagaEvent> domainEvent,
         CancellationToken cancellationToken)
     {
         if (string.IsNullOrEmpty(Id))
@@ -357,7 +357,7 @@ public class MessageReadModel : IMessageReadModel,
         return Task.CompletedTask;
     }
 
-    public Task ApplyAsync(IReadModelContext context, IDomainEvent<SendMessageSaga, SendMessageSagaId, PostChannelIdUpdatedEvent> domainEvent, CancellationToken cancellationToken)
+    public Task ApplyAsync(IReadModelContext context, IDomainEvent<SendMessageSaga, SendMessageSagaId, PostChannelIdUpdatedSagaEvent> domainEvent, CancellationToken cancellationToken)
     {
         PostChannelId = domainEvent.AggregateEvent.PostChannelId;
         PostMessageId = domainEvent.AggregateEvent.PostMessageId;

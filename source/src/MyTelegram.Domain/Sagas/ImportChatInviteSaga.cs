@@ -1,5 +1,4 @@
-﻿using MyTelegram.Domain.Aggregates.ChatInvite;
-using MyTelegram.Schema.Extensions;
+﻿using MyTelegram.Schema.Extensions;
 
 namespace MyTelegram.Domain.Sagas;
 

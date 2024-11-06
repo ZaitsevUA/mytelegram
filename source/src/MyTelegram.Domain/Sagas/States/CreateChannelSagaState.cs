@@ -1,7 +1,7 @@
 ﻿namespace MyTelegram.Domain.Sagas.States;
 
 public class CreateChannelSagaState : AggregateState<CreateChannelSaga, CreateChannelSagaId, CreateChannelSagaState>,
-    IApply<CreateChannelSagaStartedEvent>
+    IApply<CreateChannelSagaStartedSagaEvent>
 {
     public RequestInfo RequestInfo { get; private set; }
     public string MessageActionData { get; private set; }
@@ -9,7 +9,7 @@ public class CreateChannelSagaState : AggregateState<CreateChannelSaga, CreateCh
     public bool MigratedFromChat { get; private set; }
     public bool AutoCreateFromChat { get; private set; }
     public bool Broadcast { get; private set; }
-    public void Apply(CreateChannelSagaStartedEvent aggregateEvent)
+    public void Apply(CreateChannelSagaStartedSagaEvent aggregateEvent)
     {
         RequestInfo = aggregateEvent.RequestInfo;
         MessageActionData = aggregateEvent.MessageActionData;

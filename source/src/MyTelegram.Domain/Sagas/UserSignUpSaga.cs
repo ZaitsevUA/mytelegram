@@ -3,9 +3,9 @@
 public class UserSignUpSaga(UserSignUpSagaId id, IIdGenerator idGenerator)
     : AggregateSaga<UserSignUpSaga, UserSignUpSagaId, UserSignUpSagaLocator>(id),
         ISagaIsStartedBy<AppCodeAggregate, AppCodeId, CheckSignUpCodeCompletedEvent>,
-        IApply<UserSignUpSuccessEvent>
+        IApply<UserSignUpSuccessSagaEvent>
 {
-    public void Apply(UserSignUpSuccessEvent aggregateEvent)
+    public void Apply(UserSignUpSuccessSagaEvent aggregateEvent)
     {
     }
 
@@ -29,7 +29,7 @@ public class UserSignUpSaga(UserSignUpSagaId id, IIdGenerator idGenerator)
             );
             Publish(createUserCommand);
 
-            Emit(new UserSignUpSuccessEvent(domainEvent.AggregateEvent.RequestInfo,
+            Emit(new UserSignUpSuccessSagaEvent(domainEvent.AggregateEvent.RequestInfo,
                 userId,
                 domainEvent.AggregateEvent.PhoneNumber));
             Complete();

@@ -1,9 +1,9 @@
 ﻿namespace MyTelegram.Domain.Sagas.States;
 
 public class ClearHistoryState : AggregateState<ClearHistorySaga, ClearHistorySagaId, ClearHistoryState>,
-    IApply<ClearHistorySagaStartedEvent>,
-    IApply<ClearSingleUserHistoryCompletedEvent>,
-    IApply<ClearHistoryPtsIncrementedEvent>,
+    IApply<ClearHistorySagaStartedSagaEvent>,
+    IApply<ClearSingleUserHistoryCompletedSagaEvent>,
+    IApply<ClearHistoryPtsIncrementedSagaEvent>,
     IInMemoryAggregate
 {
     public RequestInfo RequestInfo { get; private set; } = default!;
@@ -20,7 +20,7 @@ public class ClearHistoryState : AggregateState<ClearHistorySaga, ClearHistorySa
     public int TotalCountToBeDelete { get; private set; }
 
 
-    public void Apply(ClearHistoryPtsIncrementedEvent aggregateEvent)
+    public void Apply(ClearHistoryPtsIncrementedSagaEvent aggregateEvent)
     {
         if (PeerToPts.TryGetValue(aggregateEvent.PeerId, out var pts))
         {
@@ -44,7 +44,7 @@ public class ClearHistoryState : AggregateState<ClearHistorySaga, ClearHistorySa
         }
     }
 
-    public void Apply(ClearHistorySagaStartedEvent aggregateEvent)
+    public void Apply(ClearHistorySagaStartedSagaEvent aggregateEvent)
     {
         RequestInfo = aggregateEvent.RequestInfo;
         Revoke = aggregateEvent.Revoke;
@@ -61,7 +61,7 @@ public class ClearHistoryState : AggregateState<ClearHistorySaga, ClearHistorySa
         }
     }
 
-    public void Apply(ClearSingleUserHistoryCompletedEvent aggregateEvent)
+    public void Apply(ClearSingleUserHistoryCompletedSagaEvent aggregateEvent)
     {
     }
 

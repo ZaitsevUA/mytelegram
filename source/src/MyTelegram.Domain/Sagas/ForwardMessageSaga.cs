@@ -27,7 +27,7 @@ public class ForwardMessageSaga : MyInMemoryAggregateSaga<ForwardMessageSaga, Fo
         CancellationToken cancellationToken)
     {
         var outMessageId = await SendMessageToTargetPeerAsync(domainEvent.AggregateEvent);
-        Emit(new ForwardSingleMessageSuccessEvent());
+        Emit(new ForwardSingleMessageSuccessSagaEvent());
         if (_state.ForwardFromLinkedChannel)
         {
             Emit(new MessageReplyCreatedEvent(domainEvent.AggregateEvent.OriginalMessageItem.ToPeer.PeerId, domainEvent.AggregateEvent.OriginalMessageItem.MessageId, _state.ToPeer.PeerId, outMessageId));
@@ -45,7 +45,7 @@ public class ForwardMessageSaga : MyInMemoryAggregateSaga<ForwardMessageSaga, Fo
 
     public Task HandleAsync(IDomainEvent<TempAggregate, TempId, ForwardMessagesStartedEvent> domainEvent, ISagaContext sagaContext, CancellationToken cancellationToken)
     {
-        Emit(new ForwardMessageSagaStartedEvent(domainEvent.AggregateEvent.RequestInfo,
+        Emit(new ForwardMessageSagaStartedSagaEvent(domainEvent.AggregateEvent.RequestInfo,
             domainEvent.AggregateEvent.FromPeer,
             domainEvent.AggregateEvent.ToPeer,
             domainEvent.AggregateEvent.MessageIds,
@@ -165,6 +165,4 @@ public class ForwardMessageSaga : MyInMemoryAggregateSaga<ForwardMessageSaga, Fo
 
         return outMessageId;
     }
-
-
 }

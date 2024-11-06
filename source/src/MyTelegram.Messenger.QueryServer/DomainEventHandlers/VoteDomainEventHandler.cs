@@ -15,11 +15,11 @@ public class VoteDomainEventHandler(
     :
         DomainEventHandlerBase(objectMessageSender, commandBus, idGenerator, ackCacheService,
             responseCacheAppService),
-        ISubscribeSynchronousTo<VoteSaga, VoteSagaId, VoteSagaCompletedEvent>
+        ISubscribeSynchronousTo<VoteSaga, VoteSagaId, VoteSagaCompletedSagaEvent>
 {
     //private readonly ITlPollConverter _pollConverter;
 
-    public async Task HandleAsync(IDomainEvent<VoteSaga, VoteSagaId, VoteSagaCompletedEvent> domainEvent,
+    public async Task HandleAsync(IDomainEvent<VoteSaga, VoteSagaId, VoteSagaCompletedSagaEvent> domainEvent,
         CancellationToken cancellationToken)
     {
         var pollReadModel = await queryProcessor

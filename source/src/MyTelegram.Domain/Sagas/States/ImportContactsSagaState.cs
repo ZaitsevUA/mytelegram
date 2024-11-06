@@ -2,8 +2,8 @@
 
 public class
     ImportContactsSagaState : AggregateState<ImportContactsSaga, ImportContactsSagaId, ImportContactsSagaState>,
-        IApply<ImportContactsStartedEvent>,
-        IApply<ImportContactsSagaSingleContactImportedEvent>
+        IApply<ImportContactsStartedSagaEvent>,
+        IApply<ImportContactsSagaSingleContactImportedSagaEvent>
 {
     //public int ImportedCount { get; private set; }
     //public PhoneContact PhoneContact { get; private set; }
@@ -12,13 +12,13 @@ public class
     public RequestInfo RequestInfo { get; private set; }
     public int TotalCount { get; private set; }
 
-    public void Apply(ImportContactsSagaSingleContactImportedEvent aggregateEvent)
+    public void Apply(ImportContactsSagaSingleContactImportedSagaEvent aggregateEvent)
     {
         //ImportedCount++;
         PhoneContacts.Add(aggregateEvent.PhoneContact);
     }
 
-    public void Apply(ImportContactsStartedEvent aggregateEvent)
+    public void Apply(ImportContactsStartedSagaEvent aggregateEvent)
     {
         //ReqMsgId = aggregateEvent.ReqMsgId;
         RequestInfo=aggregateEvent.RequestInfo;

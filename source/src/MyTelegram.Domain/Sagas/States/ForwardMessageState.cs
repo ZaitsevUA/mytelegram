@@ -1,8 +1,8 @@
 ﻿namespace MyTelegram.Domain.Sagas.States;
 
 public class ForwardMessageState : AggregateState<ForwardMessageSaga, ForwardMessageSagaId, ForwardMessageState>,
-    IApply<ForwardMessageSagaStartedEvent>,
-    IApply<ForwardSingleMessageSuccessEvent>,
+    IApply<ForwardMessageSagaStartedSagaEvent>,
+    IApply<ForwardSingleMessageSuccessSagaEvent>,
     IApply<MessageReplyCreatedEvent>
 {
     public Guid CorrelationId { get; private set; }
@@ -18,7 +18,7 @@ public class ForwardMessageState : AggregateState<ForwardMessageSaga, ForwardMes
     public bool ForwardFromLinkedChannel { get; private set; }
     public bool Post { get; private set; }
 
-    public void Apply(ForwardMessageSagaStartedEvent aggregateEvent)
+    public void Apply(ForwardMessageSagaStartedSagaEvent aggregateEvent)
     {
         RequestInfo = aggregateEvent.RequestInfo;
         FromPeer = aggregateEvent.FromPeer;
@@ -29,7 +29,7 @@ public class ForwardMessageState : AggregateState<ForwardMessageSaga, ForwardMes
         Post = aggregateEvent.Post;
     }
 
-    public void Apply(ForwardSingleMessageSuccessEvent aggregateEvent)
+    public void Apply(ForwardSingleMessageSuccessSagaEvent aggregateEvent)
     {
         ForwardCount++;
     }

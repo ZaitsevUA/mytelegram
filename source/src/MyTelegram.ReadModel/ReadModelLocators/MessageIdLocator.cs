@@ -23,15 +23,15 @@ public class MessageIdLocator : IMessageIdLocator
         {
             switch (aggregateEvent)
             {
-                case PostChannelIdUpdatedEvent postChannelIdUpdatedEvent:
+                case PostChannelIdUpdatedSagaEvent postChannelIdUpdatedEvent:
                     yield return MessageId.Create(postChannelIdUpdatedEvent.ChannelId,
                         postChannelIdUpdatedEvent.MessageId).Value;
                     break;
-                case SendOutboxMessageCompletedEvent sendOutboxMessageSuccessEvent:
+                case SendOutboxMessageCompletedSagaEvent sendOutboxMessageSuccessEvent:
                     yield return MessageId.Create(sendOutboxMessageSuccessEvent.MessageItem.OwnerPeer.PeerId,
                         sendOutboxMessageSuccessEvent.MessageItem.MessageId).Value;
                     break;
-                case ReceiveInboxMessageCompletedEvent receiveInboxMessageSuccessEvent:
+                case ReceiveInboxMessageCompletedSagaEvent receiveInboxMessageSuccessEvent:
                     yield return MessageId.Create(receiveInboxMessageSuccessEvent.MessageItem.OwnerPeer.PeerId,
                         receiveInboxMessageSuccessEvent.MessageItem.MessageId).Value;
                     break;

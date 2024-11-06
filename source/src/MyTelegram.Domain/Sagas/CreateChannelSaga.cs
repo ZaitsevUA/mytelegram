@@ -59,7 +59,7 @@ public class CreateChannelSaga :
         ISagaContext sagaContext,
         CancellationToken cancellationToken)
     {
-        Emit(new CreateChannelSagaStartedEvent(domainEvent.AggregateEvent.RequestInfo,
+        Emit(new CreateChannelSagaStartedSagaEvent(domainEvent.AggregateEvent.RequestInfo,
             domainEvent.AggregateEvent.Broadcast,
             domainEvent.AggregateEvent.MessageActionData, domainEvent.AggregateEvent.RandomId,
             domainEvent.AggregateEvent.MigratedFromChat,

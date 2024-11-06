@@ -36,6 +36,6 @@ public class UserSignInSagaTests : TestsFor<SignInSaga>
 
         await Sut.HandleAsync(domainEvent, _sagaContext.Object, CancellationToken.None).ConfigureAwait(false);
 
-        Sut.UncommittedEvents.Single().AggregateEvent.ShouldBeOfType<SignInStartedEvent>();
+        Sut.UncommittedEvents.Single().AggregateEvent.ShouldBeOfType<SignInStartedSagaEvent>();
     }
 }

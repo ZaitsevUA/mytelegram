@@ -20,7 +20,7 @@ public class UpdatePinnedMessageSaga : MyInMemoryAggregateSaga<UpdatePinnedMessa
         ISagaContext sagaContext,
         CancellationToken cancellationToken)
     {
-        Emit(new UpdateInboxPinnedCompletedEvent(domainEvent.AggregateEvent.OwnerPeerId,
+        Emit(new UpdateInboxPinnedCompletedSagaEvent(domainEvent.AggregateEvent.OwnerPeerId,
             domainEvent.AggregateEvent.MessageId,
             domainEvent.AggregateEvent.ToPeer));
         await IncrementPtsAsync(domainEvent.AggregateEvent.OwnerPeerId);
@@ -32,7 +32,7 @@ public class UpdatePinnedMessageSaga : MyInMemoryAggregateSaga<UpdatePinnedMessa
         ISagaContext sagaContext,
         CancellationToken cancellationToken)
     {
-        Emit(new UpdateOutboxPinnedCompletedEvent(domainEvent.AggregateEvent.OwnerPeerId,
+        Emit(new UpdateOutboxPinnedCompletedSagaEvent(domainEvent.AggregateEvent.OwnerPeerId,
             domainEvent.AggregateEvent.MessageId,
             domainEvent.AggregateEvent.ToPeer,
             domainEvent.AggregateEvent.Post
@@ -70,8 +70,8 @@ public class UpdatePinnedMessageSaga : MyInMemoryAggregateSaga<UpdatePinnedMessa
             domainEvent.AggregateEvent.RequestInfo.UserId == domainEvent.AggregateEvent.ToPeer.PeerId)
         {
             var pts = await _idGenerator.NextIdAsync(IdType.Pts, domainEvent.AggregateEvent.OwnerPeerId, cancellationToken: cancellationToken);
-            Emit(new UpdatePinnedBoxPtsCompletedEvent(domainEvent.AggregateEvent.OwnerPeerId, pts));
-            Emit(new UpdateSavedMessagesPinnedCompletedEvent(domainEvent.AggregateEvent.RequestInfo, domainEvent.AggregateEvent.Pinned, [domainEvent.AggregateEvent.MessageId], pts));
+            Emit(new UpdatePinnedBoxPtsCompletedSagaEvent(domainEvent.AggregateEvent.OwnerPeerId, pts));
+            Emit(new UpdateSavedMessagesPinnedCompletedSagaEvent(domainEvent.AggregateEvent.RequestInfo, domainEvent.AggregateEvent.Pinned, [domainEvent.AggregateEvent.MessageId], pts));
             return;
         }
 
@@ -81,7 +81,7 @@ public class UpdatePinnedMessageSaga : MyInMemoryAggregateSaga<UpdatePinnedMessa
             inboxCount = 1;
         }
 
-        Emit(new UpdatePinnedMessageSagaStartedEvent(domainEvent.AggregateEvent.RequestInfo,
+        Emit(new UpdatePinnedMessageSagaStartedSagaEvent(domainEvent.AggregateEvent.RequestInfo,
             !domainEvent.AggregateEvent.IsOut,
             domainEvent.AggregateEvent.Pinned,
             domainEvent.AggregateEvent.PmOneSide,
@@ -189,7 +189,7 @@ public class UpdatePinnedMessageSaga : MyInMemoryAggregateSaga<UpdatePinnedMessa
     private async Task IncrementPtsAsync(long peerId)
     {
         var pts = await _idGenerator.NextIdAsync(IdType.Pts, peerId);
-        Emit(new UpdatePinnedBoxPtsCompletedEvent(peerId, pts));
+        Emit(new UpdatePinnedBoxPtsCompletedSagaEvent(peerId, pts));
 
         var item = _state.GetUpdatePinItem(peerId);
         if (item == null)
@@ -199,7 +199,7 @@ public class UpdatePinnedMessageSaga : MyInMemoryAggregateSaga<UpdatePinnedMessa
 
         var shouldReplyRpcResult =
             (_state.ToPeer.PeerType == PeerType.Channel || _state.RequestInfo.UserId == peerId) && !_state.Pinned;
-        Emit(new UpdatePinnedMessageCompletedEvent(_state.RequestInfo,
+        Emit(new UpdatePinnedMessageCompletedSagaEvent(_state.RequestInfo,
             shouldReplyRpcResult,
             _state.RequestInfo.UserId,
             peerId,

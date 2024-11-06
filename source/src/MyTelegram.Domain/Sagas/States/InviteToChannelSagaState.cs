@@ -3,8 +3,8 @@
 public class
     InviteToChannelSagaState : AggregateState<InviteToChannelSaga, InviteToChannelSagaId, InviteToChannelSagaState>,
         //IHasCorrelationId,
-        IApply<InviteToChannelSagaStartEvent>,
-        IApply<InviteToChannelSagaMemberCreatedEvent>
+        IApply<InviteToChannelSagaStartSagaEvent>,
+        IApply<InviteToChannelSagaMemberCreatedSagaEvent>
 {
     public int ChannelHistoryMinId { get; private set; }
     public long ChannelId { get; private set; }
@@ -25,12 +25,12 @@ public class
     public int TotalCount { get; private set; }
     public bool HasLink { get; private set; }
 
-    public void Apply(InviteToChannelSagaMemberCreatedEvent aggregateEvent)
+    public void Apply(InviteToChannelSagaMemberCreatedSagaEvent aggregateEvent)
     {
         IncrementedCount++;
     }
 
-    public void Apply(InviteToChannelSagaStartEvent aggregateEvent)
+    public void Apply(InviteToChannelSagaStartSagaEvent aggregateEvent)
     {
         RequestInfo = aggregateEvent.RequestInfo;
         ChannelId = aggregateEvent.ChannelId;

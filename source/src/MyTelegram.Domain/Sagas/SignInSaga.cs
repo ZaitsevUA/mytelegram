@@ -4,8 +4,8 @@ public class SignInSaga :
     MyInMemoryAggregateSaga<SignInSaga, SignInSagaId, SignInSagaLocator>,
     ISagaIsStartedBy<AppCodeAggregate, AppCodeId, CheckSignInCodeCompletedEvent>,
     ISagaHandles<UserAggregate, UserId, CheckUserStatusCompletedEvent>,
-    IApply<SignInSuccessEvent>,
-    IApply<SignUpRequiredEvent>
+    IApply<SignInSuccessSagaEvent>,
+    IApply<SignUpRequiredSagaEvent>
 {
     private readonly SignInSagaState _state = new();
 
@@ -14,7 +14,7 @@ public class SignInSaga :
         Register(_state);
     }
 
-    public void Apply(SignInSuccessEvent aggregateEvent)
+    public void Apply(SignInSuccessSagaEvent aggregateEvent)
     {
         CompleteAsync();
     }
@@ -23,7 +23,7 @@ public class SignInSaga :
         ISagaContext sagaContext,
         CancellationToken cancellationToken)
     {
-        Emit(new SignInSuccessEvent(_state.RequestInfo,
+        Emit(new SignInSuccessSagaEvent(_state.RequestInfo,
             _state.RequestInfo.AuthKeyId,
             _state.RequestInfo.PermAuthKeyId,
             domainEvent.AggregateEvent.UserId,
@@ -49,17 +49,17 @@ public class SignInSaga :
 
         if (domainEvent.AggregateEvent.UserId == 0)
         {
-            Emit(new SignUpRequiredEvent(domainEvent.AggregateEvent.RequestInfo));
+            Emit(new SignUpRequiredSagaEvent(domainEvent.AggregateEvent.RequestInfo));
             return;
         }
 
-        Emit(new SignInStartedEvent(domainEvent.AggregateEvent.RequestInfo));
+        Emit(new SignInStartedSagaEvent(domainEvent.AggregateEvent.RequestInfo));
         var checkUserStatusCommand = new CheckUserStatusCommand(UserId.Create(domainEvent.AggregateEvent.UserId),
             domainEvent.AggregateEvent.RequestInfo);
         Publish(checkUserStatusCommand);
     }
 
-    public void Apply(SignUpRequiredEvent aggregateEvent)
+    public void Apply(SignUpRequiredSagaEvent aggregateEvent)
     {
         CompleteAsync();
     }

@@ -5,9 +5,9 @@ public class UpdateUserNameSaga(UpdateUserNameSagaId id)
         ISagaIsStartedBy<UserNameAggregate, UserNameId, UserNameChangedEvent>,
         ISagaHandles<UserAggregate, UserId, UserNameUpdatedEvent>,
         ISagaHandles<ChannelAggregate, ChannelId, ChannelUserNameChangedEvent>,
-        IApply<UpdateUserNameStartedEvent>
+        IApply<UpdateUserNameStartedSagaEvent>
 {
-    public void Apply(UpdateUserNameStartedEvent aggregateEvent)
+    public void Apply(UpdateUserNameStartedSagaEvent aggregateEvent)
     {
         //throw new NotImplementedException();
     }

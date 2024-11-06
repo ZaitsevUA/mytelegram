@@ -25,7 +25,7 @@ public class ContactDomainEventHandler(
             responseCacheAppService),
         ISubscribeSynchronousTo<ContactAggregate, ContactId, ContactAddedEvent>,
         ISubscribeSynchronousTo<ContactAggregate, ContactId, ContactDeletedEvent>,
-        ISubscribeSynchronousTo<ImportContactsSaga, ImportContactsSagaId, ImportContactsCompletedEvent>,
+        ISubscribeSynchronousTo<ImportContactsSaga, ImportContactsSagaId, ImportContactsCompletedSagaEvent>,
         ISubscribeSynchronousTo<ContactAggregate, ContactId, ContactProfilePhotoChangedEvent>
 {
     public async Task HandleAsync(IDomainEvent<ContactAggregate, ContactId, ContactAddedEvent> domainEvent,
@@ -110,7 +110,7 @@ public class ContactDomainEventHandler(
     }
 
     public async Task HandleAsync(
-        IDomainEvent<ImportContactsSaga, ImportContactsSagaId, ImportContactsCompletedEvent> domainEvent,
+        IDomainEvent<ImportContactsSaga, ImportContactsSagaId, ImportContactsCompletedSagaEvent> domainEvent,
         CancellationToken cancellationToken)
     {
         var importedContacts = domainEvent.AggregateEvent.PhoneContacts

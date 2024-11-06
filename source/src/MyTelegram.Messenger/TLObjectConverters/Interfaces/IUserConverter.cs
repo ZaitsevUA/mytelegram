@@ -12,7 +12,7 @@ public interface IUserConverter : ILayeredConverter
         IReadOnlyCollection<IPrivacyReadModel>? privacies = null
         );
 
-    IUser ToUser(SignInSuccessEvent aggregateEvent);
+    IUser ToUser(SignInSuccessSagaEvent aggregateEvent);
 
     IUser ToUser(UserCreatedEvent aggregateEvent);
 

@@ -1,17 +1,6 @@
-﻿using EventFlow.Aggregates;
-using MyTelegram.Domain.Aggregates.Temp;
-using MyTelegram.Domain.Events.Temp;
-using DeleteMessagesStartedEvent = MyTelegram.Domain.Events.Temp.DeleteMessagesStartedEvent;
+﻿using DeleteMessagesStartedEvent = MyTelegram.Domain.Events.Temp.DeleteMessagesStartedEvent;
 
 namespace MyTelegram.Domain.Sagas;
-
-//public class DeletedItem
-//{
-//    public int DeletedCount { get; set; }
-//    //public HashSet<int> DeletedMessageIds { get; set; } = new();
-//    public int Pts { get; set; }
-//    public int TotalCount { get; set; }
-//}
 
 public class DeleteMessageSaga4StartedEvent(RequestInfo requestInfo,
     //List<int> messageIds,
@@ -52,10 +41,10 @@ public class
     ISagaHandles<MessageAggregate, MessageId, MessageDeleted4Event>,
     //ISagaHandles<MessageAggregate, MessageId, OutboxMessageDeletedEvent>,
     //ISagaHandles<MessageAggregate, MessageId, InboxMessageDeletedEvent>,
-    IApply<DeleteSelfMessagesCompletedEvent4>,
-    IApply<DeleteOtherParticipantMessagesCompletedEvent4>,
-    IApply<DeleteSelfHistoryCompletedEvent4>,
-    IApply<DeleteOtherParticipantHistoryCompletedEvent4>
+    IApply<DeleteSelfMessagesCompletedSagaEvent>,
+    IApply<DeleteOtherParticipantMessagesCompletedSagaEvent>,
+    IApply<DeleteSelfHistoryCompletedSagaEvent>,
+    IApply<DeleteOtherParticipantHistoryCompletedSagaEvent>
 
 {
     private readonly IIdGenerator _idGenerator;
@@ -68,12 +57,12 @@ public class
     }
 
     public DeleteMessagesSaga4State SagaState => _state;
-    public void Apply(DeleteSelfMessagesCompletedEvent4 aggregateEvent)
+    public void Apply(DeleteSelfMessagesCompletedSagaEvent aggregateEvent)
     {
         HandleDeleteAllMessagesCompleted();
     }
 
-    public void Apply(DeleteOtherParticipantMessagesCompletedEvent4 aggregateEvent)
+    public void Apply(DeleteOtherParticipantMessagesCompletedSagaEvent aggregateEvent)
     {
         HandleDeleteAllMessagesCompleted();
     }
@@ -190,7 +179,7 @@ public class
                 {
                     if (_state.IsDeleteHistory)
                     {
-                        Emit(new DeleteSelfHistoryCompletedEvent4(_state.RequestInfo,
+                        Emit(new DeleteSelfHistoryCompletedSagaEvent(_state.RequestInfo,
                             pts,
                             item.MessageIds.Count,
                             item.MessageIds.Min(),
@@ -200,18 +189,18 @@ public class
                     }
                     else
                     {
-                        Emit(new DeleteSelfMessagesCompletedEvent4(_state.RequestInfo, pts, item.MessageIds.Count, item.MessageIds));
+                        Emit(new DeleteSelfMessagesCompletedSagaEvent(_state.RequestInfo, pts, item.MessageIds.Count, item.MessageIds));
                     }
                 }
                 else
                 {
                     if (_state.IsDeleteHistory)
                     {
-                        Emit(new DeleteOtherParticipantHistoryCompletedEvent4(userId, pts, item.MessageIds.Count, item.MessageIds));
+                        Emit(new DeleteOtherParticipantHistoryCompletedSagaEvent(userId, pts, item.MessageIds.Count, item.MessageIds));
                     }
                     else
                     {
-                        Emit(new DeleteOtherParticipantMessagesCompletedEvent4(userId, pts, item.MessageIds.Count, item.MessageIds));
+                        Emit(new DeleteOtherParticipantMessagesCompletedSagaEvent(userId, pts, item.MessageIds.Count, item.MessageIds));
                     }
                 }
             }
@@ -223,7 +212,7 @@ public class
     private async Task<int> IncrementPtsAsync(long userId)
     {
         var pts = await _idGenerator.NextIdAsync(IdType.Pts, userId);
-        Emit(new DeleteMessagePtsIncrementedEvent4(userId, pts));
+        Emit(new DeleteMessagePtsIncrementedSagaEvent(userId, pts));
 
         return pts;
     }
@@ -249,12 +238,12 @@ public class
         }
     }
 
-    public void Apply(DeleteSelfHistoryCompletedEvent4 aggregateEvent)
+    public void Apply(DeleteSelfHistoryCompletedSagaEvent aggregateEvent)
     {
         HandleDeleteAllMessagesCompleted();
     }
 
-    public void Apply(DeleteOtherParticipantHistoryCompletedEvent4 aggregateEvent)
+    public void Apply(DeleteOtherParticipantHistoryCompletedSagaEvent aggregateEvent)
     {
         HandleDeleteAllMessagesCompleted();
     }
@@ -274,7 +263,7 @@ public class DeleteMessagesSaga4State : AggregateState<DeleteMessagesSaga4, Dele
     IApply<DeleteMessageSaga4StartedEvent>,
     //IApply<SelfMessageDeletedSagaEvent>,
     //IApply<OtherParticipantMessageDeletedSagaEvent>,
-    IApply<DeleteMessagePtsIncrementedEvent4>,
+    IApply<DeleteMessagePtsIncrementedSagaEvent>,
     //IApply<OutboxMessageDeletedSagaEvent>,
     //IApply<DeleteOtherParticipantMessagesCompletedEvent4>,
     IApply<MessageDeletedSagaEvent>
@@ -323,11 +312,11 @@ public class DeleteMessagesSaga4State : AggregateState<DeleteMessagesSaga4, Dele
         }
     }
 
-    public void Apply(DeleteOtherParticipantMessagesCompletedEvent4 aggregateEvent)
+    public void Apply(DeleteOtherParticipantMessagesCompletedSagaEvent aggregateEvent)
     {
     }
 
-    public void Apply(DeleteMessagePtsIncrementedEvent4 aggregateEvent)
+    public void Apply(DeleteMessagePtsIncrementedSagaEvent aggregateEvent)
     {
     }
 
@@ -354,7 +343,7 @@ public class DeleteMessagesSaga4State : AggregateState<DeleteMessagesSaga4, Dele
 
 
 
-public class DeleteOtherParticipantHistoryCompletedEvent4(long userId, int pts, int ptsCount, List<int> messageIds)
+public class DeleteOtherParticipantHistoryCompletedSagaEvent(long userId, int pts, int ptsCount, List<int> messageIds)
     : AggregateEvent<DeleteMessagesSaga4, DeleteMessagesSaga4Id>
 {
     public List<int> MessageIds { get; } = messageIds;
@@ -363,7 +352,7 @@ public class DeleteOtherParticipantHistoryCompletedEvent4(long userId, int pts, 
     public long UserId { get; } = userId;
 }
 
-public class DeleteOtherParticipantMessagesCompletedEvent4(long userId, int pts, int ptsCount, List<int> messageIds)
+public class DeleteOtherParticipantMessagesCompletedSagaEvent(long userId, int pts, int ptsCount, List<int> messageIds)
     : AggregateEvent<DeleteMessagesSaga4, DeleteMessagesSaga4Id>
 {
     public List<int> MessageIds { get; } = messageIds;
@@ -372,7 +361,7 @@ public class DeleteOtherParticipantMessagesCompletedEvent4(long userId, int pts,
     public long UserId { get; } = userId;
 }
 
-public class DeleteSelfHistoryCompletedEvent4(RequestInfo requestInfo, int pts, int ptsCount, int offset, List<int> messageIds, bool isDeletePhoneCallHistory)
+public class DeleteSelfHistoryCompletedSagaEvent(RequestInfo requestInfo, int pts, int ptsCount, int offset, List<int> messageIds, bool isDeletePhoneCallHistory)
     : RequestAggregateEvent2<DeleteMessagesSaga4, DeleteMessagesSaga4Id>(requestInfo)
 {
     public int Offset { get; } = offset;
@@ -382,7 +371,7 @@ public class DeleteSelfHistoryCompletedEvent4(RequestInfo requestInfo, int pts, 
     public int PtsCount { get; } = ptsCount;
 }
 
-public class DeleteSelfMessagesCompletedEvent4(RequestInfo requestInfo, int pts, int ptsCount, List<int> messageIds)
+public class DeleteSelfMessagesCompletedSagaEvent(RequestInfo requestInfo, int pts, int ptsCount, List<int> messageIds)
     : RequestAggregateEvent2<DeleteMessagesSaga4, DeleteMessagesSaga4Id>(requestInfo)
 {
     public int Pts { get; } = pts;
@@ -390,38 +379,7 @@ public class DeleteSelfMessagesCompletedEvent4(RequestInfo requestInfo, int pts,
     public List<int> MessageIds { get; } = messageIds;
 }
 
-//public class MessageIdToDeletedItem(int totalCount)
-//{
-//    public int DeletedCount { get; set; }
-//    public int TotalCount { get; set; } = totalCount;
-//}
-//public class OtherParticipantMessageDeletedSagaEvent(long userId, int senderMessageId, int messageId, int pts) : AggregateEvent<DeleteMessagesSaga4, DeleteMessagesSaga4Id>
-//{
-//    public int MessageId { get; } = messageId;
-//    public int Pts { get; } = pts;
-//    public int SenderMessageId { get; } = senderMessageId;
-//    public long UserId { get; } = userId;
-//}
-
-//public class OutboxMessageDeletedSagaEvent(long ownerUserId, int messageId, IReadOnlyCollection<InboxItem> inboxItems)
-//    : AggregateEvent<DeleteMessagesSaga4, DeleteMessagesSaga4Id>
-//{
-//    public IReadOnlyCollection<InboxItem> InboxItems { get; } = inboxItems;
-//    public int MessageId { get; } = messageId;
-//    public long OwnerUserId { get; } = ownerUserId;
-//}
-
-//public class SelfMessageDeletedSagaEvent(long ownerUserId, long senderUserId, int senderMessageId, int messageId, int pts, bool isOut, Peer? toPeer) : AggregateEvent<DeleteMessagesSaga4, DeleteMessagesSaga4Id>
-//{
-//    public bool IsOut { get; } = isOut;
-//    public int MessageId { get; } = messageId;
-//    public long OwnerUserId { get; } = ownerUserId;
-//    public int Pts { get; } = pts;
-//    public int SenderMessageId { get; } = senderMessageId;
-//    public long SenderUserId { get; } = senderUserId;
-//    public Peer? ToPeer { get; } = toPeer;
-//}
-public class DeleteMessagePtsIncrementedEvent4(
+public class DeleteMessagePtsIncrementedSagaEvent(
     long userId,
     int pts) : AggregateEvent<DeleteMessagesSaga4, DeleteMessagesSaga4Id>
 {

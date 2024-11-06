@@ -44,7 +44,7 @@ public class DialogReadModelLocator : IDialogReadModelLocator
                     yield return DialogId.Create(inboxPinnedUpdatedEvent.OwnerPeerId,
                         inboxPinnedUpdatedEvent.ToPeer).Value;
                     break;
-                case SendOutboxMessageCompletedEvent sendOutboxMessageCompletedEvent2:
+                case SendOutboxMessageCompletedSagaEvent sendOutboxMessageCompletedEvent2:
                     if (sendOutboxMessageCompletedEvent2.MessageItem.ToPeer.PeerType == PeerType.Channel)
                     {
                         yield return DialogId.Create(sendOutboxMessageCompletedEvent2.MessageItem.SenderPeer.PeerId,

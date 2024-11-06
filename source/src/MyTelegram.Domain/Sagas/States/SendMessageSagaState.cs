@@ -1,12 +1,12 @@
 ﻿namespace MyTelegram.Domain.Sagas.States;
 
 public class SendMessageSagaState : AggregateState<SendMessageSaga, SendMessageSagaId, SendMessageSagaState>,
-    IApply<SendMessageSagaStartedEvent>,
-    IApply<SendOutboxMessageCompletedEvent>,
-    IApply<ReceiveInboxMessageCompletedEvent>,
+    IApply<SendMessageSagaStartedSagaEvent>,
+    IApply<SendOutboxMessageCompletedSagaEvent>,
+    IApply<ReceiveInboxMessageCompletedSagaEvent>,
     IApply<ReplyChannelMessageCompletedEvent>,
     IApply<ReplyBroadcastChannelCompletedSagaEvent>,
-    IApply<PostChannelIdUpdatedEvent>
+    IApply<PostChannelIdUpdatedSagaEvent>
 {
     public RequestInfo RequestInfo { get; set; } = default!;
     public MessageItem MessageItem { get; set; } = default!;
@@ -18,7 +18,7 @@ public class SendMessageSagaState : AggregateState<SendMessageSaga, SendMessageS
 
     public Dictionary<long, int> ReplyToMsgItems { get; private set; } = new();
 
-    public void Apply(SendMessageSagaStartedEvent aggregateEvent)
+    public void Apply(SendMessageSagaStartedSagaEvent aggregateEvent)
     {
         RequestInfo = aggregateEvent.RequestInfo;
         MessageItem = aggregateEvent.MessageItem;
@@ -33,11 +33,11 @@ public class SendMessageSagaState : AggregateState<SendMessageSaga, SendMessageS
         }
     }
 
-    public void Apply(SendOutboxMessageCompletedEvent aggregateEvent)
+    public void Apply(SendOutboxMessageCompletedSagaEvent aggregateEvent)
     {
     }
 
-    public void Apply(ReceiveInboxMessageCompletedEvent aggregateEvent)
+    public void Apply(ReceiveInboxMessageCompletedSagaEvent aggregateEvent)
     {
         InboxItems.Add(new(aggregateEvent.MessageItem.OwnerPeer.PeerId, aggregateEvent.MessageItem.MessageId));
     }
@@ -63,7 +63,7 @@ public class SendMessageSagaState : AggregateState<SendMessageSaga, SendMessageS
     {
     }
 
-    public void Apply(PostChannelIdUpdatedEvent aggregateEvent)
+    public void Apply(PostChannelIdUpdatedSagaEvent aggregateEvent)
     {
     }
 }

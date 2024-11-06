@@ -1,6 +1,4 @@
-﻿using MyTelegram.Domain.Aggregates.Temp;
-using MyTelegram.Domain.Commands.Temp;
-using MyTelegram.Schema.Extensions;
+﻿using MyTelegram.Schema.Extensions;
 
 namespace MyTelegram.Domain.Sagas;
 
@@ -12,7 +10,7 @@ public class ReplyBroadcastChannelCompletedSagaEvent(long channelId, int message
     public MessageReply Reply { get; } = reply;
 }
 
-public class PostChannelIdUpdatedEvent(long channelId, int messageId, long postChannelId, int postMessageId)
+public class PostChannelIdUpdatedSagaEvent(long channelId, int messageId, long postChannelId, int postMessageId)
     : AggregateEvent<SendMessageSaga, SendMessageSagaId>
 {
     public long ChannelId { get; } = channelId;
@@ -36,7 +34,7 @@ public class SendMessageSaga : MyInMemoryAggregateSaga<SendMessageSaga, SendMess
 
     public async Task HandleAsync(IDomainEvent<MessageAggregate, MessageId, OutboxMessageCreatedEvent> domainEvent, ISagaContext sagaContext, CancellationToken cancellationToken)
     {
-        Emit(new SendMessageSagaStartedEvent(domainEvent.AggregateEvent.RequestInfo,
+        Emit(new SendMessageSagaStartedSagaEvent(domainEvent.AggregateEvent.RequestInfo,
             domainEvent.AggregateEvent.OutboxMessageItem,
             domainEvent.AggregateEvent.MentionedUserIds,
             domainEvent.AggregateEvent.ReplyToMsgItems,
@@ -120,7 +118,7 @@ public class SendMessageSaga : MyInMemoryAggregateSaga<SendMessageSaga, SendMess
     private async Task HandleReceiveInboxMessageCompletedAsync(MessageItem inboxMessageItem)
     {
         var pts = await _idGenerator.NextIdAsync(IdType.Pts, inboxMessageItem.OwnerPeer.PeerId);
-        Emit(new ReceiveInboxMessageCompletedEvent(inboxMessageItem, pts, string.Empty));
+        Emit(new ReceiveInboxMessageCompletedSagaEvent(inboxMessageItem, pts, string.Empty));
 
         if (_state.IsCreateInboxMessagesCompleted())
         {
@@ -143,7 +141,7 @@ public class SendMessageSaga : MyInMemoryAggregateSaga<SendMessageSaga, SendMess
         var linkedChannelId = _state.LinkedChannelId;
         //var globalSeqNo = _state.MessageItem.ToPeer.PeerType == PeerType.Channel ? await _idGenerator.NextLongIdAsync(IdType.GlobalSeqNo) : 0;
 
-        Emit(new SendOutboxMessageCompletedEvent(_state.RequestInfo,
+        Emit(new SendOutboxMessageCompletedSagaEvent(_state.RequestInfo,
             _state.MessageItem,
             _state.MentionedUserIds,
             pts,
@@ -273,7 +271,7 @@ public class SendMessageSaga : MyInMemoryAggregateSaga<SendMessageSaga, SendMess
         if (domainEvent.AggregateEvent.PostChannelId.HasValue && domainEvent.AggregateEvent.PostMessageId.HasValue)
         {
             Emit(new ReplyBroadcastChannelCompletedSagaEvent(domainEvent.AggregateEvent.PostChannelId.Value, domainEvent.AggregateEvent.PostMessageId.Value, domainEvent.AggregateEvent.Reply));
-            Emit(new PostChannelIdUpdatedEvent(_state.MessageItem.OwnerPeer.PeerId, _state.MessageItem.MessageId, domainEvent.AggregateEvent.PostChannelId.Value, domainEvent.AggregateEvent.PostMessageId.Value));
+            Emit(new PostChannelIdUpdatedSagaEvent(_state.MessageItem.OwnerPeer.PeerId, _state.MessageItem.MessageId, domainEvent.AggregateEvent.PostChannelId.Value, domainEvent.AggregateEvent.PostMessageId.Value));
         }
 
         return CompleteAsync(cancellationToken);

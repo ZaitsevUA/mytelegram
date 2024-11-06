@@ -12,9 +12,9 @@ public interface IMessageConverter : ILayeredConverter
         bool mentioned = false
         );
 
-    IMessage ToMessage(InboxMessageEditCompletedEvent aggregateEvent);
+    IMessage ToMessage(InboxMessageEditCompletedSagaEvent aggregateEvent);
 
-    IMessage ToMessage(OutboxMessageEditCompletedEvent aggregateEvent,
+    IMessage ToMessage(OutboxMessageEditCompletedSagaEvent aggregateEvent,
         long selfUserId);
     IMessageFwdHeader? ToMessageFwdHeader(MessageFwdHeader? messageFwdHeader);
     IMessageReplyHeader? ToMessageReplyHeader(int? replyToMessageId, int? topMsgId);

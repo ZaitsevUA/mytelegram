@@ -17,7 +17,7 @@ ISagaIsStartedBy<MessageAggregate, MessageId, OutboxMessageEditedEvent>,
         ISagaContext sagaContext,
         CancellationToken cancellationToken)
     {
-        Emit(new EditInboxMessageStartedEvent(domainEvent.AggregateEvent.InboxOwnerPeerId, domainEvent.AggregateEvent.MessageId));
+        Emit(new EditInboxMessageStartedSagaEvent(domainEvent.AggregateEvent.InboxOwnerPeerId, domainEvent.AggregateEvent.MessageId));
         await HandleEditInboxCompletedAsync(domainEvent.AggregateEvent.InboxOwnerPeerId,
             domainEvent.AggregateEvent.MessageId, domainEvent.AggregateEvent.ToPeer);
         await HandleEditCompletedAsync();
@@ -27,7 +27,7 @@ ISagaIsStartedBy<MessageAggregate, MessageId, OutboxMessageEditedEvent>,
         ISagaContext sagaContext,
         CancellationToken cancellationToken)
     {
-        Emit(new EditOutboxMessageStartedEvent(
+        Emit(new EditOutboxMessageStartedSagaEvent(
             domainEvent.AggregateEvent.RequestInfo,
             domainEvent.AggregateEvent.OldMessageItem,
             domainEvent.AggregateEvent.MessageId,
@@ -81,7 +81,7 @@ ISagaIsStartedBy<MessageAggregate, MessageId, OutboxMessageEditedEvent>,
     {
         var pts = await _idGenerator.NextIdAsync(IdType.Pts, inboxOwnerPeerId);
 
-        Emit(new InboxMessageEditCompletedEvent(inboxOwnerPeerId,
+        Emit(new InboxMessageEditCompletedSagaEvent(inboxOwnerPeerId,
             _state.OldMessageItem.SenderPeer.PeerId,
             inboxMessageId,
             _state.NewMessage,
@@ -98,7 +98,7 @@ ISagaIsStartedBy<MessageAggregate, MessageId, OutboxMessageEditedEvent>,
     {
         var pts = await _idGenerator.NextIdAsync(IdType.Pts, outboxOwnerPeerId);
         var item = _state.OldMessageItem;
-        Emit(new OutboxMessageEditCompletedEvent(_state.RequestInfo,
+        Emit(new OutboxMessageEditCompletedSagaEvent(_state.RequestInfo,
             outboxOwnerPeerId,
             item.SenderPeer.PeerId,
             _state.SenderMessageId,

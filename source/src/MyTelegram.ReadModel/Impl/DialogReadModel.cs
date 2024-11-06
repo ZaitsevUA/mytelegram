@@ -1,6 +1,4 @@
-﻿using SendOutboxMessageCompletedEvent = MyTelegram.Domain.Sagas.Events.SendOutboxMessageCompletedEvent;
-
-namespace MyTelegram.ReadModel.Impl;
+﻿namespace MyTelegram.ReadModel.Impl;
 
 public class DialogReadModel : IDialogReadModel,
     IAmReadModelFor<DialogAggregate, DialogId, DialogCreatedEvent>,
@@ -19,7 +17,7 @@ public class DialogReadModel : IDialogReadModel,
     IAmReadModelFor<MessageAggregate, MessageId, OutboxMessagePinnedUpdatedEvent>,
     IAmReadModelFor<MessageAggregate, MessageId, InboxMessagePinnedUpdatedEvent>,
     IAmReadModelFor<MessageAggregate, MessageId, OutboxMessageCreatedEvent>,
-    IAmReadModelFor<SendMessageSaga, SendMessageSagaId, SendOutboxMessageCompletedEvent>,
+    IAmReadModelFor<SendMessageSaga, SendMessageSagaId, SendOutboxMessageCompletedSagaEvent>,
     IAmReadModelFor<PeerNotifySettingsAggregate, PeerNotifySettingsId, PeerNotifySettingsUpdatedEvent>,
     IAmReadModelFor<DialogAggregate, DialogId, ReadInboxMaxIdUpdatedEvent>,
     IAmReadModelFor<DialogAggregate, DialogId, ReadOutboxMaxIdUpdatedEvent>,
@@ -317,7 +315,7 @@ public class DialogReadModel : IDialogReadModel,
         return Task.CompletedTask;
     }
 
-    public Task ApplyAsync(IReadModelContext context, IDomainEvent<SendMessageSaga, SendMessageSagaId, SendOutboxMessageCompletedEvent> domainEvent, CancellationToken cancellationToken)
+    public Task ApplyAsync(IReadModelContext context, IDomainEvent<SendMessageSaga, SendMessageSagaId, SendOutboxMessageCompletedSagaEvent> domainEvent, CancellationToken cancellationToken)
     {
         Id = DialogId.Create(domainEvent.AggregateEvent.MessageItem.SenderPeer.PeerId,
             domainEvent.AggregateEvent.MessageItem.ToPeer).Value;

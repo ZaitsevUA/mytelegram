@@ -1,7 +1,4 @@
-﻿using MyTelegram.Domain.Aggregates.Temp;
-using MyTelegram.Domain.Events.Temp;
-
-namespace MyTelegram.Domain.Sagas;
+﻿namespace MyTelegram.Domain.Sagas;
 
 [JsonConverter(typeof(SystemTextJsonSingleValueObjectConverter<SetDiscussionGroupSagaId>))]
 public class SetDiscussionGroupSagaId(string value) : Identity<SetDiscussionGroupSagaId>(value), ISagaId;
@@ -17,12 +14,12 @@ public class
 
 public class SetDiscussionGroupSagaState : AggregateState<SetDiscussionGroupSaga, SetDiscussionGroupSagaId,
     SetDiscussionGroupSagaState>,
-    IApply<SetDiscussionGroupSagaStartedEvent>,
+    IApply<SetDiscussionGroupSagaStartedSagaEvent>,
     IApply<DiscussionGroupUpdatedSagaEvent>
 {
     public RequestInfo RequestInfo { get; private set; } = default!;
 
-    public void Apply(SetDiscussionGroupSagaStartedEvent aggregateEvent)
+    public void Apply(SetDiscussionGroupSagaStartedSagaEvent aggregateEvent)
     {
         RequestInfo = aggregateEvent.RequestInfo;
     }
@@ -32,7 +29,7 @@ public class SetDiscussionGroupSagaState : AggregateState<SetDiscussionGroupSaga
     }
 }
 
-public class SetDiscussionGroupSagaStartedEvent(RequestInfo requestInfo) : AggregateEvent<SetDiscussionGroupSaga, SetDiscussionGroupSagaId>
+public class SetDiscussionGroupSagaStartedSagaEvent(RequestInfo requestInfo) : AggregateEvent<SetDiscussionGroupSaga, SetDiscussionGroupSagaId>
 {
     public RequestInfo RequestInfo { get; } = requestInfo;
 }
@@ -59,7 +56,7 @@ public class SetDiscussionGroupSaga :
     public Task HandleAsync(IDomainEvent<TempAggregate, TempId, SetChannelDiscussionGroupStartedEvent> domainEvent,
         ISagaContext sagaContext, CancellationToken cancellationToken)
     {
-        Emit(new SetDiscussionGroupSagaStartedEvent(domainEvent.AggregateEvent.RequestInfo));
+        Emit(new SetDiscussionGroupSagaStartedSagaEvent(domainEvent.AggregateEvent.RequestInfo));
         var command = new SetDiscussionGroupCommand(ChannelId.Create(domainEvent.AggregateEvent.BroadcastChannelId),
             domainEvent.AggregateEvent.RequestInfo,
             domainEvent.AggregateEvent.BroadcastChannelId,

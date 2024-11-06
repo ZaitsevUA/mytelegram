@@ -159,7 +159,7 @@ public class MessageConverterLatest(
         }
     }
 
-    public IMessage ToMessage(InboxMessageEditCompletedEvent aggregateEvent)
+    public IMessage ToMessage(InboxMessageEditCompletedSagaEvent aggregateEvent)
     {
         return new TMessage
         {
@@ -177,7 +177,7 @@ public class MessageConverterLatest(
         };
     }
 
-    public IMessage ToMessage(OutboxMessageEditCompletedEvent aggregateEvent,
+    public IMessage ToMessage(OutboxMessageEditCompletedSagaEvent aggregateEvent,
         long selfUserId)
     {
         var m = new TMessage

@@ -1,13 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MyTelegram.Domain.Aggregates.Temp;
-using MyTelegram.Domain.Commands.Temp;
-using MyTelegram.Domain.Events.Temp;
-
-namespace MyTelegram.Domain.Sagas;
+﻿namespace MyTelegram.Domain.Sagas;
 
 [JsonConverter(typeof(SystemTextJsonSingleValueObjectConverter<DeleteReplyMessagesSagaId>))]
 public class DeleteReplyMessagesSagaId(string value) : Identity<DeleteReplyMessagesSagaId>(value), ISagaId;
@@ -22,9 +13,9 @@ public class DeleteReplyMessagesSagaLocator : DefaultSagaLocator<DeleteReplyMess
 
 public class DeleteReplyMessagesSagaState : AggregateState<DeleteReplyMessagesSaga, DeleteReplyMessagesSagaId,
     DeleteReplyMessagesSagaState>,
-    IApply<DeleteReplyMessagesSagaStartedEvent>,
-    IApply<DeleteReplyMessagePtsIncrementedEvent>,
-    IApply<DeleteReplyMessagesCompletedEvent>
+    IApply<DeleteReplyMessagesSagaStartedSagaEvent>,
+    IApply<DeleteReplyMessagePtsIncrementedSagaEvent>,
+    IApply<DeleteReplyMessagesCompletedSagaEvent>
 {
     public long ChannelId { get; private set; }
     public int Pts { get; set; }
@@ -32,7 +23,7 @@ public class DeleteReplyMessagesSagaState : AggregateState<DeleteReplyMessagesSa
     public int TotalCount { get; private set; }
     public int DeletedCount { get; private set; }
     public int NewTopMessageId { get; private set; }
-    public void Apply(DeleteReplyMessagesSagaStartedEvent aggregateEvent)
+    public void Apply(DeleteReplyMessagesSagaStartedSagaEvent aggregateEvent)
     {
         ChannelId = aggregateEvent.ChannelId;
         MessageIds = aggregateEvent.MessageIds;
@@ -40,7 +31,7 @@ public class DeleteReplyMessagesSagaState : AggregateState<DeleteReplyMessagesSa
         NewTopMessageId = aggregateEvent.NewTopMessageId;
     }
 
-    public void Apply(DeleteReplyMessagePtsIncrementedEvent aggregateEvent)
+    public void Apply(DeleteReplyMessagePtsIncrementedSagaEvent aggregateEvent)
     {
         if (Pts < aggregateEvent.Pts)
         {
@@ -49,7 +40,7 @@ public class DeleteReplyMessagesSagaState : AggregateState<DeleteReplyMessagesSa
         DeletedCount++;
     }
 
-    public void Apply(DeleteReplyMessagesCompletedEvent aggregateEvent)
+    public void Apply(DeleteReplyMessagesCompletedSagaEvent aggregateEvent)
     {
 
     }
@@ -73,7 +64,7 @@ public class DeleteReplyMessagesSaga : MyInMemoryAggregateSaga<DeleteReplyMessag
 
     public Task HandleAsync(IDomainEvent<TempAggregate, TempId, DeleteReplyMessagesStartedEvent> domainEvent, ISagaContext sagaContext, CancellationToken cancellationToken)
     {
-        Emit(new DeleteReplyMessagesSagaStartedEvent(domainEvent.AggregateEvent.RequestInfo,
+        Emit(new DeleteReplyMessagesSagaStartedSagaEvent(domainEvent.AggregateEvent.RequestInfo,
             domainEvent.AggregateEvent.ChannelId,
             domainEvent.AggregateEvent.MessageIds,
             domainEvent.AggregateEvent.NewTopMessageId
@@ -101,7 +92,7 @@ public class DeleteReplyMessagesSaga : MyInMemoryAggregateSaga<DeleteReplyMessag
     {
         if (_state.TotalCount == _state.DeletedCount)
         {
-            Emit(new DeleteReplyMessagesCompletedEvent(_state.ChannelId, _state.Pts, _state.TotalCount, _state.MessageIds, _state.NewTopMessageId));
+            Emit(new DeleteReplyMessagesCompletedSagaEvent(_state.ChannelId, _state.Pts, _state.TotalCount, _state.MessageIds, _state.NewTopMessageId));
 
             CompleteAsync();
         }
@@ -110,12 +101,12 @@ public class DeleteReplyMessagesSaga : MyInMemoryAggregateSaga<DeleteReplyMessag
     private async Task IncrementPtsAsync(long peerId)
     {
         var pts = await _idGenerator.NextIdAsync(IdType.Pts, peerId);
-        Emit(new DeleteReplyMessagePtsIncrementedEvent(peerId, pts));
+        Emit(new DeleteReplyMessagePtsIncrementedSagaEvent(peerId, pts));
     }
 
 }
 
-public class DeleteReplyMessagesCompletedEvent(long channelId, int pts, int ptsCount,
+public class DeleteReplyMessagesCompletedSagaEvent(long channelId, int pts, int ptsCount,
         List<int> messageIds, int newTopMessageId)
     : AggregateEvent<DeleteReplyMessagesSaga, DeleteReplyMessagesSagaId>
 {
@@ -127,14 +118,14 @@ public class DeleteReplyMessagesCompletedEvent(long channelId, int pts, int ptsC
 }
 
 
-public class DeleteReplyMessagePtsIncrementedEvent(long channelId, int pts) : AggregateEvent<DeleteReplyMessagesSaga, DeleteReplyMessagesSagaId>
+public class DeleteReplyMessagePtsIncrementedSagaEvent(long channelId, int pts) : AggregateEvent<DeleteReplyMessagesSaga, DeleteReplyMessagesSagaId>
 {
     public long ChannelId { get; } = channelId;
     public int Pts { get; } = pts;
 }
 
 public class
-    DeleteReplyMessagesSagaStartedEvent(RequestInfo requestInfo, long channelId, List<int> messageIds, int newTopMessageId)
+    DeleteReplyMessagesSagaStartedSagaEvent(RequestInfo requestInfo, long channelId, List<int> messageIds, int newTopMessageId)
     : AggregateEvent<DeleteReplyMessagesSaga, DeleteReplyMessagesSagaId>
 {
     public RequestInfo RequestInfo { get; } = requestInfo;

@@ -16,7 +16,7 @@ public class ReadChannelHistorySaga : MyInMemoryAggregateSaga<ReadChannelHistory
     public Task HandleAsync(IDomainEvent<DialogAggregate, DialogId, UpdateReadChannelOutboxEvent> domainEvent,
         ISagaContext sagaContext, CancellationToken cancellationToken)
     {
-        Emit(new ReadChannelHistoryCompletedEvent(domainEvent.AggregateEvent.RequestInfo,
+        Emit(new ReadChannelHistoryCompletedSagaEvent(domainEvent.AggregateEvent.RequestInfo,
             domainEvent.AggregateEvent.ChannelId, domainEvent.AggregateEvent.MessageSenderUserId,
             domainEvent.AggregateEvent.MaxId));
         return CompleteAsync(cancellationToken);
@@ -25,7 +25,7 @@ public class ReadChannelHistorySaga : MyInMemoryAggregateSaga<ReadChannelHistory
     public Task HandleAsync(IDomainEvent<DialogAggregate, DialogId, UpdateReadChannelInboxEvent> domainEvent,
         ISagaContext sagaContext, CancellationToken cancellationToken)
     {
-        Emit(new ReadChannelHistoryStartedEvent(domainEvent.AggregateEvent.RequestInfo,
+        Emit(new ReadChannelHistoryStartedSagaEvent(domainEvent.AggregateEvent.RequestInfo,
             domainEvent.AggregateEvent.ChannelId));
 
         var command = new UpdateReadChannelOutboxCommand(

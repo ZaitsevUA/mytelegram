@@ -3,7 +3,7 @@
 public class ImportContactsSaga : AggregateSaga<ImportContactsSaga, ImportContactsSagaId, ImportContactsSagaLocator>,
     ISagaIsStartedBy<ImportedContactAggregate, ImportedContactId, ContactsImportedEvent>,
     ISagaHandles<ImportedContactAggregate, ImportedContactId, SingleContactImportedEvent>,
-    IApply<ImportContactsCompletedEvent>
+    IApply<ImportContactsCompletedSagaEvent>
 {
     private readonly ImportContactsSagaState _state = new();
 
@@ -12,7 +12,7 @@ public class ImportContactsSaga : AggregateSaga<ImportContactsSaga, ImportContac
         Register(_state);
     }
 
-    public void Apply(ImportContactsCompletedEvent aggregateEvent)
+    public void Apply(ImportContactsCompletedSagaEvent aggregateEvent)
     {
         Complete();
     }
@@ -22,7 +22,7 @@ public class ImportContactsSaga : AggregateSaga<ImportContactsSaga, ImportContac
         ISagaContext sagaContext,
         CancellationToken cancellationToken)
     {
-        Emit(new ImportContactsSagaSingleContactImportedEvent(domainEvent.AggregateEvent.PhoneContact));
+        Emit(new ImportContactsSagaSingleContactImportedSagaEvent(domainEvent.AggregateEvent.PhoneContact));
         HandleImportContactsCompleted();
         return Task.CompletedTask;
     }
@@ -32,7 +32,7 @@ public class ImportContactsSaga : AggregateSaga<ImportContactsSaga, ImportContac
         ISagaContext sagaContext,
         CancellationToken cancellationToken)
     {
-        Emit(new ImportContactsStartedEvent(domainEvent.AggregateEvent.RequestInfo,
+        Emit(new ImportContactsStartedSagaEvent(domainEvent.AggregateEvent.RequestInfo,
             domainEvent.AggregateEvent.PhoneContacts.Count));
         foreach (var phoneContact in domainEvent.AggregateEvent.PhoneContacts)
         {
@@ -64,7 +64,7 @@ public class ImportContactsSaga : AggregateSaga<ImportContactsSaga, ImportContac
     {
         if (_state.IsCompleted())
         {
-            Emit(new ImportContactsCompletedEvent(_state.RequestInfo, _state.PhoneContacts));
+            Emit(new ImportContactsCompletedSagaEvent(_state.RequestInfo, _state.PhoneContacts));
         }
     }
 }

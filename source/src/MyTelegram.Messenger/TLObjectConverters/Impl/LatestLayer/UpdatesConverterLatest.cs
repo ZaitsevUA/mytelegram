@@ -11,7 +11,7 @@ public class UpdatesConverterLatest(
 
     public override int Layer => Layers.LayerLatest;
 
-    public IUpdates ToChannelMessageUpdates(SendOutboxMessageCompletedEvent aggregateEvent, bool mentioned = false)
+    public IUpdates ToChannelMessageUpdates(SendOutboxMessageCompletedSagaEvent aggregateEvent, bool mentioned = false)
     {
         // selfUser==-1 means the updates is for channel member except sender
         const int selfUserId = -1;
@@ -52,7 +52,7 @@ public class UpdatesConverterLatest(
     }
 
     public IUpdates ToCreateChannelUpdates(ChannelCreatedEvent eventData,
-        SendOutboxMessageCompletedEvent aggregateEvent)
+        SendOutboxMessageCompletedSagaEvent aggregateEvent)
     {
         var updateList = ToChannelMessageServiceUpdates(aggregateEvent.MessageItem.MessageId,
             eventData.RandomId,
@@ -78,7 +78,7 @@ public class UpdatesConverterLatest(
     }
 
     public IUpdates ToCreateChatUpdates(ChatCreatedEvent eventData,
-        SendOutboxMessageCompletedEvent aggregateEvent, IChatReadModel chatReadModel)
+        SendOutboxMessageCompletedSagaEvent aggregateEvent, IChatReadModel chatReadModel)
     {
         var updates = ToSelfMessageServiceUpdates(aggregateEvent.MessageItem.MessageId,
             eventData.RandomId,
@@ -113,7 +113,7 @@ public class UpdatesConverterLatest(
     }
 
     public IUpdates ToCreateChatUpdates(ChatCreatedEvent eventData,
-        ReceiveInboxMessageCompletedEvent aggregateEvent, IChatReadModel chatReadModel)
+        ReceiveInboxMessageCompletedSagaEvent aggregateEvent, IChatReadModel chatReadModel)
     {
         var update = ToMessageServiceUpdate(aggregateEvent.MessageItem.MessageId,
             //eventData.RandomId,
@@ -206,7 +206,7 @@ public class UpdatesConverterLatest(
         };
     }
 
-    public IUpdates ToEditUpdates(OutboxMessageEditCompletedEvent aggregateEvent,
+    public IUpdates ToEditUpdates(OutboxMessageEditCompletedSagaEvent aggregateEvent,
         long selfUserId)
     {
         IUpdate update = aggregateEvent.ToPeer.PeerType switch
@@ -235,7 +235,7 @@ public class UpdatesConverterLatest(
         };
     }
 
-    public IUpdates ToEditUpdates(InboxMessageEditCompletedEvent aggregateEvent)
+    public IUpdates ToEditUpdates(InboxMessageEditCompletedSagaEvent aggregateEvent)
     {
         var update = new TUpdateEditMessage
             { Message = GetMessageConverter().ToMessage(aggregateEvent), Pts = aggregateEvent.Pts, PtsCount = 1 };
@@ -250,12 +250,12 @@ public class UpdatesConverterLatest(
         };
     }
 
-    public IUpdates ToInboxForwardMessageUpdates(ReceiveInboxMessageCompletedEvent aggregateEvent)
+    public IUpdates ToInboxForwardMessageUpdates(ReceiveInboxMessageCompletedSagaEvent aggregateEvent)
     {
         return ToInboxForwardMessageUpdates(aggregateEvent.MessageItem, aggregateEvent.Pts);
     }
 
-    public IUpdates ToInviteToChannelUpdates(SendOutboxMessageCompletedEvent aggregateEvent,
+    public IUpdates ToInviteToChannelUpdates(SendOutboxMessageCompletedSagaEvent aggregateEvent,
         StartInviteToChannelEvent startInviteToChannelEvent,
         IChannelReadModel channelReadModel,
         //IChat channel,
@@ -317,7 +317,7 @@ public class UpdatesConverterLatest(
         };
     }
 
-    public IUpdates ToMigrateChatUpdates(ReceiveInboxMessageCompletedEvent aggregateEvent, long channelId)
+    public IUpdates ToMigrateChatUpdates(ReceiveInboxMessageCompletedSagaEvent aggregateEvent, long channelId)
     {
         var m = aggregateEvent.MessageItem;
         var updateNewMessage = new TUpdateNewMessage
@@ -352,7 +352,7 @@ public class UpdatesConverterLatest(
         return updates;
     }
 
-    public IUpdates ToMigrateChatUpdates(SendOutboxMessageCompletedEvent aggregateEvent,
+    public IUpdates ToMigrateChatUpdates(SendOutboxMessageCompletedSagaEvent aggregateEvent,
         IChannelReadModel channelReadModel, IChatReadModel chatReadModel)
     {
         // send from chat
@@ -428,7 +428,7 @@ public class UpdatesConverterLatest(
         return updates;
     }
 
-    public IUpdates ToReadHistoryUpdates(ReadHistoryCompletedEvent eventData)
+    public IUpdates ToReadHistoryUpdates(ReadHistoryCompletedSagaEvent eventData)
     {
         var peer = eventData.ReaderToPeer.PeerType == PeerType.User
             ? new TPeerUser { UserId = eventData.ReaderUserId }
@@ -473,7 +473,7 @@ public class UpdatesConverterLatest(
         return updates;
     }
 
-    public IUpdates ToSelfOtherDeviceUpdates(SendOutboxMessageCompletedEvent aggregateEvent)
+    public IUpdates ToSelfOtherDeviceUpdates(SendOutboxMessageCompletedSagaEvent aggregateEvent)
     {
         if (aggregateEvent.MessageItem.Media?.Length > 0)
         {
@@ -572,12 +572,12 @@ public class UpdatesConverterLatest(
         }
     }
 
-    public IUpdates ToSelfUpdatePinnedMessageUpdates(UpdatePinnedMessageCompletedEvent aggregateEvent)
+    public IUpdates ToSelfUpdatePinnedMessageUpdates(UpdatePinnedMessageCompletedSagaEvent aggregateEvent)
     {
         return ToUpdatePinnedMessageUpdates(aggregateEvent, true);
     }
 
-    public IUpdates ToSelfUpdates(SendOutboxMessageCompletedEvent aggregateEvent)
+    public IUpdates ToSelfUpdates(SendOutboxMessageCompletedSagaEvent aggregateEvent)
     {
         if (aggregateEvent.MessageItem.ToPeer.PeerType == PeerType.Channel)
         {
@@ -632,7 +632,7 @@ public class UpdatesConverterLatest(
         return updates;
     }
 
-    public IUpdates ToUpdatePinnedMessageServiceUpdates(SendOutboxMessageCompletedEvent aggregateEvent)
+    public IUpdates ToUpdatePinnedMessageServiceUpdates(SendOutboxMessageCompletedSagaEvent aggregateEvent)
     {
         var item = aggregateEvent.MessageItem;
         var update = ToMessageServiceUpdate(item.MessageId,
@@ -653,12 +653,12 @@ public class UpdatesConverterLatest(
         };
     }
 
-    public IUpdates ToUpdatePinnedMessageUpdates(UpdatePinnedMessageCompletedEvent aggregateEvent)
+    public IUpdates ToUpdatePinnedMessageUpdates(UpdatePinnedMessageCompletedSagaEvent aggregateEvent)
     {
         return ToUpdatePinnedMessageUpdates(aggregateEvent, false);
     }
 
-    public IUpdates ToUpdatePinnedMessageUpdates(SendOutboxMessageCompletedEvent aggregateEvent)
+    public IUpdates ToUpdatePinnedMessageUpdates(SendOutboxMessageCompletedSagaEvent aggregateEvent)
     {
         var item = aggregateEvent.MessageItem;
         var updateMessageId = new TUpdateMessageID
@@ -695,7 +695,7 @@ public class UpdatesConverterLatest(
         };
     }
 
-    public IUpdates ToUpdatePinnedMessageUpdates(ReceiveInboxMessageCompletedEvent aggregateEvent)
+    public IUpdates ToUpdatePinnedMessageUpdates(ReceiveInboxMessageCompletedSagaEvent aggregateEvent)
     {
         var item = aggregateEvent.MessageItem;
         //var fromPeer = item.SenderPeer;
@@ -722,7 +722,7 @@ public class UpdatesConverterLatest(
         };
     }
 
-    public IUpdates ToUpdates(ReceiveInboxMessageCompletedEvent aggregateEvent)
+    public IUpdates ToUpdates(ReceiveInboxMessageCompletedSagaEvent aggregateEvent)
     {
         var item = aggregateEvent.MessageItem;
 
@@ -1028,7 +1028,7 @@ public class UpdatesConverterLatest(
         return updateNewMessage;
     }
 
-    private IUpdates ToSelfChannelUpdates(SendOutboxMessageCompletedEvent aggregateEvent)
+    private IUpdates ToSelfChannelUpdates(SendOutboxMessageCompletedSagaEvent aggregateEvent)
     {
         var item = aggregateEvent.MessageItem;
         var updateMessageId = new TUpdateMessageID { Id = item.MessageId, RandomId = item.RandomId };
@@ -1097,7 +1097,7 @@ public class UpdatesConverterLatest(
         return new List<IUpdate> { updateMessageId, updateNewMessage };
     }
 
-    private IUpdates ToUpdatePinnedMessageUpdates(UpdatePinnedMessageCompletedEvent aggregateEvent,
+    private IUpdates ToUpdatePinnedMessageUpdates(UpdatePinnedMessageCompletedSagaEvent aggregateEvent,
         bool createForSelf)
     {
         if (aggregateEvent.ToPeer.PeerType == PeerType.Channel)
