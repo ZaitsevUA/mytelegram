@@ -16,11 +16,16 @@ public static class MyTelegramMessengerCommandServerExtensions
         eventBus.Subscribe<BindUidToAuthKeyIntegrationEvent, MessengerEventHandler>();
         eventBus.Subscribe<AuthKeyUnRegisteredIntegrationEvent, MessengerEventHandler>();
 
+        eventBus.Subscribe<NewPtsMessageHasSentEvent, PtsEventHandler>();
+        eventBus.Subscribe<RpcMessageHasSentEvent, PtsEventHandler>();
+        eventBus.Subscribe<AcksDataReceivedEvent, PtsEventHandler>();
+
     }
 
     public static void AddMyTelegramMessengerCommandServer(this IServiceCollection services,
         Action<IEventFlowOptions>? configure = null)
     {
+        services.RegisterServices();
         //services.AddTransient<PtsEventHandler>();
         services.AddTransient<MessengerEventHandler>();
         services.AddTransient<IDataProcessor<NewDeviceCreatedEvent>, NewDeviceCreatedEventDataProcessor>();
