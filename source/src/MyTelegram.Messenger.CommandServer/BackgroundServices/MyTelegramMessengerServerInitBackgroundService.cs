@@ -1,6 +1,7 @@
-﻿using Microsoft.Extensions.Hosting;
-using MyTelegram.Messenger.Extensions;
+﻿using EventFlow.Core;
+using Microsoft.Extensions.Hosting;
 using MyTelegram.Messenger.Services.Filters;
+using ReadHistoryStartedSagaEvent = MyTelegram.Domain.Sagas.ReadHistoryStartedSagaEvent;
 
 namespace MyTelegram.Messenger.CommandServer.BackgroundServices;
 
@@ -10,6 +11,7 @@ public class MyTelegramMessengerServerInitBackgroundService(
     IHandlerHelper handlerHelper,
     IDataSeeder dataSeeder,
     IIdGenerator idGenerator,
+    IJsonSerializer jsonSerializer,
     IOptions<MyTelegramMessengerServerOptions> options,
     IMongoDbIndexesCreator mongoDbIndexesCreator)
     : BackgroundService
@@ -19,8 +21,7 @@ public class MyTelegramMessengerServerInitBackgroundService(
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        
-        logger.LogInformation("App init starting...");
+        logger.LogInformation("Command server starting...");
         handlerHelper.InitAllHandlers(typeof(MyTelegramMessengerServerExtensions).Assembly);
         //IdGeneratorFactory.SetDefaultIdGenerator(_idGenerator);
         await mongoDbIndexesCreator.CreateAllIndexesAsync();
@@ -30,6 +31,6 @@ public class MyTelegramMessengerServerInitBackgroundService(
          ;
         }
         await dataSeeder.SeedAsync();
-        logger.LogInformation("Messenger service init ok");
+        logger.LogInformation("Command server started");
     }
 }

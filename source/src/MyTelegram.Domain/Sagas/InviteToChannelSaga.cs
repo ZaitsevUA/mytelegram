@@ -4,7 +4,7 @@ public class InviteToChannelSaga :
     MyInMemoryAggregateSaga<InviteToChannelSaga, InviteToChannelSagaId, InviteToChannelSagaLocator>,
     ISagaIsStartedBy<ChannelAggregate, ChannelId, StartInviteToChannelEvent>,
     ISagaHandles<ChannelMemberAggregate, ChannelMemberId, ChannelMemberCreatedEvent>,
-    IApply<InviteToChannelCompletedEvent>
+    IApply<InviteToChannelCompletedSagaEvent>
 {
     private readonly IIdGenerator _idGenerator;
     private readonly InviteToChannelSagaState _state = new();
@@ -15,7 +15,7 @@ public class InviteToChannelSaga :
         Register(_state);
     }
 
-    public void Apply(InviteToChannelCompletedEvent aggregateEvent)
+    public void Apply(InviteToChannelCompletedSagaEvent aggregateEvent)
     {
         CompleteAsync();
     }
@@ -25,7 +25,7 @@ public class InviteToChannelSaga :
         ISagaContext sagaContext,
         CancellationToken cancellationToken)
     {
-        Emit(new InviteToChannelSagaMemberCreatedEvent());
+        Emit(new InviteToChannelSagaMemberCreatedSagaEvent());
         var command = new IncrementParticipantCountCommand(ChannelId.Create(domainEvent.AggregateEvent.ChannelId));
         Publish(command);
 
@@ -50,7 +50,7 @@ public class InviteToChannelSaga :
         ISagaContext sagaContext,
         CancellationToken cancellationToken)
     {
-        Emit(new InviteToChannelSagaStartEvent(
+        Emit(new InviteToChannelSagaStartSagaEvent(
             domainEvent.AggregateEvent.RequestInfo,
             domainEvent.AggregateEvent.ChannelId,
             domainEvent.AggregateEvent.InviterId,
@@ -76,7 +76,8 @@ public class InviteToChannelSaga :
                 domainEvent.AggregateEvent.InviterId,
                 domainEvent.AggregateEvent.Date,
                 isBot,
-                null
+                null,
+                domainEvent.AggregateEvent.Broadcast
             );
             Publish(command);
         }
@@ -89,41 +90,37 @@ public class InviteToChannelSaga :
         if (_state.Completed)
         {
             // send service message to member after invited to super group
-            if (!_state.Broadcast && !_state.HasLink)
+            if (_state is { Broadcast: false, HasLink: false })
             {
                 var ownerPeerId = _state.ChannelId;
                 var outMessageId = await _idGenerator.NextIdAsync(IdType.MessageId, ownerPeerId);
-                var aggregateId = MessageId.Create(ownerPeerId, outMessageId);
+                //var aggregateId = MessageId.Create(ownerPeerId, outMessageId);
                 var ownerPeer = new Peer(PeerType.Channel, ownerPeerId);
                 var senderPeer = new Peer(PeerType.User, _state.InviterId);
-
-
-                var command = new CreateOutboxMessageCommand(
-                    aggregateId,
-                    _state.RequestInfo with { RequestId = Guid.NewGuid() },
-                    new MessageItem(
-                        ownerPeer,
-                        ownerPeer,
-                        senderPeer,
-                        _state.InviterId,
-                        outMessageId,
-                        string.Empty,
-                        DateTime.UtcNow.ToTimestamp(),
-                        _state.RandomId,
-                        true,
-                        SendMessageType.MessageService,
-                        MessageType.Text,
-                        MessageSubType.InviteToChannel,
-                        null,
-                        _state.MessageActionData,
-                        MessageActionType.ChatAddUser
-                    )
+                var messageItem = new MessageItem(
+                    ownerPeer,
+                    ownerPeer,
+                    senderPeer,
+                    _state.InviterId,
+                    outMessageId,
+                    string.Empty,
+                    DateTime.UtcNow.ToTimestamp(),
+                    _state.RandomId,
+                    true,
+                    SendMessageType.MessageService,
+                    MessageType.Text,
+                    MessageSubType.InviteToChannel,
+                    null,
+                    _state.MessageActionData,
+                    MessageActionType.ChatAddUser
                 );
+                var command = new StartSendMessageCommand(TempId.New, _state.RequestInfo with { RequestId = Guid.NewGuid() },
+                    [new SendMessageItem(messageItem)]);
 
                 Publish(command);
             }
 
-            Emit(new InviteToChannelCompletedEvent(_state.RequestInfo,
+            Emit(new InviteToChannelCompletedSagaEvent(_state.RequestInfo,
                 _state.ChannelId,
                 _state.InviterId,
                 _state.Broadcast,

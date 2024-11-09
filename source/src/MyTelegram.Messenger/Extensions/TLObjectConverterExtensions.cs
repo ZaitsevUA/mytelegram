@@ -27,4 +27,29 @@ public static class TLObjectConverterExtensions
 
         return services;
     }
+
+    public static IServiceCollection AddLayeredResultConverters(this IServiceCollection services)
+    {
+        services.AddSingleton<ILayeredDataConverterFactory, LayeredDataConverterFactory>();
+        var baseType = typeof(ILayeredDataConverter);
+        var types = typeof(TLObjectConverterExtensions)
+            .Assembly
+            .GetTypes()
+            .Where(p => baseType.IsAssignableFrom(p) && !p.IsAbstract)
+            .ToList();
+
+        foreach (var type in types)
+        {
+            var baseInterfaces = type.GetInterfaces()
+                .Where(p => baseType.IsAssignableFrom(p)).ToList();
+
+            foreach (var baseInterface in baseInterfaces)
+            {
+                //services.AddSingleton(baseType, type);
+                services.AddSingleton(baseInterface, type);
+            }
+        }
+
+        return services;
+    }
 }

@@ -4,16 +4,45 @@
 namespace MyTelegram.Schema.Account;
 
 ///<summary>
+/// Connect a <a href="https://corefork.telegram.org/api/business#connected-bots">business bot »</a> to the current account, or to change the current connection settings.
+/// <para>Possible errors</para>
+/// Code Type Description
+/// 400 BOT_BUSINESS_MISSING The specified bot is not a business bot (the <a href="https://corefork.telegram.org/constructor/user">user</a>.<code>bot_business</code> flag is not set).
+/// 400 BUSINESS_RECIPIENTS_EMPTY You didn't set any flag in inputBusinessBotRecipients, thus the bot cannot work with <em>any</em> peer.
+/// 403 PREMIUM_ACCOUNT_REQUIRED A premium account is required to execute this action.
 /// See <a href="https://corefork.telegram.org/method/account.updateConnectedBot" />
 ///</summary>
 [TlObject(0x43d8521d)]
 public sealed class RequestUpdateConnectedBot : IRequest<MyTelegram.Schema.IUpdates>
 {
     public uint ConstructorId => 0x43d8521d;
+    ///<summary>
+    /// Flags, see <a href="https://corefork.telegram.org/mtproto/TL-combinators#conditional-fields">TL conditional fields</a>
+    ///</summary>
     public BitArray Flags { get; set; } = new BitArray(32);
+
+    ///<summary>
+    /// Whether the bot can reply to messages it receives from us, on behalf of us using the <a href="https://corefork.telegram.org/api/business#connected-bots">business connection</a>.
+    /// See <a href="https://corefork.telegram.org/type/true" />
+    ///</summary>
     public bool CanReply { get; set; }
+
+    ///<summary>
+    /// Whether to fully disconnect the bot from the current account.
+    /// See <a href="https://corefork.telegram.org/type/true" />
+    ///</summary>
     public bool Deleted { get; set; }
+
+    ///<summary>
+    /// The bot to connect or disconnect
+    /// See <a href="https://corefork.telegram.org/type/InputUser" />
+    ///</summary>
     public MyTelegram.Schema.IInputUser Bot { get; set; }
+
+    ///<summary>
+    /// Configuration for the business connection
+    /// See <a href="https://corefork.telegram.org/type/InputBusinessBotRecipients" />
+    ///</summary>
     public MyTelegram.Schema.IInputBusinessBotRecipients Recipients { get; set; }
 
     public void ComputeFlag()

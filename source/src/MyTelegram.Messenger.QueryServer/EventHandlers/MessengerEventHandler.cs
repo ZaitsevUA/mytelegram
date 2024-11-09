@@ -6,7 +6,8 @@ public class MessengerEventHandler(
     ILogger<MessengerEventHandler> logger)
     :
         IEventHandler<MessengerQueryDataReceivedEvent>,
-        IEventHandler<StickerDataReceivedEvent>
+        IEventHandler<StickerDataReceivedEvent>,
+	    ITransientDependency
 {
     public Task HandleEventAsync(MessengerQueryDataReceivedEvent eventData)
     {
@@ -25,10 +26,6 @@ public class MessengerEventHandler(
 
     public Task HandleEventAsync(UserIsOnlineEvent eventData)
     {
-        logger.LogDebug("User {UserId} is online,tempAuthKeyId={TempAuthKeyId:x2},permAuthKeyId={PermAuthKeyId:x2}",
-            eventData.UserId,
-            eventData.TempAuthKeyId,
-            eventData.PermAuthKeyId);
         var updatesTooLong = new TUpdatesTooLong();
         return objectMessageSender.PushSessionMessageToAuthKeyIdAsync(eventData.TempAuthKeyId, updatesTooLong);
     }

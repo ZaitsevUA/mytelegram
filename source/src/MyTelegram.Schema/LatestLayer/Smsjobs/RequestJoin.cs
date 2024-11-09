@@ -4,6 +4,7 @@
 namespace MyTelegram.Schema.Smsjobs;
 
 ///<summary>
+/// Enable SMS jobs (official clients only).
 /// See <a href="https://corefork.telegram.org/method/smsjobs.join" />
 ///</summary>
 [TlObject(0xa74ece2d)]

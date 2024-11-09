@@ -36,7 +36,7 @@ internal sealed class ResetAuthorizationHandler(
         }
         else
         {
-            logger.LogWarning("Can not find device,userId={UserId},hash={Hash}", input.UserId, obj.Hash);
+            logger.LogWarning("Cannot find device data, userId: {UserId}, hash: {Hash}", input.UserId, obj.Hash);
         }
 
         return new TBoolTrue();

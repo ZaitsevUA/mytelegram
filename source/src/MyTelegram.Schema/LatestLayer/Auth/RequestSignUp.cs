@@ -21,7 +21,15 @@ namespace MyTelegram.Schema.Auth;
 public sealed class RequestSignUp : IRequest<MyTelegram.Schema.Auth.IAuthorization>
 {
     public uint ConstructorId => 0xaac7b717;
+    ///<summary>
+    /// Flags, see <a href="https://corefork.telegram.org/mtproto/TL-combinators#conditional-fields">TL conditional fields</a>
+    ///</summary>
     public BitArray Flags { get; set; } = new BitArray(32);
+
+    ///<summary>
+    /// If set, users on Telegram that have already added <code>phone_number</code> to their contacts will <em>not</em> receive signup notifications about this user.
+    /// See <a href="https://corefork.telegram.org/type/true" />
+    ///</summary>
     public bool NoJoinedNotifications { get; set; }
 
     ///<summary>

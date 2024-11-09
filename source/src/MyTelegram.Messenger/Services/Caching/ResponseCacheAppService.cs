@@ -1,6 +1,6 @@
 ﻿namespace MyTelegram.Messenger.Services.Caching;
 
-public class ResponseCacheAppService : IResponseCacheAppService
+public class ResponseCacheAppService : IResponseCacheAppService, ISingletonDependency
 {
     private readonly ConcurrentDictionary<long, List<IObject>> _responseDict = new();
 

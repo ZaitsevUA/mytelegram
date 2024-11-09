@@ -4,6 +4,7 @@
 namespace MyTelegram.Schema;
 
 ///<summary>
+/// Send <a href="https://corefork.telegram.org/api/business#away-messages">Telegram Business away messages</a> to users writing to us in private outside of the configured <a href="https://corefork.telegram.org/api/business#opening-hours">Telegram Business working hours</a>.
 /// See <a href="https://corefork.telegram.org/constructor/businessAwayMessageScheduleOutsideWorkHours" />
 ///</summary>
 [TlObject(0xc3f2f501)]

@@ -4,13 +4,21 @@
 namespace MyTelegram.Schema.Account;
 
 ///<summary>
+/// Info about currently connected <a href="https://corefork.telegram.org/api/business#connected-bots">business bots</a>.
 /// See <a href="https://corefork.telegram.org/constructor/account.connectedBots" />
 ///</summary>
 [TlObject(0x17d7f87b)]
 public sealed class TConnectedBots : IConnectedBots
 {
     public uint ConstructorId => 0x17d7f87b;
+    ///<summary>
+    /// Info about the connected bots
+    ///</summary>
     public TVector<MyTelegram.Schema.IConnectedBot> ConnectedBots { get; set; }
+
+    ///<summary>
+    /// Bot information
+    ///</summary>
     public TVector<MyTelegram.Schema.IUser> Users { get; set; }
 
     public void ComputeFlag()

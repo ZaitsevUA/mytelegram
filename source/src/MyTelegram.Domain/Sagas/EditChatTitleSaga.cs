@@ -12,7 +12,7 @@ public class
         var ownerPeerId = domainEvent.AggregateEvent.RequestInfo.UserId;
         var toPeerId = domainEvent.AggregateEvent.ChatId;
         var outMessageId = await idGenerator.NextIdAsync(IdType.MessageId, ownerPeerId, cancellationToken: cancellationToken);
-        var aggregateId = MessageId.Create(ownerPeerId, outMessageId);
+        //var aggregateId = MessageId.Create(ownerPeerId, outMessageId);
         var ownerPeer = new Peer(PeerType.User, ownerPeerId);
         var toPeer = new Peer(PeerType.Chat, toPeerId);
         var senderPeer = new Peer(PeerType.User, ownerPeerId);
@@ -34,11 +34,14 @@ public class
             MessageActionType.ChatEditTitle
         );
 
-        var command = new CreateOutboxMessageCommand(
-            aggregateId,
-            domainEvent.AggregateEvent.RequestInfo,
-            messageItem
-        );
+        //var command = new CreateOutboxMessageCommand(
+        //    aggregateId,
+        //    domainEvent.AggregateEvent.RequestInfo,
+        //    messageItem
+        //);
+        var command = new StartSendMessageCommand(TempId.New, domainEvent.AggregateEvent.RequestInfo,
+            [new SendMessageItem(messageItem)]);
+
         Publish(command);
         await CompleteAsync(cancellationToken);
     }

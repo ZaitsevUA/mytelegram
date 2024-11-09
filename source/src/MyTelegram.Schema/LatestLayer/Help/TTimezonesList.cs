@@ -4,13 +4,21 @@
 namespace MyTelegram.Schema.Help;
 
 ///<summary>
+/// Timezone information that may be used elsewhere in the API, such as to set <a href="https://corefork.telegram.org/api/business#opening-hours">Telegram Business opening hours »</a>.
 /// See <a href="https://corefork.telegram.org/constructor/help.timezonesList" />
 ///</summary>
 [TlObject(0x7b74ed71)]
 public sealed class TTimezonesList : ITimezonesList
 {
     public uint ConstructorId => 0x7b74ed71;
+    ///<summary>
+    /// Timezones
+    ///</summary>
     public TVector<MyTelegram.Schema.ITimezone> Timezones { get; set; }
+
+    ///<summary>
+    /// <a href="https://corefork.telegram.org/api/offsets#hash-generation">Hash used for caching, for more info click here</a>
+    ///</summary>
     public int Hash { get; set; }
 
     public void ComputeFlag()

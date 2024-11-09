@@ -3,55 +3,58 @@
 public class ContactAppService(
     IQueryProcessor queryProcessor,
     IPhotoAppService photoAppService,
+    IOptionsMonitor<MyTelegramMessengerServerOptions> options,
     IPrivacyAppService privacyAppService)
-    : BaseAppService, IContactAppService
+    : BaseAppService, IContactAppService, ITransientDependency
 {
     public async Task<SearchContactOutput> SearchAsync(long selfUserId,
         string keyword)
     {
         if (keyword?.Length > 0)
         {
-            var searchKey = keyword;
-            if (searchKey.StartsWith("@"))
+            var searchKeyword = keyword;
+            if (searchKeyword.StartsWith("@"))
             {
-                searchKey = keyword[1..];
+                searchKeyword = keyword[1..];
             }
 
-            var userList =
-                await queryProcessor.ProcessAsync(new SearchUserByKeywordQuery(keyword, 20),
-                    CancellationToken.None);
-
             var contactReadModels = await queryProcessor
-                .ProcessAsync(new SearchContactQuery(selfUserId, searchKey));
+                .ProcessAsync(new SearchContactQuery(selfUserId, searchKeyword));
+            var userNameReadModels = await queryProcessor
+                .ProcessAsync(new SearchUserNameQuery(searchKeyword));
 
-            var userNameReadModel = await queryProcessor
-                .ProcessAsync(new SearchUserNameQuery(searchKey));
-
-            var channelIdList = userNameReadModel.Where(p => p.PeerType == PeerType.Channel).Select(p => p.PeerId)
+            var channelIdList = userNameReadModels.Where(p => p.PeerType == PeerType.Channel).Select(p => p.PeerId)
                 .ToList();
 
             var userIdList = contactReadModels.Select(p => p.TargetUserId).ToList();
+            userIdList.AddRange(userNameReadModels.Where(p => p.PeerType == PeerType.User).Select(p => p.PeerId));
 
-            var userList2 = await queryProcessor
-                .ProcessAsync(new GetUsersByUidListQuery(userIdList));
-            var allUserList = userList.ToList();
-            allUserList.AddRange(userList2);
-            var channelList = await queryProcessor
+            var userReadModels = await queryProcessor
+                .ProcessAsync(new GetUsersByUserIdListQuery(userIdList));
+            var allUserReadModels = userReadModels.ToList();
+
+            if (options.CurrentValue.EnableSearchNonContacts)
+            {
+                var userReadModels2 = await queryProcessor.ProcessAsync(new SearchUserByKeywordQuery(keyword, 20));
+                allUserReadModels.AddRange(userReadModels2);
+            }
+
+            var channelReadModels = await queryProcessor
                 .ProcessAsync(new GetChannelByChannelIdListQuery(channelIdList));
 
-            var photos = await photoAppService.GetPhotosAsync(allUserList, contactReadModels);
+            var photos = await photoAppService.GetPhotosAsync(allUserReadModels, contactReadModels);
 
-            var privacyList = await privacyAppService.GetPrivacyListAsync(allUserList.Select(p => p.UserId).ToList());
+            var privacyReadModels = await privacyAppService.GetPrivacyListAsync(allUserReadModels.Select(p => p.UserId).ToList());
 
             return new SearchContactOutput(selfUserId,
-                allUserList,
+                allUserReadModels,
                 photos,
                 contactReadModels,
-                Array.Empty<IChannelReadModel>(),
-                channelList,
-                privacyList,
-                Array.Empty<IChannelMemberReadModel>()
-                );
+                [],
+                channelReadModels,
+                privacyReadModels,
+                []
+            );
         }
 
         return new SearchContactOutput(selfUserId,

@@ -4,6 +4,11 @@
 namespace MyTelegram.Schema.Messages;
 
 ///<summary>
+/// Delete a <a href="https://corefork.telegram.org/api/factcheck">fact-check</a> from a message.Can only be used by independent fact-checkers as specified by the <a href="https://corefork.telegram.org/api/config#can-edit-factcheck">appConfig.can_edit_factcheck</a> configuration flag.
+/// <para>Possible errors</para>
+/// Code Type Description
+/// 403 CHAT_ACTION_FORBIDDEN You cannot execute this action.
+/// 400 PEER_ID_INVALID The provided peer id is invalid.
 /// See <a href="https://corefork.telegram.org/method/messages.deleteFactCheck" />
 ///</summary>
 [TlObject(0xd1da940c)]
@@ -11,13 +16,13 @@ public sealed class RequestDeleteFactCheck : IRequest<MyTelegram.Schema.IUpdates
 {
     public uint ConstructorId => 0xd1da940c;
     ///<summary>
-    /// &nbsp;
+    /// Peer where the message was sent.
     /// See <a href="https://corefork.telegram.org/type/InputPeer" />
     ///</summary>
     public MyTelegram.Schema.IInputPeer Peer { get; set; }
 
     ///<summary>
-    /// &nbsp;
+    /// Message ID
     ///</summary>
     public int MsgId { get; set; }
 

@@ -5,7 +5,7 @@ namespace MyTelegram.Services.Services;
 public class MtpHelper(
     IHashHelper hashHelper,
     IAesHelper aesHelper)
-    : IMtpHelper
+    : IMtpHelper, ITransientDependency
 {
     public AesKeyData CalcTempAesKeyData(byte[] newNonce,
         byte[] serverNonce)

@@ -7,6 +7,7 @@ namespace MyTelegram.Schema.Phone;
 /// Get an <a href="https://corefork.telegram.org/api/links#video-chat-livestream-links">invite link</a> for a group call or livestream
 /// <para>Possible errors</para>
 /// Code Type Description
+/// 400 GROUPCALL_INVALID The specified group call is invalid.
 /// 403 PUBLIC_CHANNEL_MISSING You can only export group call invite links for public chats or channels.
 /// See <a href="https://corefork.telegram.org/method/phone.exportGroupCallInvite" />
 ///</summary>

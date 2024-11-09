@@ -15,12 +15,12 @@ public interface IBoost : IObject
     BitArray Flags { get; set; }
 
     ///<summary>
-    /// Whether this boost was applied because the channel <a href="https://corefork.telegram.org/api/giveaways">directly gifted a subscription to the user</a>.
+    /// Whether this boost was applied because the channel/supergroup <a href="https://corefork.telegram.org/api/giveaways">directly gifted a subscription to the user</a>.
     ///</summary>
     bool Gift { get; set; }
 
     ///<summary>
-    /// Whether this boost was applied because the user was chosen in a <a href="https://corefork.telegram.org/api/giveaways">giveaway started by the channel</a>.
+    /// Whether this boost was applied because the user was chosen in a <a href="https://corefork.telegram.org/api/giveaways">giveaway started by the channel/supergroup</a>.
     ///</summary>
     bool Giveaway { get; set; }
 
@@ -63,4 +63,5 @@ public interface IBoost : IObject
     /// If set, this boost counts as <code>multiplier</code> boosts, otherwise it counts as a single boost.
     ///</summary>
     int? Multiplier { get; set; }
+    long? Stars { get; set; }
 }

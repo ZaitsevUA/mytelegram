@@ -59,7 +59,7 @@ internal sealed class GetUsersHandler : RpcResultObjectHandler<MyTelegram.Schema
             }
         }
 
-        var users = await _queryProcessor.ProcessAsync(new GetUsersByUidListQuery(userIds), default)
+        var users = await _queryProcessor.ProcessAsync(new GetUsersByUserIdListQuery(userIds), default)
      ;
 
         var contacts = await _queryProcessor.ProcessAsync(new GetContactListQuery(input.UserId, userIds), default)

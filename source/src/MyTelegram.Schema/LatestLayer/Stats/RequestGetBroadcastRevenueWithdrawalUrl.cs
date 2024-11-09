@@ -4,13 +4,24 @@
 namespace MyTelegram.Schema.Stats;
 
 ///<summary>
+/// Withdraw funds from a channel's <a href="https://corefork.telegram.org/api/revenue">ad revenue balance »</a>.
+/// <para>Possible errors</para>
+/// Code Type Description
+/// 400 PASSWORD_HASH_INVALID The provided password hash is invalid.
+/// 400 PASSWORD_MISSING You must <a href="https://corefork.telegram.org/api/srp">enable 2FA</a> before executing this operation.
+/// 400 PASSWORD_TOO_FRESH_%d The password was modified less than 24 hours ago, try again in %d seconds.
 /// See <a href="https://corefork.telegram.org/method/stats.getBroadcastRevenueWithdrawalUrl" />
 ///</summary>
-[TlObject(0x2a65ef73)]
+[TlObject(0x9df4faad)]
 public sealed class RequestGetBroadcastRevenueWithdrawalUrl : IRequest<MyTelegram.Schema.Stats.IBroadcastRevenueWithdrawalUrl>
 {
-    public uint ConstructorId => 0x2a65ef73;
-    public MyTelegram.Schema.IInputChannel Channel { get; set; }
+    public uint ConstructorId => 0x9df4faad;
+    public MyTelegram.Schema.IInputPeer Peer { get; set; }
+
+    ///<summary>
+    /// 2FA password, see <a href="https://corefork.telegram.org/api/srp#using-the-2fa-password">here »</a> for more info.
+    /// See <a href="https://corefork.telegram.org/type/InputCheckPasswordSRP" />
+    ///</summary>
     public MyTelegram.Schema.IInputCheckPasswordSRP Password { get; set; }
 
     public void ComputeFlag()
@@ -22,13 +33,13 @@ public sealed class RequestGetBroadcastRevenueWithdrawalUrl : IRequest<MyTelegra
     {
         ComputeFlag();
         writer.Write(ConstructorId);
-        writer.Write(Channel);
+        writer.Write(Peer);
         writer.Write(Password);
     }
 
     public void Deserialize(ref SequenceReader<byte> reader)
     {
-        Channel = reader.Read<MyTelegram.Schema.IInputChannel>();
+        Peer = reader.Read<MyTelegram.Schema.IInputPeer>();
         Password = reader.Read<MyTelegram.Schema.IInputCheckPasswordSRP>();
     }
 }

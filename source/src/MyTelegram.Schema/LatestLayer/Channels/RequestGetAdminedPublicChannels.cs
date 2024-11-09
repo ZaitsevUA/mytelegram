@@ -27,10 +27,15 @@ public sealed class RequestGetAdminedPublicChannels : IRequest<MyTelegram.Schema
     public bool ByLocation { get; set; }
 
     ///<summary>
-    /// If set and the user has reached the limit of owned public <a href="https://corefork.telegram.org/api/channel">channels/supergroups/geogroups</a>, instead of returning the channel list one of the specified <a href="https://corefork.telegram.org/method/channels.getAdminedPublicChannels#possible-errors">errors</a> will be returned.<br>Useful to check if a new public channel can indeed be created, even before asking the user to enter a channel username to use in <a href="https://corefork.telegram.org/method/channels.checkUsername">channels.checkUsername</a>/<a href="https://corefork.telegram.org/method/channels.updateUsername">channels.updateUsername</a>.
+    /// If set and the user has reached the limit of owned public <a href="https://corefork.telegram.org/api/channel">channels/supergroups/geogroups</a>, instead of returning the channel list one of the specified <a href="https://corefork.telegram.org/htmls/method/channels.getAdminedPublicChannels.html#possible-errors">errors</a> will be returned.<br>Useful to check if a new public channel can indeed be created, even before asking the user to enter a channel username to use in <a href="https://corefork.telegram.org/method/channels.checkUsername">channels.checkUsername</a>/<a href="https://corefork.telegram.org/method/channels.updateUsername">channels.updateUsername</a>.
     /// See <a href="https://corefork.telegram.org/type/true" />
     ///</summary>
     public bool CheckLimit { get; set; }
+
+    ///<summary>
+    /// Set this flag to only fetch the full list of channels that may be passed to <a href="https://corefork.telegram.org/method/account.updatePersonalChannel">account.updatePersonalChannel</a> to <a href="https://corefork.telegram.org/api/profile#personal-channel">display them on our profile page</a>.
+    /// See <a href="https://corefork.telegram.org/type/true" />
+    ///</summary>
     public bool ForPersonal { get; set; }
 
     public void ComputeFlag()

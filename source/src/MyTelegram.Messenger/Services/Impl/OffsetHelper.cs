@@ -1,6 +1,6 @@
 ﻿namespace MyTelegram.Messenger.Services.Impl;
 
-public class OffsetHelper : IOffsetHelper
+public class OffsetHelper : IOffsetHelper, ITransientDependency
 {
     public OffsetInfo GetOffsetInfo(GetPagedListInput input)
     {

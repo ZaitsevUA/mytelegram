@@ -5,7 +5,7 @@ using Vonage.Request;
 
 namespace MyTelegram.SmsSender;
 
-public class VonageSmsSender : ISmsSender
+public class VonageSmsSender : ISmsSender, ITransientDependency
 {
     private readonly IOptionsSnapshot<VonageSmsOptions> _optionsSnapshot;
     private readonly ILogger<VonageSmsSender> _logger;
@@ -21,7 +21,7 @@ public class VonageSmsSender : ISmsSender
     {
         if (!_optionsSnapshot.Value.Enabled)
         {
-            _logger.LogWarning("Vonage sms sender disabled,the code will not be sent.PhoneNumber:{To} Text:{Text}", smsMessage.PhoneNumber, smsMessage.Text);
+            _logger.LogWarning("Vonage sms sender disabled, the code will not be sent. PhoneNumber: {To} Text: {Text}", smsMessage.PhoneNumber, smsMessage.Text);
 
             return;
         }
@@ -43,9 +43,9 @@ public class VonageSmsSender : ISmsSender
             Text = smsMessage.Text,
         });
 
-        _logger.LogDebug("Send SMS result:{@Response}", response);
+        _logger.LogDebug("Send SMS result: {@Response}", response);
 
         var message = response.Messages.ElementAtOrDefault(0);
-        _logger.LogInformation("Send SMS completed,To={To},StatusCode={StatusCode},Status={Status},MessageId={MessageId},ErrorText={ErrorText}", message?.To, message?.Status, message?.StatusCode, message?.MessageId, message?.ErrorText);
+        _logger.LogInformation("Send SMS completed, To={To}, StatusCode={StatusCode}, Status={Status}, MessageId={MessageId}, ErrorText={ErrorText}", message?.To, message?.Status, message?.StatusCode, message?.MessageId, message?.ErrorText);
     }
 }

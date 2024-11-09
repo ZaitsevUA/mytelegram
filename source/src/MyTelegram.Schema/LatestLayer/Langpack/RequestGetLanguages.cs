@@ -15,7 +15,7 @@ public sealed class RequestGetLanguages : IRequest<TVector<MyTelegram.Schema.ILa
 {
     public uint ConstructorId => 0x42c6978f;
     ///<summary>
-    /// Language pack
+    /// Platform identifier (i.e. <code>android</code>, <code>tdesktop</code>, etc).
     ///</summary>
     public string LangPack { get; set; }
 

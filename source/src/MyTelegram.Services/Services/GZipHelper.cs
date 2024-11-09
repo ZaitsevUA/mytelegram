@@ -1,11 +1,10 @@
-﻿using System.IO.Compression;
-using ICSharpCode.SharpZipLib.GZip;
+﻿using ICSharpCode.SharpZipLib.GZip;
 using ICSharpCode.SharpZipLib.Zip.Compression.Streams;
-using MyTelegram.Core;
+using System.IO.Compression;
 
 namespace MyTelegram.Services.Services;
 
-public class GZipHelper : IGZipHelper //, ISingletonDependency
+public class GZipHelper : IGZipHelper, ITransientDependency
 {
     public byte[] Decompress(byte[] data)
     {

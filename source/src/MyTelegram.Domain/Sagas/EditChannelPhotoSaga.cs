@@ -11,7 +11,7 @@ public class
         CancellationToken cancellationToken)
     {
         var outMessageId = await idGenerator.NextIdAsync(IdType.MessageId, domainEvent.AggregateEvent.ChannelId, cancellationToken: cancellationToken);
-        var aggregateId = MessageId.Create(domainEvent.AggregateEvent.ChannelId, outMessageId);
+        //var aggregateId = MessageId.Create(domainEvent.AggregateEvent.ChannelId, outMessageId);
         var ownerPeer = new Peer(PeerType.Channel, domainEvent.AggregateEvent.ChannelId);
         var senderPeer = new Peer(PeerType.User, domainEvent.AggregateEvent.RequestInfo.UserId);
 
@@ -33,9 +33,11 @@ public class
             MessageActionType.ChatEditPhoto,
             Post: domainEvent.AggregateEvent.Broadcast
         );
-        var command = new CreateOutboxMessageCommand(aggregateId,
-            domainEvent.AggregateEvent.RequestInfo,
-            messageItem);
+        //var command = new CreateOutboxMessageCommand(aggregateId,
+        //    domainEvent.AggregateEvent.RequestInfo,
+        //    messageItem);
+        var command = new StartSendMessageCommand(TempId.New, domainEvent.AggregateEvent.RequestInfo,
+            [new SendMessageItem(messageItem)]);
 
         Publish(command);
         await CompleteAsync(cancellationToken);

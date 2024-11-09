@@ -1,148 +1,212 @@
-﻿using MyTelegram.Domain.Aggregates.Messaging;
+﻿using EventFlow.Aggregates.ExecutionResults;
+using MyTelegram.Domain.Aggregates.Messaging;
+using MyTelegram.Domain.Aggregates.Pts;
+using MyTelegram.Domain.Commands.Pts;
 using MyTelegram.Domain.Events.Messaging;
+using MyTelegram.Domain.Events.Pts;
 using MyTelegram.Messenger.Services.Caching;
-using SendOutboxMessageCompletedEvent = MyTelegram.Domain.Sagas.Events.SendOutboxMessageCompletedEvent;
 
 namespace MyTelegram.Messenger.CommandServer.DomainEventHandlers;
 
-public class PtsEventHandler(IPtsHelper ptsHelper) :
-    ISubscribeSynchronousTo<UpdatePinnedMessageSaga, UpdatePinnedMessageSagaId, UpdatePinnedBoxPtsCompletedEvent>,
-    ISubscribeSynchronousTo<SendMessageSaga, SendMessageSagaId, SendOutboxMessageCompletedEvent>,
-    ISubscribeSynchronousTo<SendMessageSaga, SendMessageSagaId, ReceiveInboxMessageCompletedEvent>,
-    ISubscribeSynchronousTo<ClearHistorySaga, ClearHistorySagaId, ClearSingleUserHistoryCompletedEvent>,
-    ISubscribeSynchronousTo<DeleteMessagesSaga4, DeleteMessagesSaga4Id, DeleteMessagePtsIncrementedEvent4>,
-    ISubscribeSynchronousTo<ReadHistorySaga, ReadHistorySagaId, ReadHistoryPtsIncrementEvent>,
+public class PtsEventHandler(IPtsHelper ptsHelper,
+    IPeerHelper peerHelper,
+    IIdGenerator idGenerator,
+    IQueuedCommandExecutor<PtsAggregate, PtsId, IExecutionResult> ptsCommandExecutor) :
+    ISubscribeSynchronousTo<UpdatePinnedMessageSaga, UpdatePinnedMessageSagaId, UpdatePinnedBoxPtsCompletedSagaEvent>,
+    ISubscribeSynchronousTo<ClearHistorySaga, ClearHistorySagaId, ClearSingleUserHistoryCompletedSagaEvent>,
+    ISubscribeSynchronousTo<DeleteMessagesSaga4, DeleteMessagesSaga4Id, DeleteMessagePtsIncrementedSagaEvent>,
+    ISubscribeSynchronousTo<ReadHistorySaga, ReadHistorySagaId, ReadHistoryPtsIncrementSagaEvent>,
     ISubscribeSynchronousTo<ReadHistorySaga, ReadHistorySagaId, ReadHistoryPtsIncrementedSagaEvent>,
-    ISubscribeSynchronousTo<EditMessageSaga, EditMessageSagaId, OutboxMessageEditCompletedEvent>,
-    ISubscribeSynchronousTo<EditMessageSaga, EditMessageSagaId, InboxMessageEditCompletedEvent>,
+    ISubscribeSynchronousTo<EditMessageSaga, EditMessageSagaId, OutboxMessageEditCompletedSagaEvent>,
+    ISubscribeSynchronousTo<EditMessageSaga, EditMessageSagaId, InboxMessageEditCompletedSagaEvent>,
     ISubscribeSynchronousTo<DeleteChannelMessagesSaga, DeleteChannelMessagesSagaId,
-        DeleteChannelMessagePtsIncrementedEvent>,
+        DeleteChannelMessagePtsIncrementedSagaEvent>,
     ISubscribeSynchronousTo<PinForwardedChannelMessageSaga, PinForwardedChannelMessageSagaId,
-        PinChannelMessagePtsIncrementedEvent>,
+        PinChannelMessagePtsIncrementedSagaEvent>,
     ISubscribeSynchronousTo<MessageAggregate, MessageId, MessageReplyUpdatedEvent>,
-    ISubscribeSynchronousTo<DeleteReplyMessagesSaga, DeleteReplyMessagesSagaId, DeleteReplyMessagePtsIncrementedEvent>,
-    ISubscribeSynchronousTo<UnpinAllMessagesSaga,UnpinAllMessagesSagaId, MessageUnpinnedSagaEvent>,
-      ISubscribeSynchronousTo<UpdateMessagePinnedSaga, UpdateMessagePinnedSagaId, MessagePinnedUpdatedSagaEvent>
-
+    ISubscribeSynchronousTo<DeleteReplyMessagesSaga, DeleteReplyMessagesSagaId, DeleteReplyMessagePtsIncrementedSagaEvent>,
+    ISubscribeSynchronousTo<UnpinAllMessagesSaga, UnpinAllMessagesSagaId, MessageUnpinnedSagaEvent>,
+      ISubscribeSynchronousTo<UpdateMessagePinnedSaga, UpdateMessagePinnedSagaId, MessagePinnedUpdatedSagaEvent>,
+    ISubscribeSynchronousTo<SendMessageSaga, SendMessageSagaId, SendOutboxMessageCompletedSagaEvent>,
+    ISubscribeSynchronousTo<SendMessageSaga, SendMessageSagaId, ReceiveInboxMessageCompletedSagaEvent>,
+    ISubscribeSynchronousTo<PtsAggregate, PtsId, PtsAckedEvent>,
+    ISubscribeSynchronousTo<PtsAggregate, PtsId, QtsAckedEvent>
 {
     public Task HandleAsync(
-        IDomainEvent<ClearHistorySaga, ClearHistorySagaId, ClearSingleUserHistoryCompletedEvent> domainEvent,
+        IDomainEvent<ClearHistorySaga, ClearHistorySagaId, ClearSingleUserHistoryCompletedSagaEvent> domainEvent,
         CancellationToken cancellationToken)
     {
-        ptsHelper.IncrementPtsAsync(domainEvent.AggregateEvent.DeletedBoxItem.OwnerPeerId,
+        return UpdatePtsAsync(domainEvent.AggregateEvent.DeletedBoxItem.OwnerPeerId,
             domainEvent.AggregateEvent.DeletedBoxItem.Pts,
-            domainEvent.AggregateEvent.DeletedBoxItem.PtsCount);
-        return Task.CompletedTask;
+            domainEvent.AggregateEvent.DeletedBoxItem.PtsCount
+        );
     }
 
     public Task HandleAsync(
-        IDomainEvent<DeleteMessagesSaga4, DeleteMessagesSaga4Id, DeleteMessagePtsIncrementedEvent4> domainEvent,
+        IDomainEvent<DeleteMessagesSaga4, DeleteMessagesSaga4Id, DeleteMessagePtsIncrementedSagaEvent> domainEvent,
         CancellationToken cancellationToken)
     {
-        ptsHelper.IncrementPtsAsync(domainEvent.AggregateEvent.UserId, domainEvent.AggregateEvent.Pts);
-        return Task.CompletedTask;
+        return UpdatePtsAsync(domainEvent.AggregateEvent.UserId, domainEvent.AggregateEvent.Pts);
     }
 
     public Task HandleAsync(
-        IDomainEvent<EditMessageSaga, EditMessageSagaId, InboxMessageEditCompletedEvent> domainEvent,
+        IDomainEvent<EditMessageSaga, EditMessageSagaId, InboxMessageEditCompletedSagaEvent> domainEvent,
         CancellationToken cancellationToken)
     {
-        ptsHelper.IncrementPtsAsync(domainEvent.AggregateEvent.OwnerPeerId, domainEvent.AggregateEvent.Pts);
-        return Task.CompletedTask;
+        return UpdatePtsAsync(domainEvent.AggregateEvent.NewMessageItem.OwnerPeer.PeerId,
+            domainEvent.AggregateEvent.NewMessageItem.Pts
+        );
     }
 
     public Task HandleAsync(
-        IDomainEvent<EditMessageSaga, EditMessageSagaId, OutboxMessageEditCompletedEvent> domainEvent,
+        IDomainEvent<EditMessageSaga, EditMessageSagaId, OutboxMessageEditCompletedSagaEvent> domainEvent,
         CancellationToken cancellationToken)
     {
-        ptsHelper.IncrementPtsAsync(domainEvent.AggregateEvent.OwnerPeerId, domainEvent.AggregateEvent.Pts);
-        return Task.CompletedTask;
+        return UpdatePtsAsync(domainEvent.AggregateEvent.NewMessageItem.OwnerPeer.PeerId,
+            domainEvent.AggregateEvent.NewMessageItem.Pts);
     }
 
-    //public Task HandleAsync(IDomainEvent<MessageSaga, MessageSagaId, ReceiveInboxMessageCompletedEvent> domainEvent,
-    //    CancellationToken cancellationToken)
-    //{
-    //    _ptsHelper.IncrementPtsAsync(domainEvent.AggregateEvent.MessageItem.OwnerPeer.PeerId,
-    //        domainEvent.AggregateEvent.Pts);
-    //    return Task.CompletedTask;
-    //}
-
-    //public Task HandleAsync(IDomainEvent<MessageSaga, MessageSagaId, Domain.Events.Messaging.SendOutboxMessageCompletedEvent> domainEvent,
-    //    CancellationToken cancellationToken)
-    //{
-    //    _ptsHelper.IncrementPtsAsync(domainEvent.AggregateEvent.MessageItem.OwnerPeer.PeerId,
-    //        domainEvent.AggregateEvent.Pts);
-    //    return Task.CompletedTask;
-    //}
-
-    public Task HandleAsync(IDomainEvent<ReadHistorySaga, ReadHistorySagaId, ReadHistoryPtsIncrementEvent> domainEvent,
+    public Task HandleAsync(IDomainEvent<ReadHistorySaga, ReadHistorySagaId, ReadHistoryPtsIncrementSagaEvent> domainEvent,
         CancellationToken cancellationToken)
     {
-        ptsHelper.IncrementPtsAsync(domainEvent.AggregateEvent.PeerId, domainEvent.AggregateEvent.Pts);
-        return Task.CompletedTask;
+        return UpdatePtsAsync(domainEvent.AggregateEvent.PeerId, domainEvent.AggregateEvent.Pts);
     }
 
     public Task HandleAsync(
-        IDomainEvent<UpdatePinnedMessageSaga, UpdatePinnedMessageSagaId, UpdatePinnedBoxPtsCompletedEvent> domainEvent,
+        IDomainEvent<UpdatePinnedMessageSaga, UpdatePinnedMessageSagaId, UpdatePinnedBoxPtsCompletedSagaEvent> domainEvent,
         CancellationToken cancellationToken)
     {
-        ptsHelper.IncrementPtsAsync(domainEvent.AggregateEvent.PeerId, domainEvent.AggregateEvent.Pts);
-        return Task.CompletedTask;
+        return UpdatePtsAsync(domainEvent.AggregateEvent.PeerId, domainEvent.AggregateEvent.Pts);
     }
 
-    public Task HandleAsync(IDomainEvent<SendMessageSaga, SendMessageSagaId, SendOutboxMessageCompletedEvent> domainEvent, CancellationToken cancellationToken)
+    public Task HandleAsync(IDomainEvent<DeleteChannelMessagesSaga, DeleteChannelMessagesSagaId, DeleteChannelMessagePtsIncrementedSagaEvent> domainEvent, CancellationToken cancellationToken)
     {
-        ptsHelper.IncrementPtsAsync(domainEvent.AggregateEvent.MessageItem.OwnerPeer.PeerId,
-            domainEvent.AggregateEvent.Pts);
-        return Task.CompletedTask;
+        return UpdatePtsAsync(domainEvent.AggregateEvent.ChannelId, domainEvent.AggregateEvent.Pts);
     }
 
-    public Task HandleAsync(IDomainEvent<SendMessageSaga, SendMessageSagaId, ReceiveInboxMessageCompletedEvent> domainEvent, CancellationToken cancellationToken)
+    public Task HandleAsync(IDomainEvent<PinForwardedChannelMessageSaga, PinForwardedChannelMessageSagaId, PinChannelMessagePtsIncrementedSagaEvent> domainEvent, CancellationToken cancellationToken)
     {
-        ptsHelper.IncrementPtsAsync(domainEvent.AggregateEvent.MessageItem.OwnerPeer.PeerId,
-            domainEvent.AggregateEvent.Pts);
-        return Task.CompletedTask;
-    }
-    public Task HandleAsync(IDomainEvent<DeleteChannelMessagesSaga, DeleteChannelMessagesSagaId, DeleteChannelMessagePtsIncrementedEvent> domainEvent, CancellationToken cancellationToken)
-    {
-        ptsHelper.IncrementPtsAsync(domainEvent.AggregateEvent.ChannelId, domainEvent.AggregateEvent.Pts);
-        return Task.CompletedTask;
-    }
-
-    public Task HandleAsync(IDomainEvent<PinForwardedChannelMessageSaga, PinForwardedChannelMessageSagaId, PinChannelMessagePtsIncrementedEvent> domainEvent, CancellationToken cancellationToken)
-    {
-        ptsHelper.IncrementPtsAsync(domainEvent.AggregateEvent.ChannelId, domainEvent.AggregateEvent.Pts);
-        return Task.CompletedTask;
+        return UpdatePtsAsync(domainEvent.AggregateEvent.ChannelId, domainEvent.AggregateEvent.Pts);
     }
 
     public Task HandleAsync(IDomainEvent<MessageAggregate, MessageId, MessageReplyUpdatedEvent> domainEvent, CancellationToken cancellationToken)
     {
-        ptsHelper.IncrementPtsAsync(domainEvent.AggregateEvent.OwnerChannelId, domainEvent.AggregateEvent.Pts);
-        return Task.CompletedTask;
+        return UpdatePtsAsync(domainEvent.AggregateEvent.OwnerChannelId, domainEvent.AggregateEvent.Pts);
     }
 
-    public Task HandleAsync(IDomainEvent<DeleteReplyMessagesSaga, DeleteReplyMessagesSagaId, DeleteReplyMessagePtsIncrementedEvent> domainEvent, CancellationToken cancellationToken)
+    public Task HandleAsync(IDomainEvent<DeleteReplyMessagesSaga, DeleteReplyMessagesSagaId, DeleteReplyMessagePtsIncrementedSagaEvent> domainEvent, CancellationToken cancellationToken)
     {
-        ptsHelper.IncrementPtsAsync(domainEvent.AggregateEvent.ChannelId, domainEvent.AggregateEvent.Pts);
-        return Task.CompletedTask;
+        return UpdatePtsAsync(domainEvent.AggregateEvent.ChannelId, domainEvent.AggregateEvent.Pts);
     }
 
     public Task HandleAsync(IDomainEvent<ReadHistorySaga, ReadHistorySagaId, ReadHistoryPtsIncrementedSagaEvent> domainEvent, CancellationToken cancellationToken)
     {
-        ptsHelper.IncrementPtsAsync(domainEvent.AggregateEvent.UserId, domainEvent.AggregateEvent.Pts);
-        return Task.CompletedTask;
+        return UpdatePtsAsync(domainEvent.AggregateEvent.UserId, domainEvent.AggregateEvent.Pts);
     }
 
     public Task HandleAsync(IDomainEvent<UnpinAllMessagesSaga, UnpinAllMessagesSagaId, MessageUnpinnedSagaEvent> domainEvent, CancellationToken cancellationToken)
     {
-        ptsHelper.IncrementPtsAsync(domainEvent.AggregateEvent.OwnerPeerId, domainEvent.AggregateEvent.Pts);
-
-        return Task.CompletedTask;
+        return UpdatePtsAsync(domainEvent.AggregateEvent.OwnerPeerId, domainEvent.AggregateEvent.Pts);
     }
 
     public Task HandleAsync(IDomainEvent<UpdateMessagePinnedSaga, UpdateMessagePinnedSagaId, MessagePinnedUpdatedSagaEvent> domainEvent, CancellationToken cancellationToken)
     {
-        ptsHelper.IncrementPtsAsync(domainEvent.AggregateEvent.OwnerPeerId, domainEvent.AggregateEvent.Pts);
+        return UpdatePtsAsync(domainEvent.AggregateEvent.OwnerPeerId, domainEvent.AggregateEvent.Pts);
+    }
+
+    public async Task HandleAsync(IDomainEvent<SendMessageSaga, SendMessageSagaId, SendOutboxMessageCompletedSagaEvent> domainEvent, CancellationToken cancellationToken)
+    {
+        if (domainEvent.AggregateEvent.MessageItem.ToPeer.PeerType == PeerType.Channel)
+        {
+            await IncrementGlobalSeqNoAsync(domainEvent.AggregateEvent.RequestInfo.UserId);
+        }
+
+        foreach (var item in domainEvent.AggregateEvent.MessageItems)
+        {
+            //await ptsHelper.IncrementPtsAsync(item.OwnerPeer.PeerId, item.Pts);
+            await UpdatePtsAsync(item.OwnerPeer.PeerId, item.Pts, messageId: item.MessageId);
+        }
+    }
+
+    public async Task HandleAsync(IDomainEvent<SendMessageSaga, SendMessageSagaId, ReceiveInboxMessageCompletedSagaEvent> domainEvent, CancellationToken cancellationToken)
+    {
+        foreach (var item in domainEvent.AggregateEvent.MessageItems)
+        {
+            //await ptsHelper.IncrementPtsAsync(item.OwnerPeer.PeerId, item.Pts);
+            await UpdatePtsAsync(item.OwnerPeer.PeerId, item.Pts, messageId: item.MessageId);
+        }
+    }
+
+    private async Task IncrementGlobalSeqNoAsync(long userId)
+    {
+        var globalSeqNo = await idGenerator.NextLongIdAsync(IdType.GlobalSeqNo);
+        var command = new UpdateGlobalSeqNoCommand(PtsId.Create(userId), userId, 0, globalSeqNo);
+        ptsCommandExecutor.Enqueue(command);
+    }
+
+    private async Task UpdatePtsAsync(long ownerPeerId, int newPts, int ptsCount = 1, long permAuthKeyId = 0,
+        int changedUnreadCount = 0, int? messageId = null)
+    {
+        await ptsHelper.IncrementPtsAsync(ownerPeerId, newPts, ptsCount, permAuthKeyId, changedUnreadCount);
+
+        var command = new UpdatePtsCommand(PtsId.Create(ownerPeerId),
+            ownerPeerId,
+            permAuthKeyId,
+            newPts,
+            0,
+            changedUnreadCount,
+            messageId
+        );
+        ptsCommandExecutor.Enqueue(command);
+    }
+
+    public async Task HandleAsync(IDomainEvent<PtsAggregate, PtsId, PtsAckedEvent> domainEvent, CancellationToken cancellationToken)
+    {
+        if (!peerHelper.IsChannelPeer(domainEvent.AggregateEvent.PeerId))
+        {
+            if (await ptsHelper.UpdatePtsForAuthKeyIdAsync(domainEvent.AggregateEvent.PeerId,
+                    domainEvent.AggregateEvent.PermAuthKeyId,
+                    domainEvent.AggregateEvent.Pts,
+                    domainEvent.AggregateEvent.IsFromGetDifference
+                ))
+            {
+                await UpdatePtsForAuthKeyIdAsync(domainEvent.AggregateEvent.PeerId, domainEvent.AggregateEvent.PermAuthKeyId,
+                    domainEvent.AggregateEvent.Pts, 0, domainEvent.AggregateEvent.GlobalSeqNo);
+                return;
+            }
+        }
+
+        await UpdatePtsForAuthKeyIdAsync(domainEvent.AggregateEvent.PeerId, domainEvent.AggregateEvent.PermAuthKeyId,
+            domainEvent.AggregateEvent.Pts, 0, domainEvent.AggregateEvent.GlobalSeqNo);
+    }
+
+    public Task HandleAsync(IDomainEvent<PtsAggregate, PtsId, QtsAckedEvent> domainEvent, CancellationToken cancellationToken)
+    {
+        return UpdateQtsForAuthKeyIdAsync(domainEvent.AggregateEvent.PeerId, domainEvent.AggregateEvent.PermAuthKeyId,
+            domainEvent.AggregateEvent.Qts, domainEvent.AggregateEvent.GlobalSeqNo);
+    }
+
+    private Task UpdateQtsForAuthKeyIdAsync(long ownerPeerId, long permAuthKeyId, int qts, long globalSeqNo)
+    {
+        var command =
+            new UpdateQtsForAuthKeyIdCommand(PtsId.Create(ownerPeerId, permAuthKeyId), ownerPeerId, permAuthKeyId,
+                qts,
+                globalSeqNo);
+
+        ptsCommandExecutor.Enqueue(command);
+
+        return Task.CompletedTask;
+    }
+
+    private Task UpdatePtsForAuthKeyIdAsync(long ownerPeerId, long permAuthKeyId, int pts, int changedUnreadCount, long globalSeqNo)
+    {
+        var updatePtsForAuthKeyIdCommand =
+            new UpdatePtsForAuthKeyIdCommand(PtsId.Create(ownerPeerId, permAuthKeyId), ownerPeerId, permAuthKeyId,
+                pts,
+                changedUnreadCount,
+                globalSeqNo);
+
+        ptsCommandExecutor.Enqueue(updatePtsForAuthKeyIdCommand);
 
         return Task.CompletedTask;
     }

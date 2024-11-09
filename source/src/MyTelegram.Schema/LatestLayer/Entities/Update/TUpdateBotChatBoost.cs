@@ -4,7 +4,7 @@
 namespace MyTelegram.Schema;
 
 ///<summary>
-/// A <a href="https://corefork.telegram.org/api/boost">channel boost</a> has changed (bots only)
+/// A <a href="https://corefork.telegram.org/api/boost">channel/supergroup boost</a> has changed (bots only)
 /// See <a href="https://corefork.telegram.org/constructor/updateBotChatBoost" />
 ///</summary>
 [TlObject(0x904dd49c)]

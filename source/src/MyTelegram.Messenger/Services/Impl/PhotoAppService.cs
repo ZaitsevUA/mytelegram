@@ -1,6 +1,6 @@
 ﻿namespace MyTelegram.Messenger.Services.Impl;
 
-public class PhotoAppService(IQueryProcessor queryProcessor) : IPhotoAppService
+public class PhotoAppService(IQueryProcessor queryProcessor) : IPhotoAppService, ITransientDependency
 {
     public Task<IReadOnlyCollection<IPhotoReadModel>> GetPhotosAsync(IUserReadModel? userReadModel,
         IContactReadModel? contactReadModel = null)

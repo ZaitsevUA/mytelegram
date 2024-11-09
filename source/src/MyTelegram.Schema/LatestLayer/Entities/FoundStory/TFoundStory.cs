@@ -4,13 +4,23 @@
 namespace MyTelegram.Schema;
 
 ///<summary>
+/// A story found using <a href="https://corefork.telegram.org/api/stories#searching-stories">global story search »</a>.
 /// See <a href="https://corefork.telegram.org/constructor/foundStory" />
 ///</summary>
 [TlObject(0xe87acbc0)]
 public sealed class TFoundStory : IFoundStory
 {
     public uint ConstructorId => 0xe87acbc0;
+    ///<summary>
+    /// The peer that posted the story.
+    /// See <a href="https://corefork.telegram.org/type/Peer" />
+    ///</summary>
     public MyTelegram.Schema.IPeer Peer { get; set; }
+
+    ///<summary>
+    /// The story.
+    /// See <a href="https://corefork.telegram.org/type/StoryItem" />
+    ///</summary>
     public MyTelegram.Schema.IStoryItem Story { get; set; }
 
     public void ComputeFlag()

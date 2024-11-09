@@ -7,10 +7,12 @@ namespace MyTelegram.Schema;
 /// Some <a href="https://corefork.telegram.org/api/scheduled-messages">scheduled messages</a> were deleted from the schedule queue of a chat
 /// See <a href="https://corefork.telegram.org/constructor/updateDeleteScheduledMessages" />
 ///</summary>
-[TlObject(0x90866cee)]
+[TlObject(0xf2a71983)]
 public sealed class TUpdateDeleteScheduledMessages : IUpdate
 {
-    public uint ConstructorId => 0x90866cee;
+    public uint ConstructorId => 0xf2a71983;
+    public BitArray Flags { get; set; } = new BitArray(32);
+
     ///<summary>
     /// Peer
     /// See <a href="https://corefork.telegram.org/type/Peer" />
@@ -21,23 +23,28 @@ public sealed class TUpdateDeleteScheduledMessages : IUpdate
     /// Deleted scheduled messages
     ///</summary>
     public TVector<int> Messages { get; set; }
+    public TVector<int>? SentMessages { get; set; }
 
     public void ComputeFlag()
     {
-
+        if (SentMessages?.Count > 0) { Flags[0] = true; }
     }
 
     public void Serialize(IBufferWriter<byte> writer)
     {
         ComputeFlag();
         writer.Write(ConstructorId);
+        writer.Write(Flags);
         writer.Write(Peer);
         writer.Write(Messages);
+        if (Flags[0]) { writer.Write(SentMessages); }
     }
 
     public void Deserialize(ref SequenceReader<byte> reader)
     {
+        Flags = reader.ReadBitArray();
         Peer = reader.Read<MyTelegram.Schema.IPeer>();
         Messages = reader.Read<TVector<int>>();
+        if (Flags[0]) { SentMessages = reader.Read<TVector<int>>(); }
     }
 }

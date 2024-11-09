@@ -68,6 +68,12 @@ public sealed class RequestGetTopPeers : IRequest<MyTelegram.Schema.Contacts.ITo
     public bool Channels { get; set; }
 
     ///<summary>
+    /// Most frequently used <a href="https://corefork.telegram.org/api/bots/webapps#main-mini-apps">Main Mini Bot Apps</a>.
+    /// See <a href="https://corefork.telegram.org/type/true" />
+    ///</summary>
+    public bool BotsApp { get; set; }
+
+    ///<summary>
     /// Offset for <a href="https://corefork.telegram.org/api/offsets">pagination</a>
     ///</summary>
     public int Offset { get; set; }
@@ -78,7 +84,7 @@ public sealed class RequestGetTopPeers : IRequest<MyTelegram.Schema.Contacts.ITo
     public int Limit { get; set; }
 
     ///<summary>
-    /// <a href="https://corefork.telegram.org/api/offsets#hash-generation">Hash for pagination, for more info click here</a>
+    /// <a href="https://corefork.telegram.org/api/offsets#hash-generation">Hash used for caching, for more info click here</a>
     ///</summary>
     public long Hash { get; set; }
 
@@ -92,6 +98,7 @@ public sealed class RequestGetTopPeers : IRequest<MyTelegram.Schema.Contacts.ITo
         if (ForwardChats) { Flags[5] = true; }
         if (Groups) { Flags[10] = true; }
         if (Channels) { Flags[15] = true; }
+        if (BotsApp) { Flags[16] = true; }
 
     }
 
@@ -116,6 +123,7 @@ public sealed class RequestGetTopPeers : IRequest<MyTelegram.Schema.Contacts.ITo
         if (Flags[5]) { ForwardChats = true; }
         if (Flags[10]) { Groups = true; }
         if (Flags[15]) { Channels = true; }
+        if (Flags[16]) { BotsApp = true; }
         Offset = reader.ReadInt32();
         Limit = reader.ReadInt32();
         Hash = reader.ReadInt64();

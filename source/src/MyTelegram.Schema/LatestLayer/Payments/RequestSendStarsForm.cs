@@ -4,24 +4,25 @@
 namespace MyTelegram.Schema.Payments;
 
 ///<summary>
+/// Make a payment using <a href="https://corefork.telegram.org/api/stars#using-stars">Telegram Stars, see here »</a> for more info.
+/// <para>Possible errors</para>
+/// Code Type Description
+/// 400 BALANCE_TOO_LOW The transaction cannot be completed because the current <a href="https://corefork.telegram.org/api/stars">Telegram Stars balance</a> is too low.
+/// 400 FORM_EXPIRED The form was generated more than 10 minutes ago and has expired, please re-generate it using <a href="https://corefork.telegram.org/method/payments.getPaymentForm">payments.getPaymentForm</a> and pass the new <code>form_id</code>.
+/// 400 PEER_ID_INVALID The provided peer id is invalid.
 /// See <a href="https://corefork.telegram.org/method/payments.sendStarsForm" />
 ///</summary>
-[TlObject(0x2bb731d)]
+[TlObject(0x7998c914)]
 public sealed class RequestSendStarsForm : IRequest<MyTelegram.Schema.Payments.IPaymentResult>
 {
-    public uint ConstructorId => 0x2bb731d;
+    public uint ConstructorId => 0x7998c914;
     ///<summary>
-    /// Flags, see <a href="https://corefork.telegram.org/mtproto/TL-combinators#conditional-fields">TL conditional fields</a>
-    ///</summary>
-    public BitArray Flags { get; set; } = new BitArray(32);
-
-    ///<summary>
-    /// &nbsp;
+    /// Payment form ID
     ///</summary>
     public long FormId { get; set; }
 
     ///<summary>
-    /// &nbsp;
+    /// Invoice
     /// See <a href="https://corefork.telegram.org/type/InputInvoice" />
     ///</summary>
     public MyTelegram.Schema.IInputInvoice Invoice { get; set; }
@@ -35,14 +36,12 @@ public sealed class RequestSendStarsForm : IRequest<MyTelegram.Schema.Payments.I
     {
         ComputeFlag();
         writer.Write(ConstructorId);
-        writer.Write(Flags);
         writer.Write(FormId);
         writer.Write(Invoice);
     }
 
     public void Deserialize(ref SequenceReader<byte> reader)
     {
-        Flags = reader.ReadBitArray();
         FormId = reader.ReadInt64();
         Invoice = reader.Read<MyTelegram.Schema.IInputInvoice>();
     }

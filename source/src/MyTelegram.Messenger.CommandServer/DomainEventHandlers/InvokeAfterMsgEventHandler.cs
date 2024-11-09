@@ -26,7 +26,10 @@ public class InvokeAfterMsgEventHandler(
                     var timespan = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() - requestInfo.RequestInfo.Date;
                     if (timespan > 500)
                     {
-                        logger.LogWarning("{Name} mill seconds:{Timespan} reqMsgId:{ReqMsgId}", aggregateEvent.GetType().Name, timespan, requestInfo.RequestInfo.ReqMsgId);
+                        logger.LogDebug("Process domain event '{DomainEvent}' is too slow, timespan: {Timespan}ms, reqMsgId: {ReqMsgId}",
+                            domainEvent.GetAggregateEvent().GetType().Name,
+                            timespan,
+                            requestInfo.RequestInfo.ReqMsgId);
                     }
 
                     break;

@@ -105,7 +105,8 @@ public class ChannelAggregate : MyInMemorySnapshotAggregateRoot<ChannelAggregate
         long? migratedFromChatId,
         int? migratedMaxId,
         long? photoId,
-        bool autoCreateFromChat
+        bool autoCreateFromChat,
+        bool ttlFromDefaultSetting
         )
     {
         Specs.AggregateIsNew.ThrowDomainErrorIfNotSatisfied(this);
@@ -126,7 +127,8 @@ public class ChannelAggregate : MyInMemorySnapshotAggregateRoot<ChannelAggregate
             migratedFromChatId,
             migratedMaxId,
             photoId,
-            autoCreateFromChat
+            autoCreateFromChat,
+            ttlFromDefaultSetting
         ));
     }
 
@@ -188,7 +190,8 @@ public class ChannelAggregate : MyInMemorySnapshotAggregateRoot<ChannelAggregate
             adminRights,
             rank,
             removeFromAdminList,
-            date
+            date,
+            _state.Broadcast
         ));
     }
 

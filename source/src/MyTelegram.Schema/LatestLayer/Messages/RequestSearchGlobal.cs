@@ -8,6 +8,7 @@ namespace MyTelegram.Schema.Messages;
 /// <para>Possible errors</para>
 /// Code Type Description
 /// 400 FOLDER_ID_INVALID Invalid folder ID.
+/// 400 INPUT_FILTER_INVALID The specified filter is invalid.
 /// 400 SEARCH_QUERY_EMPTY The search query is empty.
 /// See <a href="https://corefork.telegram.org/method/messages.searchGlobal" />
 ///</summary>
@@ -19,6 +20,11 @@ public sealed class RequestSearchGlobal : IRequest<MyTelegram.Schema.Messages.IM
     /// Flags, see <a href="https://corefork.telegram.org/mtproto/TL-combinators#conditional-fields">TL conditional fields</a>
     ///</summary>
     public BitArray Flags { get; set; } = new BitArray(32);
+
+    ///<summary>
+    /// If set, only returns results from channels (used in the <a href="https://corefork.telegram.org/api/search#global-search">global channel search tab »</a>).
+    /// See <a href="https://corefork.telegram.org/type/true" />
+    ///</summary>
     public bool BroadcastsOnly { get; set; }
 
     ///<summary>

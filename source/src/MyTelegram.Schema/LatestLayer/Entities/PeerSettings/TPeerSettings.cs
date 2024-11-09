@@ -69,7 +69,17 @@ public sealed class TPeerSettings : IPeerSettings
     /// See <a href="https://corefork.telegram.org/type/true" />
     ///</summary>
     public bool RequestChatBroadcast { get; set; }
+
+    ///<summary>
+    /// This flag is set if both <code>business_bot_id</code> and <code>business_bot_manage_url</code> are set and all <a href="https://corefork.telegram.org/api/business#connected-bots">connected business bots »</a> were paused in this chat using <a href="https://corefork.telegram.org/method/account.toggleConnectedBotPaused">account.toggleConnectedBotPaused »</a>.
+    /// See <a href="https://corefork.telegram.org/type/true" />
+    ///</summary>
     public bool BusinessBotPaused { get; set; }
+
+    ///<summary>
+    /// This flag is set if both <code>business_bot_id</code> and <code>business_bot_manage_url</code> are set and <a href="https://corefork.telegram.org/api/business#connected-bots">connected business bots »</a> can reply to messages in this chat, as specified by the settings during <a href="https://corefork.telegram.org/api/business#connected-bots">initial configuration</a>.
+    /// See <a href="https://corefork.telegram.org/type/true" />
+    ///</summary>
     public bool BusinessBotCanReply { get; set; }
 
     ///<summary>
@@ -86,7 +96,15 @@ public sealed class TPeerSettings : IPeerSettings
     /// If set, this is a private chat with an administrator of a chat or channel to which the user sent a join request, and this field contains the timestamp when the <a href="https://corefork.telegram.org/api/invites#join-requests">join request »</a> was sent.
     ///</summary>
     public int? RequestChatDate { get; set; }
+
+    ///<summary>
+    /// Contains the ID of the <a href="https://corefork.telegram.org/api/business#connected-bots">business bot »</a> managing this chat, used to display info about the bot in the action bar.
+    ///</summary>
     public long? BusinessBotId { get; set; }
+
+    ///<summary>
+    /// Contains a <a href="https://corefork.telegram.org/api/links">deep link »</a>, used to open a management menu in the business bot. This flag is set if and only if <code>business_bot_id</code> is set.
+    ///</summary>
     public string? BusinessBotManageUrl { get; set; }
 
     public void ComputeFlag()

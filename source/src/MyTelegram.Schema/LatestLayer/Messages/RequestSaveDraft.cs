@@ -7,7 +7,7 @@ namespace MyTelegram.Schema.Messages;
 /// Save a message <a href="https://corefork.telegram.org/api/drafts">draft</a> associated to a chat.
 /// <para>Possible errors</para>
 /// Code Type Description
-/// 400 ENTITY_BOUNDS_INVALID A specified <a href="https://corefork.telegram.org/api/entities#entity-length">entity offset or length</a> is invalid, see <a href="https://corefork.telegram.org/api/entities#entity-length">here »</a> for info on how to properly compute the entity offset/length.
+/// 400 ENTITY_BOUNDS_INVALID A specified <a href="https://corefork.telegram.org/api/entities#entity-length">entity offset or length</a> is invalid, see <a href="https://corefork.telegram.org/api/entities#entity-length">here&nbsp;»</a> for info on how to properly compute the entity offset/length.
 /// 400 MSG_ID_INVALID Invalid message ID provided.
 /// 400 PEER_ID_INVALID The provided peer id is invalid.
 /// See <a href="https://corefork.telegram.org/method/messages.saveDraft" />
@@ -60,6 +60,10 @@ public sealed class RequestSaveDraft : IRequest<IBool>
     /// See <a href="https://corefork.telegram.org/type/InputMedia" />
     ///</summary>
     public MyTelegram.Schema.IInputMedia? Media { get; set; }
+
+    ///<summary>
+    /// Specifies a <a href="https://corefork.telegram.org/api/effects">message effect »</a> to use for the message.
+    ///</summary>
     public long? Effect { get; set; }
 
     public void ComputeFlag()

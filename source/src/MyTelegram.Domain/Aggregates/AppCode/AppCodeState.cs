@@ -3,7 +3,7 @@
 public class AppCodeState : AggregateState<AppCodeAggregate, AppCodeId, AppCodeState>,
     IApply<AppCodeCreatedEvent>,
     IApply<AppCodeCanceledEvent>,
-    IApply<SignUpRequiredEvent>,
+    IApply<SignUpRequiredSagaEvent>,
     IApply<AppCodeCheckFailedEvent>,
     IApply<CheckSignUpCodeCompletedEvent>,
     IApply<CheckSignInCodeCompletedEvent>,
@@ -58,7 +58,7 @@ public class AppCodeState : AggregateState<AppCodeAggregate, AppCodeId, AppCodeS
         }
     }
 
-    public void Apply(SignUpRequiredEvent aggregateEvent)
+    public void Apply(SignUpRequiredSagaEvent aggregateEvent)
     {
     }
 

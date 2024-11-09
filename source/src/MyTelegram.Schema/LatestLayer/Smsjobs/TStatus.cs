@@ -4,20 +4,57 @@
 namespace MyTelegram.Schema.Smsjobs;
 
 ///<summary>
+/// Status
 /// See <a href="https://corefork.telegram.org/constructor/smsjobs.status" />
 ///</summary>
 [TlObject(0x2aee9191)]
 public sealed class TStatus : IStatus
 {
     public uint ConstructorId => 0x2aee9191;
+    ///<summary>
+    /// Flags, see <a href="https://corefork.telegram.org/mtproto/TL-combinators#conditional-fields">TL conditional fields</a>
+    ///</summary>
     public BitArray Flags { get; set; } = new BitArray(32);
+
+    ///<summary>
+    /// Allow international numbers
+    /// See <a href="https://corefork.telegram.org/type/true" />
+    ///</summary>
     public bool AllowInternational { get; set; }
+
+    ///<summary>
+    /// Recently sent
+    ///</summary>
     public int RecentSent { get; set; }
+
+    ///<summary>
+    /// Since
+    ///</summary>
     public int RecentSince { get; set; }
+
+    ///<summary>
+    /// Remaining
+    ///</summary>
     public int RecentRemains { get; set; }
+
+    ///<summary>
+    /// Total sent
+    ///</summary>
     public int TotalSent { get; set; }
+
+    ///<summary>
+    /// Total since
+    ///</summary>
     public int TotalSince { get; set; }
+
+    ///<summary>
+    /// Last gift deep link
+    ///</summary>
     public string? LastGiftSlug { get; set; }
+
+    ///<summary>
+    /// Terms of service URL
+    ///</summary>
     public string TermsUrl { get; set; }
 
     public void ComputeFlag()

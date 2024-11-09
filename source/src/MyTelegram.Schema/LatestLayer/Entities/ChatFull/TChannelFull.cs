@@ -4,7 +4,7 @@
 namespace MyTelegram.Schema;
 
 ///<summary>
-/// Full info about a <a href="https://corefork.telegram.org/api/channel#channels">channel</a>, <a href="https://corefork.telegram.org/api/channel#supergroups">supergroup</a> or <a href="https://corefork.telegram.org/api/channel#gigagroups">gigagroup</a>.
+/// Full info about a <a href="https://corefork.telegram.org/api/channel#channels">channel</a>, <a href="https://corefork.telegram.org/api/channel#supergroups">supergroup</a> or <a href="https://corefork.telegram.org/api/channel#gigagroups">gigagroup</a>.When updating the <a href="https://corefork.telegram.org/api/peers">local peer database »</a>, all fields from the newly received constructor take priority over the old constructor cached locally (including by removing fields that aren't set in the new constructor).
 /// See <a href="https://corefork.telegram.org/constructor/channelFull" />
 ///</summary>
 [TlObject(0xbbab348d)]
@@ -104,9 +104,31 @@ public sealed class TChannelFull : MyTelegram.Schema.IChatFull, ILayeredChannelF
     /// See <a href="https://corefork.telegram.org/type/true" />
     ///</summary>
     public bool ViewForumAsMessages { get; set; }
+
+    ///<summary>
+    /// Whether ads on this channel were <a href="https://corefork.telegram.org/api/boost#disable-ads-on-the-channel">disabled as specified here »</a> (this flag is only visible to the owner of the channel).
+    /// See <a href="https://corefork.telegram.org/type/true" />
+    ///</summary>
     public bool RestrictedSponsored { get; set; }
+
+    ///<summary>
+    /// If set, this user can view <a href="https://corefork.telegram.org/api/revenue#revenue-statistics">ad revenue statistics »</a> for this channel.
+    /// See <a href="https://corefork.telegram.org/type/true" />
+    ///</summary>
     public bool CanViewRevenue { get; set; }
+
+    ///<summary>
+    /// Whether the current user can send or forward <a href="https://corefork.telegram.org/api/paid-media">paid media »</a> to this channel.
+    /// See <a href="https://corefork.telegram.org/type/true" />
+    ///</summary>
     public bool PaidMediaAllowed { get; set; }
+
+    ///<summary>
+    /// If set, this user can view <a href="https://corefork.telegram.org/api/stars#revenue-statistics">Telegram Star revenue statistics »</a> for this channel.
+    /// See <a href="https://corefork.telegram.org/type/true" />
+    ///</summary>
+    public bool CanViewStarsRevenue { get; set; }
+    public bool PaidReactionsAvailable { get; set; }
 
     ///<summary>
     /// ID of the channel
@@ -213,7 +235,7 @@ public sealed class TChannelFull : MyTelegram.Schema.IChatFull, ILayeredChannelF
     public int? FolderId { get; set; }
 
     ///<summary>
-    /// ID of the linked <a href="https://corefork.telegram.org/api/discussion">discussion chat</a> for channels
+    /// ID of the linked <a href="https://corefork.telegram.org/api/discussion">discussion chat</a> for channels (and vice versa, the ID of the linked channel for discussion chats).
     ///</summary>
     public long? LinkedChatId { get; set; }
 
@@ -291,6 +313,10 @@ public sealed class TChannelFull : MyTelegram.Schema.IChatFull, ILayeredChannelF
     /// See <a href="https://corefork.telegram.org/type/ChatReactions" />
     ///</summary>
     public MyTelegram.Schema.IChatReactions? AvailableReactions { get; set; }
+
+    ///<summary>
+    /// This flag may be used to impose a custom limit of unique reactions (i.e. a customizable version of <a href="https://corefork.telegram.org/api/config#reactions-uniq-max">appConfig.reactions_uniq_max</a>).
+    ///</summary>
     public int? ReactionsLimit { get; set; }
 
     ///<summary>
@@ -304,8 +330,21 @@ public sealed class TChannelFull : MyTelegram.Schema.IChatFull, ILayeredChannelF
     /// See <a href="https://corefork.telegram.org/type/WallPaper" />
     ///</summary>
     public MyTelegram.Schema.IWallPaper? Wallpaper { get; set; }
+
+    ///<summary>
+    /// The number of <a href="https://corefork.telegram.org/api/boost">boosts</a> the current user has applied to the current <em>supergroup</em>.
+    ///</summary>
     public int? BoostsApplied { get; set; }
+
+    ///<summary>
+    /// The number of <a href="https://corefork.telegram.org/api/boost">boosts</a> this <em>supergroup</em> requires to bypass slowmode and other restrictions, see <a href="https://corefork.telegram.org/api/boost#bypass-slowmode-and-chat-restrictions">here »</a> for more info.
+    ///</summary>
     public int? BoostsUnrestrict { get; set; }
+
+    ///<summary>
+    /// <a href="https://corefork.telegram.org/api/custom-emoji">Custom emoji stickerset</a> associated to the current <em>supergroup</em>, set using <a href="https://corefork.telegram.org/method/channels.setEmojiStickers">channels.setEmojiStickers</a> after reaching the appropriate boost level, see <a href="https://corefork.telegram.org/api/boost#setting-a-custom-emoji-stickerset-for-supergroups">here »</a> for more info.
+    /// See <a href="https://corefork.telegram.org/type/StickerSet" />
+    ///</summary>
     public MyTelegram.Schema.IStickerSet? Emojiset { get; set; }
 
     public void ComputeFlag()
@@ -327,6 +366,8 @@ public sealed class TChannelFull : MyTelegram.Schema.IChatFull, ILayeredChannelF
         if (RestrictedSponsored) { Flags2[11] = true; }
         if (CanViewRevenue) { Flags2[12] = true; }
         if (PaidMediaAllowed) { Flags2[14] = true; }
+        if (CanViewStarsRevenue) { Flags2[15] = true; }
+        if (PaidReactionsAvailable) { Flags2[16] = true; }
         if (/*ParticipantsCount != 0 && */ParticipantsCount.HasValue) { Flags[0] = true; }
         if (/*AdminsCount != 0 && */AdminsCount.HasValue) { Flags[1] = true; }
         if (/*KickedCount != 0 && */KickedCount.HasValue) { Flags[2] = true; }
@@ -431,6 +472,8 @@ public sealed class TChannelFull : MyTelegram.Schema.IChatFull, ILayeredChannelF
         if (Flags2[11]) { RestrictedSponsored = true; }
         if (Flags2[12]) { CanViewRevenue = true; }
         if (Flags2[14]) { PaidMediaAllowed = true; }
+        if (Flags2[15]) { CanViewStarsRevenue = true; }
+        if (Flags2[16]) { PaidReactionsAvailable = true; }
         Id = reader.ReadInt64();
         About = reader.ReadString();
         if (Flags[0]) { ParticipantsCount = reader.ReadInt32(); }

@@ -4,6 +4,7 @@
 namespace MyTelegram.Schema;
 
 ///<summary>
+/// The list of <a href="https://corefork.telegram.org/api/saved-messages#tags">reaction tag »</a> names assigned by the user has changed and should be refetched using <a href="https://corefork.telegram.org/method/messages.getSavedReactionTags">messages.getSavedReactionTags »</a>.
 /// See <a href="https://corefork.telegram.org/constructor/updateSavedReactionTags" />
 ///</summary>
 [TlObject(0x39c67432)]

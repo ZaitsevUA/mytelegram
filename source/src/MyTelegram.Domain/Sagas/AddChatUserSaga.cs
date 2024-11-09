@@ -15,7 +15,7 @@ public class AddChatUserSaga(
         var ownerPeer = new Peer(PeerType.User, ownerPeerId);
         //var aggregateId = MessageId.Create(ownerPeerId, outMessageId);
         var outMessageId = await idGenerator.NextIdAsync(IdType.MessageId, ownerPeerId, cancellationToken: cancellationToken);
-        var aggregateId = MessageId.Create(ownerPeerId, outMessageId);
+        //var aggregateId = MessageId.Create(ownerPeerId, outMessageId);
 
         var item = new MessageItem(
             ownerPeer,
@@ -35,10 +35,14 @@ public class AddChatUserSaga(
             MessageActionType.ChatAddUser
         );
 
-        var command = new CreateOutboxMessageCommand(aggregateId,
-            domainEvent.AggregateEvent.RequestInfo ,//with { RequestId = Guid.NewGuid() },
-            item,
-            chatMembers: domainEvent.AggregateEvent.AllChatMembers
+        //var command = new CreateOutboxMessageCommand(aggregateId,
+        //    domainEvent.AggregateEvent.RequestInfo ,//with { RequestId = Guid.NewGuid() },
+        //    item,
+        //    chatMembers: domainEvent.AggregateEvent.AllChatMembers
+        //);
+        var command = new StartSendMessageCommand(TempId.New,
+            domainEvent.AggregateEvent.RequestInfo,
+            [new SendMessageItem(item, ChatMembers: domainEvent.AggregateEvent.AllChatMembers)]
         );
 
         Publish(command);

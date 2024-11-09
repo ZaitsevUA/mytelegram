@@ -7,6 +7,7 @@ namespace MyTelegram.Schema.Contacts;
 /// Get users and geochats near you, see <a href="https://corefork.telegram.org/api/nearby">here »</a> for more info.
 /// <para>Possible errors</para>
 /// Code Type Description
+/// 406 BUSINESS_ADDRESS_ACTIVE The user is currently advertising a <a href="https://corefork.telegram.org/api/business#location">Business Location</a>, the location may only be changed (or removed) using <a href="https://corefork.telegram.org/method/account.updateBusinessLocation">account.updateBusinessLocation&nbsp;»</a>.  .
 /// 400 GEO_POINT_INVALID Invalid geoposition provided.
 /// 406 USERPIC_PRIVACY_REQUIRED You need to disable privacy settings for your profile picture in order to make your geolocation public.
 /// 406 USERPIC_UPLOAD_REQUIRED You must have a profile picture to publish your geolocation.

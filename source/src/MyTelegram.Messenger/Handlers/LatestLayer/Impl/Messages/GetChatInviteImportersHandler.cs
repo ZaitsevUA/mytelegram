@@ -70,7 +70,7 @@ internal sealed class GetChatInviteImportersHandler : RpcResultObjectHandler<MyT
                 userIds.Add(readModel.UserId);
             }
 
-            var userReadModels = await _queryProcessor.ProcessAsync(new GetUsersByUidListQuery(userIds));
+            var userReadModels = await _queryProcessor.ProcessAsync(new GetUsersByUserIdListQuery(userIds));
             var contactReadModels = await _queryProcessor.ProcessAsync(new GetContactListQuery(input.UserId, userIds));
             var photoReadModes = await _photoAppService.GetPhotosAsync(userReadModels, contactReadModels);
             var privacyReadModels = await _privacyAppService.GetPrivacyListAsync(userIds);

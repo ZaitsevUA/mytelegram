@@ -4,13 +4,25 @@
 namespace MyTelegram.Schema.Payments;
 
 ///<summary>
+/// Obtain info about <a href="https://corefork.telegram.org/api/stars#balance-and-transaction-history">Telegram Star transactions »</a> using specific transaction IDs.
+/// <para>Possible errors</para>
+/// Code Type Description
+/// 400 PEER_ID_INVALID The provided peer id is invalid.
 /// See <a href="https://corefork.telegram.org/method/payments.getStarsTransactionsByID" />
 ///</summary>
 [TlObject(0x27842d2e)]
 public sealed class RequestGetStarsTransactionsByID : IRequest<MyTelegram.Schema.Payments.IStarsStatus>
 {
     public uint ConstructorId => 0x27842d2e;
+    ///<summary>
+    /// Channel or bot.
+    /// See <a href="https://corefork.telegram.org/type/InputPeer" />
+    ///</summary>
     public MyTelegram.Schema.IInputPeer Peer { get; set; }
+
+    ///<summary>
+    /// Transaction IDs.
+    ///</summary>
     public TVector<MyTelegram.Schema.IInputStarsTransaction> Id { get; set; }
 
     public void ComputeFlag()

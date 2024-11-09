@@ -38,12 +38,12 @@ public sealed class TWebPage : IWebPage
     public string DisplayUrl { get; set; }
 
     ///<summary>
-    /// <a href="https://corefork.telegram.org/api/offsets#hash-generation">Hash for pagination, for more info click here</a>
+    /// <a href="https://corefork.telegram.org/api/offsets#hash-generation">Hash used for caching, for more info click here</a>
     ///</summary>
     public int Hash { get; set; }
 
     ///<summary>
-    /// Type of the web page. Can be: article, photo, audio, video, document, profile, app, or something else
+    /// Type of the web page. Can be: article, photo, audio, video, document, profile, app, or something else, see <a href="https://github.com/telegramdesktop/tdesktop/blob/4f7a124f3e85f3f61d862b94fb5a45236976f38f/Telegram/SourceFiles/data/data_web_page.cpp#L127">here »</a> for a full list.
     ///</summary>
     public string? Type { get; set; }
 

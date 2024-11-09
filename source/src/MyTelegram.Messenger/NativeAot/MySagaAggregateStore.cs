@@ -1,7 +1,4 @@
-﻿using EventFlow.Sagas;
-using MyTelegram.Domain.Sagas;
-
-namespace MyTelegram.Messenger.NativeAot;
+﻿namespace MyTelegram.Messenger.NativeAot;
 
 public class MySagaAggregateStore(
     IAggregateStore aggregateStore,

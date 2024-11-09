@@ -2,13 +2,13 @@
 
 public class UpdatePinnedMessageState :
     AggregateState<UpdatePinnedMessageSaga, UpdatePinnedMessageSagaId, UpdatePinnedMessageState>,
-    IApply<UpdatePinnedMessageSagaStartedEvent>,
-    IApply<UpdateOutboxPinnedCompletedEvent>,
-    IApply<UpdateInboxPinnedCompletedEvent>,
-    IApply<UpdatePinnedCompletedEvent>,
-    IApply<UpdatePinnedBoxPtsCompletedEvent>,
-    IApply<UpdatePinnedMessageCompletedEvent>,
-    IApply<UpdateSavedMessagesPinnedCompletedEvent>
+    IApply<UpdatePinnedMessageSagaStartedSagaEvent>,
+    IApply<UpdateOutboxPinnedCompletedSagaEvent>,
+    IApply<UpdateInboxPinnedCompletedSagaEvent>,
+    IApply<UpdatePinnedCompletedSagaEvent>,
+    IApply<UpdatePinnedBoxPtsCompletedSagaEvent>,
+    IApply<UpdatePinnedMessageCompletedSagaEvent>,
+    IApply<UpdateSavedMessagesPinnedCompletedSagaEvent>
 {
     public Dictionary<long, PinnedMsgItem> UpdatePinItems = new();
     public RequestInfo RequestInfo { get; private set; } = default!;
@@ -31,25 +31,25 @@ public class UpdatePinnedMessageState :
     public Peer? ToPeer { get; private set; }
     public int UpdatedInboxCount { get; private set; }
     public bool Post { get; private set; }
-    public void Apply(UpdateInboxPinnedCompletedEvent aggregateEvent)
+    public void Apply(UpdateInboxPinnedCompletedSagaEvent aggregateEvent)
     {
         UpdatedInboxCount++;
         UpdatePinItems.TryAdd(aggregateEvent.OwnerPeerId,
             new PinnedMsgItem(aggregateEvent.OwnerPeerId, aggregateEvent.MessageId, aggregateEvent.ToPeer.PeerId));
     }
 
-    public void Apply(UpdateOutboxPinnedCompletedEvent aggregateEvent)
+    public void Apply(UpdateOutboxPinnedCompletedSagaEvent aggregateEvent)
     {
         Post = aggregateEvent.Post;
         UpdatePinItems.TryAdd(aggregateEvent.OwnerPeerId,
             new PinnedMsgItem(aggregateEvent.OwnerPeerId, aggregateEvent.MessageId, aggregateEvent.ToPeer.PeerId));
     }
 
-    public void Apply(UpdatePinnedMessageCompletedEvent aggregateEvent)
+    public void Apply(UpdatePinnedMessageCompletedSagaEvent aggregateEvent)
     {
     }
 
-    public void Apply(UpdatePinnedBoxPtsCompletedEvent aggregateEvent)
+    public void Apply(UpdatePinnedBoxPtsCompletedSagaEvent aggregateEvent)
     {
         if (ToPeer is { PeerType: PeerType.Channel })
         {
@@ -57,11 +57,11 @@ public class UpdatePinnedMessageState :
         }
     }
 
-    public void Apply(UpdatePinnedCompletedEvent aggregateEvent)
+    public void Apply(UpdatePinnedCompletedSagaEvent aggregateEvent)
     {
     }
 
-    public void Apply(UpdatePinnedMessageSagaStartedEvent aggregateEvent)
+    public void Apply(UpdatePinnedMessageSagaStartedSagaEvent aggregateEvent)
     {
         RequestInfo = aggregateEvent.RequestInfo;
         ToPeer = aggregateEvent.ToPeer;
@@ -93,7 +93,7 @@ public class UpdatePinnedMessageState :
         return default;
     }
 
-    public void Apply(UpdateSavedMessagesPinnedCompletedEvent aggregateEvent)
+    public void Apply(UpdateSavedMessagesPinnedCompletedSagaEvent aggregateEvent)
     {
         //throw new NotImplementedException();
     }

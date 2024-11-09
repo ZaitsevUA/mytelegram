@@ -4,13 +4,21 @@
 namespace MyTelegram.Schema.Smsjobs;
 
 ///<summary>
+/// SMS jobs eligibility
 /// See <a href="https://corefork.telegram.org/constructor/smsjobs.eligibleToJoin" />
 ///</summary>
 [TlObject(0xdc8b44cf)]
 public sealed class TEligibleToJoin : IEligibilityToJoin
 {
     public uint ConstructorId => 0xdc8b44cf;
+    ///<summary>
+    /// Terms of service URL
+    ///</summary>
     public string TermsUrl { get; set; }
+
+    ///<summary>
+    /// Monthly sent SMSes
+    ///</summary>
     public int MonthlySentSms { get; set; }
 
     public void ComputeFlag()

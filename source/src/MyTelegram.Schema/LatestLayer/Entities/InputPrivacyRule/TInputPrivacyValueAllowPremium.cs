@@ -4,6 +4,7 @@
 namespace MyTelegram.Schema;
 
 ///<summary>
+/// Allow only users with a <a href="https://corefork.telegram.org/api/premium">Premium subscription »</a>, currently only usable for <a href="https://corefork.telegram.org/constructor/inputPrivacyKeyChatInvite">inputPrivacyKeyChatInvite</a>.
 /// See <a href="https://corefork.telegram.org/constructor/inputPrivacyValueAllowPremium" />
 ///</summary>
 [TlObject(0x77cdc9f1)]

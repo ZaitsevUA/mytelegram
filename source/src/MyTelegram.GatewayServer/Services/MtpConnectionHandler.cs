@@ -21,7 +21,7 @@ public class MtpConnectionHandler(
         }
         var connectionTypeFeature = connection.Features.Get<ConnectionTypeFeature>();
 
-        logger.LogInformation("[ConnectionId={ConnectionId}] New client connected,localPort={LocalPort}({ConnectionType}), remoteEndPoint:{RemoteEndPoint},online count:{OnlineCount}",
+        logger.LogInformation("[ConnectionId: {ConnectionId}] New client connected, localPort: {LocalPort}({ConnectionType}), remoteEndPoint: {RemoteEndPoint}, online count: {OnlineCount}",
             connection.ConnectionId,
             (connection.LocalEndPoint as IPEndPoint)?.Port,
             connectionTypeFeature?.ConnectionType,
@@ -44,7 +44,7 @@ public class MtpConnectionHandler(
                 messageQueueProcessor.Enqueue(new ClientDisconnectedEvent(clientData.ConnectionId, clientData.AuthKeyId, 0), clientData.AuthKeyId);
 
             }
-            logger.LogInformation("[ConnectionId={ConnectionId}] Client disconnected,RemoteEndPoint:{RemoteEndPoint}",
+            logger.LogInformation("[ConnectionId: {ConnectionId}] Client disconnected, RemoteEndPoint: {RemoteEndPoint}",
                 connection.ConnectionId,
                 remoteEndPoint);
         });
@@ -66,7 +66,7 @@ public class MtpConnectionHandler(
 
             if (!clientManager.TryGetClientData(connection.ConnectionId, out _))
             {
-                logger.LogWarning("Can not find client data,connectionId={ConnectionId}", connection.ConnectionId);
+                logger.LogWarning("Cannot find client data, connectionId: {ConnectionId}", connection.ConnectionId);
                 break;
             }
 

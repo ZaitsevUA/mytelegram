@@ -22,7 +22,7 @@ public sealed class RequestGetScheduledHistory : IRequest<MyTelegram.Schema.Mess
     public MyTelegram.Schema.IInputPeer Peer { get; set; }
 
     ///<summary>
-    /// <a href="https://corefork.telegram.org/api/offsets#hash-generation">Hash for pagination, for more info click here</a>
+    /// <a href="https://corefork.telegram.org/api/offsets#hash-generation">Hash used for caching, for more info click here</a>. <br>To generate the hash, populate the <code>ids</code> array with the <code>id</code>, <code>date</code> and <code>edit_date</code> (in this order) of the previously returned messages (in order, i.e. <code>ids = [id1, date1, edit_date1, id2, date2, edit_date2, ...]</code>).
     ///</summary>
     public long Hash { get; set; }
 

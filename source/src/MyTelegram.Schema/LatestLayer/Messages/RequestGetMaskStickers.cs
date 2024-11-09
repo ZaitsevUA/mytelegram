@@ -12,7 +12,7 @@ public sealed class RequestGetMaskStickers : IRequest<MyTelegram.Schema.Messages
 {
     public uint ConstructorId => 0x640f82b8;
     ///<summary>
-    /// <a href="https://corefork.telegram.org/api/offsets#hash-generation">Hash for pagination, for more info click here</a>
+    /// <a href="https://corefork.telegram.org/api/offsets#hash-generation">Hash used for caching, for more info click here</a>.
     ///</summary>
     public long Hash { get; set; }
 

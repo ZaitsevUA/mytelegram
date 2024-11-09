@@ -7,7 +7,8 @@ namespace MyTelegram.Schema.Account;
 /// Set global privacy settings
 /// <para>Possible errors</para>
 /// Code Type Description
-/// 400 AUTOARCHIVE_NOT_AVAILABLE The autoarchive setting is not available at this time: please check the value of the <a href="https://corefork.telegram.org/api/config#client-configuration">autoarchive_setting_available field in client config »</a> before calling this method.
+/// 400 AUTOARCHIVE_NOT_AVAILABLE The autoarchive setting is not available at this time: please check the value of the <a href="https://corefork.telegram.org/api/config#client-configuration">autoarchive_setting_available field in client config&nbsp;»</a> before calling this method.
+/// 403 PREMIUM_ACCOUNT_REQUIRED A premium account is required to execute this action.
 /// See <a href="https://corefork.telegram.org/method/account.setGlobalPrivacySettings" />
 ///</summary>
 [TlObject(0x1edaaac2)]

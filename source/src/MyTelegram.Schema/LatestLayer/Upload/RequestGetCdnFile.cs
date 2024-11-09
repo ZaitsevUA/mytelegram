@@ -5,6 +5,9 @@ namespace MyTelegram.Schema.Upload;
 
 ///<summary>
 /// Download a <a href="https://corefork.telegram.org/cdn">CDN</a> file.
+/// <para>Possible errors</para>
+/// Code Type Description
+/// 400 FILE_TOKEN_INVALID The master DC did not accept the <code>file_token</code> (e.g., the token has expired). Continue downloading the file from the master DC using upload.getFile.
 /// See <a href="https://corefork.telegram.org/method/upload.getCdnFile" />
 ///</summary>
 [TlObject(0x395f69da)]

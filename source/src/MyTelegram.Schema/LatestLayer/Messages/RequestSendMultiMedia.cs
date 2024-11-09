@@ -7,6 +7,7 @@ namespace MyTelegram.Schema.Messages;
 /// Send an <a href="https://corefork.telegram.org/api/files#albums-grouped-media">album or grouped media</a>
 /// <para>Possible errors</para>
 /// Code Type Description
+/// 400 CHANNEL_INVALID The provided channel is invalid.
 /// 400 CHANNEL_PRIVATE You haven't joined this channel/supergroup.
 /// 400 CHAT_ADMIN_REQUIRED You must be an admin in this chat to do this.
 /// 400 CHAT_FORWARDS_RESTRICTED You can't forward messages from a protected chat.
@@ -14,14 +15,18 @@ namespace MyTelegram.Schema.Messages;
 /// 403 CHAT_SEND_PHOTOS_FORBIDDEN You can't send photos in this chat.
 /// 403 CHAT_SEND_VIDEOS_FORBIDDEN You can't send videos in this chat.
 /// 403 CHAT_WRITE_FORBIDDEN You can't write in this chat.
-/// 400 ENTITY_BOUNDS_INVALID A specified <a href="https://corefork.telegram.org/api/entities#entity-length">entity offset or length</a> is invalid, see <a href="https://corefork.telegram.org/api/entities#entity-length">here »</a> for info on how to properly compute the entity offset/length.
+/// 400 ENTITY_BOUNDS_INVALID A specified <a href="https://corefork.telegram.org/api/entities#entity-length">entity offset or length</a> is invalid, see <a href="https://corefork.telegram.org/api/entities#entity-length">here&nbsp;»</a> for info on how to properly compute the entity offset/length.
+/// 400 FILE_REFERENCE_%d_EXPIRED The file reference of the media file at index %d in the passed media array expired, it <a href="https://corefork.telegram.org/api/file_reference">must be refreshed</a>.
+/// 400 FILE_REFERENCE_%d_INVALID The file reference of the media file at index %d in the passed media array is invalid.
 /// 400 MEDIA_CAPTION_TOO_LONG The caption is too long.
 /// 400 MEDIA_EMPTY The provided media object is invalid.
 /// 400 MEDIA_INVALID Media invalid.
 /// 400 MULTI_MEDIA_TOO_LONG Too many media files for album.
 /// 400 PEER_ID_INVALID The provided peer id is invalid.
+/// 400 QUICK_REPLIES_TOO_MUCH A maximum of <a href="https://corefork.telegram.org/api/config#quick-replies-limit">appConfig.<code>quick_replies_limit</code></a> shortcuts may be created, the limit was reached.
 /// 500 RANDOM_ID_DUPLICATE You provided a random ID that was already used.
 /// 400 RANDOM_ID_EMPTY Random ID empty.
+/// 400 REPLY_MESSAGES_TOO_MUCH Each shortcut can contain a maximum of <a href="https://corefork.telegram.org/api/config#quick-reply-messages-limit">appConfig.<code>quick_reply_messages_limit</code></a> messages, the limit was reached.
 /// 400 SCHEDULE_DATE_TOO_LATE You can't schedule a message this far in the future.
 /// 400 SCHEDULE_TOO_MUCH There are too many scheduled messages.
 /// 400 SEND_AS_PEER_INVALID You can't send messages as the specified peer.
@@ -75,6 +80,7 @@ public sealed class RequestSendMultiMedia : IRequest<MyTelegram.Schema.IUpdates>
     /// See <a href="https://corefork.telegram.org/type/true" />
     ///</summary>
     public bool InvertMedia { get; set; }
+    public bool AllowPaidFloodskip { get; set; }
 
     ///<summary>
     /// The destination chat
@@ -103,7 +109,16 @@ public sealed class RequestSendMultiMedia : IRequest<MyTelegram.Schema.IUpdates>
     /// See <a href="https://corefork.telegram.org/type/InputPeer" />
     ///</summary>
     public MyTelegram.Schema.IInputPeer? SendAs { get; set; }
+
+    ///<summary>
+    /// Add the message to the specified <a href="https://corefork.telegram.org/api/business#quick-reply-shortcuts">quick reply shortcut »</a>, instead.
+    /// See <a href="https://corefork.telegram.org/type/InputQuickReplyShortcut" />
+    ///</summary>
     public MyTelegram.Schema.IInputQuickReplyShortcut? QuickReplyShortcut { get; set; }
+
+    ///<summary>
+    /// Specifies a <a href="https://corefork.telegram.org/api/effects">message effect »</a> to use for the message.
+    ///</summary>
     public long? Effect { get; set; }
 
     public void ComputeFlag()
@@ -114,6 +129,7 @@ public sealed class RequestSendMultiMedia : IRequest<MyTelegram.Schema.IUpdates>
         if (Noforwards) { Flags[14] = true; }
         if (UpdateStickersetsOrder) { Flags[15] = true; }
         if (InvertMedia) { Flags[16] = true; }
+        if (AllowPaidFloodskip) { Flags[19] = true; }
         if (ReplyTo != null) { Flags[0] = true; }
         if (/*ScheduleDate != 0 && */ScheduleDate.HasValue) { Flags[10] = true; }
         if (SendAs != null) { Flags[13] = true; }
@@ -144,6 +160,7 @@ public sealed class RequestSendMultiMedia : IRequest<MyTelegram.Schema.IUpdates>
         if (Flags[14]) { Noforwards = true; }
         if (Flags[15]) { UpdateStickersetsOrder = true; }
         if (Flags[16]) { InvertMedia = true; }
+        if (Flags[19]) { AllowPaidFloodskip = true; }
         Peer = reader.Read<MyTelegram.Schema.IInputPeer>();
         if (Flags[0]) { ReplyTo = reader.Read<MyTelegram.Schema.IInputReplyTo>(); }
         MultiMedia = reader.Read<TVector<MyTelegram.Schema.IInputSingleMedia>>();

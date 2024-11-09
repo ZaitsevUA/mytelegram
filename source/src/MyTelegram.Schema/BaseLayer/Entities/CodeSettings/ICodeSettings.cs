@@ -38,6 +38,10 @@ public interface ICodeSettings : IObject
     /// Whether Firebase auth is supported
     ///</summary>
     bool AllowFirebase { get; set; }
+
+    ///<summary>
+    /// Set this flag if there is a SIM card in the current device, but it is not possible to check whether the specified phone number matches the SIM's phone number.
+    ///</summary>
     bool UnknownNumber { get; set; }
 
     ///<summary>

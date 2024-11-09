@@ -8,6 +8,7 @@ namespace MyTelegram.Schema.Account;
 /// <para>Possible errors</para>
 /// Code Type Description
 /// 400 THEME_FILE_INVALID Invalid theme file provided.
+/// 400 THEME_MIME_INVALID The theme's MIME type is invalid.
 /// See <a href="https://corefork.telegram.org/method/account.uploadTheme" />
 ///</summary>
 [TlObject(0x1c3db333)]

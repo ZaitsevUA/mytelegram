@@ -7,6 +7,7 @@ namespace MyTelegram.Schema.Payments;
 /// Obtain information about a <a href="https://corefork.telegram.org/api/giveaways">Telegram Premium giftcode »</a>
 /// <para>Possible errors</para>
 /// Code Type Description
+/// 400 GIFT_SLUG_EXPIRED The specified gift slug has expired.
 /// 400 GIFT_SLUG_INVALID The specified slug is invalid.
 /// See <a href="https://corefork.telegram.org/method/payments.checkGiftCode" />
 ///</summary>

@@ -35,7 +35,7 @@ services:
 
   ### MongoDb
   mongodb:
-    image: mongo:7.0.12
+    image: mongo:latest
     restart: always
     networks:
       - tg-net
@@ -72,7 +72,7 @@ services:
 
   ### 1.Gateway server
   gateway-server:
-    image: mytelegram/mytelegram-gateway-server:${MyTelegramVersion}
+    image: ${MyTelegramRegistry}/mytelegram-gateway-server:${MyTelegramVersion}
     restart: always
     networks:
       - tg-net
@@ -176,9 +176,9 @@ services:
   # depends_on:
   # - mongodb
 
-  ### 3.Auth server
+  ### 2.Auth server
   auth-server:
-    image: mytelegram/mytelegram-auth-server:${MyTelegramVersion}
+    image: ${MyTelegramRegistry}/mytelegram-auth-server:${MyTelegramVersion}
     restart: always
     networks:
       - tg-net
@@ -199,9 +199,9 @@ services:
       - rabbitmq
       - redis
 
-  ### 4.Session server
+  ### 3.Session server
   session-server:
-    image: mytelegram/mytelegram-session-server:${MyTelegramVersion}
+    image: ${MyTelegramRegistry}/mytelegram-session-server:${MyTelegramVersion}
     restart: always
     networks:
       - tg-net
@@ -246,9 +246,9 @@ services:
   #   depends_on:
   #     - mongodb
 
-  ### 6.File server
+  ### 4.File server
   file-server:
-    image: mytelegram/mytelegram-file-server:${MyTelegramVersion}
+    image: ${MyTelegramRegistry}/mytelegram-file-server:${MyTelegramVersion}
     restart: always
     networks:
       - tg-net
@@ -278,9 +278,9 @@ services:
       - mongodb
       - rabbitmq
 
-  ### 7.Messenger command server
+  ### 5.Messenger command server
   messenger-command-server:
-    image: mytelegram/mytelegram-messenger-command-server:${MyTelegramVersion}
+    image: ${MyTelegramRegistry}/mytelegram-messenger-command-server:${MyTelegramVersion}
     restart: always
     networks:
       - tg-net
@@ -296,6 +296,7 @@ services:
       App__VerificationCodeLength: ${App__VerificationCodeLength}
       App__VerificationCodeExpirationSeconds: ${App__VerificationCodeExpirationSeconds}
       App__CheckPhoneNumberFormat: ${App__CheckPhoneNumberFormat}
+      App__EnableSearchNonContacts: ${App__EnableSearchNonContacts}
       # App__JoinChatDomain: ${App__JoinChatDomain}
       # App__ChannelGetDifferenceIntervalSeconds: ${App__ChannelGetDifferenceIntervalSeconds}
       # App__UseInMemoryFilters: ${App__UseInMemoryFilters}
@@ -369,9 +370,9 @@ services:
       - rabbitmq
       - redis
 
-  ### 7.Messenger query server
+  ### 6.Messenger query server
   messenger-query-server:
-    image: mytelegram/mytelegram-messenger-query-server:${MyTelegramVersion}
+    image: ${MyTelegramRegistry}/mytelegram-messenger-query-server:${MyTelegramVersion}
     restart: always
     networks:
       - tg-net
@@ -386,6 +387,7 @@ services:
       App__FixedVerifyCode: ${App__FixedVerifyCode}
       App__VerificationCodeLength: ${App__VerificationCodeLength}
       App__VerificationCodeExpirationSeconds: ${App__VerificationCodeExpirationSeconds}
+      App__EnableSearchNonContacts: ${App__EnableSearchNonContacts}
       # App__JoinChatDomain: ${App__JoinChatDomain}
       # App__ChannelGetDifferenceIntervalSeconds: ${App__ChannelGetDifferenceIntervalSeconds}
       # App__UseInMemoryFilters: ${App__UseInMemoryFilters}
@@ -459,9 +461,9 @@ services:
       - rabbitmq
       - redis
 
-  ### 8.Sms sender
+  ### 7.Sms sender
   sms-sender:
-    image: mytelegram/mytelegram-sms-sender:${MyTelegramVersion}
+    image: ${MyTelegramRegistry}/mytelegram-sms-sender:${MyTelegramVersion}
     restart: always
     networks:
       - tg-net

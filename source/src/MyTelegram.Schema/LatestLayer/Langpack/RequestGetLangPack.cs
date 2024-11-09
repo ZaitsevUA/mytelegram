@@ -7,6 +7,7 @@ namespace MyTelegram.Schema.Langpack;
 /// Get localization pack strings
 /// <para>Possible errors</para>
 /// Code Type Description
+/// 400 LANGUAGE_INVALID The specified lang_code is invalid.
 /// 400 LANG_CODE_NOT_SUPPORTED The specified language code is not supported.
 /// 400 LANG_PACK_INVALID The provided language pack is invalid.
 /// See <a href="https://corefork.telegram.org/method/langpack.getLangPack" />
@@ -16,12 +17,12 @@ public sealed class RequestGetLangPack : IRequest<MyTelegram.Schema.ILangPackDif
 {
     public uint ConstructorId => 0xf2f2330a;
     ///<summary>
-    /// Language pack name, usually obtained from a <a href="https://corefork.telegram.org/api/links#language-pack-links">language pack link</a>
+    /// Platform identifier (i.e. <code>android</code>, <code>tdesktop</code>, etc).
     ///</summary>
     public string LangPack { get; set; }
 
     ///<summary>
-    /// Language code
+    /// Either an ISO 639-1 language code or a language pack name obtained from a <a href="https://corefork.telegram.org/api/links#language-pack-links">language pack link</a>.
     ///</summary>
     public string LangCode { get; set; }
 

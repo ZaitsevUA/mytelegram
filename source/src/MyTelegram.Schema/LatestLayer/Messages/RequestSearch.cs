@@ -52,6 +52,10 @@ public sealed class RequestSearch : IRequest<MyTelegram.Schema.Messages.IMessage
     /// See <a href="https://corefork.telegram.org/type/InputPeer" />
     ///</summary>
     public MyTelegram.Schema.IInputPeer? SavedPeerId { get; set; }
+
+    ///<summary>
+    /// You may search for <a href="https://corefork.telegram.org/api/saved-messages#tags">saved messages tagged »</a> with one or more reactions using this flag.
+    ///</summary>
     public TVector<MyTelegram.Schema.IReaction>? SavedReaction { get; set; }
 
     ///<summary>

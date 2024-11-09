@@ -11,6 +11,10 @@ namespace MyTelegram.Schema;
 public sealed class TInputReplyToStory : IInputReplyTo
 {
     public uint ConstructorId => 0x5881323a;
+    ///<summary>
+    /// Sender of the story
+    /// See <a href="https://corefork.telegram.org/type/InputPeer" />
+    ///</summary>
     public MyTelegram.Schema.IInputPeer Peer { get; set; }
 
     ///<summary>

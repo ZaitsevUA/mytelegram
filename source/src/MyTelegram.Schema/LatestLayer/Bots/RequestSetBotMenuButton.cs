@@ -9,6 +9,7 @@ namespace MyTelegram.Schema.Bots;
 /// Code Type Description
 /// 400 BUTTON_TEXT_INVALID The specified button text is invalid.
 /// 400 BUTTON_URL_INVALID Button URL invalid.
+/// 400 USER_BOT_REQUIRED This method can only be called by a bot.
 /// See <a href="https://corefork.telegram.org/method/bots.setBotMenuButton" />
 ///</summary>
 [TlObject(0x4504d54f)]

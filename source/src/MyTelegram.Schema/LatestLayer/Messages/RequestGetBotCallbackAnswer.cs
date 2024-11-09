@@ -12,6 +12,7 @@ namespace MyTelegram.Schema.Messages;
 /// 400 CHANNEL_PRIVATE You haven't joined this channel/supergroup.
 /// 400 DATA_INVALID Encrypted data invalid.
 /// 400 MESSAGE_ID_INVALID The provided message id is invalid.
+/// 400 PASSWORD_MISSING You must <a href="https://corefork.telegram.org/api/srp">enable 2FA</a> before executing this operation.
 /// 400 PEER_ID_INVALID The provided peer id is invalid.
 /// -503 Timeout Timeout while fetching data.
 /// See <a href="https://corefork.telegram.org/method/messages.getBotCallbackAnswer" />

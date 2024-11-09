@@ -89,7 +89,7 @@ internal sealed class GetFullChatHandler : RpcResultObjectHandler<MyTelegram.Sch
                         : null;
 
                     var userList = chat!.IsDeleted ? Array.Empty<IUserReadModel>() : await _queryProcessor
-                        .ProcessAsync(new GetUsersByUidListQuery(chat!.ChatMembers.Select(p => p.UserId).ToList()),
+                        .ProcessAsync(new GetUsersByUserIdListQuery(chat!.ChatMembers.Select(p => p.UserId).ToList()),
                             CancellationToken.None);
                     var contactReadModels = chat.IsDeleted ? Array.Empty<IContactReadModel>() : await _queryProcessor
                         .ProcessAsync(new GetContactListQuery(input.UserId, userList.Select(p => p.UserId).ToList()), default)

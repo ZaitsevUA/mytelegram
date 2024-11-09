@@ -4,6 +4,7 @@
 namespace MyTelegram.Schema.Messages;
 
 ///<summary>
+/// Info about <a href="https://corefork.telegram.org/api/business#quick-reply-shortcuts">quick reply shortcuts »</a> hasn't changed.
 /// See <a href="https://corefork.telegram.org/constructor/messages.quickRepliesNotModified" />
 ///</summary>
 [TlObject(0x5f91eb5b)]

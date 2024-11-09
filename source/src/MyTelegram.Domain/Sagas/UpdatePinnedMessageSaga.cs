@@ -20,7 +20,7 @@ public class UpdatePinnedMessageSaga : MyInMemoryAggregateSaga<UpdatePinnedMessa
         ISagaContext sagaContext,
         CancellationToken cancellationToken)
     {
-        Emit(new UpdateInboxPinnedCompletedEvent(domainEvent.AggregateEvent.OwnerPeerId,
+        Emit(new UpdateInboxPinnedCompletedSagaEvent(domainEvent.AggregateEvent.OwnerPeerId,
             domainEvent.AggregateEvent.MessageId,
             domainEvent.AggregateEvent.ToPeer));
         await IncrementPtsAsync(domainEvent.AggregateEvent.OwnerPeerId);
@@ -32,7 +32,7 @@ public class UpdatePinnedMessageSaga : MyInMemoryAggregateSaga<UpdatePinnedMessa
         ISagaContext sagaContext,
         CancellationToken cancellationToken)
     {
-        Emit(new UpdateOutboxPinnedCompletedEvent(domainEvent.AggregateEvent.OwnerPeerId,
+        Emit(new UpdateOutboxPinnedCompletedSagaEvent(domainEvent.AggregateEvent.OwnerPeerId,
             domainEvent.AggregateEvent.MessageId,
             domainEvent.AggregateEvent.ToPeer,
             domainEvent.AggregateEvent.Post
@@ -70,8 +70,8 @@ public class UpdatePinnedMessageSaga : MyInMemoryAggregateSaga<UpdatePinnedMessa
             domainEvent.AggregateEvent.RequestInfo.UserId == domainEvent.AggregateEvent.ToPeer.PeerId)
         {
             var pts = await _idGenerator.NextIdAsync(IdType.Pts, domainEvent.AggregateEvent.OwnerPeerId, cancellationToken: cancellationToken);
-            Emit(new UpdatePinnedBoxPtsCompletedEvent(domainEvent.AggregateEvent.OwnerPeerId, pts));
-            Emit(new UpdateSavedMessagesPinnedCompletedEvent(domainEvent.AggregateEvent.RequestInfo, domainEvent.AggregateEvent.Pinned, [domainEvent.AggregateEvent.MessageId], pts));
+            Emit(new UpdatePinnedBoxPtsCompletedSagaEvent(domainEvent.AggregateEvent.OwnerPeerId, pts));
+            Emit(new UpdateSavedMessagesPinnedCompletedSagaEvent(domainEvent.AggregateEvent.RequestInfo, domainEvent.AggregateEvent.Pinned, [domainEvent.AggregateEvent.MessageId], pts));
             return;
         }
 
@@ -81,7 +81,7 @@ public class UpdatePinnedMessageSaga : MyInMemoryAggregateSaga<UpdatePinnedMessa
             inboxCount = 1;
         }
 
-        Emit(new UpdatePinnedMessageSagaStartedEvent(domainEvent.AggregateEvent.RequestInfo,
+        Emit(new UpdatePinnedMessageSagaStartedSagaEvent(domainEvent.AggregateEvent.RequestInfo,
             !domainEvent.AggregateEvent.IsOut,
             domainEvent.AggregateEvent.Pinned,
             domainEvent.AggregateEvent.PmOneSide,
@@ -154,30 +154,29 @@ public class UpdatePinnedMessageSaga : MyInMemoryAggregateSaga<UpdatePinnedMessa
                 var ownerPeerId = _state.StartUpdatePinnedOwnerPeerId;
                 var outMessageId = await _idGenerator.NextIdAsync(IdType.MessageId, ownerPeerId);
 
-                var aggregateId = MessageId.Create(ownerPeerId, outMessageId);
-                var command = new CreateOutboxMessageCommand(aggregateId,
-                    _state.RequestInfo with { RequestId = Guid.NewGuid() },
-                    new MessageItem(new Peer(PeerType.User, ownerPeerId),
-                        _state.ToPeer,
-                        new Peer(PeerType.User, ownerPeerId),
-                        ownerPeerId,
-                        outMessageId,
-                        string.Empty,
-                        DateTime.UtcNow.ToTimestamp(),
-                        _state.RandomId,
-                        true,
-                        SendMessageType.MessageService,
-                        MessageType.Text,
-                        MessageSubType.UpdatePinnedMessage,
-                        MessageActionData: _state.MessageActionData,
-                        //replyToMsgId: _state.ReplyToMsgId,
-                        InputReplyTo: new TInputReplyToMessage
-                        {
-                            ReplyToMsgId = _state.ReplyToMsgId
-                        },
-                        MessageActionType: MessageActionType.PinMessage,
-                        Post: _state.Post
-                        ));
+                var messageItem = new MessageItem(new Peer(PeerType.User, ownerPeerId),
+                    _state.ToPeer,
+                    new Peer(PeerType.User, ownerPeerId),
+                    ownerPeerId,
+                    outMessageId,
+                    string.Empty,
+                    DateTime.UtcNow.ToTimestamp(),
+                    _state.RandomId,
+                    true,
+                    SendMessageType.MessageService,
+                    MessageType.Text,
+                    MessageSubType.UpdatePinnedMessage,
+                    MessageActionData: _state.MessageActionData,
+                    //replyToMsgId: _state.ReplyToMsgId,
+                    InputReplyTo: new TInputReplyToMessage
+                    {
+                        ReplyToMsgId = _state.ReplyToMsgId
+                    },
+                    MessageActionType: MessageActionType.PinMessage,
+                    Post: _state.Post
+                );
+                var command = new StartSendMessageCommand(TempId.New, _state.RequestInfo with { RequestId = Guid.NewGuid() },
+                    [new SendMessageItem(messageItem)]);
 
                 Publish(command);
             }
@@ -189,7 +188,7 @@ public class UpdatePinnedMessageSaga : MyInMemoryAggregateSaga<UpdatePinnedMessa
     private async Task IncrementPtsAsync(long peerId)
     {
         var pts = await _idGenerator.NextIdAsync(IdType.Pts, peerId);
-        Emit(new UpdatePinnedBoxPtsCompletedEvent(peerId, pts));
+        Emit(new UpdatePinnedBoxPtsCompletedSagaEvent(peerId, pts));
 
         var item = _state.GetUpdatePinItem(peerId);
         if (item == null)
@@ -199,7 +198,7 @@ public class UpdatePinnedMessageSaga : MyInMemoryAggregateSaga<UpdatePinnedMessa
 
         var shouldReplyRpcResult =
             (_state.ToPeer.PeerType == PeerType.Channel || _state.RequestInfo.UserId == peerId) && !_state.Pinned;
-        Emit(new UpdatePinnedMessageCompletedEvent(_state.RequestInfo,
+        Emit(new UpdatePinnedMessageCompletedSagaEvent(_state.RequestInfo,
             shouldReplyRpcResult,
             _state.RequestInfo.UserId,
             peerId,

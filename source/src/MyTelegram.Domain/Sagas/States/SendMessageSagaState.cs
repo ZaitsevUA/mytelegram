@@ -1,58 +1,87 @@
 ﻿namespace MyTelegram.Domain.Sagas.States;
 
 public class SendMessageSagaState : AggregateState<SendMessageSaga, SendMessageSagaId, SendMessageSagaState>,
-    IApply<SendMessageSagaStartedEvent>,
-    IApply<SendOutboxMessageCompletedEvent>,
-    IApply<ReceiveInboxMessageCompletedEvent>,
+    //IApply<SendMessageSagaStartedEvent>,
+    IApply<ReceiveInboxMessageCompletedSagaEvent>,
     IApply<ReplyChannelMessageCompletedEvent>,
     IApply<ReplyBroadcastChannelCompletedSagaEvent>,
-    IApply<PostChannelIdUpdatedEvent>
+    IApply<PostChannelIdUpdatedSagaEvent>,
+    IApply<SendMessageStartedSagaEvent>,
+    IApply<OutboxMessageCreatedSagaEvent>,
+    IApply<SendOutboxMessageCompletedSagaEvent>,
+    IApply<InboxMessageCreatedSagaEvent>
 {
     public RequestInfo RequestInfo { get; set; } = default!;
-    public MessageItem MessageItem { get; set; } = default!;
+    //public MessageItem MessageItem { get; set; } = default!;
     public List<long>? MentionedUserIds { get; private set; }
-    public int GroupItemCount { get; set; }
+    //public int GroupItemCount { get; set; }
     public long? LinkedChannelId { get; set; }
     public List<long>? ChatMembers { get; private set; } = new();
-    public List<InboxItem> InboxItems { get; private set; } = new();
+    //public List<InboxItem> InboxItems { get; private set; } = new();
 
-    public Dictionary<long, int> ReplyToMsgItems { get; private set; } = new();
+    public Dictionary<Guid, List<InboxItem>> UserInboxItems { get; set; } = new();
 
-    public void Apply(SendMessageSagaStartedEvent aggregateEvent)
+    //public Dictionary<long, int> ReplyToMsgItems { get; private set; } = new();
+
+    public List<SendMessageItem> SendMessageItems { get; private set; } = [];
+    public bool IsSendQuickReplyMessages { get; private set; }
+    public bool IsSendGroupedMessages { get; private set; }
+    public bool ClearDraft { get; private set; }
+    public int SentCount { get; private set; }
+
+    public int InboxReceiveCount { get; private set; }
+
+    public int TotalCount { get; private set; }
+
+    public SendMessageItem FirstMessageItem { get; private set; }
+
+    public List<MessageItem> InboxMessageItems { get; private set; } = [];
+
+    public bool IsSendOutboxMessageCompleted => SentCount == SendMessageItems.Count;
+
+
+    //public void Apply(SendMessageSagaStartedEvent aggregateEvent)
+    //{
+    //    RequestInfo = aggregateEvent.RequestInfo;
+    //    MessageItem = aggregateEvent.MessageItem;
+    //    MentionedUserIds = aggregateEvent.MentionedUserIds;
+    //    GroupItemCount = aggregateEvent.GroupItemCount;
+    //    LinkedChannelId = aggregateEvent.LinkedChannelId;
+    //    ChatMembers = aggregateEvent.ChatMembers;
+
+    //    if (aggregateEvent.ReplyToMsgItems?.Count > 0)
+    //    {
+    //        ReplyToMsgItems = aggregateEvent.ReplyToMsgItems.ToDictionary(k => k.UserId, v => v.MessageId);
+    //    }
+    //}
+
+
+    public void Apply(SendMessageStartedSagaEvent aggregateEvent)
     {
         RequestInfo = aggregateEvent.RequestInfo;
-        MessageItem = aggregateEvent.MessageItem;
-        MentionedUserIds = aggregateEvent.MentionedUserIds;
-        GroupItemCount = aggregateEvent.GroupItemCount;
-        LinkedChannelId = aggregateEvent.LinkedChannelId;
+        SendMessageItems = aggregateEvent.SendMessageItems;
+        IsSendGroupedMessages = aggregateEvent.IsSendGroupedMessages;
+        IsSendQuickReplyMessages = aggregateEvent.IsSendQuickReplyMessages;
+        ClearDraft = aggregateEvent.ClearDraft;
         ChatMembers = aggregateEvent.ChatMembers;
 
-        if (aggregateEvent.ReplyToMsgItems?.Count > 0)
+        FirstMessageItem = aggregateEvent.SendMessageItems.First();
+
+        TotalCount = SendMessageItems.Count;
+        if (aggregateEvent.ChatMembers?.Count > 0)
         {
-            ReplyToMsgItems = aggregateEvent.ReplyToMsgItems.ToDictionary(k => k.UserId, v => v.MessageId);
+            TotalCount = SendMessageItems.Count * aggregateEvent.ChatMembers.Count;
         }
     }
 
-    public void Apply(SendOutboxMessageCompletedEvent aggregateEvent)
+    public void Apply(ReceiveInboxMessageCompletedSagaEvent aggregateEvent)
     {
-    }
-
-    public void Apply(ReceiveInboxMessageCompletedEvent aggregateEvent)
-    {
-        InboxItems.Add(new(aggregateEvent.MessageItem.OwnerPeer.PeerId, aggregateEvent.MessageItem.MessageId));
+        //InboxItems.Add(new(aggregateEvent.MessageItem.OwnerPeer.PeerId, aggregateEvent.MessageItem.MessageId));
     }
 
     public bool IsCreateInboxMessagesCompleted()
     {
-        switch (MessageItem.ToPeer.PeerType)
-        {
-            case PeerType.User:
-                return InboxItems.Count == 1;
-            case PeerType.Chat:
-                return InboxItems.Count == ChatMembers?.Count - 1;
-        }
-
-        return false;
+        return InboxReceiveCount == SendMessageItems.Count;
     }
 
     public void Apply(ReplyChannelMessageCompletedEvent aggregateEvent)
@@ -63,7 +92,32 @@ public class SendMessageSagaState : AggregateState<SendMessageSaga, SendMessageS
     {
     }
 
-    public void Apply(PostChannelIdUpdatedEvent aggregateEvent)
+    public void Apply(PostChannelIdUpdatedSagaEvent aggregateEvent)
     {
+    }
+
+    public void Apply(OutboxMessageCreatedSagaEvent aggregateEvent)
+    {
+        SentCount++;
+    }
+
+    public void Apply(SendOutboxMessageCompletedSagaEvent aggregateEvent)
+    {
+
+    }
+
+    public void Apply(InboxMessageCreatedSagaEvent aggregateEvent)
+    {
+        InboxMessageItems.Add(aggregateEvent.MessageItem);
+        var key = aggregateEvent.MessageItem.BatchId ?? Guid.Empty;
+        //InboxItems.Add(new InboxItem(aggregateEvent.MessageItem.OwnerPeer.PeerId, aggregateEvent.MessageItem.MessageId));
+        if (!UserInboxItems.TryGetValue(key, out var inboxItems))
+        {
+            inboxItems = new List<InboxItem>();
+            UserInboxItems.TryAdd(key, inboxItems);
+        }
+
+        inboxItems.Add(new InboxItem(aggregateEvent.MessageItem.OwnerPeer.PeerId, aggregateEvent.MessageItem.MessageId));
+        InboxReceiveCount++;
     }
 }

@@ -39,7 +39,7 @@ public class ChannelDomainEventHandler(
         ISubscribeSynchronousTo<ChannelMemberAggregate, ChannelMemberId, ChannelMemberJoinedEvent>,
         ISubscribeSynchronousTo<ChannelMemberAggregate, ChannelMemberId, ChannelMemberBannedRightsChangedEvent>,
         ISubscribeSynchronousTo<ChannelMemberAggregate, ChannelMemberId, ChannelMemberLeftEvent>,
-        ISubscribeSynchronousTo<InviteToChannelSaga, InviteToChannelSagaId, InviteToChannelCompletedEvent>,
+        ISubscribeSynchronousTo<InviteToChannelSaga, InviteToChannelSagaId, InviteToChannelCompletedSagaEvent>,
         //ISubscribeSynchronousTo<ChannelAggregate, ChannelId, ChannelInviteEditedEvent>
         ISubscribeSynchronousTo<ChannelAggregate, ChannelId, ChannelColorUpdatedEvent>,
         ISubscribeSynchronousTo<ChatInviteAggregate, ChatInviteId, ChatInviteCreatedEvent>,
@@ -48,7 +48,7 @@ public class ChannelDomainEventHandler(
         ISubscribeSynchronousTo<ChannelAggregate, ChannelId, ChatInviteRequestPendingUpdatedEvent>,
         ISubscribeSynchronousTo<ChannelAggregate, ChannelId, ChatJoinRequestHiddenEvent>,
         ISubscribeSynchronousTo<ChannelAggregate, ChannelId, ChannelDeletedEvent>,
-        ISubscribeSynchronousTo<UpdatePinnedMessageSaga, UpdatePinnedMessageSagaId, UpdatePinnedMessageCompletedEvent>
+        ISubscribeSynchronousTo<UpdatePinnedMessageSaga, UpdatePinnedMessageSagaId, UpdatePinnedMessageCompletedSagaEvent>
 {
     //private readonly ITlChatConverter _chatConverter;
     private readonly IChatInviteLinkHelper _chatInviteLinkHelper = chatInviteLinkHelper;
@@ -307,7 +307,7 @@ public class ChannelDomainEventHandler(
     }
 
     public async Task HandleAsync(
-        IDomainEvent<InviteToChannelSaga, InviteToChannelSagaId, InviteToChannelCompletedEvent> domainEvent,
+        IDomainEvent<InviteToChannelSaga, InviteToChannelSagaId, InviteToChannelCompletedSagaEvent> domainEvent,
         CancellationToken cancellationToken)
     {
         if (domainEvent.AggregateEvent.Broadcast || domainEvent.AggregateEvent.HasLink)
@@ -344,7 +344,7 @@ public class ChannelDomainEventHandler(
     }
 
     public async Task HandleAsync(
-        IDomainEvent<UpdatePinnedMessageSaga, UpdatePinnedMessageSagaId, UpdatePinnedMessageCompletedEvent> domainEvent,
+        IDomainEvent<UpdatePinnedMessageSaga, UpdatePinnedMessageSagaId, UpdatePinnedMessageCompletedSagaEvent> domainEvent,
         CancellationToken cancellationToken)
     {
         var r = layeredUpdatesService.GetConverter(domainEvent.AggregateEvent.RequestInfo.Layer)

@@ -45,6 +45,11 @@ public sealed class TCodeSettings : ICodeSettings
     /// See <a href="https://corefork.telegram.org/type/true" />
     ///</summary>
     public bool AllowFirebase { get; set; }
+
+    ///<summary>
+    /// Set this flag if there is a SIM card in the current device, but it is not possible to check whether the specified phone number matches the SIM's phone number.
+    /// See <a href="https://corefork.telegram.org/type/true" />
+    ///</summary>
     public bool UnknownNumber { get; set; }
 
     ///<summary>

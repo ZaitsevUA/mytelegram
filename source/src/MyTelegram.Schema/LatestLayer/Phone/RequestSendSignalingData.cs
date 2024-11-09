@@ -5,6 +5,9 @@ namespace MyTelegram.Schema.Phone;
 
 ///<summary>
 /// Send VoIP signaling data
+/// <para>Possible errors</para>
+/// Code Type Description
+/// 400 CALL_PEER_INVALID The provided call peer object is invalid.
 /// See <a href="https://corefork.telegram.org/method/phone.sendSignalingData" />
 ///</summary>
 [TlObject(0xff7a9383)]

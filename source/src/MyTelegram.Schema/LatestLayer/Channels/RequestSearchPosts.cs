@@ -4,6 +4,7 @@
 namespace MyTelegram.Schema.Channels;
 
 ///<summary>
+/// Globally search for posts from public <a href="https://corefork.telegram.org/api/channel">channels »</a> (<em>including</em> those we aren't a member of) containing a specific hashtag.
 /// See <a href="https://corefork.telegram.org/method/channels.searchPosts" />
 ///</summary>
 [TlObject(0xd19f987b)]
@@ -11,17 +12,17 @@ public sealed class RequestSearchPosts : IRequest<MyTelegram.Schema.Messages.IMe
 {
     public uint ConstructorId => 0xd19f987b;
     ///<summary>
-    /// &nbsp;
+    /// The hashtag to search, without the <code>#</code> character.
     ///</summary>
     public string Hashtag { get; set; }
 
     ///<summary>
-    /// &nbsp;
+    /// Initially 0, then set to the <a href="https://corefork.telegram.org/constructor/messages.messagesSlice"><code>next_rate</code> parameter of messages.messagesSlice</a>
     ///</summary>
     public int OffsetRate { get; set; }
 
     ///<summary>
-    /// &nbsp;
+    /// <a href="https://corefork.telegram.org/api/offsets">Offsets for pagination, for more info click here</a>
     /// See <a href="https://corefork.telegram.org/type/InputPeer" />
     ///</summary>
     public MyTelegram.Schema.IInputPeer OffsetPeer { get; set; }

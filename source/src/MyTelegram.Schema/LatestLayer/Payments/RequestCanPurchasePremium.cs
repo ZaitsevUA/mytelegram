@@ -5,6 +5,9 @@ namespace MyTelegram.Schema.Payments;
 
 ///<summary>
 /// Checks whether Telegram Premium purchase is possible. Must be called before in-store Premium purchase, official apps only.
+/// <para>Possible errors</para>
+/// Code Type Description
+/// 406 PREMIUM_CURRENTLY_UNAVAILABLE You cannot currently purchase a Premium subscription.
 /// See <a href="https://corefork.telegram.org/method/payments.canPurchasePremium" />
 ///</summary>
 [TlObject(0x9fc19eb6)]

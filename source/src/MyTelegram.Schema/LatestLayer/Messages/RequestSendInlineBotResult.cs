@@ -10,7 +10,7 @@ namespace MyTelegram.Schema.Messages;
 /// 400 CHANNEL_INVALID The provided channel is invalid.
 /// 400 CHANNEL_PRIVATE You haven't joined this channel/supergroup.
 /// 400 CHAT_ADMIN_REQUIRED You must be an admin in this chat to do this.
-/// 403 CHAT_GUEST_SEND_FORBIDDEN You join the discussion group before commenting, see <a href="https://corefork.telegram.org/api/discussion#requiring-users-to-join-the-group">here »</a> for more info.
+/// 403 CHAT_GUEST_SEND_FORBIDDEN You join the discussion group before commenting, see <a href="https://corefork.telegram.org/api/discussion#requiring-users-to-join-the-group">here&nbsp;»</a> for more info.
 /// 400 CHAT_RESTRICTED You can't send messages in this chat, you were restricted.
 /// 403 CHAT_SEND_AUDIOS_FORBIDDEN You can't send audio messages in this chat.
 /// 403 CHAT_SEND_GAME_FORBIDDEN You can't send a game to this chat.
@@ -22,14 +22,16 @@ namespace MyTelegram.Schema.Messages;
 /// 403 CHAT_SEND_STICKERS_FORBIDDEN You can't send stickers in this chat.
 /// 403 CHAT_SEND_VOICES_FORBIDDEN You can't send voice recordings in this chat.
 /// 403 CHAT_WRITE_FORBIDDEN You can't write in this chat.
-/// 400 ENTITY_BOUNDS_INVALID A specified <a href="https://corefork.telegram.org/api/entities#entity-length">entity offset or length</a> is invalid, see <a href="https://corefork.telegram.org/api/entities#entity-length">here »</a> for info on how to properly compute the entity offset/length.
+/// 400 ENTITY_BOUNDS_INVALID A specified <a href="https://corefork.telegram.org/api/entities#entity-length">entity offset or length</a> is invalid, see <a href="https://corefork.telegram.org/api/entities#entity-length">here&nbsp;»</a> for info on how to properly compute the entity offset/length.
 /// 400 INLINE_RESULT_EXPIRED The inline query expired.
 /// 400 INPUT_USER_DEACTIVATED The specified user was deleted.
 /// 400 MEDIA_EMPTY The provided media object is invalid.
 /// 400 MSG_ID_INVALID Invalid message ID provided.
 /// 400 PEER_ID_INVALID The provided peer id is invalid.
 /// 400 QUERY_ID_EMPTY The query ID is empty.
+/// 400 QUICK_REPLIES_TOO_MUCH A maximum of <a href="https://corefork.telegram.org/api/config#quick-replies-limit">appConfig.<code>quick_replies_limit</code></a> shortcuts may be created, the limit was reached.
 /// 500 RANDOM_ID_DUPLICATE You provided a random ID that was already used.
+/// 400 REPLY_MESSAGES_TOO_MUCH Each shortcut can contain a maximum of <a href="https://corefork.telegram.org/api/config#quick-reply-messages-limit">appConfig.<code>quick_reply_messages_limit</code></a> messages, the limit was reached.
 /// 400 RESULT_ID_EMPTY Result ID empty.
 /// 400 RESULT_ID_INVALID One of the specified result IDs is invalid.
 /// 400 SCHEDULE_DATE_TOO_LATE You can't schedule a message this far in the future.
@@ -114,6 +116,11 @@ public sealed class RequestSendInlineBotResult : IRequest<MyTelegram.Schema.IUpd
     /// See <a href="https://corefork.telegram.org/type/InputPeer" />
     ///</summary>
     public MyTelegram.Schema.IInputPeer? SendAs { get; set; }
+
+    ///<summary>
+    /// Add the message to the specified <a href="https://corefork.telegram.org/api/business#quick-reply-shortcuts">quick reply shortcut »</a>, instead.
+    /// See <a href="https://corefork.telegram.org/type/InputQuickReplyShortcut" />
+    ///</summary>
     public MyTelegram.Schema.IInputQuickReplyShortcut? QuickReplyShortcut { get; set; }
 
     public void ComputeFlag()

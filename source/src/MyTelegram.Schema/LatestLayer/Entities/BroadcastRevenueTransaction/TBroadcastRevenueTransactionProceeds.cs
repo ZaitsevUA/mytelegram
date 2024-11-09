@@ -4,14 +4,26 @@
 namespace MyTelegram.Schema;
 
 ///<summary>
+/// Describes earnings from sponsored messages in a channel in some time frame, see <a href="https://corefork.telegram.org/api/revenue">here »</a> for more info.
 /// See <a href="https://corefork.telegram.org/constructor/broadcastRevenueTransactionProceeds" />
 ///</summary>
 [TlObject(0x557e2cc4)]
 public sealed class TBroadcastRevenueTransactionProceeds : IBroadcastRevenueTransaction
 {
     public uint ConstructorId => 0x557e2cc4;
+    ///<summary>
+    /// Amount in the smallest unit of the cryptocurrency.
+    ///</summary>
     public long Amount { get; set; }
+
+    ///<summary>
+    /// Start unixtime for the timeframe.
+    ///</summary>
     public int FromDate { get; set; }
+
+    ///<summary>
+    /// End unixtime for the timeframe.
+    ///</summary>
     public int ToDate { get; set; }
 
     public void ComputeFlag()

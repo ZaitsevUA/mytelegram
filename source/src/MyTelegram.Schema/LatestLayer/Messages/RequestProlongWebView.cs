@@ -5,6 +5,9 @@ namespace MyTelegram.Schema.Messages;
 
 ///<summary>
 /// Indicate to the server (from the user side) that the user is still using a web app.If the method returns a <code>QUERY_ID_INVALID</code> error, the webview must be closed.
+/// <para>Possible errors</para>
+/// Code Type Description
+/// 400 BOT_INVALID This is not a valid bot.
 /// See <a href="https://corefork.telegram.org/method/messages.prolongWebView" />
 ///</summary>
 [TlObject(0xb0d81a83)]

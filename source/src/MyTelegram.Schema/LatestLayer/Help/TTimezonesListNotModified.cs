@@ -4,6 +4,7 @@
 namespace MyTelegram.Schema.Help;
 
 ///<summary>
+/// The timezone list has not changed.
 /// See <a href="https://corefork.telegram.org/constructor/help.timezonesListNotModified" />
 ///</summary>
 [TlObject(0x970708cc)]

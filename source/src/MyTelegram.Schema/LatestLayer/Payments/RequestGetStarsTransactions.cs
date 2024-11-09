@@ -4,40 +4,55 @@
 namespace MyTelegram.Schema.Payments;
 
 ///<summary>
+/// Fetch <a href="https://corefork.telegram.org/api/stars#balance-and-transaction-history">Telegram Stars transactions</a>.The <code>inbound</code> and <code>outbound</code> flags are mutually exclusive: if none of the two are set, both incoming and outgoing transactions are fetched.
+/// <para>Possible errors</para>
+/// Code Type Description
+/// 400 CHAT_ADMIN_REQUIRED You must be an admin in this chat to do this.
+/// 400 PEER_ID_INVALID The provided peer id is invalid.
 /// See <a href="https://corefork.telegram.org/method/payments.getStarsTransactions" />
 ///</summary>
-[TlObject(0x97938d5a)]
+[TlObject(0x69da4557)]
 public sealed class RequestGetStarsTransactions : IRequest<MyTelegram.Schema.Payments.IStarsStatus>
 {
-    public uint ConstructorId => 0x97938d5a;
+    public uint ConstructorId => 0x69da4557;
     ///<summary>
     /// Flags, see <a href="https://corefork.telegram.org/mtproto/TL-combinators#conditional-fields">TL conditional fields</a>
     ///</summary>
     public BitArray Flags { get; set; } = new BitArray(32);
 
     ///<summary>
-    /// &nbsp;
+    /// If set, fetches only incoming transactions.
     /// See <a href="https://corefork.telegram.org/type/true" />
     ///</summary>
     public bool Inbound { get; set; }
 
     ///<summary>
-    /// &nbsp;
+    /// If set, fetches only outgoing transactions.
     /// See <a href="https://corefork.telegram.org/type/true" />
     ///</summary>
     public bool Outbound { get; set; }
-    public bool Ascending { get; set; }
 
     ///<summary>
-    /// &nbsp;
+    /// Return transactions in ascending order by date (instead of descending order by date).
+    /// See <a href="https://corefork.telegram.org/type/true" />
+    ///</summary>
+    public bool Ascending { get; set; }
+    public string? SubscriptionId { get; set; }
+
+    ///<summary>
+    /// Fetch the transaction history of the peer (<a href="https://corefork.telegram.org/constructor/inputPeerSelf">inputPeerSelf</a> or a bot we own).
     /// See <a href="https://corefork.telegram.org/type/InputPeer" />
     ///</summary>
     public MyTelegram.Schema.IInputPeer Peer { get; set; }
 
     ///<summary>
-    /// &nbsp;
+    /// <a href="https://corefork.telegram.org/api/offsets">Offset for pagination, obtained from the returned <code>next_offset</code>, initially an empty string »</a>.
     ///</summary>
     public string Offset { get; set; }
+
+    ///<summary>
+    /// Maximum number of results to return, <a href="https://corefork.telegram.org/api/offsets">see pagination</a>
+    ///</summary>
     public int Limit { get; set; }
 
     public void ComputeFlag()
@@ -45,6 +60,7 @@ public sealed class RequestGetStarsTransactions : IRequest<MyTelegram.Schema.Pay
         if (Inbound) { Flags[0] = true; }
         if (Outbound) { Flags[1] = true; }
         if (Ascending) { Flags[2] = true; }
+        if (SubscriptionId != null) { Flags[3] = true; }
 
     }
 
@@ -53,6 +69,7 @@ public sealed class RequestGetStarsTransactions : IRequest<MyTelegram.Schema.Pay
         ComputeFlag();
         writer.Write(ConstructorId);
         writer.Write(Flags);
+        if (Flags[3]) { writer.Write(SubscriptionId); }
         writer.Write(Peer);
         writer.Write(Offset);
         writer.Write(Limit);
@@ -64,6 +81,7 @@ public sealed class RequestGetStarsTransactions : IRequest<MyTelegram.Schema.Pay
         if (Flags[0]) { Inbound = true; }
         if (Flags[1]) { Outbound = true; }
         if (Flags[2]) { Ascending = true; }
+        if (Flags[3]) { SubscriptionId = reader.ReadString(); }
         Peer = reader.Read<MyTelegram.Schema.IInputPeer>();
         Offset = reader.ReadString();
         Limit = reader.ReadInt32();

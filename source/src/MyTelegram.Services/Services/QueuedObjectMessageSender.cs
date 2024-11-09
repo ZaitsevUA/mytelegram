@@ -1,12 +1,11 @@
 ﻿using MyTelegram.Schema;
-using MyTelegram.Schema.Extensions;
 
 namespace MyTelegram.Services.Services;
 
 public class QueuedObjectMessageSender(
     IMessageQueueProcessor<ISessionMessage> sessionMessageQueueProcessor,
     IGZipHelper gzipHelper)
-    : IObjectMessageSender
+    : IObjectMessageSender, ITransientDependency
 {
     private readonly int _maxQueueCount = 10;
 

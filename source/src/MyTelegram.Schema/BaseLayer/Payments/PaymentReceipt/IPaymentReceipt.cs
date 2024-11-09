@@ -16,49 +16,49 @@ public interface IPaymentReceipt : IObject
     BitArray Flags { get; set; }
 
     ///<summary>
-    /// &nbsp;
+    /// Date of generation
     ///</summary>
     int Date { get; set; }
 
     ///<summary>
-    /// &nbsp;
+    /// Bot ID
     ///</summary>
     long BotId { get; set; }
 
     ///<summary>
-    /// &nbsp;
+    /// Title
     ///</summary>
     string Title { get; set; }
 
     ///<summary>
-    /// &nbsp;
+    /// Description
     ///</summary>
     string Description { get; set; }
 
     ///<summary>
-    /// &nbsp;
+    /// Product photo
     /// See <a href="https://corefork.telegram.org/type/WebDocument" />
     ///</summary>
     MyTelegram.Schema.IWebDocument? Photo { get; set; }
 
     ///<summary>
-    /// &nbsp;
+    /// Invoice
     /// See <a href="https://corefork.telegram.org/type/Invoice" />
     ///</summary>
     MyTelegram.Schema.IInvoice Invoice { get; set; }
 
     ///<summary>
-    /// &nbsp;
+    /// Currency, always <code>XTR</code>.
     ///</summary>
     string Currency { get; set; }
 
     ///<summary>
-    /// &nbsp;
+    /// Amount of <a href="https://corefork.telegram.org/api/stars">Telegram Stars</a>.
     ///</summary>
     long TotalAmount { get; set; }
 
     ///<summary>
-    /// &nbsp;
+    /// Info about users mentioned in the other fields.
     /// See <a href="https://corefork.telegram.org/type/User" />
     ///</summary>
     TVector<MyTelegram.Schema.IUser> Users { get; set; }

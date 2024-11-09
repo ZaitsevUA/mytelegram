@@ -77,18 +77,18 @@ public class PtsAggregate : MyInMemorySnapshotAggregateRoot<PtsAggregate, PtsId,
 
     public void UpdatePts(long peerId,
         long permAuthKeyId,
-        int newPts, long globalSeqNo, int changedUnreadCount)
+        int newPts, long globalSeqNo, int changedUnreadCount, int? messageId)
     {
         if (!IsNew)
         {
             if (_state.Pts < newPts)
             {
-                Emit(new PtsUpdatedEvent(peerId, permAuthKeyId, newPts, DateTime.UtcNow.ToTimestamp(), globalSeqNo, changedUnreadCount));
+                Emit(new PtsUpdatedEvent(peerId, permAuthKeyId, newPts, DateTime.UtcNow.ToTimestamp(), globalSeqNo, changedUnreadCount, messageId));
             }
         }
         else
         {
-            Emit(new PtsUpdatedEvent(peerId, permAuthKeyId, newPts, DateTime.UtcNow.ToTimestamp(), globalSeqNo, changedUnreadCount));
+            Emit(new PtsUpdatedEvent(peerId, permAuthKeyId, newPts, DateTime.UtcNow.ToTimestamp(), globalSeqNo, changedUnreadCount, messageId));
         }
     }
 

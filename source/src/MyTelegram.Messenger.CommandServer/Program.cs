@@ -3,6 +3,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using MyTelegram;
 using MyTelegram.Caching.Redis;
+using MyTelegram.Domain.Aggregates.Device;
+using MyTelegram.Domain.Aggregates.Pts;
 using MyTelegram.Messenger;
 using MyTelegram.Messenger.CommandServer.BackgroundServices;
 using MyTelegram.Messenger.CommandServer.Extensions;
@@ -117,6 +119,8 @@ builder.ConfigureServices((ctx,
     services.AddHostedService<MessageQueueDataProcessorBackgroundService<MessengerCommandDataReceivedEvent>>();
     services.AddHostedService<MessageQueueDataProcessorBackgroundService<NewDeviceCreatedEvent>>();
     services.AddHostedService<MessageQueueDataProcessorBackgroundService<ISessionMessage>>();
+    services.AddHostedService<QueuedCommandExecutorBackgroundService<DeviceAggregate, DeviceId>>();
+    services.AddHostedService<QueuedCommandExecutorBackgroundService<PtsAggregate, PtsId>>();
 
     services.Configure<HostOptions>(options =>
     {

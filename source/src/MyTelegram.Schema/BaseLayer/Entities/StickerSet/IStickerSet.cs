@@ -40,9 +40,13 @@ public interface IStickerSet : IObject
     bool TextColor { get; set; }
 
     ///<summary>
-    /// If set, this custom emoji stickerset can be used in <a href="https://corefork.telegram.org/api/emoji-status">channel emoji statuses</a>.
+    /// If set, this custom emoji stickerset can be used in <a href="https://corefork.telegram.org/api/emoji-status">channel/supergroup emoji statuses</a>.
     ///</summary>
     bool ChannelEmojiStatus { get; set; }
+
+    ///<summary>
+    /// Whether we created this stickerset
+    ///</summary>
     bool Creator { get; set; }
 
     ///<summary>

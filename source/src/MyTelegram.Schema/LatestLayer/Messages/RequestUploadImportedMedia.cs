@@ -8,6 +8,7 @@ namespace MyTelegram.Schema.Messages;
 /// <para>Possible errors</para>
 /// Code Type Description
 /// 400 CHAT_ADMIN_REQUIRED You must be an admin in this chat to do this.
+/// 400 IMPORT_ID_INVALID The specified import ID is invalid.
 /// See <a href="https://corefork.telegram.org/method/messages.uploadImportedMedia" />
 ///</summary>
 [TlObject(0x2a862092)]

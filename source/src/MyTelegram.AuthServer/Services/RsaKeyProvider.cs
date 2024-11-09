@@ -1,6 +1,6 @@
 ﻿namespace MyTelegram.AuthServer.Services;
 
-public class RsaKeyProvider(IOptions<MyTelegramAuthServerOptions> options) : IRsaKeyProvider
+public class RsaKeyProvider(IOptions<MyTelegramAuthServerOptions> options) : IRsaKeyProvider, ISingletonDependency
 {
     private string? _privateKey;
 

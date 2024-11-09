@@ -8,6 +8,7 @@ namespace MyTelegram.Schema.Bots;
 /// <para>Possible errors</para>
 /// Code Type Description
 /// 400 RIGHTS_NOT_MODIFIED The new admin rights are equal to the old rights, no change was made.
+/// 400 USER_BOT_REQUIRED This method can only be called by a bot.
 /// See <a href="https://corefork.telegram.org/method/bots.setBotBroadcastDefaultAdminRights" />
 ///</summary>
 [TlObject(0x788464e1)]

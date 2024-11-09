@@ -3,7 +3,7 @@
 public class UserMapper : ILayeredMapper,
     IObjectMapper<IUserReadModel, Schema.TUser>,
     IObjectMapper<UserCreatedEvent, Schema.TUser>,
-    IObjectMapper<SignInSuccessEvent, Schema.TUser>,
+    IObjectMapper<SignInSuccessSagaEvent, Schema.TUser>,
     IObjectMapper<UserItem, Schema.TUser>
 {
     public Schema.TUser Map(IUserReadModel source)
@@ -53,13 +53,13 @@ public class UserMapper : ILayeredMapper,
     }
 
 
-    public Schema.TUser Map(SignInSuccessEvent source)
+    public Schema.TUser Map(SignInSuccessSagaEvent source)
     {
         return Map(source, new Schema.TUser());
     }
 
 
-    public Schema.TUser Map(SignInSuccessEvent source,
+    public Schema.TUser Map(SignInSuccessSagaEvent source,
         Schema.TUser destination)
     {
         destination.Id = source.UserId;

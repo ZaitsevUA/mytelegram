@@ -2,7 +2,7 @@
 
 namespace MyTelegram.GatewayServer.EventHandlers;
 
-public class TransportErrorEventHandler(IClientDataSender clientDataSender) : IEventHandler<TransportErrorEvent>
+public class TransportErrorEventHandler(IClientDataSender clientDataSender) : IEventHandler<TransportErrorEvent>, ITransientDependency
 {
     public Task HandleEventAsync(TransportErrorEvent eventData)
     {

@@ -4,16 +4,37 @@
 namespace MyTelegram.Schema;
 
 ///<summary>
+/// Info about a <a href="https://corefork.telegram.org/api/channel">channel/supergroup</a>, shared by a user with the currently logged in bot using <a href="https://corefork.telegram.org/method/messages.sendBotRequestedPeer">messages.sendBotRequestedPeer</a>.All fields except the ID are optional, and will be populated if present on the chosen channel/supergroup, according to the parameters of the requesting <a href="https://corefork.telegram.org/constructor/inputKeyboardButtonRequestPeer">inputKeyboardButtonRequestPeer</a>.
 /// See <a href="https://corefork.telegram.org/constructor/requestedPeerChannel" />
 ///</summary>
 [TlObject(0x8ba403e4)]
 public sealed class TRequestedPeerChannel : IRequestedPeer
 {
     public uint ConstructorId => 0x8ba403e4;
+    ///<summary>
+    /// Flags, see <a href="https://corefork.telegram.org/mtproto/TL-combinators#conditional-fields">TL conditional fields</a>
+    ///</summary>
     public BitArray Flags { get; set; } = new BitArray(32);
+
+    ///<summary>
+    /// Channel/supergroup ID.
+    ///</summary>
     public long ChannelId { get; set; }
+
+    ///<summary>
+    /// Channel/supergroup title.
+    ///</summary>
     public string? Title { get; set; }
+
+    ///<summary>
+    /// Channel/supergroup username.
+    ///</summary>
     public string? Username { get; set; }
+
+    ///<summary>
+    /// Channel/supergroup photo.
+    /// See <a href="https://corefork.telegram.org/type/Photo" />
+    ///</summary>
     public MyTelegram.Schema.IPhoto? Photo { get; set; }
 
     public void ComputeFlag()

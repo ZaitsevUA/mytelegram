@@ -4,7 +4,7 @@
 namespace MyTelegram.Schema;
 
 ///<summary>
-/// Extended media
+/// Already purchased paid media, <a href="https://corefork.telegram.org/api/paid-media">see here »</a> for more info.
 /// See <a href="https://corefork.telegram.org/constructor/messageExtendedMedia" />
 ///</summary>
 [TlObject(0xee479c64)]
@@ -12,7 +12,7 @@ public sealed class TMessageExtendedMedia : IMessageExtendedMedia
 {
     public uint ConstructorId => 0xee479c64;
     ///<summary>
-    /// Media
+    /// The media we purchased.
     /// See <a href="https://corefork.telegram.org/type/MessageMedia" />
     ///</summary>
     public MyTelegram.Schema.IMessageMedia Media { get; set; }

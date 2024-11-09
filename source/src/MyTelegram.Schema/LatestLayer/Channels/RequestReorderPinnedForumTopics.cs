@@ -5,6 +5,9 @@ namespace MyTelegram.Schema.Channels;
 
 ///<summary>
 /// Reorder pinned forum topics
+/// <para>Possible errors</para>
+/// Code Type Description
+/// 400 CHANNEL_INVALID The provided channel is invalid.
 /// See <a href="https://corefork.telegram.org/method/channels.reorderPinnedForumTopics" />
 ///</summary>
 [TlObject(0x2950a18f)]

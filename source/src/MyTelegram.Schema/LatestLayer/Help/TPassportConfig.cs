@@ -12,7 +12,7 @@ public sealed class TPassportConfig : IPassportConfig
 {
     public uint ConstructorId => 0xa098d6af;
     ///<summary>
-    /// <a href="https://corefork.telegram.org/api/offsets#hash-generation">Hash for pagination, for more info click here</a>
+    /// <a href="https://corefork.telegram.org/api/offsets#hash-generation">Hash used for caching, for more info click here</a>
     ///</summary>
     public int Hash { get; set; }
 

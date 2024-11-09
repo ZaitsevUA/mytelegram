@@ -4,12 +4,17 @@
 namespace MyTelegram.Schema.Account;
 
 ///<summary>
+/// Disable or re-enable Telegram ads for the current <a href="https://corefork.telegram.org/api/premium">Premium</a> account.Useful for business owners that may want to launch and view their own Telegram ads via the <a href="https://ads.telegram.org/">Telegram ad platform »</a>.
 /// See <a href="https://corefork.telegram.org/method/account.toggleSponsoredMessages" />
 ///</summary>
 [TlObject(0xb9d9a38d)]
 public sealed class RequestToggleSponsoredMessages : IRequest<IBool>
 {
     public uint ConstructorId => 0xb9d9a38d;
+    ///<summary>
+    /// Enable or disable ads.
+    /// See <a href="https://corefork.telegram.org/type/Bool" />
+    ///</summary>
     public bool Enabled { get; set; }
 
     public void ComputeFlag()

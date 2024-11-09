@@ -4,14 +4,29 @@
 namespace MyTelegram.Schema.Smsjobs;
 
 ///<summary>
+/// Finish an SMS job (official clients only).
+/// <para>Possible errors</para>
+/// Code Type Description
+/// 400 SMSJOB_ID_INVALID The specified job ID is invalid.
 /// See <a href="https://corefork.telegram.org/method/smsjobs.finishJob" />
 ///</summary>
 [TlObject(0x4f1ebf24)]
 public sealed class RequestFinishJob : IRequest<IBool>
 {
     public uint ConstructorId => 0x4f1ebf24;
+    ///<summary>
+    /// Flags, see <a href="https://corefork.telegram.org/mtproto/TL-combinators#conditional-fields">TL conditional fields</a>
+    ///</summary>
     public BitArray Flags { get; set; } = new BitArray(32);
+
+    ///<summary>
+    /// Job ID.
+    ///</summary>
     public string JobId { get; set; }
+
+    ///<summary>
+    /// If failed, the error.
+    ///</summary>
     public string? Error { get; set; }
 
     public void ComputeFlag()

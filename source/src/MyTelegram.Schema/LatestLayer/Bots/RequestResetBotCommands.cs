@@ -8,6 +8,7 @@ namespace MyTelegram.Schema.Bots;
 /// <para>Possible errors</para>
 /// Code Type Description
 /// 400 LANG_CODE_INVALID The specified language code is invalid.
+/// 400 USER_BOT_REQUIRED This method can only be called by a bot.
 /// See <a href="https://corefork.telegram.org/method/bots.resetBotCommands" />
 ///</summary>
 [TlObject(0x3d8de0f9)]

@@ -4,17 +4,42 @@
 namespace MyTelegram.Schema;
 
 ///<summary>
+/// Info about a user, shared by a user with the currently logged in bot using <a href="https://corefork.telegram.org/method/messages.sendBotRequestedPeer">messages.sendBotRequestedPeer</a>.All fields except the ID are optional, and will be populated if present on the chosen user, according to the parameters of the requesting <a href="https://corefork.telegram.org/constructor/inputKeyboardButtonRequestPeer">inputKeyboardButtonRequestPeer</a>.
 /// See <a href="https://corefork.telegram.org/constructor/requestedPeerUser" />
 ///</summary>
 [TlObject(0xd62ff46a)]
 public sealed class TRequestedPeerUser : IRequestedPeer
 {
     public uint ConstructorId => 0xd62ff46a;
+    ///<summary>
+    /// Flags, see <a href="https://corefork.telegram.org/mtproto/TL-combinators#conditional-fields">TL conditional fields</a>
+    ///</summary>
     public BitArray Flags { get; set; } = new BitArray(32);
+
+    ///<summary>
+    /// User ID.
+    ///</summary>
     public long UserId { get; set; }
+
+    ///<summary>
+    /// First name.
+    ///</summary>
     public string? FirstName { get; set; }
+
+    ///<summary>
+    /// Last name.
+    ///</summary>
     public string? LastName { get; set; }
+
+    ///<summary>
+    /// Username.
+    ///</summary>
     public string? Username { get; set; }
+
+    ///<summary>
+    /// Profile photo.
+    /// See <a href="https://corefork.telegram.org/type/Photo" />
+    ///</summary>
     public MyTelegram.Schema.IPhoto? Photo { get; set; }
 
     public void ComputeFlag()

@@ -4,17 +4,18 @@
 namespace MyTelegram.Schema;
 
 ///<summary>
+/// Used to top up the <a href="https://corefork.telegram.org/api/stars">Telegram Stars</a> balance of the current account or someone else's account.
 /// See <a href="https://corefork.telegram.org/constructor/inputInvoiceStars" />
 ///</summary>
-[TlObject(0x1da33ad8)]
+[TlObject(0x65f00ce3)]
 public sealed class TInputInvoiceStars : IInputInvoice
 {
-    public uint ConstructorId => 0x1da33ad8;
+    public uint ConstructorId => 0x65f00ce3;
     ///<summary>
-    /// &nbsp;
-    /// See <a href="https://corefork.telegram.org/type/StarsTopupOption" />
+    /// Either an <a href="https://corefork.telegram.org/constructor/inputStorePaymentStarsTopup">inputStorePaymentStarsTopup</a> or an <a href="https://corefork.telegram.org/constructor/inputStorePaymentStarsGift">inputStorePaymentStarsGift</a>.
+    /// See <a href="https://corefork.telegram.org/type/InputStorePaymentPurpose" />
     ///</summary>
-    public MyTelegram.Schema.IStarsTopupOption Option { get; set; }
+    public MyTelegram.Schema.IInputStorePaymentPurpose Purpose { get; set; }
 
     public void ComputeFlag()
     {
@@ -25,11 +26,11 @@ public sealed class TInputInvoiceStars : IInputInvoice
     {
         ComputeFlag();
         writer.Write(ConstructorId);
-        writer.Write(Option);
+        writer.Write(Purpose);
     }
 
     public void Deserialize(ref SequenceReader<byte> reader)
     {
-        Option = reader.Read<MyTelegram.Schema.IStarsTopupOption>();
+        Purpose = reader.Read<MyTelegram.Schema.IInputStorePaymentPurpose>();
     }
 }

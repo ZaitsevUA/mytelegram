@@ -68,10 +68,27 @@ public interface IUserFull : IObject
     /// Whether the other user has chosen a custom wallpaper for us using <a href="https://corefork.telegram.org/method/messages.setChatWallPaper">messages.setChatWallPaper</a> and the <code>for_both</code> flag, see <a href="https://corefork.telegram.org/api/wallpapers#installing-wallpapers-in-a-specific-chat-or-channel">here »</a> for more info.
     ///</summary>
     bool WallpaperOverridden { get; set; }
+
+    ///<summary>
+    /// If set, we cannot write to this user: subscribe to <a href="https://corefork.telegram.org/api/premium">Telegram Premium</a> to get permission to write to this user. <br>To set this flag for ourselves invoke <a href="https://corefork.telegram.org/method/account.setGlobalPrivacySettings">account.setGlobalPrivacySettings</a>, setting the <code>settings.new_noncontact_peers_require_premium</code> flag, see <a href="https://corefork.telegram.org/api/privacy#require-premium-for-new-non-contact-users">here »</a> for more info.
+    ///</summary>
     bool ContactRequirePremium { get; set; }
+
+    ///<summary>
+    /// If set, we cannot fetch the exact read date of messages we send to this user using <a href="https://corefork.telegram.org/method/messages.getOutboxReadDate">messages.getOutboxReadDate</a>.  <br>The exact read date of messages might still be unavailable for other reasons, see <a href="https://corefork.telegram.org/method/messages.getOutboxReadDate">here »</a> for more info.  <br>To set this flag for ourselves invoke <a href="https://corefork.telegram.org/method/account.setGlobalPrivacySettings">account.setGlobalPrivacySettings</a>, setting the <code>settings.hide_read_marks</code> flag.
+    ///</summary>
     bool ReadDatesPrivate { get; set; }
+
+    ///<summary>
+    /// Flags, see <a href="https://corefork.telegram.org/mtproto/TL-combinators#conditional-fields">TL conditional fields</a>
+    ///</summary>
     BitArray Flags2 { get; set; }
+
+    ///<summary>
+    /// Whether ads were re-enabled for the current account (only accessible to the currently logged-in user), see <a href="https://corefork.telegram.org/api/business#re-enable-ads">here »</a> for more info.
+    ///</summary>
     bool SponsoredEnabled { get; set; }
+    bool CanViewRevenue { get; set; }
 
     ///<summary>
     /// User ID
@@ -178,12 +195,51 @@ public interface IUserFull : IObject
     /// See <a href="https://corefork.telegram.org/type/PeerStories" />
     ///</summary>
     MyTelegram.Schema.IPeerStories? Stories { get; set; }
+
+    ///<summary>
+    /// <a href="https://corefork.telegram.org/api/business#opening-hours">Telegram Business working hours »</a>.
+    /// See <a href="https://corefork.telegram.org/type/BusinessWorkHours" />
+    ///</summary>
     MyTelegram.Schema.IBusinessWorkHours? BusinessWorkHours { get; set; }
+
+    ///<summary>
+    /// <a href="https://corefork.telegram.org/api/business#location">Telegram Business location »</a>.
+    /// See <a href="https://corefork.telegram.org/type/BusinessLocation" />
+    ///</summary>
     MyTelegram.Schema.IBusinessLocation? BusinessLocation { get; set; }
+
+    ///<summary>
+    /// <a href="https://corefork.telegram.org/api/business#greeting-messages">Telegram Business greeting message »</a>.
+    /// See <a href="https://corefork.telegram.org/type/BusinessGreetingMessage" />
+    ///</summary>
     MyTelegram.Schema.IBusinessGreetingMessage? BusinessGreetingMessage { get; set; }
+
+    ///<summary>
+    /// <a href="https://corefork.telegram.org/api/business#away-messages">Telegram Business away message »</a>.
+    /// See <a href="https://corefork.telegram.org/type/BusinessAwayMessage" />
+    ///</summary>
     MyTelegram.Schema.IBusinessAwayMessage? BusinessAwayMessage { get; set; }
+
+    ///<summary>
+    /// Specifies a custom <a href="https://corefork.telegram.org/api/business#business-introduction">Telegram Business profile introduction »</a>.
+    /// See <a href="https://corefork.telegram.org/type/BusinessIntro" />
+    ///</summary>
     MyTelegram.Schema.IBusinessIntro? BusinessIntro { get; set; }
+
+    ///<summary>
+    /// Contains info about the user's <a href="https://corefork.telegram.org/api/profile#birthday">birthday »</a>.
+    /// See <a href="https://corefork.telegram.org/type/Birthday" />
+    ///</summary>
     MyTelegram.Schema.IBirthday? Birthday { get; set; }
+
+    ///<summary>
+    /// ID of the associated personal <a href="https://corefork.telegram.org/api/channel">channel »</a>, that should be shown in the <a href="https://corefork.telegram.org/api/profile#personal-channel">profile page</a>.
+    ///</summary>
     long? PersonalChannelId { get; set; }
+
+    ///<summary>
+    /// ID of the latest message of the associated personal <a href="https://corefork.telegram.org/api/channel">channel »</a>, that should be previewed in the <a href="https://corefork.telegram.org/api/profile#personal-channel">profile page</a>.
+    ///</summary>
     int? PersonalChannelMessage { get; set; }
+    int? StargiftsCount { get; set; }
 }

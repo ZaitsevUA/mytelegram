@@ -1,6 +1,6 @@
 ﻿namespace MyTelegram.Messenger.Services.Interfaces;
 
-public class DomainEventMessageFactory(IEventJsonSerializer eventJsonSerializer) : IDomainEventMessageFactory
+public class DomainEventMessageFactory(IEventJsonSerializer eventJsonSerializer) : IDomainEventMessageFactory, ITransientDependency
 {
     public DomainEventMessage CreateDomainEventMessage(IDomainEvent domainEvent)
     {

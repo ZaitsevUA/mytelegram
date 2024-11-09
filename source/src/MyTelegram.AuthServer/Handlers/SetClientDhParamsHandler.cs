@@ -12,13 +12,13 @@ public class SetClientDhParamsHandler(
         RequestSetClientDHParams obj)
     {
         var dto = await step3ServerHelper.SetClientDhParamsAnswerAsync(obj);
-        logger.LogInformation(
-            "[Step3] ConnectionId={ConnectionId} Create [{IsPerm}] auth key success,authKeyId={AuthKeyId:x2},reqMsgId={ReqMsgId}",
+        logger.LogDebug(
+            "[Step3] [{IsPerm}] authKey created successfully, connectionId: {ConnectionId}, authKeyId: {AuthKeyId:x2}, reqMsgId: {ReqMsgId}",
             input.ConnectionId,
             dto.IsPermanent ? "Perm" : "Temp",
             dto.AuthKeyId,
             input.ReqMsgId);
-        
+
         // Cached authentication data expires in 120 seconds
         var cacheKey = AuthKeyCacheItem.GetCacheKey(dto.AuthKeyId);
         await cacheManager.SetAsync(cacheKey, new AuthKeyCacheItem(dto.AuthKey, dto.ServerSalt, dto.IsPermanent), 120);
@@ -38,6 +38,6 @@ public class SetClientDhParamsHandler(
             return dto.SetClientDhParamsAnswer;
         }
 
-        return null;
+        return null!;
     }
 }

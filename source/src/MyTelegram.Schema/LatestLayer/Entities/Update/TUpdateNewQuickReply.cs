@@ -4,12 +4,17 @@
 namespace MyTelegram.Schema;
 
 ///<summary>
+/// A new <a href="https://corefork.telegram.org/api/business#quick-reply-shortcuts">quick reply shortcut »</a> was created.
 /// See <a href="https://corefork.telegram.org/constructor/updateNewQuickReply" />
 ///</summary>
 [TlObject(0xf53da717)]
 public sealed class TUpdateNewQuickReply : IUpdate
 {
     public uint ConstructorId => 0xf53da717;
+    ///<summary>
+    /// Quick reply shortcut.
+    /// See <a href="https://corefork.telegram.org/type/QuickReply" />
+    ///</summary>
     public MyTelegram.Schema.IQuickReply QuickReply { get; set; }
 
     public void ComputeFlag()

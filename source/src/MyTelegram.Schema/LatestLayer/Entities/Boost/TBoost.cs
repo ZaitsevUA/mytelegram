@@ -7,23 +7,23 @@ namespace MyTelegram.Schema;
 /// Info about one or more <a href="https://corefork.telegram.org/api/boost">boosts</a> applied by a specific user.
 /// See <a href="https://corefork.telegram.org/constructor/boost" />
 ///</summary>
-[TlObject(0x2a1c8c71)]
+[TlObject(0x4b3e14d6)]
 public sealed class TBoost : IBoost
 {
-    public uint ConstructorId => 0x2a1c8c71;
+    public uint ConstructorId => 0x4b3e14d6;
     ///<summary>
     /// Flags, see <a href="https://corefork.telegram.org/mtproto/TL-combinators#conditional-fields">TL conditional fields</a>
     ///</summary>
     public BitArray Flags { get; set; } = new BitArray(32);
 
     ///<summary>
-    /// Whether this boost was applied because the channel <a href="https://corefork.telegram.org/api/giveaways">directly gifted a subscription to the user</a>.
+    /// Whether this boost was applied because the channel/supergroup <a href="https://corefork.telegram.org/api/giveaways">directly gifted a subscription to the user</a>.
     /// See <a href="https://corefork.telegram.org/type/true" />
     ///</summary>
     public bool Gift { get; set; }
 
     ///<summary>
-    /// Whether this boost was applied because the user was chosen in a <a href="https://corefork.telegram.org/api/giveaways">giveaway started by the channel</a>.
+    /// Whether this boost was applied because the user was chosen in a <a href="https://corefork.telegram.org/api/giveaways">giveaway started by the channel/supergroup</a>.
     /// See <a href="https://corefork.telegram.org/type/true" />
     ///</summary>
     public bool Giveaway { get; set; }
@@ -68,6 +68,7 @@ public sealed class TBoost : IBoost
     /// If set, this boost counts as <code>multiplier</code> boosts, otherwise it counts as a single boost.
     ///</summary>
     public int? Multiplier { get; set; }
+    public long? Stars { get; set; }
 
     public void ComputeFlag()
     {
@@ -78,6 +79,7 @@ public sealed class TBoost : IBoost
         if (/*GiveawayMsgId != 0 && */GiveawayMsgId.HasValue) { Flags[2] = true; }
         if (UsedGiftSlug != null) { Flags[4] = true; }
         if (/*Multiplier != 0 && */Multiplier.HasValue) { Flags[5] = true; }
+        if (/*Stars != 0 &&*/ Stars.HasValue) { Flags[6] = true; }
     }
 
     public void Serialize(IBufferWriter<byte> writer)
@@ -92,6 +94,7 @@ public sealed class TBoost : IBoost
         writer.Write(Expires);
         if (Flags[4]) { writer.Write(UsedGiftSlug); }
         if (Flags[5]) { writer.Write(Multiplier.Value); }
+        if (Flags[6]) { writer.Write(Stars.Value); }
     }
 
     public void Deserialize(ref SequenceReader<byte> reader)
@@ -107,5 +110,6 @@ public sealed class TBoost : IBoost
         Expires = reader.ReadInt32();
         if (Flags[4]) { UsedGiftSlug = reader.ReadString(); }
         if (Flags[5]) { Multiplier = reader.ReadInt32(); }
+        if (Flags[6]) { Stars = reader.ReadInt64(); }
     }
 }

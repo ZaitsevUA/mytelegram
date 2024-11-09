@@ -3,7 +3,7 @@
 /// <summary>
 /// https://corefork.telegram.org/api/offsets#hash-generation
 /// </summary>
-public class HashCalculator : IHashCalculator
+public class HashCalculator : IHashCalculator, ITransientDependency
 {
     public long GetHash(IEnumerable<long> ids)
     {

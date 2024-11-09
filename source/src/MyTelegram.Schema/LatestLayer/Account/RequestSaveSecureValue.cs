@@ -8,6 +8,7 @@ namespace MyTelegram.Schema.Account;
 /// <para>Possible errors</para>
 /// Code Type Description
 /// 400 PASSWORD_REQUIRED A <a href="https://corefork.telegram.org/api/srp">2FA password</a> must be configured to use Telegram Passport.
+/// 400 SECURE_SECRET_REQUIRED A secure secret is required.
 /// See <a href="https://corefork.telegram.org/method/account.saveSecureValue" />
 ///</summary>
 [TlObject(0x899fe31d)]

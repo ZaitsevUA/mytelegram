@@ -4,6 +4,7 @@
 namespace MyTelegram.Schema;
 
 ///<summary>
+/// Describes a <a href="https://corefork.telegram.org/api/stars">Telegram Star</a> transaction with <a href="https://fragment.com/">Fragment</a>, used when purchasing Telegram Stars through <a href="https://fragment.com/">Fragment</a>.
 /// See <a href="https://corefork.telegram.org/constructor/starsTransactionPeerFragment" />
 ///</summary>
 [TlObject(0xe92fd902)]

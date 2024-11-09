@@ -21,7 +21,7 @@ public sealed class RequestUpdateColor : IRequest<MyTelegram.Schema.IUpdates>
     public BitArray Flags { get; set; } = new BitArray(32);
 
     ///<summary>
-    /// Whether to change the accent color emoji pattern of the profile page; otherwise, the accent color and emoji pattern of messages will be changed.
+    /// Whether to change the accent color emoji pattern of the profile page; otherwise, the accent color and emoji pattern of messages will be changed. <br>Channels can change both message and profile palettes; supergroups can only change the profile palette, of course after reaching the <a href="https://corefork.telegram.org/api/colors">appropriate boost level</a>.
     /// See <a href="https://corefork.telegram.org/type/true" />
     ///</summary>
     public bool ForProfile { get; set; }

@@ -1,6 +1,6 @@
 ﻿namespace MyTelegram.Messenger.QueryServer.Services;
 
-public class QueryServerReadModelUpdateStrategy : IReadModelUpdateStrategy
+public class QueryServerReadModelUpdateStrategy : IReadModelUpdateStrategy, ITransientDependency
 {
     public Task<bool> ShouldUpdateReadModelAsync<TReadModel>()
     {

@@ -42,6 +42,7 @@ message SavePhotoRequest{
 	string name=6;
 	string md5=7;
 	optional bytes videoEmojiMarkup=8;
+	int64 userId=9;
 }
 
 message SavePhotoResponse{

@@ -4,7 +4,7 @@
 namespace MyTelegram.Schema;
 
 ///<summary>
-/// Whether people can send you voice messages
+/// Whether people can send you voice messages or round videos (<a href="https://corefork.telegram.org/api/premium">Premium</a> users only).
 /// See <a href="https://corefork.telegram.org/constructor/inputPrivacyKeyVoiceMessages" />
 ///</summary>
 [TlObject(0xaee69d68)]

@@ -7,7 +7,7 @@ public class Step3Helper(
     ILogger<Step3Helper> logger,
     IAuthKeyIdHelper authKeyIdHelper,
     ICacheManager<AuthCacheItem> cacheManager)
-    : Step1To3Helper, IStep3Helper
+    : Step1To3Helper, IStep3Helper, ISingletonDependency
 {
     public async Task<Step3Output> SetClientDhParamsAnswerAsync(RequestSetClientDHParams req)
     {
@@ -16,7 +16,7 @@ public class Step3Helper(
         if (cachedAuthKey?.A == null)
         {
             throw new InvalidOperationException(
-                $"SetClientDhParamsAnswerAsync:can not find cached auth key info,nonce={req.Nonce.ToHexString()}");
+                $"Cannot find cached auth key info, nonce: {req.Nonce.ToHexString()}");
         }
 
         if (cachedAuthKey.NewNonce == null)
@@ -64,11 +64,10 @@ public class Step3Helper(
         var calcHash = hashHelper.Sha1(data);
         if (!hash.SequenceEqual(calcHash))
         {
-            logger.LogWarning(
-                $"Answer hash mismatch,req hash:{hash.ToHexString()} ,calc hash:{calcHash.ToHexString()}");
+            logger.LogWarning("Answer sha1 hash mismatch, client hash: {RequestHash}, server calculated hash: {ServerCalculatedHash}", hash.ToHexString(), calcHash.ToHexString());
 
             throw new ArgumentException(
-                $"Answer hash mismatch.req hash:{hash.ToHexString()} calc hash:{calcHash.ToHexString()}");
+                $"Answer sha1 hash mismatch, client hash: {hash.ToHexString()}, server calculated hash: {calcHash.ToHexString()}");
         }
 
         return obj;

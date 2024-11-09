@@ -4,6 +4,7 @@
 namespace MyTelegram.Schema;
 
 ///<summary>
+/// Whether the user can see our birthday.
 /// See <a href="https://corefork.telegram.org/constructor/privacyKeyBirthday" />
 ///</summary>
 [TlObject(0x2000a518)]

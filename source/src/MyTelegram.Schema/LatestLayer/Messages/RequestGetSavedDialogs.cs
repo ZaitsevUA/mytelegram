@@ -44,7 +44,7 @@ public sealed class RequestGetSavedDialogs : IRequest<MyTelegram.Schema.Messages
     public int Limit { get; set; }
 
     ///<summary>
-    /// <a href="https://corefork.telegram.org/api/offsets#hash-generation">Hash for pagination, for more info click here</a>
+    /// <a href="https://corefork.telegram.org/api/offsets#hash-generation">Hash used for caching, for more info click here</a>
     ///</summary>
     public long Hash { get; set; }
 

@@ -4,15 +4,32 @@
 namespace MyTelegram.Schema;
 
 ///<summary>
+/// A message was deleted in a <a href="https://corefork.telegram.org/api/business#connected-bots">connected business chat »</a>.
 /// See <a href="https://corefork.telegram.org/constructor/updateBotDeleteBusinessMessage" />
 ///</summary>
 [TlObject(0xa02a982e)]
 public sealed class TUpdateBotDeleteBusinessMessage : IUpdate
 {
     public uint ConstructorId => 0xa02a982e;
+    ///<summary>
+    /// Business connection ID.
+    ///</summary>
     public string ConnectionId { get; set; }
+
+    ///<summary>
+    /// <a href="https://corefork.telegram.org/api/peers">Peer</a> where the messages were deleted.
+    /// See <a href="https://corefork.telegram.org/type/Peer" />
+    ///</summary>
     public MyTelegram.Schema.IPeer Peer { get; set; }
+
+    ///<summary>
+    /// IDs of the messages that were deleted.
+    ///</summary>
     public TVector<int> Messages { get; set; }
+
+    ///<summary>
+    /// New <strong>qts</strong> value, see <a href="https://corefork.telegram.org/api/updates">updates »</a> for more info.
+    ///</summary>
     public int Qts { get; set; }
 
     public void ComputeFlag()

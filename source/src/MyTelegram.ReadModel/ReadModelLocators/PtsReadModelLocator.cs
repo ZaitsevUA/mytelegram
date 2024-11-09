@@ -27,31 +27,31 @@ public class PtsReadModelLocator : IPtsReadModelLocator
             case PtsUpdatedEvent ptsUpdatedEvent:
                 ownerPeerId = ptsUpdatedEvent.PeerId;
                 break;
-            case InboxMessageEditCompletedEvent inboxEditCompletedEvent:
-                ownerPeerId = inboxEditCompletedEvent.OwnerPeerId;
+            case InboxMessageEditCompletedSagaEvent inboxEditCompletedEvent:
+                ownerPeerId = inboxEditCompletedEvent.NewMessageItem.OwnerPeer.PeerId;
                 break;
-            case OutboxMessageEditCompletedEvent outboxEditCompletedEvent:
-                ownerPeerId = outboxEditCompletedEvent.OwnerPeerId;
+            case OutboxMessageEditCompletedSagaEvent outboxEditCompletedEvent:
+                ownerPeerId = outboxEditCompletedEvent.NewMessageItem.OwnerPeer.PeerId;
                 break;
-            case ReadHistoryPtsIncrementEvent readHistoryPtsIncrementEvent:
+            case ReadHistoryPtsIncrementSagaEvent readHistoryPtsIncrementEvent:
                 ownerPeerId = readHistoryPtsIncrementEvent.PeerId;
                 break;
-            case DeleteMessagePtsIncrementedEvent4 deleteMessagePtsIncrementedEvent:
+            case DeleteMessagePtsIncrementedSagaEvent deleteMessagePtsIncrementedEvent:
                 ownerPeerId = deleteMessagePtsIncrementedEvent.UserId;
                 break;
-            case ClearSingleUserHistoryCompletedEvent clearSingleUserHistoryCompletedEvent:
+            case ClearSingleUserHistoryCompletedSagaEvent clearSingleUserHistoryCompletedEvent:
                 ownerPeerId = clearSingleUserHistoryCompletedEvent.DeletedBoxItem.OwnerPeerId;
                 break;
             case UserCreatedEvent userCreatedEvent:
                 ownerPeerId = userCreatedEvent.UserId;
                 break;
-            case UpdatePinnedBoxPtsCompletedEvent updatePinnedBoxPtsCompletedEvent:
+            case UpdatePinnedBoxPtsCompletedSagaEvent updatePinnedBoxPtsCompletedEvent:
                 ownerPeerId = updatePinnedBoxPtsCompletedEvent.PeerId;
                 break;
             case ChannelCreatedEvent channelCreatedEvent:
                 ownerPeerId = channelCreatedEvent.ChannelId;
                 break;
-            case UpdateOutboxPinnedCompletedEvent updateOutboxPinnedCompletedEvent:
+            case UpdateOutboxPinnedCompletedSagaEvent updateOutboxPinnedCompletedEvent:
                 ownerPeerId = updateOutboxPinnedCompletedEvent.OwnerPeerId;
                 break;
         }

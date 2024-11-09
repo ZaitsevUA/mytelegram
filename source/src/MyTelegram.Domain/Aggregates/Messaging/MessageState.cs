@@ -1,4 +1,5 @@
 ﻿using System.Collections.Concurrent;
+using ReplyChannelMessageCompletedEvent = MyTelegram.Domain.Events.Messaging.ReplyChannelMessageCompletedEvent;
 
 namespace MyTelegram.Domain.Aggregates.Messaging;
 
@@ -27,34 +28,122 @@ public class MessageState : AggregateState<MessageAggregate, MessageId, MessageS
     IApply<ChannelMessageDeletedEvent>,
     IApply<MessageReplyUpdatedEvent>,
     IApply<MessageUnpinnedEvent>,
-    IApply<MessagePinnedUpdatedEvent>
-
+    IApply<MessagePinnedUpdatedEvent>,
+    IApply<OutboxMessageEditedEventV2>,
+    IApply<InboxMessageEditedEventV2>
 {
-    public MessageItem MessageItem { get; private set; } = null!;
-    public List<InboxItem> InboxItems { get; private set; } = new();
-    public int SenderMessageId { get; private set; }
-
-    public bool Pinned { get; private set; }
-    public bool PmOneSide { get; private set; }
     public int EditDate { get; private set; }
     //public bool EditHide { get; private set; }
     public bool Edited { get; private set; }
+
+    public List<InboxItem> InboxItems { get; private set; } = new();
+    public MessageItem MessageItem { get; private set; } = null!;
+    public bool Pinned { get; private set; }
+    public bool PmOneSide { get; private set; }
     public int Pts { get; private set; }
+    public ConcurrentDictionary<long, ReactionCount> ReactionCounts { get; private set; } = new();
+    public List<Reaction> RecentReactions { get; private set; } = new();
 
-    //public List<Peer> RecentRepliers { get; private set; } = new(MyTelegramServerDomainConsts.MaxRecentRepliersCount);
+    public int SenderMessageId { get; private set; }
+    public ConcurrentDictionary<long, List<Reaction>> UserReactions { get; } = new();
 
-    //public MessageReply? Reply { get; private set; }
-
-    public void LoadSnapshot(MessageSnapshot snapshot)
+    public bool IsDeleted { get; private set; }
+    public void Apply(ChannelMessageDeletedEvent aggregateEvent)
     {
-        MessageItem = snapshot.MessageItem;
-        InboxItems = snapshot.InboxItems;
-        SenderMessageId = snapshot.SenderMessageId;
-        Pinned = snapshot.Pinned;
-        EditDate = snapshot.EditDate;
-        //EditHide = snapshot.EditHide;
-        Edited = snapshot.Edited;
-        Pts = snapshot.Pts;
+        //throw new NotImplementedException();
+    }
+
+    public void Apply(ChannelMessagePinnedEvent aggregateEvent)
+    {
+        Pinned = true;
+    }
+
+    public void Apply(InboxItemsAddedToOutboxMessageEvent aggregateEvent)
+    {
+        InboxItems = aggregateEvent.InboxItems;
+        MessageItem = MessageItem with
+        {
+            InboxItems = InboxItems
+        };
+    }
+
+    public void Apply(InboxMessageCreatedEvent aggregateEvent)
+    {
+        MessageItem = aggregateEvent.InboxMessageItem;
+        SenderMessageId = aggregateEvent.SenderMessageId;
+    }
+
+    public void Apply(InboxMessageDeletedEvent aggregateEvent)
+    {
+        IsDeleted = true;
+    }
+
+    public void Apply(InboxMessageEditedEvent aggregateEvent)
+    {
+        EditDate = aggregateEvent.EditDate;
+        Edited = true;
+    }
+
+    public void Apply(InboxMessageHasReadEvent aggregateEvent)
+    {
+        //throw new NotImplementedException();
+    }
+
+    public void Apply(InboxMessageIdAddedToOutboxMessageEvent aggregateEvent)
+    {
+        InboxItems.Add(aggregateEvent.InboxItem);
+    }
+
+    public void Apply(InboxMessagePinnedUpdatedEvent aggregateEvent)
+    {
+        Pinned = aggregateEvent.Pinned;
+        //PmOneSide = false;
+    }
+
+    public void Apply(MessageDeleted4Event aggregateEvent)
+    {
+        IsDeleted = true;
+    }
+
+    public void Apply(MessageDeletedEvent aggregateEvent)
+    {
+        IsDeleted = true;
+        //throw new NotImplementedException();
+    }
+
+    public void Apply(MessageForwardedEvent aggregateEvent)
+    {
+        //throw new NotImplementedException();
+    }
+
+    public void Apply(MessagePinnedUpdatedEvent aggregateEvent)
+    {
+        Pinned = aggregateEvent.Pinned;
+    }
+
+    public void Apply(MessageReplyUpdatedEvent aggregateEvent)
+    {
+        //throw new NotImplementedException();
+        if (MessageItem.Reply != null)
+        {
+            MessageItem.Reply.ChannelId = aggregateEvent.ChannelId;
+        }
+    }
+
+    public void Apply(MessageUnpinnedEvent aggregateEvent)
+    {
+        Pinned = false;
+    }
+
+    public void Apply(MessageViewsIncrementedEvent aggregateEvent)
+    {
+        MessageItem = MessageItem with { Views = MessageItem.Views + 1 };
+    }
+
+    public void Apply(OtherPartyMessageDeletedEvent aggregateEvent)
+    {
+        IsDeleted = true;
+        //throw new NotImplementedException();
     }
 
     //private readonly CircularBuffer<Peer> _recentRepliers = new(5);
@@ -73,21 +162,12 @@ public class MessageState : AggregateState<MessageAggregate, MessageId, MessageS
     {
         MessageItem = aggregateEvent.OutboxMessageItem;
         SenderMessageId = aggregateEvent.OutboxMessageItem.MessageId;
+        //Reply = MessageItem.Reply;
     }
 
-    public void Apply(InboxMessageCreatedEvent aggregateEvent)
+    public void Apply(OutboxMessageDeletedEvent aggregateEvent)
     {
-        MessageItem = aggregateEvent.InboxMessageItem;
-        SenderMessageId = aggregateEvent.SenderMessageId;
-    }
-
-    public void Apply(InboxMessageIdAddedToOutboxMessageEvent aggregateEvent)
-    {
-        InboxItems.Add(aggregateEvent.InboxItem);
-    }
-
-    public void Apply(MessageDeletedEvent aggregateEvent)
-    {
+        IsDeleted = true;
         //throw new NotImplementedException();
     }
 
@@ -97,20 +177,16 @@ public class MessageState : AggregateState<MessageAggregate, MessageId, MessageS
         Edited = true;
     }
 
-    public void Apply(InboxMessageEditedEvent aggregateEvent)
+    public void Apply(OutboxMessagePinnedUpdatedEvent aggregateEvent)
     {
-        EditDate = aggregateEvent.EditDate;
-        Edited = true;
+        Pinned = aggregateEvent.Pinned;
+        //PmOneSide = false;
     }
 
-    public void Apply(MessageForwardedEvent aggregateEvent)
+    public void Apply(ReplyChannelMessageCompletedEvent aggregateEvent)
     {
-        //throw new NotImplementedException();
-    }
-
-    public void Apply(InboxMessageHasReadEvent aggregateEvent)
-    {
-        //throw new NotImplementedException();
+        //Reply = aggregateEvent.Reply;
+        MessageItem = MessageItem with { Reply = aggregateEvent.Reply };
     }
 
     public void Apply(ReplyToMessageEvent aggregateEvent)
@@ -118,28 +194,11 @@ public class MessageState : AggregateState<MessageAggregate, MessageId, MessageS
         //throw new NotImplementedException();
     }
 
-    //public void Apply(ReplyToMessageStartedEvent aggregateEvent)
-    //{
-    //    //RecentRepliers = aggregateEvent.RecentRepliers;
-    //    //throw new NotImplementedException();
-    //}
-
-    //public void Apply(SendMessageStartedEvent aggregateEvent)
-    //{
-    //    MessageItem = aggregateEvent.OutMessageItem;
-    //    SenderMessageId = aggregateEvent.OutMessageItem.MessageId;
-    //    //throw new NotImplementedException();
-    //}
-
-    public void Apply(MessageViewsIncrementedEvent aggregateEvent)
+    public void Apply(SelfMessageDeletedEvent aggregateEvent)
     {
-        MessageItem = MessageItem with { Views = MessageItem.Views + 1 };
-    }
-
-    //public void Apply(DeleteMessagesStartedEvent aggregateEvent)
-    //{
+        IsDeleted = true;
         //throw new NotImplementedException();
-    //}
+    }
 
     public void Apply(UpdatePinnedMessageStartedEvent aggregateEvent)
     {
@@ -147,29 +206,9 @@ public class MessageState : AggregateState<MessageAggregate, MessageId, MessageS
         PmOneSide = aggregateEvent.PmOneSide;
     }
 
-    public void Apply(InboxMessagePinnedUpdatedEvent aggregateEvent)
-    {
-        Pinned = aggregateEvent.Pinned;
-        //PmOneSide = false;
-    }
+    //public List<Peer> RecentRepliers { get; private set; } = new(MyTelegramServerDomainConsts.MaxRecentRepliersCount);
 
-    public void Apply(OutboxMessagePinnedUpdatedEvent aggregateEvent)
-    {
-        Pinned = aggregateEvent.Pinned;
-        //PmOneSide = false;
-    }
-
-    public void Apply(OtherPartyMessageDeletedEvent aggregateEvent)
-    {
-        //throw new NotImplementedException();
-    }
-
-    //public CircularBuffer<Reaction> RecentReactions { get; private set; } = new(10);
-    //public ConcurrentDictionary<long, Reaction> RecentReactions { get; private set; } = new();
-    public List<Reaction> RecentReactions { get; private set; } = new();
-    public ConcurrentDictionary<long, ReactionCount> ReactionCounts { get; private set; } = new();
-    //public List<Reaction> AllReactions { get; private set; } = new();
-    public ConcurrentDictionary<long, List<Reaction>> UserReactions { get; private set; } = new();
+    //public MessageReply? Reply { get; private set; }
 
     public List<ReactionCount>? GetReactions()
     {
@@ -181,88 +220,31 @@ public class MessageState : AggregateState<MessageAggregate, MessageId, MessageS
         return null;
     }
 
-    private void UpdateReactions(long reactionSenderUserId,
-        List<ReactionCount>? reactions,
-        List<Reaction>? addedReactions,
-        List<Reaction>? recentReactions, int date)
+    public void LoadSnapshot(MessageSnapshot snapshot)
     {
-        EditDate = date;
-        RecentReactions = recentReactions ?? Array.Empty<Reaction>().ToList();
-
-        //RecentReactions = new(10, recentReactions?.ToArray() ?? Array.Empty<Reaction>());
-        //RecentReactions = recentReactions?.ToDictionary(k => k.GetReactionId(), v => v) ?? new();
-        if (reactions?.Count > 0)
-        {
-            ReactionCounts = new(reactions.ToDictionary(k => k.GetReactionId(), v => v));
-        }
-        else
-        {
-            ReactionCounts = new();
-        }
-
-        UserReactions.TryRemove(reactionSenderUserId, out _);
-        if (addedReactions?.Count > 0)
-        {
-            UserReactions.TryAdd(reactionSenderUserId, addedReactions);
-        }
+        MessageItem = snapshot.MessageItem;
+        InboxItems = snapshot.InboxItems;
+        SenderMessageId = snapshot.SenderMessageId;
+        Pinned = snapshot.Pinned;
+        EditDate = snapshot.EditDate;
+        //EditHide = snapshot.EditHide;
+        Edited = snapshot.Edited;
+        Pts = snapshot.Pts;
     }
 
-    public void Apply(SelfMessageDeletedEvent aggregateEvent)
+    public void Apply(OutboxMessageEditedEventV2 aggregateEvent)
     {
-        //throw new NotImplementedException();
+        EditDate = aggregateEvent.NewMessageItem.EditDate ?? 0;
+        Edited = true;
+
+        MessageItem = aggregateEvent.NewMessageItem;
     }
 
-    public void Apply(OutboxMessageDeletedEvent aggregateEvent)
+    public void Apply(InboxMessageEditedEventV2 aggregateEvent)
     {
-        //throw new NotImplementedException();
-    }
+        EditDate = aggregateEvent.NewMessageItem.EditDate ?? 0;
+        Edited = true;
 
-    public void Apply(InboxMessageDeletedEvent aggregateEvent)
-    {
-        //throw new NotImplementedException();
-    }
-
-    public void Apply(InboxItemsAddedToOutboxMessageEvent aggregateEvent)
-    {
-        InboxItems = aggregateEvent.InboxItems;
-    }
-    public void Apply(MessageDeleted4Event aggregateEvent)
-    {
-        //throw new NotImplementedException();
-    }
-
-    public void Apply(ReplyChannelMessageCompletedEvent aggregateEvent)
-    {
-        //Reply = aggregateEvent.Reply;
-        MessageItem = MessageItem with { Reply = aggregateEvent.Reply };
-    }
-
-    public void Apply(ChannelMessagePinnedEvent aggregateEvent)
-    {
-        Pinned = true;
-    }
-
-    public void Apply(ChannelMessageDeletedEvent aggregateEvent)
-    {
-        //throw new NotImplementedException();
-    }
-
-    public void Apply(MessageReplyUpdatedEvent aggregateEvent)
-    {
-        //throw new NotImplementedException();
-        if (MessageItem.Reply != null)
-        {
-            MessageItem.Reply.ChannelId = aggregateEvent.ChannelId;
-        }
-    }
-
-    public void Apply(MessageUnpinnedEvent aggregateEvent)
-    {
-        Pinned = false;
-    }
-
-    public void Apply(MessagePinnedUpdatedEvent aggregateEvent)
-    {
-        Pinned = aggregateEvent.Pinned;
+        MessageItem = aggregateEvent.NewMessageItem;
     }
 }

@@ -4,13 +4,13 @@
 namespace MyTelegram.Schema;
 
 ///<summary>
-/// Channel/supergroup info
+/// Channel/supergroup infoWhen updating the <a href="https://corefork.telegram.org/api/peers">local peer database</a>, all fields from the newly received constructor take priority over the old constructor cached locally (including by removing fields that aren't set in the new constructor).The only exception to the above rule is when the <code>min</code> flag is set, in which case <strong>only</strong> the following fields must be applied over any locally stored version:See <a href="https://github.com/tdlib/td/blob/a24af0992245f838f2b4b418a0a2d5fa9caa27b5/td/telegram/ChatManager.cpp#L8329">here »</a> for an implementation of the logic to use when updating the <a href="https://corefork.telegram.org/api/peers">local user peer database</a>.
 /// See <a href="https://corefork.telegram.org/constructor/channel" />
 ///</summary>
-[TlObject(0xaadfc8f)]
+[TlObject(0xfe4478bd)]
 public sealed class TChannel : MyTelegram.Schema.IChat, ILayeredChannel
 {
-    public uint ConstructorId => 0xaadfc8f;
+    public uint ConstructorId => 0xfe4478bd;
     ///<summary>
     /// Flags, see <a href="https://corefork.telegram.org/mtproto/TL-combinators#conditional-fields">TL conditional fields</a>
     ///</summary>
@@ -41,13 +41,13 @@ public sealed class TChannel : MyTelegram.Schema.IChat, ILayeredChannel
     public bool Verified { get; set; }
 
     ///<summary>
-    /// Is this a supergroup?
+    /// Is this a supergroup? <br>Changes to this flag should invalidate the local <a href="https://corefork.telegram.org/constructor/channelFull">channelFull</a> cache for this channel/supergroup ID, see <a href="https://corefork.telegram.org/api/peers#full-info-database">here »</a> for more info.
     /// See <a href="https://corefork.telegram.org/type/true" />
     ///</summary>
     public bool Megagroup { get; set; }
 
     ///<summary>
-    /// Whether viewing/writing in this channel for a reason (see <code>restriction_reason</code>
+    /// Whether viewing/writing in this channel for a reason (see <code>restriction_reason</code>)
     /// See <a href="https://corefork.telegram.org/type/true" />
     ///</summary>
     public bool Restricted { get; set; }
@@ -65,13 +65,13 @@ public sealed class TChannel : MyTelegram.Schema.IChat, ILayeredChannel
     public bool Min { get; set; }
 
     ///<summary>
-    /// This channel/supergroup is probably a scam
+    /// This channel/supergroup is probably a scam <br>Changes to this flag should invalidate the local <a href="https://corefork.telegram.org/constructor/channelFull">channelFull</a> cache for this channel/supergroup ID, see <a href="https://corefork.telegram.org/api/peers#full-info-database">here »</a> for more info.
     /// See <a href="https://corefork.telegram.org/type/true" />
     ///</summary>
     public bool Scam { get; set; }
 
     ///<summary>
-    /// Whether this channel has a private join link
+    /// Whether this channel has a linked <a href="https://corefork.telegram.org/api/discussion">discussion group »</a> (or this supergroup is a channel's discussion group). The actual ID of the linked channel/supergroup is contained in <a href="https://corefork.telegram.org/constructor/channelFull">channelFull</a>.<code>linked_chat_id</code>. <br>Changes to this flag should invalidate the local <a href="https://corefork.telegram.org/constructor/channelFull">channelFull</a> cache for this channel/supergroup ID, see <a href="https://corefork.telegram.org/api/peers#full-info-database">here »</a> for more info.
     /// See <a href="https://corefork.telegram.org/type/true" />
     ///</summary>
     public bool HasLink { get; set; }
@@ -83,7 +83,7 @@ public sealed class TChannel : MyTelegram.Schema.IChat, ILayeredChannel
     public bool HasGeo { get; set; }
 
     ///<summary>
-    /// Whether slow mode is enabled for groups to prevent flood in chat
+    /// Whether slow mode is enabled for groups to prevent flood in chat. <br>Changes to this flag should invalidate the local <a href="https://corefork.telegram.org/constructor/channelFull">channelFull</a> cache for this channel/supergroup ID, see <a href="https://corefork.telegram.org/api/peers#full-info-database">here »</a> for more info.
     /// See <a href="https://corefork.telegram.org/type/true" />
     ///</summary>
     public bool SlowmodeEnabled { get; set; }
@@ -101,13 +101,13 @@ public sealed class TChannel : MyTelegram.Schema.IChat, ILayeredChannel
     public bool CallNotEmpty { get; set; }
 
     ///<summary>
-    /// If set, this <a href="https://corefork.telegram.org/api/channel">supergroup/channel</a> was reported by many users as a fake or scam: be careful when interacting with it.
+    /// If set, this <a href="https://corefork.telegram.org/api/channel">supergroup/channel</a> was reported by many users as a fake or scam: be careful when interacting with it. <br>Changes to this flag should invalidate the local <a href="https://corefork.telegram.org/constructor/channelFull">channelFull</a> cache for this channel/supergroup ID, see <a href="https://corefork.telegram.org/api/peers#full-info-database">here »</a> for more info.
     /// See <a href="https://corefork.telegram.org/type/true" />
     ///</summary>
     public bool Fake { get; set; }
 
     ///<summary>
-    /// Whether this <a href="https://corefork.telegram.org/api/channel">supergroup</a> is a gigagroup
+    /// Whether this <a href="https://corefork.telegram.org/api/channel">supergroup</a> is a gigagroup<br>Changes to this flag should invalidate the local <a href="https://corefork.telegram.org/constructor/channelFull">channelFull</a> cache for this channel/supergroup ID, see <a href="https://corefork.telegram.org/api/peers#full-info-database">here »</a> for more info.
     /// See <a href="https://corefork.telegram.org/type/true" />
     ///</summary>
     public bool Gigagroup { get; set; }
@@ -119,19 +119,19 @@ public sealed class TChannel : MyTelegram.Schema.IChat, ILayeredChannel
     public bool Noforwards { get; set; }
 
     ///<summary>
-    /// Whether a user needs to join the supergroup before they can send messages: can be false only for <a href="https://corefork.telegram.org/api/discussion">discussion groups »</a>, toggle using <a href="https://corefork.telegram.org/method/channels.toggleJoinToSend">channels.toggleJoinToSend</a>
+    /// Whether a user needs to join the supergroup before they can send messages: can be false only for <a href="https://corefork.telegram.org/api/discussion">discussion groups »</a>, toggle using <a href="https://corefork.telegram.org/method/channels.toggleJoinToSend">channels.toggleJoinToSend</a><br>Changes to this flag should invalidate the local <a href="https://corefork.telegram.org/constructor/channelFull">channelFull</a> cache for this channel/supergroup ID, see <a href="https://corefork.telegram.org/api/peers#full-info-database">here »</a> for more info.
     /// See <a href="https://corefork.telegram.org/type/true" />
     ///</summary>
     public bool JoinToSend { get; set; }
 
     ///<summary>
-    /// Whether a user's join request will have to be <a href="https://corefork.telegram.org/api/invites#join-requests">approved by administrators</a>, toggle using <a href="https://corefork.telegram.org/method/channels.toggleJoinRequest">channels.toggleJoinToSend</a>
+    /// Whether a user's join request will have to be <a href="https://corefork.telegram.org/api/invites#join-requests">approved by administrators</a>, toggle using <a href="https://corefork.telegram.org/method/channels.toggleJoinRequest">channels.toggleJoinToSend</a><br>Changes to this flag should invalidate the local <a href="https://corefork.telegram.org/constructor/channelFull">channelFull</a> cache for this channel/supergroup ID, see <a href="https://corefork.telegram.org/api/peers#full-info-database">here »</a> for more info.
     /// See <a href="https://corefork.telegram.org/type/true" />
     ///</summary>
     public bool JoinRequest { get; set; }
 
     ///<summary>
-    /// Whether this supergroup is a <a href="https://corefork.telegram.org/api/forum">forum</a>
+    /// Whether this supergroup is a <a href="https://corefork.telegram.org/api/forum">forum</a>. <br>Changes to this flag should invalidate the local <a href="https://corefork.telegram.org/constructor/channelFull">channelFull</a> cache for this channel/supergroup ID, see <a href="https://corefork.telegram.org/api/peers#full-info-database">here »</a> for more info.
     /// See <a href="https://corefork.telegram.org/type/true" />
     ///</summary>
     public bool Forum { get; set; }
@@ -158,14 +158,15 @@ public sealed class TChannel : MyTelegram.Schema.IChat, ILayeredChannel
     /// See <a href="https://corefork.telegram.org/type/true" />
     ///</summary>
     public bool StoriesUnavailable { get; set; }
+    public bool SignatureProfiles { get; set; }
 
     ///<summary>
-    /// ID of the channel
+    /// ID of the channel, see <a href="https://corefork.telegram.org/api/peers#peer-id">here »</a> for more info
     ///</summary>
     public long Id { get; set; }
 
     ///<summary>
-    /// Access hash
+    /// Access hash, see <a href="https://corefork.telegram.org/api/peers#access-hash">here »</a> for more info
     ///</summary>
     public long? AccessHash { get; set; }
 
@@ -175,7 +176,7 @@ public sealed class TChannel : MyTelegram.Schema.IChat, ILayeredChannel
     public string Title { get; set; }
 
     ///<summary>
-    /// Username
+    /// Main active username.
     ///</summary>
     public string? Username { get; set; }
 
@@ -191,7 +192,7 @@ public sealed class TChannel : MyTelegram.Schema.IChat, ILayeredChannel
     public int Date { get; set; }
 
     ///<summary>
-    /// Contains the reason why access to this channel must be restricted.
+    /// Contains the reason why access to this channel must be restricted. <br>Changes to this flag should invalidate the local <a href="https://corefork.telegram.org/constructor/channelFull">channelFull</a> cache for this channel/supergroup ID, see <a href="https://corefork.telegram.org/api/peers#full-info-database">here »</a> for more info.
     ///</summary>
     public TVector<MyTelegram.Schema.IRestrictionReason>? RestrictionReason { get; set; }
 
@@ -247,9 +248,10 @@ public sealed class TChannel : MyTelegram.Schema.IChat, ILayeredChannel
     public MyTelegram.Schema.IEmojiStatus? EmojiStatus { get; set; }
 
     ///<summary>
-    /// <a href="https://corefork.telegram.org/api/boost">Boost level</a>
+    /// <a href="https://corefork.telegram.org/api/boost">Boost level</a>. <br>Changes to this flag should invalidate the local <a href="https://corefork.telegram.org/constructor/channelFull">channelFull</a> cache for this channel/supergroup ID, see <a href="https://corefork.telegram.org/api/peers#full-info-database">here »</a> for more info.
     ///</summary>
     public int? Level { get; set; }
+    public int? SubscriptionUntilDate { get; set; }
 
     public void ComputeFlag()
     {
@@ -276,6 +278,7 @@ public sealed class TChannel : MyTelegram.Schema.IChat, ILayeredChannel
         if (StoriesHidden) { Flags2[1] = true; }
         if (StoriesHiddenMin) { Flags2[2] = true; }
         if (StoriesUnavailable) { Flags2[3] = true; }
+        if (SignatureProfiles) { Flags2[12] = true; }
         if (/*AccessHash != 0 &&*/ AccessHash.HasValue) { Flags[13] = true; }
         if (Username != null) { Flags[6] = true; }
         if (RestrictionReason?.Count > 0) { Flags[9] = true; }
@@ -289,6 +292,7 @@ public sealed class TChannel : MyTelegram.Schema.IChat, ILayeredChannel
         if (ProfileColor != null) { Flags2[8] = true; }
         if (EmojiStatus != null) { Flags2[9] = true; }
         if (/*Level != 0 && */Level.HasValue) { Flags2[10] = true; }
+        if (/*SubscriptionUntilDate != 0 && */SubscriptionUntilDate.HasValue) { Flags2[11] = true; }
     }
 
     public void Serialize(IBufferWriter<byte> writer)
@@ -314,6 +318,7 @@ public sealed class TChannel : MyTelegram.Schema.IChat, ILayeredChannel
         if (Flags2[8]) { writer.Write(ProfileColor); }
         if (Flags2[9]) { writer.Write(EmojiStatus); }
         if (Flags2[10]) { writer.Write(Level.Value); }
+        if (Flags2[11]) { writer.Write(SubscriptionUntilDate.Value); }
     }
 
     public void Deserialize(ref SequenceReader<byte> reader)
@@ -343,6 +348,7 @@ public sealed class TChannel : MyTelegram.Schema.IChat, ILayeredChannel
         if (Flags2[1]) { StoriesHidden = true; }
         if (Flags2[2]) { StoriesHiddenMin = true; }
         if (Flags2[3]) { StoriesUnavailable = true; }
+        if (Flags2[12]) { SignatureProfiles = true; }
         Id = reader.ReadInt64();
         if (Flags[13]) { AccessHash = reader.ReadInt64(); }
         Title = reader.ReadString();
@@ -360,5 +366,6 @@ public sealed class TChannel : MyTelegram.Schema.IChat, ILayeredChannel
         if (Flags2[8]) { ProfileColor = reader.Read<MyTelegram.Schema.IPeerColor>(); }
         if (Flags2[9]) { EmojiStatus = reader.Read<MyTelegram.Schema.IEmojiStatus>(); }
         if (Flags2[10]) { Level = reader.ReadInt32(); }
+        if (Flags2[11]) { SubscriptionUntilDate = reader.ReadInt32(); }
     }
 }

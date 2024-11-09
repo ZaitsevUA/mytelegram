@@ -4,6 +4,7 @@
 namespace MyTelegram.Schema.Messages;
 
 ///<summary>
+/// The list of <a href="https://corefork.telegram.org/api/saved-messages#tags">reaction tag »</a> names assigned by the user hasn't changed.
 /// See <a href="https://corefork.telegram.org/constructor/messages.savedReactionTagsNotModified" />
 ///</summary>
 [TlObject(0x889b59ef)]

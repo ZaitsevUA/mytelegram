@@ -4,7 +4,7 @@
 namespace MyTelegram.Schema;
 
 ///<summary>
-/// Used if the user wishes to start a channel <a href="https://corefork.telegram.org/api/giveaways">giveaway</a> or send some <a href="https://corefork.telegram.org/api/giveaways">giftcodes</a> to members of a channel, in exchange for <a href="https://corefork.telegram.org/api/boost">boosts</a>.
+/// Used if the user wishes to start a channel/supergroup <a href="https://corefork.telegram.org/api/giveaways">giveaway</a> or send some <a href="https://corefork.telegram.org/api/giveaways">giftcodes</a> to members of a channel/supergroup, in exchange for <a href="https://corefork.telegram.org/api/boost">boosts</a>.
 /// See <a href="https://corefork.telegram.org/constructor/inputInvoicePremiumGiftCode" />
 ///</summary>
 [TlObject(0x98986c0d)]

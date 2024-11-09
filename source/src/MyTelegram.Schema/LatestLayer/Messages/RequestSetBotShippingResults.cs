@@ -8,6 +8,7 @@ namespace MyTelegram.Schema.Messages;
 /// <para>Possible errors</para>
 /// Code Type Description
 /// 400 QUERY_ID_INVALID The query ID is invalid.
+/// 400 USER_BOT_REQUIRED This method can only be called by a bot.
 /// See <a href="https://corefork.telegram.org/method/messages.setBotShippingResults" />
 ///</summary>
 [TlObject(0xe5f672fa)]

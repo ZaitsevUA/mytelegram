@@ -15,6 +15,11 @@ public interface IBotInfo : IObject
     BitArray Flags { get; set; }
 
     ///<summary>
+    /// If set, the bot has some <a href="https://corefork.telegram.org/api/bots/webapps#main-mini-app-previews">preview medias for the configured Main Mini App, see here »</a> for more info on Main Mini App preview medias.
+    ///</summary>
+    bool HasPreviewMedias { get; set; }
+
+    ///<summary>
     /// ID of the bot
     ///</summary>
     long? UserId { get; set; }
@@ -47,4 +52,5 @@ public interface IBotInfo : IObject
     /// See <a href="https://corefork.telegram.org/type/BotMenuButton" />
     ///</summary>
     MyTelegram.Schema.IBotMenuButton? MenuButton { get; set; }
+    string? PrivacyPolicyUrl { get; set; }
 }

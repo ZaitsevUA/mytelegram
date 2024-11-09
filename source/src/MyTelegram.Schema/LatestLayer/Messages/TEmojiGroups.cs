@@ -4,7 +4,7 @@
 namespace MyTelegram.Schema.Messages;
 
 ///<summary>
-/// Represents a list of <a href="https://corefork.telegram.org/api/custom-emoji#emoji-categories">emoji categories</a>.
+/// Represents a list of <a href="https://corefork.telegram.org/api/emoji-categories">emoji categories</a>.
 /// See <a href="https://corefork.telegram.org/constructor/messages.emojiGroups" />
 ///</summary>
 [TlObject(0x881fb94b)]
@@ -12,12 +12,12 @@ public sealed class TEmojiGroups : IEmojiGroups
 {
     public uint ConstructorId => 0x881fb94b;
     ///<summary>
-    /// <a href="https://corefork.telegram.org/api/offsets#hash-generation">Hash for pagination, for more info click here</a>
+    /// <a href="https://corefork.telegram.org/api/offsets#hash-generation">Hash used for caching, for more info click here</a>
     ///</summary>
     public int Hash { get; set; }
 
     ///<summary>
-    /// A list of <a href="https://corefork.telegram.org/api/custom-emoji#emoji-categories">emoji categories</a>.
+    /// A list of <a href="https://corefork.telegram.org/api/emoji-categories">emoji categories</a>.
     ///</summary>
     public TVector<MyTelegram.Schema.IEmojiGroup> Groups { get; set; }
 

@@ -4,6 +4,7 @@
 namespace MyTelegram.Schema.Channels;
 
 ///<summary>
+/// Sponsored messages were hidden for the user in all chats.
 /// See <a href="https://corefork.telegram.org/constructor/channels.sponsoredMessageReportResultAdsHidden" />
 ///</summary>
 [TlObject(0x3e3bcf2f)]

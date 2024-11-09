@@ -8,6 +8,7 @@ namespace MyTelegram.Schema.Messages;
 /// <para>Possible errors</para>
 /// Code Type Description
 /// 400 CHAT_NOT_MODIFIED No changes were made to chat information because the new information you passed is identical to the current information.
+/// 400 PEER_ID_INVALID The provided peer id is invalid.
 /// 400 TTL_PERIOD_INVALID The specified TTL period is invalid.
 /// See <a href="https://corefork.telegram.org/method/messages.setHistoryTTL" />
 ///</summary>

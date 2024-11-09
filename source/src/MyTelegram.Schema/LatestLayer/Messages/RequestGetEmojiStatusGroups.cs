@@ -4,7 +4,7 @@
 namespace MyTelegram.Schema.Messages;
 
 ///<summary>
-/// Represents a list of <a href="https://corefork.telegram.org/api/custom-emoji#emoji-categories">emoji categories</a>, to be used when selecting custom emojis to set as <a href="https://corefork.telegram.org/api">custom emoji status</a>.
+/// Represents a list of <a href="https://corefork.telegram.org/api/emoji-categories">emoji categories</a>, to be used when selecting custom emojis to set as <a href="https://corefork.telegram.org/api">custom emoji status</a>.
 /// See <a href="https://corefork.telegram.org/method/messages.getEmojiStatusGroups" />
 ///</summary>
 [TlObject(0x2ecd56cd)]
@@ -12,7 +12,7 @@ public sealed class RequestGetEmojiStatusGroups : IRequest<MyTelegram.Schema.Mes
 {
     public uint ConstructorId => 0x2ecd56cd;
     ///<summary>
-    /// <a href="https://corefork.telegram.org/api/offsets#hash-generation">Hash for pagination, for more info click here</a>
+    /// <a href="https://corefork.telegram.org/api/offsets#hash-generation">Hash used for caching, for more info click here</a>.
     ///</summary>
     public int Hash { get; set; }
 

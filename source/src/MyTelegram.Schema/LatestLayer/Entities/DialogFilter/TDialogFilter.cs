@@ -70,7 +70,7 @@ public sealed class TDialogFilter : IDialogFilter
     public int Id { get; set; }
 
     ///<summary>
-    /// <a href="https://corefork.telegram.org/api/folders">Folder</a> name
+    /// <a href="https://corefork.telegram.org/api/folders">Folder</a> name (max 12 UTF-8 chars)
     ///</summary>
     public string Title { get; set; }
 
@@ -78,6 +78,10 @@ public sealed class TDialogFilter : IDialogFilter
     /// Emoji to use as icon for the folder.
     ///</summary>
     public string? Emoticon { get; set; }
+
+    ///<summary>
+    /// A color ID for the <a href="https://corefork.telegram.org/api/folders#folder-tags">folder tag associated to this folder, see here »</a> for more info.
+    ///</summary>
     public int? Color { get; set; }
 
     ///<summary>

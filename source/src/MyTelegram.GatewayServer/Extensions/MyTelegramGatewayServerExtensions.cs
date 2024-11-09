@@ -6,7 +6,7 @@ public static class MyTelegramGatewayServerExtensions
 {
     public static void AddMyTelegramGatewayServer(this IServiceCollection services)
     {
-        services.AddSingleton<IClientManager, ClientManager>();
+        services.RegisterServices();
         services.AddSingleton(typeof(IMessageQueueProcessor<>), typeof(MessageQueueProcessor2<>));
 
         services.AddSingleton<IMessageIdHelper, MessageIdHelper>();
@@ -20,13 +20,6 @@ public static class MyTelegramGatewayServerExtensions
 
         services.AddTransient<IMtpMessageParser, MtpMessageParser>();
         services.AddTransient<IMtpMessageDispatcher, MtpMessageDispatcher>();
-        services.AddTransient<EncryptedMessageResponseEventHandler>();
-        services.AddTransient<UnencryptedMessageResponseEventHandler>();
-        services.AddTransient<AuthKeyNotFoundEventHandler>();
-        services.AddTransient<TransportErrorEventHandler>();
-        services.AddTransient<PingTimeoutEventHandler>();
-        services.AddTransient<IClientDataSender, ClientDataSender>();
-        services.AddTransient<IProxyProtocolParser, ProxyProtocolParser>();
 
         services.AddTransient<IDataProcessor<ClientDisconnectedEvent>, ClientDisconnectedDataProcessor>();
 

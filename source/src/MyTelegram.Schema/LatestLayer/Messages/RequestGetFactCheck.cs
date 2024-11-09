@@ -4,6 +4,10 @@
 namespace MyTelegram.Schema.Messages;
 
 ///<summary>
+/// Fetch one or more <a href="https://corefork.telegram.org/api/factcheck">factchecks, see here »</a> for the full flow.
+/// <para>Possible errors</para>
+/// Code Type Description
+/// 400 PEER_ID_INVALID The provided peer id is invalid.
 /// See <a href="https://corefork.telegram.org/method/messages.getFactCheck" />
 ///</summary>
 [TlObject(0xb9cdc5ee)]
@@ -11,13 +15,13 @@ public sealed class RequestGetFactCheck : IRequest<TVector<MyTelegram.Schema.IFa
 {
     public uint ConstructorId => 0xb9cdc5ee;
     ///<summary>
-    /// &nbsp;
+    /// Peer where the messages were sent.
     /// See <a href="https://corefork.telegram.org/type/InputPeer" />
     ///</summary>
     public MyTelegram.Schema.IInputPeer Peer { get; set; }
 
     ///<summary>
-    /// &nbsp;
+    /// Messages that have associated <a href="https://corefork.telegram.org/constructor/factCheck">factCheck</a> constructors with the <code>need_check</code> flag set.
     ///</summary>
     public TVector<int> MsgId { get; set; }
 

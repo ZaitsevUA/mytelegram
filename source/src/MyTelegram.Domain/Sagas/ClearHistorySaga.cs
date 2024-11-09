@@ -4,7 +4,7 @@ public class ClearHistorySaga : MyInMemoryAggregateSaga<ClearHistorySaga, ClearH
     ISagaIsStartedBy<DialogAggregate, DialogId, HistoryClearedEvent>,
     ISagaHandles<MessageAggregate, MessageId, MessageDeletedEvent>,
     ISagaHandles<MessageAggregate, MessageId, OtherPartyMessageDeletedEvent>,
-    IApply<ClearHistorySagaCompletedEvent>
+    IApply<ClearHistorySagaCompletedSagaEvent>
 {
     private readonly IIdGenerator _idGenerator;
     private readonly ClearHistoryState _state = new();
@@ -15,7 +15,7 @@ public class ClearHistorySaga : MyInMemoryAggregateSaga<ClearHistorySaga, ClearH
         Register(_state);
     }
 
-    public void Apply(ClearHistorySagaCompletedEvent aggregateEvent)
+    public void Apply(ClearHistorySagaCompletedSagaEvent aggregateEvent)
     {
         CompleteAsync();
     }
@@ -118,7 +118,7 @@ public class ClearHistorySaga : MyInMemoryAggregateSaga<ClearHistorySaga, ClearH
             {
                 if (_state.PeerToPts.TryGetValue(peerId, out var pts))
                 {
-                    Emit(new ClearSingleUserHistoryCompletedEvent(_state.RequestInfo,
+                    Emit(new ClearSingleUserHistoryCompletedSagaEvent(_state.RequestInfo,
                         _state.RequestInfo.AuthKeyId,
                         _state.NextMaxId,
                         _state.RequestInfo.UserId == peerId,
@@ -133,7 +133,7 @@ public class ClearHistorySaga : MyInMemoryAggregateSaga<ClearHistorySaga, ClearH
                 // after messages cleared should send history cleared service message
                 var ownerPeerId = _state.RequestInfo.UserId;
                 var outMessageId = await _idGenerator.NextIdAsync(IdType.MessageId, ownerPeerId);
-                var aggregateId = MessageId.Create(ownerPeerId, outMessageId);
+                //var aggregateId = MessageId.Create(ownerPeerId, outMessageId);
                 var messageItem = new MessageItem(
                     new Peer(PeerType.User, ownerPeerId),
                     _state.ToPeer,
@@ -148,10 +148,14 @@ public class ClearHistorySaga : MyInMemoryAggregateSaga<ClearHistorySaga, ClearH
                     MessageSubType: MessageSubType.ClearHistory,
                     MessageActionData: _state.MessageActionData,
                     MessageActionType: MessageActionType.HistoryClear);
-                var command = new CreateOutboxMessageCommand(aggregateId, _state.RequestInfo with { RequestId = Guid.NewGuid() }, messageItem);
+                //var command = new CreateOutboxMessageCommand(aggregateId, _state.RequestInfo with { RequestId = Guid.NewGuid() }, messageItem);
+                var command = new StartSendMessageCommand(TempId.New,
+                    _state.RequestInfo with { RequestId = Guid.NewGuid() },
+                    [new SendMessageItem(messageItem)]
+                );
                 Publish(command);
 
-                Emit(new ClearHistorySagaCompletedEvent());
+                Emit(new ClearHistorySagaCompletedSagaEvent());
             }
         }
     }
@@ -160,7 +164,7 @@ public class ClearHistorySaga : MyInMemoryAggregateSaga<ClearHistorySaga, ClearH
         int messageId)
     {
         var pts = await _idGenerator.NextIdAsync(IdType.Pts, peerId);
-        Emit(new ClearHistoryPtsIncrementedEvent(peerId, messageId, pts));
+        Emit(new ClearHistoryPtsIncrementedSagaEvent(peerId, messageId, pts));
         await HandleClearHistoryCompletedAsync(peerId);
     }
 }

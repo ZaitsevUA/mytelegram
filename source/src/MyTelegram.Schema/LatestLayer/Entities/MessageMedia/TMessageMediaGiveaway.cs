@@ -7,10 +7,10 @@ namespace MyTelegram.Schema;
 /// Contains info about a <a href="https://corefork.telegram.org/api/giveaways">giveaway, see here »</a> for more info.
 /// See <a href="https://corefork.telegram.org/constructor/messageMediaGiveaway" />
 ///</summary>
-[TlObject(0xdaad85b0)]
+[TlObject(0xaa073beb)]
 public sealed class TMessageMediaGiveaway : IMessageMedia
 {
-    public uint ConstructorId => 0xdaad85b0;
+    public uint ConstructorId => 0xaa073beb;
     ///<summary>
     /// Flags, see <a href="https://corefork.telegram.org/mtproto/TL-combinators#conditional-fields">TL conditional fields</a>
     ///</summary>
@@ -51,7 +51,8 @@ public sealed class TMessageMediaGiveaway : IMessageMedia
     ///<summary>
     /// Duration in months of each <a href="https://corefork.telegram.org/api/premium">Telegram Premium</a> subscription in the giveaway.
     ///</summary>
-    public int Months { get; set; }
+    public int? Months { get; set; }
+    public long? Stars { get; set; }
 
     ///<summary>
     /// The end date of the giveaway.
@@ -64,6 +65,8 @@ public sealed class TMessageMediaGiveaway : IMessageMedia
         if (WinnersAreVisible) { Flags[2] = true; }
         if (CountriesIso2?.Count > 0) { Flags[1] = true; }
         if (PrizeDescription != null) { Flags[3] = true; }
+        if (/*Months != 0 && */Months.HasValue) { Flags[4] = true; }
+        if (/*Stars != 0 &&*/ Stars.HasValue) { Flags[5] = true; }
 
     }
 
@@ -76,7 +79,8 @@ public sealed class TMessageMediaGiveaway : IMessageMedia
         if (Flags[1]) { writer.Write(CountriesIso2); }
         if (Flags[3]) { writer.Write(PrizeDescription); }
         writer.Write(Quantity);
-        writer.Write(Months);
+        if (Flags[4]) { writer.Write(Months.Value); }
+        if (Flags[5]) { writer.Write(Stars.Value); }
         writer.Write(UntilDate);
     }
 
@@ -89,7 +93,8 @@ public sealed class TMessageMediaGiveaway : IMessageMedia
         if (Flags[1]) { CountriesIso2 = reader.Read<TVector<string>>(); }
         if (Flags[3]) { PrizeDescription = reader.ReadString(); }
         Quantity = reader.ReadInt32();
-        Months = reader.ReadInt32();
+        if (Flags[4]) { Months = reader.ReadInt32(); }
+        if (Flags[5]) { Stars = reader.ReadInt64(); }
         UntilDate = reader.ReadInt32();
     }
 }

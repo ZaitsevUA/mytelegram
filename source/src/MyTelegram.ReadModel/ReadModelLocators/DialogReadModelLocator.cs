@@ -22,6 +22,7 @@ public class DialogReadModelLocator : IDialogReadModelLocator
                     //yield return outboxCreatedEvent.DialogId.Value;
                     yield return DialogId.Create(outboxCreatedEvent.RequestInfo.UserId,
                         outboxCreatedEvent.OutboxMessageItem.ToPeer).Value;
+
                     break;
 
                 case InboxMessageCreatedEvent inboxMessageCreatedEvent:
@@ -44,7 +45,7 @@ public class DialogReadModelLocator : IDialogReadModelLocator
                     yield return DialogId.Create(inboxPinnedUpdatedEvent.OwnerPeerId,
                         inboxPinnedUpdatedEvent.ToPeer).Value;
                     break;
-                case SendOutboxMessageCompletedEvent sendOutboxMessageCompletedEvent2:
+                case SendOutboxMessageCompletedSagaEvent sendOutboxMessageCompletedEvent2:
                     if (sendOutboxMessageCompletedEvent2.MessageItem.ToPeer.PeerType == PeerType.Channel)
                     {
                         yield return DialogId.Create(sendOutboxMessageCompletedEvent2.MessageItem.SenderPeer.PeerId,
@@ -53,7 +54,7 @@ public class DialogReadModelLocator : IDialogReadModelLocator
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(
-                        $"Not supported domain event:{aggregateEvent.GetType().Name} for DialogReadModelLocator");
+                        $"Not supported domain event: {aggregateEvent.GetType().Name} for DialogReadModelLocator");
             }
         }
     }

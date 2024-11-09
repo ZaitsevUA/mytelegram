@@ -40,7 +40,7 @@ internal sealed class GetFullChannelHandler(
                 new GetDialogByIdQuery(DialogId.Create(input.UserId, PeerType.Channel, inputChannel.ChannelId)));
             if (dialogReadModel == null)
             {
-                logger.LogWarning("Dialog not exists,userId={UserId},ToPeer={ToPeer}", input.UserId, new Peer(PeerType.Channel, inputChannel.ChannelId));
+                logger.LogWarning("Dialog not exists, userId: {UserId}, toPeer: {ToPeer}", input.UserId, new Peer(PeerType.Channel, inputChannel.ChannelId));
             }
             else
             {

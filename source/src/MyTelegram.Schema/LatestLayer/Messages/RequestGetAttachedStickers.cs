@@ -5,6 +5,9 @@ namespace MyTelegram.Schema.Messages;
 
 ///<summary>
 /// Get stickers attached to a photo or video
+/// <para>Possible errors</para>
+/// Code Type Description
+/// 400 MEDIA_EMPTY The provided media object is invalid.
 /// See <a href="https://corefork.telegram.org/method/messages.getAttachedStickers" />
 ///</summary>
 [TlObject(0xcc5b67cc)]

@@ -4,13 +4,13 @@
 namespace MyTelegram.Schema;
 
 ///<summary>
-/// A <a href="https://core.telegram.org/api/sponsored-messages">sponsored message</a>.
+/// A <a href="https://corefork.telegram.org/api/sponsored-messages">sponsored message</a>.
 /// See <a href="https://corefork.telegram.org/constructor/sponsoredMessage" />
 ///</summary>
-[TlObject(0xbdedf566)]
+[TlObject(0x4d93a990)]
 public sealed class TSponsoredMessage : ISponsoredMessage
 {
-    public uint ConstructorId => 0xbdedf566;
+    public uint ConstructorId => 0x4d93a990;
     ///<summary>
     /// Flags, see <a href="https://corefork.telegram.org/mtproto/TL-combinators#conditional-fields">TL conditional fields</a>
     ///</summary>
@@ -21,13 +21,26 @@ public sealed class TSponsoredMessage : ISponsoredMessage
     /// See <a href="https://corefork.telegram.org/type/true" />
     ///</summary>
     public bool Recommended { get; set; }
+
+    ///<summary>
+    /// Whether this message can be <a href="https://corefork.telegram.org/api/sponsored-messages#reporting-sponsored-messages">reported as specified here »</a>.
+    /// See <a href="https://corefork.telegram.org/type/true" />
+    ///</summary>
     public bool CanReport { get; set; }
 
     ///<summary>
     /// Message ID
     ///</summary>
     public byte[] RandomId { get; set; }
+
+    ///<summary>
+    /// Contains the URL to open when the user clicks on the sponsored message.
+    ///</summary>
     public string Url { get; set; }
+
+    ///<summary>
+    /// Contains the title of the sponsored message.
+    ///</summary>
     public string Title { get; set; }
 
     ///<summary>
@@ -36,14 +49,25 @@ public sealed class TSponsoredMessage : ISponsoredMessage
     public string Message { get; set; }
 
     ///<summary>
-    /// <a href="https://corefork.telegram.org/api/entities">Message entities for styled text</a>
+    /// <a href="https://corefork.telegram.org/api/entities">Message entities for styled text</a> in <code>message</code>.
     ///</summary>
     public TVector<MyTelegram.Schema.IMessageEntity>? Entities { get; set; }
+
+    ///<summary>
+    /// If set, contains a custom profile photo bubble that should be displayed for the sponsored message, like for messages sent in groups.
+    /// See <a href="https://corefork.telegram.org/type/Photo" />
+    ///</summary>
     public MyTelegram.Schema.IPhoto? Photo { get; set; }
+    public MyTelegram.Schema.IMessageMedia? Media { get; set; }
+
+    ///<summary>
+    /// If set, the sponsored message should use the <a href="https://corefork.telegram.org/api/colors">message accent color »</a> specified in <code>color</code>.
+    /// See <a href="https://corefork.telegram.org/type/PeerColor" />
+    ///</summary>
     public MyTelegram.Schema.IPeerColor? Color { get; set; }
 
     ///<summary>
-    /// Text of the sponsored message button.
+    /// Label of the sponsored message button.
     ///</summary>
     public string ButtonText { get; set; }
 
@@ -63,6 +87,7 @@ public sealed class TSponsoredMessage : ISponsoredMessage
         if (CanReport) { Flags[12] = true; }
         if (Entities?.Count > 0) { Flags[1] = true; }
         if (Photo != null) { Flags[6] = true; }
+        if (Media != null) { Flags[14] = true; }
         if (Color != null) { Flags[13] = true; }
         if (SponsorInfo != null) { Flags[7] = true; }
         if (AdditionalInfo != null) { Flags[8] = true; }
@@ -79,6 +104,7 @@ public sealed class TSponsoredMessage : ISponsoredMessage
         writer.Write(Message);
         if (Flags[1]) { writer.Write(Entities); }
         if (Flags[6]) { writer.Write(Photo); }
+        if (Flags[14]) { writer.Write(Media); }
         if (Flags[13]) { writer.Write(Color); }
         writer.Write(ButtonText);
         if (Flags[7]) { writer.Write(SponsorInfo); }
@@ -96,6 +122,7 @@ public sealed class TSponsoredMessage : ISponsoredMessage
         Message = reader.ReadString();
         if (Flags[1]) { Entities = reader.Read<TVector<MyTelegram.Schema.IMessageEntity>>(); }
         if (Flags[6]) { Photo = reader.Read<MyTelegram.Schema.IPhoto>(); }
+        if (Flags[14]) { Media = reader.Read<MyTelegram.Schema.IMessageMedia>(); }
         if (Flags[13]) { Color = reader.Read<MyTelegram.Schema.IPeerColor>(); }
         ButtonText = reader.ReadString();
         if (Flags[7]) { SponsorInfo = reader.ReadString(); }

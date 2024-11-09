@@ -4,14 +4,27 @@
 namespace MyTelegram.Schema.Messages;
 
 ///<summary>
+/// <a href="https://corefork.telegram.org/api/folders">Folder and folder tags</a> information
 /// See <a href="https://corefork.telegram.org/constructor/messages.dialogFilters" />
 ///</summary>
 [TlObject(0x2ad93719)]
 public sealed class TDialogFilters : IDialogFilters
 {
     public uint ConstructorId => 0x2ad93719;
+    ///<summary>
+    /// Flags, see <a href="https://corefork.telegram.org/mtproto/TL-combinators#conditional-fields">TL conditional fields</a>
+    ///</summary>
     public BitArray Flags { get; set; } = new BitArray(32);
+
+    ///<summary>
+    /// Whether <a href="https://corefork.telegram.org/api/folders#folder-tags">folder tags</a> are enabled.
+    /// See <a href="https://corefork.telegram.org/type/true" />
+    ///</summary>
     public bool TagsEnabled { get; set; }
+
+    ///<summary>
+    /// Folders.
+    ///</summary>
     public TVector<MyTelegram.Schema.IDialogFilter> Filters { get; set; }
 
     public void ComputeFlag()

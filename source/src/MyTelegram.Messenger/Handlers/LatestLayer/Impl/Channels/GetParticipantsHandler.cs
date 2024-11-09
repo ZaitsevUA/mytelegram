@@ -146,7 +146,7 @@ internal sealed class GetParticipantsHandler : RpcResultObjectHandler<MyTelegram
             }
 
             var userReadModels = await _queryProcessor
-                .ProcessAsync(new GetUsersByUidListQuery(userIdList), default);
+                .ProcessAsync(new GetUsersByUserIdListQuery(userIdList), default);
             var contactReadModels = await _queryProcessor
                 .ProcessAsync(new GetContactListQuery(input.UserId, userIdList));
             var privacies = await _privacyAppService.GetPrivacyListAsync(userIdList);

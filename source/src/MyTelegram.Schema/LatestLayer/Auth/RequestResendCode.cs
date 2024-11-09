@@ -18,6 +18,9 @@ namespace MyTelegram.Schema.Auth;
 public sealed class RequestResendCode : IRequest<MyTelegram.Schema.Auth.ISentCode>
 {
     public uint ConstructorId => 0xcae47523;
+    ///<summary>
+    /// Flags, see <a href="https://corefork.telegram.org/mtproto/TL-combinators#conditional-fields">TL conditional fields</a>
+    ///</summary>
     public BitArray Flags { get; set; } = new BitArray(32);
 
     ///<summary>
@@ -29,6 +32,10 @@ public sealed class RequestResendCode : IRequest<MyTelegram.Schema.Auth.ISentCod
     /// The phone code hash obtained from <a href="https://corefork.telegram.org/method/auth.sendCode">auth.sendCode</a>
     ///</summary>
     public string PhoneCodeHash { get; set; }
+
+    ///<summary>
+    /// Official clients only, used if the device integrity verification failed, and no secret could be obtained to invoke <a href="https://corefork.telegram.org/method/auth.requestFirebaseSms">auth.requestFirebaseSms</a>: in this case, the device integrity verification failure reason must be passed here.
+    ///</summary>
     public string? Reason { get; set; }
 
     public void ComputeFlag()

@@ -7,17 +7,17 @@ namespace MyTelegram.Schema;
 /// Contains a <a href="https://corefork.telegram.org/api/links#premium-giftcode-links">Telegram Premium giftcode link</a>.
 /// See <a href="https://corefork.telegram.org/constructor/messageActionGiftCode" />
 ///</summary>
-[TlObject(0x678c2e09)]
+[TlObject(0x56d03994)]
 public sealed class TMessageActionGiftCode : IMessageAction
 {
-    public uint ConstructorId => 0x678c2e09;
+    public uint ConstructorId => 0x56d03994;
     ///<summary>
     /// Flags, see <a href="https://corefork.telegram.org/mtproto/TL-combinators#conditional-fields">TL conditional fields</a>
     ///</summary>
     public BitArray Flags { get; set; } = new BitArray(32);
 
     ///<summary>
-    /// If set, this gift code was received from a <a href="https://corefork.telegram.org/api/giveaways">giveaway »</a> started by a channel we're subscribed to.
+    /// If set, this gift code was received from a <a href="https://corefork.telegram.org/api/giveaways">giveaway »</a> started by a channel/supergroup we're subscribed to.
     /// See <a href="https://corefork.telegram.org/type/true" />
     ///</summary>
     public bool ViaGiveaway { get; set; }
@@ -29,7 +29,7 @@ public sealed class TMessageActionGiftCode : IMessageAction
     public bool Unclaimed { get; set; }
 
     ///<summary>
-    /// Identifier of the channel that created the gift code <a href="https://corefork.telegram.org/api/giveaways">either directly or through a giveaway</a>: if we import this giftcode link, we will also automatically <a href="https://corefork.telegram.org/api/boost">boost</a> this channel.
+    /// Identifier of the channel/supergroup that created the gift code <a href="https://corefork.telegram.org/api/giveaways">either directly or through a giveaway</a>: if we import this giftcode link, we will also automatically <a href="https://corefork.telegram.org/api/boost">boost</a> this channel/supergroup.
     /// See <a href="https://corefork.telegram.org/type/Peer" />
     ///</summary>
     public MyTelegram.Schema.IPeer? BoostPeer { get; set; }
@@ -63,6 +63,7 @@ public sealed class TMessageActionGiftCode : IMessageAction
     /// If <code>crypto_currency</code> is set, contains the paid amount, in the smallest units of the cryptocurrency.
     ///</summary>
     public long? CryptoAmount { get; set; }
+    public MyTelegram.Schema.ITextWithEntities? Message { get; set; }
 
     public void ComputeFlag()
     {
@@ -73,6 +74,7 @@ public sealed class TMessageActionGiftCode : IMessageAction
         if (/*Amount != 0 &&*/ Amount.HasValue) { Flags[2] = true; }
         if (CryptoCurrency != null) { Flags[3] = true; }
         if (/*CryptoAmount != 0 &&*/ CryptoAmount.HasValue) { Flags[3] = true; }
+        if (Message != null) { Flags[4] = true; }
     }
 
     public void Serialize(IBufferWriter<byte> writer)
@@ -87,6 +89,7 @@ public sealed class TMessageActionGiftCode : IMessageAction
         if (Flags[2]) { writer.Write(Amount.Value); }
         if (Flags[3]) { writer.Write(CryptoCurrency); }
         if (Flags[3]) { writer.Write(CryptoAmount.Value); }
+        if (Flags[4]) { writer.Write(Message); }
     }
 
     public void Deserialize(ref SequenceReader<byte> reader)
@@ -101,5 +104,6 @@ public sealed class TMessageActionGiftCode : IMessageAction
         if (Flags[2]) { Amount = reader.ReadInt64(); }
         if (Flags[3]) { CryptoCurrency = reader.ReadString(); }
         if (Flags[3]) { CryptoAmount = reader.ReadInt64(); }
+        if (Flags[4]) { Message = reader.Read<MyTelegram.Schema.ITextWithEntities>(); }
     }
 }

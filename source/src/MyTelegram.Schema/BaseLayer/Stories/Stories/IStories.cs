@@ -9,6 +9,9 @@ namespace MyTelegram.Schema.Stories;
 [JsonDerivedType(typeof(TStories), nameof(TStories))]
 public interface IStories : IObject
 {
+    ///<summary>
+    /// Flags, see <a href="https://corefork.telegram.org/mtproto/TL-combinators#conditional-fields">TL conditional fields</a>
+    ///</summary>
     BitArray Flags { get; set; }
 
     ///<summary>
@@ -21,6 +24,10 @@ public interface IStories : IObject
     /// See <a href="https://corefork.telegram.org/type/StoryItem" />
     ///</summary>
     TVector<MyTelegram.Schema.IStoryItem> Stories { get; set; }
+
+    ///<summary>
+    /// IDs of pinned stories.
+    ///</summary>
     TVector<int>? PinnedToTop { get; set; }
 
     ///<summary>

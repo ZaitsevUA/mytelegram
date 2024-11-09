@@ -13,24 +13,24 @@ namespace MyTelegram.Schema.Channels;
 /// 400 CHAT_NOT_MODIFIED No changes were made to chat information because the new information you passed is identical to the current information.
 /// See <a href="https://corefork.telegram.org/method/channels.toggleSignatures" />
 ///</summary>
-[TlObject(0x1f69b606)]
+[TlObject(0x418d549c)]
 public sealed class RequestToggleSignatures : IRequest<MyTelegram.Schema.IUpdates>
 {
-    public uint ConstructorId => 0x1f69b606;
+    public uint ConstructorId => 0x418d549c;
+    public BitArray Flags { get; set; } = new BitArray(32);
+    public bool SignaturesEnabled { get; set; }
+    public bool ProfilesEnabled { get; set; }
+
     ///<summary>
     /// Channel
     /// See <a href="https://corefork.telegram.org/type/InputChannel" />
     ///</summary>
     public MyTelegram.Schema.IInputChannel Channel { get; set; }
 
-    ///<summary>
-    /// Value
-    /// See <a href="https://corefork.telegram.org/type/Bool" />
-    ///</summary>
-    public bool Enabled { get; set; }
-
     public void ComputeFlag()
     {
+        if (SignaturesEnabled) { Flags[0] = true; }
+        if (ProfilesEnabled) { Flags[1] = true; }
 
     }
 
@@ -38,13 +38,15 @@ public sealed class RequestToggleSignatures : IRequest<MyTelegram.Schema.IUpdate
     {
         ComputeFlag();
         writer.Write(ConstructorId);
+        writer.Write(Flags);
         writer.Write(Channel);
-        writer.Write(Enabled);
     }
 
     public void Deserialize(ref SequenceReader<byte> reader)
     {
+        Flags = reader.ReadBitArray();
+        if (Flags[0]) { SignaturesEnabled = true; }
+        if (Flags[1]) { ProfilesEnabled = true; }
         Channel = reader.Read<MyTelegram.Schema.IInputChannel>();
-        Enabled = reader.Read();
     }
 }

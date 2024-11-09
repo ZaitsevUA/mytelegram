@@ -4,13 +4,13 @@
 namespace MyTelegram.Schema;
 
 ///<summary>
-/// Extended user info
+/// Extended user infoWhen updating the <a href="https://corefork.telegram.org/api/peers">local peer database »</a>, all fields from the newly received constructor take priority over the old constructor cached locally (including by removing fields that aren't set in the new constructor).
 /// See <a href="https://corefork.telegram.org/constructor/userFull" />
 ///</summary>
-[TlObject(0xcc997720)]
+[TlObject(0x1f58e369)]
 public sealed class TUserFull : IUserFull
 {
-    public uint ConstructorId => 0xcc997720;
+    public uint ConstructorId => 0x1f58e369;
     ///<summary>
     /// Flags, see <a href="https://corefork.telegram.org/mtproto/TL-combinators#conditional-fields">TL conditional fields</a>
     ///</summary>
@@ -81,10 +81,30 @@ public sealed class TUserFull : IUserFull
     /// See <a href="https://corefork.telegram.org/type/true" />
     ///</summary>
     public bool WallpaperOverridden { get; set; }
+
+    ///<summary>
+    /// If set, we cannot write to this user: subscribe to <a href="https://corefork.telegram.org/api/premium">Telegram Premium</a> to get permission to write to this user. <br>To set this flag for ourselves invoke <a href="https://corefork.telegram.org/method/account.setGlobalPrivacySettings">account.setGlobalPrivacySettings</a>, setting the <code>settings.new_noncontact_peers_require_premium</code> flag, see <a href="https://corefork.telegram.org/api/privacy#require-premium-for-new-non-contact-users">here »</a> for more info.
+    /// See <a href="https://corefork.telegram.org/type/true" />
+    ///</summary>
     public bool ContactRequirePremium { get; set; }
+
+    ///<summary>
+    /// If set, we cannot fetch the exact read date of messages we send to this user using <a href="https://corefork.telegram.org/method/messages.getOutboxReadDate">messages.getOutboxReadDate</a>.  <br>The exact read date of messages might still be unavailable for other reasons, see <a href="https://corefork.telegram.org/method/messages.getOutboxReadDate">here »</a> for more info.  <br>To set this flag for ourselves invoke <a href="https://corefork.telegram.org/method/account.setGlobalPrivacySettings">account.setGlobalPrivacySettings</a>, setting the <code>settings.hide_read_marks</code> flag.
+    /// See <a href="https://corefork.telegram.org/type/true" />
+    ///</summary>
     public bool ReadDatesPrivate { get; set; }
+
+    ///<summary>
+    /// Flags, see <a href="https://corefork.telegram.org/mtproto/TL-combinators#conditional-fields">TL conditional fields</a>
+    ///</summary>
     public BitArray Flags2 { get; set; } = new BitArray(32);
+
+    ///<summary>
+    /// Whether ads were re-enabled for the current account (only accessible to the currently logged-in user), see <a href="https://corefork.telegram.org/api/business#re-enable-ads">here »</a> for more info.
+    /// See <a href="https://corefork.telegram.org/type/true" />
+    ///</summary>
     public bool SponsoredEnabled { get; set; }
+    public bool CanViewRevenue { get; set; }
 
     ///<summary>
     /// User ID
@@ -190,14 +210,53 @@ public sealed class TUserFull : IUserFull
     /// See <a href="https://corefork.telegram.org/type/PeerStories" />
     ///</summary>
     public MyTelegram.Schema.IPeerStories? Stories { get; set; }
+
+    ///<summary>
+    /// <a href="https://corefork.telegram.org/api/business#opening-hours">Telegram Business working hours »</a>.
+    /// See <a href="https://corefork.telegram.org/type/BusinessWorkHours" />
+    ///</summary>
     public MyTelegram.Schema.IBusinessWorkHours? BusinessWorkHours { get; set; }
+
+    ///<summary>
+    /// <a href="https://corefork.telegram.org/api/business#location">Telegram Business location »</a>.
+    /// See <a href="https://corefork.telegram.org/type/BusinessLocation" />
+    ///</summary>
     public MyTelegram.Schema.IBusinessLocation? BusinessLocation { get; set; }
+
+    ///<summary>
+    /// <a href="https://corefork.telegram.org/api/business#greeting-messages">Telegram Business greeting message »</a>.
+    /// See <a href="https://corefork.telegram.org/type/BusinessGreetingMessage" />
+    ///</summary>
     public MyTelegram.Schema.IBusinessGreetingMessage? BusinessGreetingMessage { get; set; }
+
+    ///<summary>
+    /// <a href="https://corefork.telegram.org/api/business#away-messages">Telegram Business away message »</a>.
+    /// See <a href="https://corefork.telegram.org/type/BusinessAwayMessage" />
+    ///</summary>
     public MyTelegram.Schema.IBusinessAwayMessage? BusinessAwayMessage { get; set; }
+
+    ///<summary>
+    /// Specifies a custom <a href="https://corefork.telegram.org/api/business#business-introduction">Telegram Business profile introduction »</a>.
+    /// See <a href="https://corefork.telegram.org/type/BusinessIntro" />
+    ///</summary>
     public MyTelegram.Schema.IBusinessIntro? BusinessIntro { get; set; }
+
+    ///<summary>
+    /// Contains info about the user's <a href="https://corefork.telegram.org/api/profile#birthday">birthday »</a>.
+    /// See <a href="https://corefork.telegram.org/type/Birthday" />
+    ///</summary>
     public MyTelegram.Schema.IBirthday? Birthday { get; set; }
+
+    ///<summary>
+    /// ID of the associated personal <a href="https://corefork.telegram.org/api/channel">channel »</a>, that should be shown in the <a href="https://corefork.telegram.org/api/profile#personal-channel">profile page</a>.
+    ///</summary>
     public long? PersonalChannelId { get; set; }
+
+    ///<summary>
+    /// ID of the latest message of the associated personal <a href="https://corefork.telegram.org/api/channel">channel »</a>, that should be previewed in the <a href="https://corefork.telegram.org/api/profile#personal-channel">profile page</a>.
+    ///</summary>
     public int? PersonalChannelMessage { get; set; }
+    public int? StargiftsCount { get; set; }
 
     public void ComputeFlag()
     {
@@ -215,6 +274,7 @@ public sealed class TUserFull : IUserFull
         if (ContactRequirePremium) { Flags[29] = true; }
         if (ReadDatesPrivate) { Flags[30] = true; }
         if (SponsoredEnabled) { Flags2[7] = true; }
+        if (CanViewRevenue) { Flags2[9] = true; }
         if (About != null) { Flags[1] = true; }
         if (PersonalPhoto != null) { Flags[21] = true; }
         if (ProfilePhoto != null) { Flags[2] = true; }
@@ -238,6 +298,7 @@ public sealed class TUserFull : IUserFull
         if (Birthday != null) { Flags2[5] = true; }
         if (/*PersonalChannelId != 0 &&*/ PersonalChannelId.HasValue) { Flags2[6] = true; }
         if (/*PersonalChannelMessage != 0 && */PersonalChannelMessage.HasValue) { Flags2[6] = true; }
+        if (/*StargiftsCount != 0 && */StargiftsCount.HasValue) { Flags2[8] = true; }
     }
 
     public void Serialize(IBufferWriter<byte> writer)
@@ -273,6 +334,7 @@ public sealed class TUserFull : IUserFull
         if (Flags2[5]) { writer.Write(Birthday); }
         if (Flags2[6]) { writer.Write(PersonalChannelId.Value); }
         if (Flags2[6]) { writer.Write(PersonalChannelMessage.Value); }
+        if (Flags2[8]) { writer.Write(StargiftsCount.Value); }
     }
 
     public void Deserialize(ref SequenceReader<byte> reader)
@@ -293,6 +355,7 @@ public sealed class TUserFull : IUserFull
         if (Flags[30]) { ReadDatesPrivate = true; }
         Flags2 = reader.ReadBitArray();
         if (Flags2[7]) { SponsoredEnabled = true; }
+        if (Flags2[9]) { CanViewRevenue = true; }
         Id = reader.ReadInt64();
         if (Flags[1]) { About = reader.ReadString(); }
         Settings = reader.Read<MyTelegram.Schema.IPeerSettings>();
@@ -320,5 +383,6 @@ public sealed class TUserFull : IUserFull
         if (Flags2[5]) { Birthday = reader.Read<MyTelegram.Schema.IBirthday>(); }
         if (Flags2[6]) { PersonalChannelId = reader.ReadInt64(); }
         if (Flags2[6]) { PersonalChannelMessage = reader.ReadInt32(); }
+        if (Flags2[8]) { StargiftsCount = reader.ReadInt32(); }
     }
 }

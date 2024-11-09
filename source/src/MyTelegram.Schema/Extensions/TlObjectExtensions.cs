@@ -1,7 +1,4 @@
-﻿using System.Buffers;
-using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
-using MyTelegram.Schema.Serializer;
+﻿using System.Diagnostics.CodeAnalysis;
 
 namespace MyTelegram.Schema.Extensions;
 
@@ -41,6 +38,30 @@ public class ArrayBufferWriterPool<T>
 
 public static class TlObjectExtensions
 {
+    public static long GetFileId(this IInputFile? file)
+    {
+        switch (file)
+        {
+            case null:
+                return 0;
+            case TInputFile inputFile:
+                return inputFile.Id;
+            case TInputFileBig inputFileBig:
+                return inputFileBig.Id;
+            case TInputFileStoryDocument inputFileStoryDocument:
+                switch (inputFileStoryDocument.Id)
+                {
+                    case TInputDocument inputDocument:
+                        return inputDocument.Id;
+                    case TInputDocumentEmpty:
+                        return 0;
+                }
+                break;
+        }
+
+        return 0;
+    }
+
     //private static readonly BytesSerializer BytesSerializer = new();
     //[return: NotNullIfNotNull("obj")]
     //public static byte[]? ToBytes(this IObject? obj)

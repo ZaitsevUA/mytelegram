@@ -4,6 +4,7 @@
 namespace MyTelegram.Schema.Smsjobs;
 
 ///<summary>
+/// Get SMS jobs status (official clients only).
 /// See <a href="https://corefork.telegram.org/method/smsjobs.getStatus" />
 ///</summary>
 [TlObject(0x10a698e8)]

@@ -23,9 +23,9 @@ public class UserConverterLatest(
 
     //ITlPhotoConverterLayer143 photoConverter,
     //_layeredPhotoService = layeredPhotoService;
-    public virtual IUser ToUser(SignInSuccessEvent aggregateEvent)
+    public virtual IUser ToUser(SignInSuccessSagaEvent aggregateEvent)
     {
-        return ObjectMapper.Map<SignInSuccessEvent, TUser>(aggregateEvent);
+        return ObjectMapper.Map<SignInSuccessSagaEvent, TUser>(aggregateEvent);
     }
 
     public virtual IUser ToUser(UserCreatedEvent aggregateEvent)

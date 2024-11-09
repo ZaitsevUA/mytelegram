@@ -13,7 +13,6 @@ internal sealed class MsgsAckHandler : BaseObjectHandler<TMsgsAck, IObject>, IMs
     protected override Task<IObject> HandleCoreAsync(IRequestInput input,
         TMsgsAck obj)
     {
-        _logger.LogInformation("Receive acks from userId {UserId}:@{MsgIds}", input.UserId, obj.MsgIds);
         return Task.FromResult<IObject>(null!);
         //IObject r = new TMsgsAck
         //{

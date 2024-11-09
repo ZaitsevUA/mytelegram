@@ -10,6 +10,7 @@ public interface IMediaHelper
     Task<IMessageMedia> SaveMediaAsync(IInputMedia media);
 
     Task<SavePhotoResult> SavePhotoAsync(long reqMsgId,
+        long userId,
         long fileId,
         bool hasVideo,
         double? videoStartTs,
@@ -17,5 +18,5 @@ public interface IMediaHelper
         string name,
         string md5,
         IVideoSize? videoEmojiMarkup = null
-        );
+    );
 }

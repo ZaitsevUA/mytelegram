@@ -4,15 +4,33 @@
 namespace MyTelegram.Schema;
 
 ///<summary>
+/// Contains info about a <a href="https://corefork.telegram.org/api/stickers">stickerset »</a>, for a <a href="https://corefork.telegram.org/constructor/webPage">webPage</a> preview of a <a href="https://corefork.telegram.org/api/links#stickerset-links">stickerset deep link »</a> (the <a href="https://corefork.telegram.org/constructor/webPage">webPage</a> will have a <code>type</code> of <code>telegram_stickerset</code>).
 /// See <a href="https://corefork.telegram.org/constructor/webPageAttributeStickerSet" />
 ///</summary>
 [TlObject(0x50cc03d3)]
 public sealed class TWebPageAttributeStickerSet : IWebPageAttribute
 {
     public uint ConstructorId => 0x50cc03d3;
+    ///<summary>
+    /// Flags, see <a href="https://corefork.telegram.org/mtproto/TL-combinators#conditional-fields">TL conditional fields</a>
+    ///</summary>
     public BitArray Flags { get; set; } = new BitArray(32);
+
+    ///<summary>
+    /// Whether this i s a <a href="https://corefork.telegram.org/api/custom-emoji">custom emoji stickerset</a>.
+    /// See <a href="https://corefork.telegram.org/type/true" />
+    ///</summary>
     public bool Emojis { get; set; }
+
+    ///<summary>
+    /// Whether the color of this TGS custom emoji stickerset should be changed to the text color when used in messages, the accent color if used as emoji status, white on chat photos, or another appropriate color based on context.
+    /// See <a href="https://corefork.telegram.org/type/true" />
+    ///</summary>
     public bool TextColor { get; set; }
+
+    ///<summary>
+    /// A subset of the stickerset in the stickerset.
+    ///</summary>
     public TVector<MyTelegram.Schema.IDocument> Stickers { get; set; }
 
     public void ComputeFlag()

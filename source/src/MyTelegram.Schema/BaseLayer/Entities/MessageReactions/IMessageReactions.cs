@@ -23,6 +23,10 @@ public interface IMessageReactions : IObject
     /// Whether <a href="https://corefork.telegram.org/method/messages.getMessageReactionsList">messages.getMessageReactionsList</a> can be used to see how each specific peer reacted to the message
     ///</summary>
     bool CanSeeList { get; set; }
+
+    ///<summary>
+    /// If set or if there are no reactions, all present and future reactions should be treated as <a href="https://corefork.telegram.org/api/saved-messages#tags">message tags, see here » for more info</a>.
+    ///</summary>
     bool ReactionsAsTags { get; set; }
 
     ///<summary>
@@ -36,4 +40,5 @@ public interface IMessageReactions : IObject
     /// See <a href="https://corefork.telegram.org/type/MessagePeerReaction" />
     ///</summary>
     TVector<MyTelegram.Schema.IMessagePeerReaction>? RecentReactions { get; set; }
+    TVector<MyTelegram.Schema.IMessageReactor>? TopReactors { get; set; }
 }

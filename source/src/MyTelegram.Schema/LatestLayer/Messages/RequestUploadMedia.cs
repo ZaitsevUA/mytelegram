@@ -31,7 +31,14 @@ namespace MyTelegram.Schema.Messages;
 public sealed class RequestUploadMedia : IRequest<MyTelegram.Schema.IMessageMedia>
 {
     public uint ConstructorId => 0x14967978;
+    ///<summary>
+    /// Flags, see <a href="https://corefork.telegram.org/mtproto/TL-combinators#conditional-fields">TL conditional fields</a>
+    ///</summary>
     public BitArray Flags { get; set; } = new BitArray(32);
+
+    ///<summary>
+    /// Whether the media will be used only in the specified <a href="https://corefork.telegram.org/api/business#connected-bots">business connection »</a>, and not directly by the bot.
+    ///</summary>
     public string? BusinessConnectionId { get; set; }
 
     ///<summary>

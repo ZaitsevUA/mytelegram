@@ -81,8 +81,18 @@ public sealed class TMessage : IMessage
     /// See <a href="https://corefork.telegram.org/type/true" />
     ///</summary>
     public bool InvertMedia { get; set; }
+
+    ///<summary>
+    /// Flags, see <a href="https://corefork.telegram.org/mtproto/TL-combinators#conditional-fields">TL conditional fields</a>
+    ///</summary>
     public BitArray Flags2 { get; set; } = new BitArray(32);
+
+    ///<summary>
+    /// If set, the message was sent because of a scheduled action by the message sender, for example, as away, or a greeting service message.
+    /// See <a href="https://corefork.telegram.org/type/true" />
+    ///</summary>
     public bool Offline { get; set; }
+    public bool VideoProcessingPending { get; set; }
 
     ///<summary>
     /// ID of the message
@@ -94,6 +104,10 @@ public sealed class TMessage : IMessage
     /// See <a href="https://corefork.telegram.org/type/Peer" />
     ///</summary>
     public MyTelegram.Schema.IPeer? FromId { get; set; }
+
+    ///<summary>
+    /// Supergroups only, contains the number of <a href="https://corefork.telegram.org/api/boost">boosts</a> this user has given the current supergroup, and should be shown in the UI in the header of the message. <br>Only present for incoming messages from non-anonymous supergroup members that have boosted the supergroup. <br>Note that this counter should be locally overridden for non-anonymous <em>outgoing</em> messages, according to the current value of <a href="https://corefork.telegram.org/constructor/channelFull">channelFull</a>.<code>boosts_applied</code>, to ensure the value is correct even for messages sent by the current user before a supergroup was boosted (or after a boost has expired or the number of boosts has changed); do not update this value for incoming messages from other users, even if their boosts have changed.
+    ///</summary>
     public int? FromBoostsApplied { get; set; }
 
     ///<summary>
@@ -118,6 +132,10 @@ public sealed class TMessage : IMessage
     /// ID of the inline bot that generated the message
     ///</summary>
     public long? ViaBotId { get; set; }
+
+    ///<summary>
+    /// Whether the message was sent by the <a href="https://corefork.telegram.org/api/business#connected-bots">business bot</a> specified in <code>via_bot_id</code> on behalf of the user.
+    ///</summary>
     public long? ViaBusinessBotId { get; set; }
 
     ///<summary>
@@ -199,8 +217,21 @@ public sealed class TMessage : IMessage
     /// Time To Live of the message, once message.date+message.ttl_period === time(), the message will be deleted on the server, and must be deleted locally as well.
     ///</summary>
     public int? TtlPeriod { get; set; }
+
+    ///<summary>
+    /// If set, this message is a <a href="https://corefork.telegram.org/api/business#quick-reply-shortcuts">quick reply shortcut message »</a> (note that quick reply shortcut messages <em>sent</em> to a private chat will <em>not</em> have this field set).
+    ///</summary>
     public int? QuickReplyShortcutId { get; set; }
+
+    ///<summary>
+    /// A <a href="https://corefork.telegram.org/api/effects">message effect that should be played as specified here »</a>.
+    ///</summary>
     public long? Effect { get; set; }
+
+    ///<summary>
+    /// Represents a <a href="https://corefork.telegram.org/api/factcheck">fact-check »</a>.
+    /// See <a href="https://corefork.telegram.org/type/FactCheck" />
+    ///</summary>
     public MyTelegram.Schema.IFactCheck? Factcheck { get; set; }
 
     public void ComputeFlag()
@@ -217,6 +248,7 @@ public sealed class TMessage : IMessage
         if (Noforwards) { Flags[26] = true; }
         if (InvertMedia) { Flags[27] = true; }
         if (Offline) { Flags2[1] = true; }
+        if (VideoProcessingPending) { Flags2[4] = true; }
         if (FromId != null) { Flags[8] = true; }
         if (/*FromBoostsApplied != 0 && */FromBoostsApplied.HasValue) { Flags[29] = true; }
         if (SavedPeerId != null) { Flags[28] = true; }
@@ -291,6 +323,7 @@ public sealed class TMessage : IMessage
         if (Flags[27]) { InvertMedia = true; }
         Flags2 = reader.ReadBitArray();
         if (Flags2[1]) { Offline = true; }
+        if (Flags2[4]) { VideoProcessingPending = true; }
         Id = reader.ReadInt32();
         if (Flags[8]) { FromId = reader.Read<MyTelegram.Schema.IPeer>(); }
         if (Flags[29]) { FromBoostsApplied = reader.ReadInt32(); }

@@ -7,6 +7,7 @@ namespace MyTelegram.Schema.Phone;
 /// Start screen sharing in a call
 /// <para>Possible errors</para>
 /// Code Type Description
+/// 400 GROUPCALL_INVALID The specified group call is invalid.
 /// 403 PARTICIPANT_JOIN_MISSING Trying to enable a presentation, when the user hasn't joined the Video Chat with <a href="https://corefork.telegram.org/method/phone.joinGroupCall">phone.joinGroupCall</a>.
 /// See <a href="https://corefork.telegram.org/method/phone.joinGroupCallPresentation" />
 ///</summary>

@@ -5,6 +5,9 @@ namespace MyTelegram.Schema.Chatlists;
 
 ///<summary>
 /// Delete a folder imported using a <a href="https://corefork.telegram.org/api/links#chat-folder-links">chat folder deep link »</a>
+/// <para>Possible errors</para>
+/// Code Type Description
+/// 400 FILTER_ID_INVALID The specified filter ID is invalid.
 /// See <a href="https://corefork.telegram.org/method/chatlists.leaveChatlist" />
 ///</summary>
 [TlObject(0x74fae13a)]

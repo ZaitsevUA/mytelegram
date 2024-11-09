@@ -4,7 +4,7 @@
 namespace MyTelegram.Schema;
 
 ///<summary>
-/// User information was updated, it must be refetched using <a href="https://corefork.telegram.org/method/users.getFullUser">users.getFullUser</a>.
+/// User (<a href="https://corefork.telegram.org/constructor/user">user</a> and/or <a href="https://corefork.telegram.org/constructor/userFull">userFull</a>) information was updated.This update can only be received through getDifference or in <a href="https://corefork.telegram.org/constructor/updates">updates</a>/<a href="https://corefork.telegram.org/constructor/updatesCombined">updatesCombined</a> constructors, so it will <strong>always</strong> come bundled with the updated <a href="https://corefork.telegram.org/constructor/user">user</a>, that should be applied <a href="https://corefork.telegram.org/api/peers">as usual »</a>, <strong>without</strong> re-fetching the info manually.However, full peer information will not come bundled in updates, so the full peer cache (<a href="https://corefork.telegram.org/constructor/userFull">userFull</a>) must be invalidated for <code>user_id</code> when receiving this update.
 /// See <a href="https://corefork.telegram.org/constructor/updateUser" />
 ///</summary>
 [TlObject(0x20529438)]

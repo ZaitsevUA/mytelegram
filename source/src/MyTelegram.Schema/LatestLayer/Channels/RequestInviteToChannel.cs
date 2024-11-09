@@ -4,7 +4,7 @@
 namespace MyTelegram.Schema.Channels;
 
 ///<summary>
-/// Invite users to a channel/supergroupMay also return 0-N updates of type <a href="https://corefork.telegram.org/constructor/updateGroupInvitePrivacyForbidden">updateGroupInvitePrivacyForbidden</a>: it indicates we couldn't add a user to a chat because of their privacy settings; if required, an <a href="https://corefork.telegram.org/api/invites">invite link</a> can be shared with the user, instead.
+/// Invite users to a channel/supergroup
 /// <para>Possible errors</para>
 /// Code Type Description
 /// 400 BOTS_TOO_MUCH There are too many bots in this chat/channel.

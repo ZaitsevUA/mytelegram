@@ -18,10 +18,10 @@ namespace MyTelegram.Schema.Messages;
 /// 400 USAGE_LIMIT_INVALID The specified usage limit is invalid.
 /// See <a href="https://corefork.telegram.org/method/messages.exportChatInvite" />
 ///</summary>
-[TlObject(0xa02ce5d5)]
+[TlObject(0xa455de90)]
 public sealed class RequestExportChatInvite : IRequest<MyTelegram.Schema.IExportedChatInvite>
 {
-    public uint ConstructorId => 0xa02ce5d5;
+    public uint ConstructorId => 0xa455de90;
     ///<summary>
     /// Flags, see <a href="https://corefork.telegram.org/mtproto/TL-combinators#conditional-fields">TL conditional fields</a>
     ///</summary>
@@ -59,6 +59,7 @@ public sealed class RequestExportChatInvite : IRequest<MyTelegram.Schema.IExport
     /// Description of the invite link, visible only to administrators
     ///</summary>
     public string? Title { get; set; }
+    public MyTelegram.Schema.IStarsSubscriptionPricing? SubscriptionPricing { get; set; }
 
     public void ComputeFlag()
     {
@@ -67,6 +68,7 @@ public sealed class RequestExportChatInvite : IRequest<MyTelegram.Schema.IExport
         if (/*ExpireDate != 0 && */ExpireDate.HasValue) { Flags[0] = true; }
         if (/*UsageLimit != 0 && */UsageLimit.HasValue) { Flags[1] = true; }
         if (Title != null) { Flags[4] = true; }
+        if (SubscriptionPricing != null) { Flags[5] = true; }
     }
 
     public void Serialize(IBufferWriter<byte> writer)
@@ -78,6 +80,7 @@ public sealed class RequestExportChatInvite : IRequest<MyTelegram.Schema.IExport
         if (Flags[0]) { writer.Write(ExpireDate.Value); }
         if (Flags[1]) { writer.Write(UsageLimit.Value); }
         if (Flags[4]) { writer.Write(Title); }
+        if (Flags[5]) { writer.Write(SubscriptionPricing); }
     }
 
     public void Deserialize(ref SequenceReader<byte> reader)
@@ -89,5 +92,6 @@ public sealed class RequestExportChatInvite : IRequest<MyTelegram.Schema.IExport
         if (Flags[0]) { ExpireDate = reader.ReadInt32(); }
         if (Flags[1]) { UsageLimit = reader.ReadInt32(); }
         if (Flags[4]) { Title = reader.ReadString(); }
+        if (Flags[5]) { SubscriptionPricing = reader.Read<MyTelegram.Schema.IStarsSubscriptionPricing>(); }
     }
 }

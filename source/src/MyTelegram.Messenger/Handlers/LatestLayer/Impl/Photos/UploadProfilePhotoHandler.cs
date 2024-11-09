@@ -37,7 +37,8 @@ internal sealed class UploadProfilePhotoHandler : RpcResultObjectHandler<MyTeleg
     {
         var file = obj.File ?? obj.Video;
         var md5 = string.Empty;
-
+        var parts = 0;
+        var name = string.Empty;
         switch (file)
         {
             case TInputFile inputFile:
@@ -48,15 +49,15 @@ internal sealed class UploadProfilePhotoHandler : RpcResultObjectHandler<MyTeleg
         }
 
         var r = await _mediaHelper.SavePhotoAsync(input.ReqMsgId,
-            file?.Id ?? 0,
+            input.UserId,
+            file.GetFileId(),
             obj.Video != null,
             obj.VideoStartTs,
-            file?.Parts ?? 0,
-            file?.Name ?? string.Empty,
+            parts,
+            name,
             md5 ?? string.Empty,
             obj.VideoEmojiMarkup
             );
-
         var command = new UploadProfilePhotoCommand(UserId.Create(input.UserId),
             input.ToRequestInfo(),
             r.PhotoId,

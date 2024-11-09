@@ -4,15 +4,33 @@
 namespace MyTelegram.Schema;
 
 ///<summary>
+/// Contains info about a <a href="https://corefork.telegram.org/api/business#connected-bots">connected business bot »</a>.
 /// See <a href="https://corefork.telegram.org/constructor/connectedBot" />
 ///</summary>
 [TlObject(0xbd068601)]
 public sealed class TConnectedBot : IConnectedBot
 {
     public uint ConstructorId => 0xbd068601;
+    ///<summary>
+    /// Flags, see <a href="https://corefork.telegram.org/mtproto/TL-combinators#conditional-fields">TL conditional fields</a>
+    ///</summary>
     public BitArray Flags { get; set; } = new BitArray(32);
+
+    ///<summary>
+    /// Whether the the bot can reply to messages it receives through the connection
+    /// See <a href="https://corefork.telegram.org/type/true" />
+    ///</summary>
     public bool CanReply { get; set; }
+
+    ///<summary>
+    /// ID of the connected bot
+    ///</summary>
     public long BotId { get; set; }
+
+    ///<summary>
+    /// Specifies the private chats that a <a href="https://corefork.telegram.org/api/business#connected-bots">connected business bot »</a> may receive messages and interact with.<br>
+    /// See <a href="https://corefork.telegram.org/type/BusinessBotRecipients" />
+    ///</summary>
     public MyTelegram.Schema.IBusinessBotRecipients Recipients { get; set; }
 
     public void ComputeFlag()

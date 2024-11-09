@@ -4,6 +4,7 @@
 namespace MyTelegram.Schema.Messages;
 
 ///<summary>
+/// Fetch the full list of usable <a href="https://corefork.telegram.org/api/effects">animated message effects »</a>.
 /// See <a href="https://corefork.telegram.org/method/messages.getAvailableEffects" />
 ///</summary>
 [TlObject(0xdea20a39)]
@@ -11,7 +12,7 @@ public sealed class RequestGetAvailableEffects : IRequest<MyTelegram.Schema.Mess
 {
     public uint ConstructorId => 0xdea20a39;
     ///<summary>
-    /// <a href="https://corefork.telegram.org/api/offsets#hash-generation">Hash for pagination, for more info click here</a>
+    /// <a href="https://corefork.telegram.org/api/offsets#hash-generation">Hash used for caching, for more info click here</a>.
     ///</summary>
     public int Hash { get; set; }
 

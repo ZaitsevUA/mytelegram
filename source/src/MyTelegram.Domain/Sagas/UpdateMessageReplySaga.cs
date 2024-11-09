@@ -1,12 +1,4 @@
-﻿using MyTelegram.Domain.Aggregates.Temp;
-using MyTelegram.Domain.Events.Temp;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace MyTelegram.Domain.Sagas;
+﻿namespace MyTelegram.Domain.Sagas;
 [JsonConverter(typeof(SystemTextJsonSingleValueObjectConverter<UpdateMessageReplySagaId>))]
 public class UpdateMessageReplySagaId(string value) : Identity<UpdateMessageReplySagaId>(value), ISagaId;
 
@@ -21,12 +13,12 @@ public class
 
 public class UpdateMessageReplySagaState : AggregateState<UpdateMessageReplySaga, UpdateMessageReplySagaId,
     UpdateMessageReplySagaState>,
-    IApply<UpdateMessageReplySagaStartedEvent>,
+    IApply<UpdateMessageReplySagaStartedSagaEvent>,
     IApply<DiscussionGroupUpdatedSagaEvent>
 {
     public RequestInfo RequestInfo { get; private set; } = default!;
 
-    public void Apply(UpdateMessageReplySagaStartedEvent aggregateEvent)
+    public void Apply(UpdateMessageReplySagaStartedSagaEvent aggregateEvent)
     {
         RequestInfo = aggregateEvent.RequestInfo;
     }
@@ -36,7 +28,7 @@ public class UpdateMessageReplySagaState : AggregateState<UpdateMessageReplySaga
     }
 }
 
-public class UpdateMessageReplySagaStartedEvent(RequestInfo requestInfo) : AggregateEvent<UpdateMessageReplySaga, UpdateMessageReplySagaId>
+public class UpdateMessageReplySagaStartedSagaEvent(RequestInfo requestInfo) : AggregateEvent<UpdateMessageReplySaga, UpdateMessageReplySagaId>
 {
     public RequestInfo RequestInfo { get; } = requestInfo;
 }

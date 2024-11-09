@@ -4,7 +4,7 @@
 namespace MyTelegram.Schema.Messages;
 
 ///<summary>
-/// Creates a new chat.May also return 0-N updates of type <a href="https://corefork.telegram.org/constructor/updateGroupInvitePrivacyForbidden">updateGroupInvitePrivacyForbidden</a>: it indicates we couldn't add a user to a chat because of their privacy settings; if required, an <a href="https://corefork.telegram.org/api/invites">invite link</a> can be shared with the user, instead.
+/// Creates a new chat.
 /// <para>Possible errors</para>
 /// Code Type Description
 /// 500 CHAT_ID_GENERATE_FAILED Failure while generating the chat ID.

@@ -4,7 +4,7 @@
 namespace MyTelegram.Schema.Stickers;
 
 ///<summary>
-/// Renames a stickerset, bots only.
+/// Renames a stickerset.
 /// <para>Possible errors</para>
 /// Code Type Description
 /// 400 STICKERSET_INVALID The provided sticker set is invalid.

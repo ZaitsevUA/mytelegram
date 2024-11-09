@@ -4,6 +4,7 @@
 namespace MyTelegram.Schema;
 
 ///<summary>
+/// The current account's <a href="https://corefork.telegram.org/api/stars">Telegram Stars balance »</a> has changed.
 /// See <a href="https://corefork.telegram.org/constructor/updateStarsBalance" />
 ///</summary>
 [TlObject(0xfb85198)]
@@ -11,7 +12,7 @@ public sealed class TUpdateStarsBalance : IUpdate
 {
     public uint ConstructorId => 0xfb85198;
     ///<summary>
-    /// &nbsp;
+    /// New balance.
     ///</summary>
     public long Balance { get; set; }
 

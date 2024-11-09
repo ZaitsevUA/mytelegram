@@ -18,7 +18,7 @@ public class MyTelegramMessengerServerInitBackgroundService(
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        logger.LogInformation("App init starting...");
+        logger.LogInformation("Query server starting...");
         handlerHelper.InitAllHandlers(typeof(MyTelegramMessengerServerExtensions).Assembly);
         await mongoDbIndexesCreator.CreateAllIndexesAsync();
         if (options.CurrentValue.UseInMemoryFilters)
@@ -27,6 +27,6 @@ public class MyTelegramMessengerServerInitBackgroundService(
          ;
         }
         //await _dataSeeder.SeedAsync();
-        logger.LogInformation("Messenger service init ok");
+        logger.LogInformation("Query server started");
     }
 }

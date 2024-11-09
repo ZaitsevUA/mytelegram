@@ -7,6 +7,7 @@ namespace MyTelegram.Schema.Stories;
 /// Uploads a <a href="https://corefork.telegram.org/api/stories">Telegram Story</a>.
 /// <para>Possible errors</para>
 /// Code Type Description
+/// 400 BOOSTS_REQUIRED The specified channel must first be <a href="https://corefork.telegram.org/api/boost">boosted by its users</a> in order to perform this action.
 /// 400 IMAGE_PROCESS_FAILED Failure while processing image.
 /// 400 MEDIA_EMPTY The provided media object is invalid.
 /// 400 MEDIA_FILE_INVALID The specified media file is invalid.

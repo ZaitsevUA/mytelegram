@@ -4,13 +4,21 @@
 namespace MyTelegram.Schema.Auth;
 
 ///<summary>
+/// The code was sent via SMS as a secret phrase starting with the word specified in <code>beginning</code>
 /// See <a href="https://corefork.telegram.org/constructor/auth.sentCodeTypeSmsPhrase" />
 ///</summary>
 [TlObject(0xb37794af)]
 public sealed class TSentCodeTypeSmsPhrase : ISentCodeType
 {
     public uint ConstructorId => 0xb37794af;
+    ///<summary>
+    /// Flags, see <a href="https://corefork.telegram.org/mtproto/TL-combinators#conditional-fields">TL conditional fields</a>
+    ///</summary>
     public BitArray Flags { get; set; } = new BitArray(32);
+
+    ///<summary>
+    /// If set, the secret phrase (and the SMS) starts with this word.
+    ///</summary>
     public string? Beginning { get; set; }
 
     public void ComputeFlag()

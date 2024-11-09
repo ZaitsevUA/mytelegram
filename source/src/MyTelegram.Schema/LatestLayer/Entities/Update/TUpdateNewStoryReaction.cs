@@ -4,14 +4,28 @@
 namespace MyTelegram.Schema;
 
 ///<summary>
+/// Represents a new <a href="https://corefork.telegram.org/api/reactions#notifications-about-reactions">reaction to a story</a>.
 /// See <a href="https://corefork.telegram.org/constructor/updateNewStoryReaction" />
 ///</summary>
 [TlObject(0x1824e40b)]
 public sealed class TUpdateNewStoryReaction : IUpdate
 {
     public uint ConstructorId => 0x1824e40b;
+    ///<summary>
+    /// <a href="https://corefork.telegram.org/api/stories">Story ID</a>.
+    ///</summary>
     public int StoryId { get; set; }
+
+    ///<summary>
+    /// The peer where the story was posted.
+    /// See <a href="https://corefork.telegram.org/type/Peer" />
+    ///</summary>
     public MyTelegram.Schema.IPeer Peer { get; set; }
+
+    ///<summary>
+    /// The <a href="https://corefork.telegram.org/api/reactions">reaction</a>.
+    /// See <a href="https://corefork.telegram.org/type/Reaction" />
+    ///</summary>
     public MyTelegram.Schema.IReaction Reaction { get; set; }
 
     public void ComputeFlag()

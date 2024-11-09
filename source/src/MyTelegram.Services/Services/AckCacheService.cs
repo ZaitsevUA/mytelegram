@@ -3,7 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace MyTelegram.Services.Services;
 
-public class AckCacheService(IScheduleAppService scheduleAppService) : IAckCacheService
+public class AckCacheService(IScheduleAppService scheduleAppService) : IAckCacheService, ISingletonDependency
 {
     private readonly ConcurrentDictionary<long, AckCacheItem> _msgIdToPtsDict = new();
     private readonly ConcurrentDictionary<long, long> _msgIdToReqMsgIdDict = new();
@@ -16,7 +16,7 @@ public class AckCacheService(IScheduleAppService scheduleAppService) : IAckCache
         Peer toPeer, bool isQts = false)
     {
         _msgIdToPtsDict.TryAdd(msgId, new AckCacheItem(ptsOrQts, globalSeqNo, toPeer, isQts));
-        scheduleAppService.ExecuteAsync(() =>
+        scheduleAppService.Execute(() =>
             {
                 _msgIdToPtsDict.TryRemove(msgId, out _);
             },
@@ -29,7 +29,7 @@ public class AckCacheService(IScheduleAppService scheduleAppService) : IAckCache
     {
         //Console.WriteLine($"Add Rpc msgId to cache,msgId:{msgId} reqMsgId:{reqMsgId}");
         _msgIdToReqMsgIdDict.TryAdd(msgId, reqMsgId);
-        scheduleAppService.ExecuteAsync(() => _msgIdToReqMsgIdDict.TryRemove(msgId, out _), TimeSpan.FromSeconds(50));
+        scheduleAppService.Execute(() => _msgIdToReqMsgIdDict.TryRemove(msgId, out _), TimeSpan.FromSeconds(50));
     }
 
     public Task AddRpcPtsToCacheAsync(long reqMsgId,
@@ -39,7 +39,7 @@ public class AckCacheService(IScheduleAppService scheduleAppService) : IAckCache
         bool isFromGetDifference)
     {
         _rpcReqMsgIdToPtsDict.TryAdd(reqMsgId, new AckCacheItem(pts, globalSeqNo, toPeer, false, isFromGetDifference));
-        scheduleAppService.ExecuteAsync(() =>
+        scheduleAppService.Execute(() =>
             {
                 _rpcReqMsgIdToPtsDict.TryRemove(reqMsgId, out _);
             },

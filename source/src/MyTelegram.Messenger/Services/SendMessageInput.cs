@@ -13,7 +13,8 @@ public record SendMessageInput
         //IReplyTo? replyTo = null,
         IInputReplyTo? inputReplyTo = null,
         bool clearDraft = false,
-        byte[]? media = null,
+        //byte[]? media = null,
+        IMessageMedia? media = null,
         //Peer? peer = null,
         SendMessageType sendMessageType = SendMessageType.Text,
         MessageType messageType = MessageType.Text,
@@ -22,11 +23,16 @@ public record SendMessageInput
         long? groupId = null,
         int groupItemCount = 1,
         long? pollId = null,
-        byte[]? replyMarkup = null,
+        IReplyMarkup? replyMarkup = null,
         int? topMsgId = null,
         Peer? sendAs = null,
-        string? quickReplyShortcut = null,
-        long? effect = null
+        //string? quickReplyShortcut = null,
+        IInputQuickReplyShortcut? inputQuickReplyShortcut = null,
+        long? effect = null,
+        bool isSendGroupedMessage = false,
+        bool isSendQuickReplyMessage = false,
+        bool silent = false,
+        int? scheduleDate = null
         )
     {
         RequestInfo = requestInfo;
@@ -50,8 +56,12 @@ public record SendMessageInput
         ReplyMarkup = replyMarkup;
         TopMsgId = topMsgId;
         SendAs = sendAs;
-        QuickReplyShortcut = quickReplyShortcut;
+        InputQuickReplyShortcut = inputQuickReplyShortcut;
         Effect = effect;
+        IsSendGroupedMessage = isSendGroupedMessage;
+        IsSendQuickReplyMessage = isSendQuickReplyMessage;
+        Silent = silent;
+        ScheduleDate = scheduleDate;
     }
 
     public bool ClearDraft { get; }
@@ -61,12 +71,16 @@ public record SendMessageInput
     public long? GroupId { get; }
     public int GroupItemCount { get; } = 1;
     public long? PollId { get; }
-    public byte[]? ReplyMarkup { get; }
+    public IReplyMarkup? ReplyMarkup { get; }
     public int? TopMsgId { get; }
     public Peer? SendAs { get; }
-    public string? QuickReplyShortcut { get; }
+    public IInputQuickReplyShortcut? InputQuickReplyShortcut { get; }
     public long? Effect { get; }
-    public byte[]? Media { get; }
+    public bool IsSendGroupedMessage { get; }
+    public bool IsSendQuickReplyMessage { get; }
+    public bool Silent { get; }
+    public int? ScheduleDate { get; }
+    public IMessageMedia? Media { get; }
     public string Message { get; }
     public string? MessageActionData { get; }
     //public MessageActionType MessageActionType { get; }

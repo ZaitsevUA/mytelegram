@@ -23,7 +23,7 @@ internal sealed class GetContactsHandler(
         var userIdList = contactReadModels.Select(p => p.TargetUserId).ToList();
         userIdList.Add(input.UserId);
         var userReadModels = await queryProcessor
-            .ProcessAsync(new GetUsersByUidListQuery(userIdList));
+            .ProcessAsync(new GetUsersByUserIdListQuery(userIdList));
         var privacies = await privacyAppService.GetPrivacyListAsync(userIdList);
         var photos = await photoAppService.GetPhotosAsync(userReadModels, contactReadModels);
         var userList = layeredUserService.GetConverter(input.Layer).ToUserList(input.UserId, userReadModels, photos, contactReadModels, privacies);

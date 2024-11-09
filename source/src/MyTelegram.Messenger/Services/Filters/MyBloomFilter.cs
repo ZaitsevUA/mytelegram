@@ -5,7 +5,7 @@ using Task = System.Threading.Tasks.Task;
 
 namespace MyTelegram.Messenger.Services.Filters;
 
-public class MyBloomFilter : IBloomFilter
+public class MyBloomFilter : IBloomFilter, ISingletonDependency
 {
     //private readonly BloomFilter.IBloomFilter _filter = FilterBuilder.Build(5_000_000, 0.001, HashMethod.LCGWithFNV1a);
     private readonly Microsoft.Cuckoo.ICuckooFilter _filter = new CuckooFilter(50_000_000, 0.001);

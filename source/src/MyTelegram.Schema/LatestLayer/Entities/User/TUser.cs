@@ -4,13 +4,13 @@
 namespace MyTelegram.Schema;
 
 ///<summary>
-/// Indicates info about a certain user
+/// Indicates info about a certain user.Unless specified otherwise, when updating the <a href="https://corefork.telegram.org/api/peers">local peer database</a>, all fields from the newly received constructor take priority over the old constructor cached locally (including by removing fields that aren't set in the new constructor).See <a href="https://github.com/tdlib/td/blob/cb164927417f22811c74cd8678ed4a5ab7cb80ba/td/telegram/UserManager.cpp#L2267">here »</a> for an implementation of the logic to use when updating the <a href="https://corefork.telegram.org/api/peers">local user peer database</a>.
 /// See <a href="https://corefork.telegram.org/constructor/user" />
 ///</summary>
-[TlObject(0x215c4438)]
+[TlObject(0x83314fca)]
 public sealed class TUser : IUser, ILayeredUser
 {
-    public uint ConstructorId => 0x215c4438;
+    public uint ConstructorId => 0x83314fca;
     ///<summary>
     /// Flags, see <a href="https://corefork.telegram.org/mtproto/TL-combinators#conditional-fields">TL conditional fields</a>
     ///</summary>
@@ -23,25 +23,25 @@ public sealed class TUser : IUser, ILayeredUser
     public bool Self { get; set; }
 
     ///<summary>
-    /// Whether this user is a contact
+    /// Whether this user is a contact <br>When updating the <a href="https://corefork.telegram.org/api/peers">local peer database</a>, do not apply changes to this field if the <code>min</code> flag is set.
     /// See <a href="https://corefork.telegram.org/type/true" />
     ///</summary>
     public bool Contact { get; set; }
 
     ///<summary>
-    /// Whether this user is a mutual contact
+    /// Whether this user is a mutual contact. <br>When updating the <a href="https://corefork.telegram.org/api/peers">local peer database</a>, do not apply changes to this field if the <code>min</code> flag is set.
     /// See <a href="https://corefork.telegram.org/type/true" />
     ///</summary>
     public bool MutualContact { get; set; }
 
     ///<summary>
-    /// Whether the account of this user was deleted
+    /// Whether the account of this user was deleted. <br>Changes to this flag should invalidate the local <a href="https://corefork.telegram.org/constructor/userFull">userFull</a> cache for this user ID, see <a href="https://corefork.telegram.org/api/peers#full-info-database">here »</a> for more info.
     /// See <a href="https://corefork.telegram.org/type/true" />
     ///</summary>
     public bool Deleted { get; set; }
 
     ///<summary>
-    /// Is this user a bot?
+    /// Is this user a bot? <br>Changes to this flag should invalidate the local <a href="https://corefork.telegram.org/constructor/userFull">userFull</a> cache for this user ID, see <a href="https://corefork.telegram.org/api/peers#full-info-database">here »</a> for more info.
     /// See <a href="https://corefork.telegram.org/type/true" />
     ///</summary>
     public bool Bot { get; set; }
@@ -95,7 +95,7 @@ public sealed class TUser : IUser, ILayeredUser
     public bool Scam { get; set; }
 
     ///<summary>
-    /// If set, the profile picture for this user should be refetched
+    /// If set and <code>min</code> is set, the value of <code>photo</code> can be used to update the local database, see the documentation of that flag for more info.
     /// See <a href="https://corefork.telegram.org/type/true" />
     ///</summary>
     public bool ApplyMinPhoto { get; set; }
@@ -113,13 +113,13 @@ public sealed class TUser : IUser, ILayeredUser
     public bool BotAttachMenu { get; set; }
 
     ///<summary>
-    /// Whether this user is a Telegram Premium user
+    /// Whether this user is a Telegram Premium user <br>Changes to this flag should invalidate the local <a href="https://corefork.telegram.org/constructor/userFull">userFull</a> cache for this user ID, see <a href="https://corefork.telegram.org/api/peers#full-info-database">here »</a> for more info. <br>Changes to this flag if the <code>self</code> flag is set should also trigger the following calls, to refresh the respective caches: <br>- The <a href="https://corefork.telegram.org/method/help.getConfig">help.getConfig</a> cache <br>- The <a href="https://corefork.telegram.org/method/messages.getTopReactions">messages.getTopReactions</a> cache if the <code>bot</code> flag is <strong>not</strong> set
     /// See <a href="https://corefork.telegram.org/type/true" />
     ///</summary>
     public bool Premium { get; set; }
 
     ///<summary>
-    /// Whether we installed the <a href="https://corefork.telegram.org/api/bots/attach">attachment menu web app</a> offered by this bot
+    /// Whether we installed the <a href="https://corefork.telegram.org/api/bots/attach">attachment menu web app</a> offered by this bot. <br>When updating the <a href="https://corefork.telegram.org/api/peers">local peer database</a>, do not apply changes to this field if the <code>min</code> flag is set.
     /// See <a href="https://corefork.telegram.org/type/true" />
     ///</summary>
     public bool AttachMenuEnabled { get; set; }
@@ -130,19 +130,19 @@ public sealed class TUser : IUser, ILayeredUser
     public BitArray Flags2 { get; set; } = new BitArray(32);
 
     ///<summary>
-    /// Whether we can edit the profile picture, name, about text and description of this bot because we own it.
+    /// Whether we can edit the profile picture, name, about text and description of this bot because we own it. <br>When updating the <a href="https://corefork.telegram.org/api/peers">local peer database</a>, do not apply changes to this field if the <code>min</code> flag is set. <br>Changes to this flag (if <code>min</code> is not set) should invalidate the local <a href="https://corefork.telegram.org/constructor/userFull">userFull</a> cache for this user ID.
     /// See <a href="https://corefork.telegram.org/type/true" />
     ///</summary>
     public bool BotCanEdit { get; set; }
 
     ///<summary>
-    /// Whether we marked this user as a <a href="https://corefork.telegram.org/api/privacy">close friend, see here » for more info</a>
+    /// Whether we marked this user as a <a href="https://corefork.telegram.org/api/privacy">close friend, see here » for more info</a>. <br>When updating the <a href="https://corefork.telegram.org/api/peers">local peer database</a>, do not apply changes to this field if the <code>min</code> flag is set.
     /// See <a href="https://corefork.telegram.org/type/true" />
     ///</summary>
     public bool CloseFriend { get; set; }
 
     ///<summary>
-    /// Whether we have <a href="https://corefork.telegram.org/api/stories#hiding-stories-of-other-users">hidden »</a> all active stories of this user.
+    /// Whether we have <a href="https://corefork.telegram.org/api/stories#hiding-stories-of-other-users">hidden »</a> all active stories of this user. <br>When updating the <a href="https://corefork.telegram.org/api/peers">local peer database</a>, do not apply changes to this field if the <code>min</code> flag is set.
     /// See <a href="https://corefork.telegram.org/type/true" />
     ///</summary>
     public bool StoriesHidden { get; set; }
@@ -152,53 +152,69 @@ public sealed class TUser : IUser, ILayeredUser
     /// See <a href="https://corefork.telegram.org/type/true" />
     ///</summary>
     public bool StoriesUnavailable { get; set; }
+
+    ///<summary>
+    /// If set, we can only write to this user if they have already sent some messages to us, if we are subscribed to <a href="https://corefork.telegram.org/api/premium">Telegram Premium</a>, or if they're a mutual contact (<a href="https://corefork.telegram.org/constructor/user">user</a>.<code>mutual_contact</code>).  <br>All the secondary conditions listed above must be checked separately to verify whether we can still write to the user, even if this flag is set (i.e. a mutual contact will have this flag set even if we can still write to them, and so on...); to avoid doing these extra checks if we haven't yet cached all the required information (for example while displaying the chat list in the sharing UI) the <a href="https://corefork.telegram.org/method/users.getIsPremiumRequiredToContact">users.getIsPremiumRequiredToContact</a> method may be invoked instead, passing the list of users currently visible in the UI, returning a list of booleans that directly specify whether we can or cannot write to each user; alternatively, the <a href="https://corefork.telegram.org/constructor/userFull">userFull</a>.<code>contact_require_premium</code> flag contains the same (fully checked, i.e. it's not just a copy of this flag) info returned by <a href="https://corefork.telegram.org/method/users.getIsPremiumRequiredToContact">users.getIsPremiumRequiredToContact</a>. <br>To set this flag for ourselves invoke <a href="https://corefork.telegram.org/method/account.setGlobalPrivacySettings">account.setGlobalPrivacySettings</a>, setting the <code>settings.new_noncontact_peers_require_premium</code> flag.
+    /// See <a href="https://corefork.telegram.org/type/true" />
+    ///</summary>
     public bool ContactRequirePremium { get; set; }
+
+    ///<summary>
+    /// Whether this bot can be <a href="https://corefork.telegram.org/api/business#connected-bots">connected to a user as specified here »</a>.
+    /// See <a href="https://corefork.telegram.org/type/true" />
+    ///</summary>
     public bool BotBusiness { get; set; }
 
     ///<summary>
-    /// ID of the user
+    /// If set, this bot has configured a <a href="https://corefork.telegram.org/api/bots/webapps#main-mini-apps">Main Mini App »</a>.
+    /// See <a href="https://corefork.telegram.org/type/true" />
+    ///</summary>
+    public bool BotHasMainApp { get; set; }
+
+    ///<summary>
+    /// ID of the user, see <a href="https://corefork.telegram.org/api/peers#peer-id">here »</a> for more info.
     ///</summary>
     public long Id { get; set; }
 
     ///<summary>
-    /// Access hash of the user
+    /// Access hash of the user, see <a href="https://corefork.telegram.org/api/peers#access-hash">here »</a> for more info. <br>If this flag is set, when updating the <a href="https://corefork.telegram.org/api/peers">local peer database</a>, generate a virtual flag called <code>min_access_hash</code>, which is: <br>- Set to <code>true</code> if <code>min</code> is set AND <br>- The <code>phone</code> flag is <strong>not</strong> set OR <br>- The <code>phone</code> flag is set and the associated phone number string is non-empty <br>- Set to <code>false</code> otherwise. <br><br>Then, apply both <code>access_hash</code> and <code>min_access_hash</code> to the local database if: <br>- <code>min_access_hash</code> is false OR <br>- <code>min_access_hash</code> is true AND <br>- There is no locally cached object for this user OR <br>- There is no <code>access_hash</code> in the local cache OR <br>- The cached object's <code>min_access_hash</code> is also true <br>If the final merged object stored to the database has the <code>min_access_hash</code> field set to true, the related <code>access_hash</code> is <strong>only</strong> suitable to use in <a href="https://corefork.telegram.org/constructor/inputPeerPhotoFileLocation"><code>inputPeerPhotoFileLocation</code> »</a>, to directly <a href="https://corefork.telegram.org/api/files">download the profile pictures</a> of users, everywhere else a <code>inputPeer*FromMessage</code> constructor will have to be generated as specified <a href="https://corefork.telegram.org/api/min">here »</a>. <br>Bots can also use min access hashes in some conditions, by passing <code>0</code> instead of the min access hash.
     ///</summary>
     public long? AccessHash { get; set; }
 
     ///<summary>
-    /// First name
+    /// First name. <br>When updating the <a href="https://corefork.telegram.org/api/peers">local peer database</a>, apply changes to this field only if: <br>- The <code>min</code> flag is not set OR <br>- The <code>min</code> flag is set AND <br>- The <code>min</code> flag of the locally cached user entry is set.
     ///</summary>
     public string? FirstName { get; set; }
 
     ///<summary>
-    /// Last name
+    /// Last name. <br>When updating the <a href="https://corefork.telegram.org/api/peers">local peer database</a>, apply changes to this field only if: <br>- The <code>min</code> flag is not set OR <br>- The <code>min</code> flag is set AND <br>- The <code>min</code> flag of the locally cached user entry is set.
     ///</summary>
     public string? LastName { get; set; }
 
     ///<summary>
-    /// Username
+    /// Main active username. <br>When updating the <a href="https://corefork.telegram.org/api/peers">local peer database</a>, apply changes to this field only if: <br>- The <code>min</code> flag is not set OR <br>- The <code>min</code> flag is set AND <br>- The <code>min</code> flag of the locally cached user entry is set. <br>Changes to this flag should invalidate the local <a href="https://corefork.telegram.org/constructor/userFull">userFull</a> cache for this user ID if the above conditions are respected and the <code>bot_can_edit</code> flag is also set.
     ///</summary>
     public string? Username { get; set; }
 
     ///<summary>
-    /// Phone number
+    /// Phone number. <br>When updating the <a href="https://corefork.telegram.org/api/peers">local peer database</a>, apply changes to this field only if: <br>- The <code>min</code> flag is not set OR <br>- The <code>min</code> flag is set AND <br>- The <code>min</code> flag of the locally cached user entry is set.
     ///</summary>
     public string? Phone { get; set; }
 
     ///<summary>
-    /// Profile picture of user
+    /// Profile picture of user. <br>When updating the <a href="https://corefork.telegram.org/api/peers">local peer database</a>, apply changes to this field only if: <br>- The <code>min</code> flag is not set OR <br>- The <code>min</code> flag is set AND <br>- The <code>apply_min_photo</code> flag is set OR <br>- The <code>min</code> flag of the locally cached user entry is set.
     /// See <a href="https://corefork.telegram.org/type/UserProfilePhoto" />
     ///</summary>
     public MyTelegram.Schema.IUserProfilePhoto? Photo { get; set; }
 
     ///<summary>
-    /// Online status of user
+    /// Online status of user. <br>When updating the <a href="https://corefork.telegram.org/api/peers">local peer database</a>, apply changes to this field only if: <br>- The <code>min</code> flag is not set OR <br>- The <code>min</code> flag is set AND <br>- The <code>min</code> flag of the locally cached user entry is set OR <br>- The locally cached user entry is equal to <a href="https://corefork.telegram.org/constructor/userStatusEmpty">userStatusEmpty</a>.
     /// See <a href="https://corefork.telegram.org/type/UserStatus" />
     ///</summary>
     public MyTelegram.Schema.IUserStatus? Status { get; set; }
 
     ///<summary>
-    /// Version of the <a href="https://corefork.telegram.org/constructor/userFull">bot_info field in userFull</a>, incremented every time it changes
+    /// Version of the <a href="https://corefork.telegram.org/constructor/userFull">bot_info field in userFull</a>, incremented every time it changes. <br>Changes to this flag should invalidate the local <a href="https://corefork.telegram.org/constructor/userFull">userFull</a> cache for this user ID, see <a href="https://corefork.telegram.org/api/peers#full-info-database">here »</a> for more info.
     ///</summary>
     public int? BotInfoVersion { get; set; }
 
@@ -224,12 +240,12 @@ public sealed class TUser : IUser, ILayeredUser
     public MyTelegram.Schema.IEmojiStatus? EmojiStatus { get; set; }
 
     ///<summary>
-    /// Additional usernames
+    /// Additional usernames. <br>When updating the <a href="https://corefork.telegram.org/api/peers">local peer database</a>, apply changes to this field only if: <br>- The <code>min</code> flag is not set OR <br>- The <code>min</code> flag is set AND <br>- The <code>min</code> flag of the locally cached user entry is set. <br>Changes to this flag (if the above conditions are respected) should invalidate the local <a href="https://corefork.telegram.org/constructor/userFull">userFull</a> cache for this user ID.
     ///</summary>
     public TVector<MyTelegram.Schema.IUsername>? Usernames { get; set; }
 
     ///<summary>
-    /// ID of the maximum read <a href="https://corefork.telegram.org/api/stories">story</a>.
+    /// ID of the maximum read <a href="https://corefork.telegram.org/api/stories">story</a>.  <br>When updating the <a href="https://corefork.telegram.org/api/peers">local peer database</a>, do not apply changes to this field if the <code>min</code> flag of the incoming constructor is set.
     ///</summary>
     public int? StoriesMaxId { get; set; }
 
@@ -244,6 +260,11 @@ public sealed class TUser : IUser, ILayeredUser
     /// See <a href="https://corefork.telegram.org/type/PeerColor" />
     ///</summary>
     public MyTelegram.Schema.IPeerColor? ProfileColor { get; set; }
+
+    ///<summary>
+    /// Monthly Active Users (MAU) of this bot (may be absent for small bots).
+    ///</summary>
+    public int? BotActiveUsers { get; set; }
 
     public void ComputeFlag()
     {
@@ -271,6 +292,7 @@ public sealed class TUser : IUser, ILayeredUser
         if (StoriesUnavailable) { Flags2[4] = true; }
         if (ContactRequirePremium) { Flags2[10] = true; }
         if (BotBusiness) { Flags2[11] = true; }
+        if (BotHasMainApp) { Flags2[13] = true; }
         if (/*AccessHash != 0 &&*/ AccessHash.HasValue) { Flags[0] = true; }
         if (FirstName != null) { Flags[1] = true; }
         if (LastName != null) { Flags[2] = true; }
@@ -287,6 +309,7 @@ public sealed class TUser : IUser, ILayeredUser
         if (/*StoriesMaxId != 0 && */StoriesMaxId.HasValue) { Flags2[5] = true; }
         if (Color != null) { Flags2[8] = true; }
         if (ProfileColor != null) { Flags2[9] = true; }
+        if (/*BotActiveUsers != 0 && */BotActiveUsers.HasValue) { Flags2[12] = true; }
     }
 
     public void Serialize(IBufferWriter<byte> writer)
@@ -312,6 +335,7 @@ public sealed class TUser : IUser, ILayeredUser
         if (Flags2[5]) { writer.Write(StoriesMaxId.Value); }
         if (Flags2[8]) { writer.Write(Color); }
         if (Flags2[9]) { writer.Write(ProfileColor); }
+        if (Flags2[12]) { writer.Write(BotActiveUsers.Value); }
     }
 
     public void Deserialize(ref SequenceReader<byte> reader)
@@ -342,6 +366,7 @@ public sealed class TUser : IUser, ILayeredUser
         if (Flags2[4]) { StoriesUnavailable = true; }
         if (Flags2[10]) { ContactRequirePremium = true; }
         if (Flags2[11]) { BotBusiness = true; }
+        if (Flags2[13]) { BotHasMainApp = true; }
         Id = reader.ReadInt64();
         if (Flags[0]) { AccessHash = reader.ReadInt64(); }
         if (Flags[1]) { FirstName = reader.ReadString(); }
@@ -359,5 +384,6 @@ public sealed class TUser : IUser, ILayeredUser
         if (Flags2[5]) { StoriesMaxId = reader.ReadInt32(); }
         if (Flags2[8]) { Color = reader.Read<MyTelegram.Schema.IPeerColor>(); }
         if (Flags2[9]) { ProfileColor = reader.Read<MyTelegram.Schema.IPeerColor>(); }
+        if (Flags2[12]) { BotActiveUsers = reader.ReadInt32(); }
     }
 }

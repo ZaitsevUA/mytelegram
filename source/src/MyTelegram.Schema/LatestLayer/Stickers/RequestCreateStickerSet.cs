@@ -4,7 +4,7 @@
 namespace MyTelegram.Schema.Stickers;
 
 ///<summary>
-/// Create a stickerset, bots only.
+/// Create a stickerset.
 /// <para>Possible errors</para>
 /// Code Type Description
 /// 400 PACK_SHORT_NAME_INVALID Short pack name invalid.

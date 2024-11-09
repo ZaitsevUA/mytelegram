@@ -18,15 +18,15 @@ public class ReadHistoryDomainEventHandler(
             idGenerator,
             ackCacheService,
             responseCacheAppService),
-        ISubscribeSynchronousTo<ReadHistorySaga, ReadHistorySagaId, ReadHistoryCompletedEvent>,
-        ISubscribeSynchronousTo<ReadChannelHistorySaga, ReadChannelHistorySagaId, ReadChannelHistoryCompletedEvent>,
+        ISubscribeSynchronousTo<ReadHistorySaga, ReadHistorySagaId, ReadHistoryCompletedSagaEvent>,
+        ISubscribeSynchronousTo<ReadChannelHistorySaga, ReadChannelHistorySagaId, ReadChannelHistoryCompletedSagaEvent>,
         ISubscribeSynchronousTo<ReadHistorySaga, ReadHistorySagaId, UpdateInboxMaxIdCompletedSagaEvent>,
         ISubscribeSynchronousTo<ReadHistorySaga, ReadHistorySagaId, UpdateOutboxMaxIdCompletedSagaEvent>
 {
     //private readonly ITlUpdatesConverter _updatesConverter;
 
     public async Task HandleAsync(
-        IDomainEvent<ReadChannelHistorySaga, ReadChannelHistorySagaId, ReadChannelHistoryCompletedEvent>
+        IDomainEvent<ReadChannelHistorySaga, ReadChannelHistorySagaId, ReadChannelHistoryCompletedSagaEvent>
             domainEvent,
         CancellationToken cancellationToken)
     {
@@ -48,7 +48,7 @@ public class ReadHistoryDomainEventHandler(
     }
 
     public async Task HandleAsync(
-        IDomainEvent<ReadHistorySaga, ReadHistorySagaId, ReadHistoryCompletedEvent> domainEvent,
+        IDomainEvent<ReadHistorySaga, ReadHistorySagaId, ReadHistoryCompletedSagaEvent> domainEvent,
         CancellationToken cancellationToken)
     {
         var affectedMessages = new TAffectedMessages { Pts = domainEvent.AggregateEvent.ReaderPts, PtsCount = 1 };

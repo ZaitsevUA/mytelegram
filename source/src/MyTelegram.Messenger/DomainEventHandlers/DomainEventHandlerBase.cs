@@ -154,27 +154,32 @@ public abstract class DomainEventHandlerBase(
         RequestInfo requestInfo,
         Peer toPeer,
         IUpdates updates,
-        int groupItemCount,
+        //int groupItemCount,
         long selfUserId,
         int pts)
     {
-        if (groupItemCount > 1)
-        {
-            await SendMultiMediaResultAsync(requestInfo,
-                toPeer,
-                updates,
-                groupItemCount,
-                selfUserId,
-                pts);
-        }
-        else
-        {
-            await SendRpcMessageToClientAsync(requestInfo,
-                updates,
-                selfUserId,
-                pts,
-                toPeer.PeerType);
-        }
+        await SendRpcMessageToClientAsync(requestInfo,
+            updates,
+            selfUserId,
+            pts,
+            toPeer.PeerType);
+        //if (groupItemCount > 1)
+        //{
+        //    await SendMultiMediaResultAsync(requestInfo,
+        //        toPeer,
+        //        updates,
+        //        groupItemCount,
+        //        selfUserId,
+        //        pts);
+        //}
+        //else
+        //{
+        //    await SendRpcMessageToClientAsync(requestInfo,
+        //        updates,
+        //        selfUserId,
+        //        pts,
+        //        toPeer.PeerType);
+        //}
     }
 
     protected async Task<long> SavePushUpdatesAsync(

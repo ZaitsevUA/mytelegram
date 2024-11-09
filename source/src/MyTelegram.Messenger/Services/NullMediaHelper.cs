@@ -18,8 +18,8 @@ public class NullMediaHelper : IMediaHelper
         throw new NotImplementedException();
     }
 
-    public Task<SavePhotoResult> SavePhotoAsync(long reqMsgId, long fileId, bool hasVideo, double? videoStartTs, int parts, string name, string md5,
-        IVideoSize? videoEmojiMarkup = null)
+    public Task<SavePhotoResult> SavePhotoAsync(long reqMsgId, long userId, long fileId, bool hasVideo, double? videoStartTs, int parts,
+        string name, string md5, IVideoSize? videoEmojiMarkup = null)
     {
         throw new NotImplementedException();
     }

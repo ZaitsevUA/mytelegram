@@ -11,6 +11,9 @@ namespace MyTelegram.Schema;
 public sealed class TMediaAreaGeoPoint : IMediaArea
 {
     public uint ConstructorId => 0xcad5452d;
+    ///<summary>
+    /// Flags, see <a href="https://corefork.telegram.org/mtproto/TL-combinators#conditional-fields">TL conditional fields</a>
+    ///</summary>
     public BitArray Flags { get; set; } = new BitArray(32);
 
     ///<summary>
@@ -24,6 +27,11 @@ public sealed class TMediaAreaGeoPoint : IMediaArea
     /// See <a href="https://corefork.telegram.org/type/GeoPoint" />
     ///</summary>
     public MyTelegram.Schema.IGeoPoint Geo { get; set; }
+
+    ///<summary>
+    /// Optional textual representation of the address.
+    /// See <a href="https://corefork.telegram.org/type/GeoPointAddress" />
+    ///</summary>
     public MyTelegram.Schema.IGeoPointAddress? Address { get; set; }
 
     public void ComputeFlag()

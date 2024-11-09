@@ -4,6 +4,7 @@
 namespace MyTelegram.Schema;
 
 ///<summary>
+/// Receive notifications about reactions made by any user.
 /// See <a href="https://corefork.telegram.org/constructor/reactionNotificationsFromAll" />
 ///</summary>
 [TlObject(0x4b9e22a0)]

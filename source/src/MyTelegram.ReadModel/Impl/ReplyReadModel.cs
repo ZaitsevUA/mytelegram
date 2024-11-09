@@ -2,7 +2,7 @@
 {
     public class ReplyReadModel : IReplyReadModel,
     //IAmReadModelFor<SendMessageSaga, SendMessageSagaId, ReplyToChannelMessageCompletedEvent2>
-    IAmReadModelFor<ForwardMessageSaga, ForwardMessageSagaId, MessageReplyCreatedEvent>,
+    IAmReadModelFor<ForwardMessageSaga, ForwardMessageSagaId, MessageReplyCreatedSagaEvent>,
         IAmReadModelFor<MessageAggregate, MessageId, ReplyChannelMessageCompletedEvent>,
     IAmReadModelFor<SendMessageSaga, SendMessageSagaId, ReplyBroadcastChannelCompletedSagaEvent>,
     IAmReadModelFor<MessageAggregate, MessageId, MessageReplyUpdatedEvent>
@@ -20,7 +20,7 @@
         public int? MaxId { get; private set; }
         public long? CommentChannelId { get; private set; }
 
-        public Task ApplyAsync(IReadModelContext context, IDomainEvent<ForwardMessageSaga, ForwardMessageSagaId, MessageReplyCreatedEvent> domainEvent, CancellationToken cancellationToken)
+        public Task ApplyAsync(IReadModelContext context, IDomainEvent<ForwardMessageSaga, ForwardMessageSagaId, MessageReplyCreatedSagaEvent> domainEvent, CancellationToken cancellationToken)
         {
             Id = ReplyId.Create(domainEvent.AggregateEvent.ChannelId, domainEvent.AggregateEvent.MessageId).Value;
 

@@ -12,7 +12,8 @@ public sealed class TPollAnswer : IPollAnswer
 {
     public uint ConstructorId => 0xff16e2ca;
     ///<summary>
-    /// Textual representation of the answer
+    /// Textual representation of the answer (only <a href="https://corefork.telegram.org/api/premium">Premium</a> users can use <a href="https://corefork.telegram.org/api/custom-emoji">custom emoji entities</a> here).
+    /// See <a href="https://corefork.telegram.org/type/TextWithEntities" />
     ///</summary>
     public MyTelegram.Schema.ITextWithEntities Text { get; set; }
 

@@ -3,10 +3,10 @@
 namespace MyTelegram.Handlers.Account;
 
 ///<summary>
-/// Finish account takeout session
+/// Terminate a <a href="https://corefork.telegram.org/api/takeout">takeout session, see here » for more info</a>.
 /// <para>Possible errors</para>
 /// Code Type Description
-/// 403 TAKEOUT_REQUIRED A takeout session has to be initialized, first.
+/// 403 TAKEOUT_REQUIRED A <a href="https://corefork.telegram.org/api/takeout">takeout</a> session needs to be initialized first, <a href="https://corefork.telegram.org/api/takeout">see here » for more info</a>.
 /// See <a href="https://corefork.telegram.org/method/account.finishTakeoutSession" />
 ///</summary>
 internal sealed class FinishTakeoutSessionHandler : RpcResultObjectHandler<MyTelegram.Schema.Account.RequestFinishTakeoutSession, IBool>,

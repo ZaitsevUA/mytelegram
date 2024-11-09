@@ -25,6 +25,11 @@ public sealed class RequestRequestAppWebView : IRequest<MyTelegram.Schema.IWebVi
     /// See <a href="https://corefork.telegram.org/type/true" />
     ///</summary>
     public bool WriteAllowed { get; set; }
+
+    ///<summary>
+    /// If set, requests to open the mini app in compact mode (as opposed to fullview mode). Must be set if the <code>mode</code> parameter of the <a href="https://corefork.telegram.org/api/links#direct-mini-app-links">direct Mini App deep link</a> is equal to <code>compact</code>.
+    /// See <a href="https://corefork.telegram.org/type/true" />
+    ///</summary>
     public bool Compact { get; set; }
 
     ///<summary>

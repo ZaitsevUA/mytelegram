@@ -4,15 +4,31 @@
 namespace MyTelegram.Schema.Messages;
 
 ///<summary>
+/// Info about <a href="https://corefork.telegram.org/api/business#quick-reply-shortcuts">quick reply shortcuts »</a>.
 /// See <a href="https://corefork.telegram.org/constructor/messages.quickReplies" />
 ///</summary>
 [TlObject(0xc68d6695)]
 public sealed class TQuickReplies : IQuickReplies
 {
     public uint ConstructorId => 0xc68d6695;
+    ///<summary>
+    /// Quick reply shortcuts.
+    ///</summary>
     public TVector<MyTelegram.Schema.IQuickReply> QuickReplies { get; set; }
+
+    ///<summary>
+    /// Messages mentioned in <code>quick_replies</code>.
+    ///</summary>
     public TVector<MyTelegram.Schema.IMessage> Messages { get; set; }
+
+    ///<summary>
+    /// Mentioned chats
+    ///</summary>
     public TVector<MyTelegram.Schema.IChat> Chats { get; set; }
+
+    ///<summary>
+    /// Mentioned users
+    ///</summary>
     public TVector<MyTelegram.Schema.IUser> Users { get; set; }
 
     public void ComputeFlag()

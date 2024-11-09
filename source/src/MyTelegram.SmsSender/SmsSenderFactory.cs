@@ -1,7 +1,7 @@
 ﻿namespace MyTelegram.SmsSender;
 
 public class SmsSenderFactory(ILogger<SmsSenderFactory> logger, IEnumerable<ISmsSender> smsSenderList, INullSmsSender nullSmsSender)
-    : ISmsSenderFactory
+    : ISmsSenderFactory, ITransientDependency
 {
     private readonly List<ISmsSender> _enabledSmsSenderList = smsSenderList.Where(p => p.Enabled).ToList();
 
@@ -9,7 +9,7 @@ public class SmsSenderFactory(ILogger<SmsSenderFactory> logger, IEnumerable<ISms
     {
         if (!_enabledSmsSenderList.Any())
         {
-            logger.LogWarning("All SMS sender disabled,SMS will not be sent");
+            logger.LogWarning("All SMS sender disabled, SMS will not be sent");
             return nullSmsSender;
         }
 

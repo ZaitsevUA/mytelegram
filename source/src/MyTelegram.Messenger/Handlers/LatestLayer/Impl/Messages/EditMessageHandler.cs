@@ -17,7 +17,7 @@ namespace MyTelegram.Handlers.Messages;
 /// 400 CHAT_FORWARDS_RESTRICTED You can't forward messages from a protected chat.
 /// 403 CHAT_SEND_GIFS_FORBIDDEN You can't send gifs in this chat.
 /// 403 CHAT_WRITE_FORBIDDEN You can't write in this chat.
-/// 400 DOCUMENT_INVALID The specified document is invalid.
+/// 400 DOCUMENT_INVALID The specified documentItem is invalid.
 /// 400 ENTITIES_TOO_LONG You provided too many styled message entities.
 /// 400 ENTITY_BOUNDS_INVALID A specified <a href="https://corefork.telegram.org/api/entities#entity-length">entity offset or length</a> is invalid, see <a href="https://corefork.telegram.org/api/entities#entity-length">here »</a> for info on how to properly compute the entity offset/length.
 /// 400 IMAGE_PROCESS_FAILED Failure while processing image.
@@ -42,26 +42,15 @@ namespace MyTelegram.Handlers.Messages;
 /// 400 USER_BANNED_IN_CHANNEL You're banned from sending messages in supergroups/channels.
 /// See <a href="https://corefork.telegram.org/method/messages.editMessage" />
 ///</summary>
-internal sealed class EditMessageHandler : RpcResultObjectHandler<MyTelegram.Schema.Messages.RequestEditMessage, MyTelegram.Schema.IUpdates>,
-    Messages.IEditMessageHandler
+internal sealed class EditMessageHandler(
+    IMediaHelper mediaHelper,
+    ICommandBus commandBus,
+    IPeerHelper peerHelper,
+    IAccessHashHelper accessHashHelper,
+    IQueryProcessor queryProcessor)
+    : RpcResultObjectHandler<MyTelegram.Schema.Messages.RequestEditMessage, MyTelegram.Schema.IUpdates>,
+        Messages.IEditMessageHandler
 {
-    private readonly ICommandBus _commandBus;
-    private readonly IMediaHelper _mediaHelper;
-    private readonly IPeerHelper _peerHelper;
-    private readonly IAccessHashHelper _accessHashHelper;
-    private readonly IQueryProcessor _queryProcessor;
-    public EditMessageHandler(IMediaHelper mediaHelper,
-        ICommandBus commandBus,
-        IPeerHelper peerHelper,
-        IAccessHashHelper accessHashHelper, IQueryProcessor queryProcessor)
-    {
-        _mediaHelper = mediaHelper;
-        _commandBus = commandBus;
-        _peerHelper = peerHelper;
-        _accessHashHelper = accessHashHelper;
-        _queryProcessor = queryProcessor;
-    }
-
     protected override async Task<IUpdates> HandleCoreAsync(IRequestInput input,
         RequestEditMessage obj)
     {
@@ -69,51 +58,49 @@ internal sealed class EditMessageHandler : RpcResultObjectHandler<MyTelegram.Sch
         switch (obj.Peer)
         {
             case TInputPeerChannel inputPeerChannel:
-                await _accessHashHelper.CheckAccessHashAsync(inputPeerChannel.ChannelId, inputPeerChannel.AccessHash);
+                await accessHashHelper.CheckAccessHashAsync(inputPeerChannel.ChannelId, inputPeerChannel.AccessHash);
                 break;
             case TInputPeerChat inputPeerChat:
-                chatReadModel = await _queryProcessor.ProcessAsync(new GetChatByChatIdQuery(inputPeerChat.ChatId));
+                chatReadModel = await queryProcessor.ProcessAsync(new GetChatByChatIdQuery(inputPeerChat.ChatId));
                 break;
             case TInputPeerUser inputPeerUser:
-                await _accessHashHelper.CheckAccessHashAsync(inputPeerUser.UserId, inputPeerUser.AccessHash);
+                await accessHashHelper.CheckAccessHashAsync(inputPeerUser.UserId, inputPeerUser.AccessHash);
                 break;
 
         }
 
-        var peer = _peerHelper.GetPeer(obj.Peer, input.UserId);
+        var peer = peerHelper.GetPeer(obj.Peer, input.UserId);
         var ownerPeerId = input.UserId;
         if (peer.PeerType == PeerType.Channel)
         {
             ownerPeerId = peer.PeerId;
         }
 
-        byte[]? mediaBytes = null;
+        IMessageMedia? media = null;
         if (obj.Media != null)
         {
             if (obj.Media is TInputMediaEmpty)
             {
-                mediaBytes = new TMessageMediaEmpty().ToBytes();
+                media = new TMessageMediaEmpty();
             }
             else
             {
-                var media = await _mediaHelper.SaveMediaAsync(obj.Media);
-                mediaBytes = media.ToBytes();
+                media = await mediaHelper.SaveMediaAsync(obj.Media);
             }
         }
 
-        var command = new EditOutboxMessageCommand(MessageId.Create(ownerPeerId, obj.Id),
-            input.ToRequestInfo(),
-            obj.Id,
-            obj.Message ?? string.Empty,
-            obj.Entities.ToBytes(),
-            CurrentDate,
-            mediaBytes,
-            obj.ReplyMarkup.ToBytes(),
-            chatReadModel?.ChatMembers.Select(p => p.UserId).ToList()
-        );
-        await _commandBus.PublishAsync(command, default);
+        var command = new EditOutboxMessageCommand(MessageId.Create(ownerPeerId, obj.Id, obj.QuickReplyShortcutId.HasValue),
+                input.ToRequestInfo(),
+                obj.Id,
+                obj.Message ?? string.Empty,
+                obj.Entities,
+                CurrentDate,
+                media,
+                obj.ReplyMarkup,
+                chatReadModel?.ChatMembers.Select(p => p.UserId).ToList()
+            );
+        await commandBus.PublishAsync(command, default);
 
         return null!;
-        //throw new NotImplementedException();
     }
 }

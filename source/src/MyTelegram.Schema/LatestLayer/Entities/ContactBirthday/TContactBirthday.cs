@@ -4,13 +4,22 @@
 namespace MyTelegram.Schema;
 
 ///<summary>
+/// Birthday information of a contact.
 /// See <a href="https://corefork.telegram.org/constructor/contactBirthday" />
 ///</summary>
 [TlObject(0x1d998733)]
 public sealed class TContactBirthday : IContactBirthday
 {
     public uint ConstructorId => 0x1d998733;
+    ///<summary>
+    /// User ID.
+    ///</summary>
     public long ContactId { get; set; }
+
+    ///<summary>
+    /// Birthday information.
+    /// See <a href="https://corefork.telegram.org/type/Birthday" />
+    ///</summary>
     public MyTelegram.Schema.IBirthday Birthday { get; set; }
 
     public void ComputeFlag()

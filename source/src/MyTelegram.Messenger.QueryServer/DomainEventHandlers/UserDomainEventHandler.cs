@@ -38,7 +38,7 @@ public class UserDomainEventHandler(
         CancellationToken cancellationToken)
     {
         logger.LogInformation(
-            "User created,userId={UserId},phoneNumber={PhoneNumber},firstName={FirstName},lastName={LastName}",
+            "User created successfully, userId: {UserId}  phoneNumber: {PhoneNumber} firstName: {FirstName} lastName: {LastName}",
             domainEvent.AggregateEvent.UserId,
             domainEvent.AggregateEvent.PhoneNumber,
             domainEvent.AggregateEvent.FirstName,

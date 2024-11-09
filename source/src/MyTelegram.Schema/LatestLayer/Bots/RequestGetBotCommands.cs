@@ -8,6 +8,7 @@ namespace MyTelegram.Schema.Bots;
 /// <para>Possible errors</para>
 /// Code Type Description
 /// 400 USER_BOT_INVALID User accounts must provide the <code>bot</code> method parameter when calling this method. If there is no such method parameter, this method can only be invoked by bot accounts.
+/// 400 USER_BOT_REQUIRED This method can only be called by a bot.
 /// See <a href="https://corefork.telegram.org/method/bots.getBotCommands" />
 ///</summary>
 [TlObject(0xe34c0dd6)]

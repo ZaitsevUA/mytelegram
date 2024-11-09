@@ -1,6 +1,6 @@
 ﻿namespace MyTelegram.Messenger.Services.Filters;
 
-public class MyCuckooFilter : ICuckooFilter
+public class MyCuckooFilter : ICuckooFilter, ISingletonDependency
 {
     private readonly Microsoft.Cuckoo.ICuckooFilter _filter = new Microsoft.Cuckoo.CuckooFilter(capacity: 5_000_000, falsePositiveRate: 0.01);
 

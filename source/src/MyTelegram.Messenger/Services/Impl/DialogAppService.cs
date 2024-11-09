@@ -7,7 +7,7 @@ public class DialogAppService(
     IPrivacyAppService privacyAppService,
     IPeerHelper peerHelper,
     IOffsetHelper offsetHelper)
-    : BaseAppService, IDialogAppService
+    : BaseAppService, IDialogAppService, ITransientDependency
 {
     public async Task ReorderPinnedDialogsAsync(ReorderPinnedDialogsInput input)
     {
@@ -118,7 +118,7 @@ public class DialogAppService(
         userIdList.AddRange(extraChatUserIdList);
 
         var userList =
-            await queryProcessor.ProcessAsync(new GetUsersByUidListQuery(userIdList))
+            await queryProcessor.ProcessAsync(new GetUsersByUserIdListQuery(userIdList))
          ;
         var contactList = await queryProcessor
             .ProcessAsync(new GetContactListQuery(input.OwnerId, userIdList))

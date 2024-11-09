@@ -40,4 +40,5 @@ public class MyTelegramMessengerServerOptions
     public string? SupportUserId { get; set; }
 
     public bool CheckPhoneNumberFormat { get; set; }
+    public bool EnableSearchNonContacts { get; set; }
 }

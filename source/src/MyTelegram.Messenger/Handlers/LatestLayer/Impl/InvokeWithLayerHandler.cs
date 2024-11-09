@@ -1,4 +1,5 @@
 ﻿// ReSharper disable All
+
 namespace MyTelegram.Handlers;
 
 ///<summary>
@@ -13,24 +14,16 @@ namespace MyTelegram.Handlers;
 /// See <a href="https://corefork.telegram.org/method/invokeWithLayer" />
 ///</summary>
 
-internal sealed class InvokeWithLayerHandler : BaseObjectHandler<RequestInvokeWithLayer, IObject>,
-    IInvokeWithLayerHandler
+internal sealed class InvokeWithLayerHandler(
+    IHandlerHelper handlerHelper,
+    ICommandBus commandBus,
+    ILogger<InvokeWithLayerHandler> logger,
+    IHashHelper hashHelper,
+    IRandomHelper randomHelper,
+    IEventBus eventBus)
+    : BaseObjectHandler<RequestInvokeWithLayer, IObject>,
+        IInvokeWithLayerHandler
 {
-    private readonly ICommandBus _commandBus;
-    private readonly IHandlerHelper _handlerHelper;
-    private readonly ILogger<InvokeWithLayerHandler> _logger;
-    private readonly IEventBus _eventBus;
-
-    public InvokeWithLayerHandler(IHandlerHelper handlerHelper,
-        ICommandBus commandBus,
-        ILogger<InvokeWithLayerHandler> logger, IEventBus eventBus)
-    {
-        _handlerHelper = handlerHelper;
-        _commandBus = commandBus;
-        _logger = logger;
-        _eventBus = eventBus;
-    }
-
     protected override async Task<IObject> HandleCoreAsync(IRequestInput input,
         RequestInvokeWithLayer obj)
     {
@@ -67,17 +60,12 @@ internal sealed class InvokeWithLayerHandler : BaseObjectHandler<RequestInvokeWi
             throw new ArgumentException("InitConnection.query can not be null.");
         }
 
-        if (!_handlerHelper.TryGetHandler(query.ConstructorId, out var handler))
+        if (!handlerHelper.TryGetHandler(query.ConstructorId, out var handler))
         {
             throw new NotSupportedException($"Not supported query:{query.ConstructorId:x2}");
         }
 
-        _handlerHelper.TryGetHandlerShortName(query.ConstructorId, out var handlerShortName);
-        _logger.LogInformation("ReqMsgId={ReqMsgId} UserId={UserId} InvokeWithLayer->{Layer},handler={HandlerShortName}",
-            input.ReqMsgId,
-            input.UserId,
-            obj.Layer,
-            handlerShortName);
+        handlerHelper.TryGetHandlerShortName(query.ConstructorId, out var handlerShortName);
 
         var result = await handler.HandleAsync(input, query);
 
@@ -120,6 +108,6 @@ internal sealed class InvokeWithLayerHandler : BaseObjectHandler<RequestInvokeWi
             requestInput.ClientIp,
             requestInput.Layer
         );
-        await _eventBus.PublishAsync(eventData);
+        await eventBus.PublishAsync(eventData);
     }
 }

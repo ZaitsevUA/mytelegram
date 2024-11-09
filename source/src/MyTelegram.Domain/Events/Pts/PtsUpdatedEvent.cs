@@ -6,19 +6,16 @@ public class PtsUpdatedEvent(
     int newPts,
     int date,
     long globalSeqNo,
-    int changedUnreadCount)
+    int changedUnreadCount,
+    int? messageId
+)
     : AggregateEvent<PtsAggregate, PtsId>
 {
-    //bool incrementUnreadCount
-    //IncrementUnreadCount = incrementUnreadCount;
-
     public int NewPts { get; } = newPts;
     public int Date { get; } = date;
     public long GlobalSeqNo { get; } = globalSeqNo;
-
     public int ChangedUnreadCount { get; } = changedUnreadCount;
-    //public bool IncrementUnreadCount { get; }
-
+    public int? MessageId { get; } = messageId;
     public long PeerId { get; } = peerId;
     public long PermAuthKeyId { get; } = permAuthKeyId;
 }

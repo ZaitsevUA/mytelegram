@@ -4,14 +4,28 @@
 namespace MyTelegram.Schema.Payments;
 
 ///<summary>
+/// <a href="https://corefork.telegram.org/api/stars">Star revenue statistics, see here »</a> for more info.Note that all balances and currency amounts and graph values are in Stars.
 /// See <a href="https://corefork.telegram.org/constructor/payments.starsRevenueStats" />
 ///</summary>
 [TlObject(0xc92bb73b)]
 public sealed class TStarsRevenueStats : IStarsRevenueStats
 {
     public uint ConstructorId => 0xc92bb73b;
+    ///<summary>
+    /// Star revenue graph (number of earned stars)
+    /// See <a href="https://corefork.telegram.org/type/StatsGraph" />
+    ///</summary>
     public MyTelegram.Schema.IStatsGraph RevenueGraph { get; set; }
+
+    ///<summary>
+    /// Current balance, current withdrawable balance and overall earned Telegram Stars
+    /// See <a href="https://corefork.telegram.org/type/StarsRevenueStatus" />
+    ///</summary>
     public MyTelegram.Schema.IStarsRevenueStatus Status { get; set; }
+
+    ///<summary>
+    /// Current conversion rate of Telegram Stars to USD
+    ///</summary>
     public double UsdRate { get; set; }
 
     public void ComputeFlag()

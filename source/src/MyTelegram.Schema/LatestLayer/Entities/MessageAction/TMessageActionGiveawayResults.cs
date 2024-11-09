@@ -7,10 +7,13 @@ namespace MyTelegram.Schema;
 /// A <a href="https://corefork.telegram.org/api/giveaways">giveaway</a> has ended.
 /// See <a href="https://corefork.telegram.org/constructor/messageActionGiveawayResults" />
 ///</summary>
-[TlObject(0x2a9fadc5)]
+[TlObject(0x87e2f155)]
 public sealed class TMessageActionGiveawayResults : IMessageAction
 {
-    public uint ConstructorId => 0x2a9fadc5;
+    public uint ConstructorId => 0x87e2f155;
+    public BitArray Flags { get; set; } = new BitArray(32);
+    public bool Stars { get; set; }
+
     ///<summary>
     /// Number of winners in the giveaway
     ///</summary>
@@ -23,6 +26,7 @@ public sealed class TMessageActionGiveawayResults : IMessageAction
 
     public void ComputeFlag()
     {
+        if (Stars) { Flags[0] = true; }
 
     }
 
@@ -30,12 +34,15 @@ public sealed class TMessageActionGiveawayResults : IMessageAction
     {
         ComputeFlag();
         writer.Write(ConstructorId);
+        writer.Write(Flags);
         writer.Write(WinnersCount);
         writer.Write(UnclaimedCount);
     }
 
     public void Deserialize(ref SequenceReader<byte> reader)
     {
+        Flags = reader.ReadBitArray();
+        if (Flags[0]) { Stars = true; }
         WinnersCount = reader.ReadInt32();
         UnclaimedCount = reader.ReadInt32();
     }

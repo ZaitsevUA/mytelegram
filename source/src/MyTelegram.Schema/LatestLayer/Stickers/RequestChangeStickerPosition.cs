@@ -4,7 +4,7 @@
 namespace MyTelegram.Schema.Stickers;
 
 ///<summary>
-/// Changes the absolute position of a sticker in the set to which it belongs; for bots only. The sticker set must have been created by the bot
+/// Changes the absolute position of a sticker in the set to which it belongs. The sticker set must have been created by the current user/bot.
 /// <para>Possible errors</para>
 /// Code Type Description
 /// 400 STICKER_INVALID The provided sticker is invalid.

@@ -4,13 +4,13 @@
 namespace MyTelegram.Schema;
 
 ///<summary>
-/// Used to gift <a href="https://corefork.telegram.org/api/premium">Telegram Premium</a> subscriptions only to some specific subscribers of a channel or to some of our contacts, see <a href="https://corefork.telegram.org/api/giveaways">here »</a> for more info on giveaways and gifts.
+/// Used to gift <a href="https://corefork.telegram.org/api/premium">Telegram Premium</a> subscriptions only to some specific subscribers of a channel/supergroup or to some of our contacts, see <a href="https://corefork.telegram.org/api/giveaways">here »</a> for more info on giveaways and gifts.
 /// See <a href="https://corefork.telegram.org/constructor/inputStorePaymentPremiumGiftCode" />
 ///</summary>
-[TlObject(0xa3805f3f)]
+[TlObject(0xfb790393)]
 public sealed class TInputStorePaymentPremiumGiftCode : IInputStorePaymentPurpose
 {
-    public uint ConstructorId => 0xa3805f3f;
+    public uint ConstructorId => 0xfb790393;
     ///<summary>
     /// Flags, see <a href="https://corefork.telegram.org/mtproto/TL-combinators#conditional-fields">TL conditional fields</a>
     ///</summary>
@@ -22,7 +22,7 @@ public sealed class TInputStorePaymentPremiumGiftCode : IInputStorePaymentPurpos
     public TVector<MyTelegram.Schema.IInputUser> Users { get; set; }
 
     ///<summary>
-    /// If set, the gifts will be sent on behalf of a channel we are an admin of, which will also assign some <a href="https://corefork.telegram.org/api/boost">boosts</a> to it. Otherwise, the gift will be sent directly from the currently logged in users, and we will gain some extra <a href="https://corefork.telegram.org/api/boost">boost slots</a>. See <a href="https://corefork.telegram.org/api/giveaways">here »</a> for more info on giveaways and gifts.
+    /// If set, the gifts will be sent on behalf of a channel/supergroup we are an admin of, which will also assign some <a href="https://corefork.telegram.org/api/boost">boosts</a> to it. Otherwise, the gift will be sent directly from the currently logged in user, and we will gain some extra <a href="https://corefork.telegram.org/api/boost">boost slots</a>. See <a href="https://corefork.telegram.org/api/giveaways">here »</a> for more info on giveaways and gifts.
     /// See <a href="https://corefork.telegram.org/type/InputPeer" />
     ///</summary>
     public MyTelegram.Schema.IInputPeer? BoostPeer { get; set; }
@@ -36,11 +36,12 @@ public sealed class TInputStorePaymentPremiumGiftCode : IInputStorePaymentPurpos
     /// Total price in the smallest units of the currency (integer, not float/double). For example, for a price of <code>US$ 1.45</code> pass <code>amount = 145</code>. See the exp parameter in <a href="https://corefork.telegram.org/bots/payments/currencies.json">currencies.json</a>, it shows the number of digits past the decimal point for each currency (2 for the majority of currencies).
     ///</summary>
     public long Amount { get; set; }
+    public MyTelegram.Schema.ITextWithEntities? Message { get; set; }
 
     public void ComputeFlag()
     {
         if (BoostPeer != null) { Flags[0] = true; }
-
+        if (Message != null) { Flags[1] = true; }
     }
 
     public void Serialize(IBufferWriter<byte> writer)
@@ -52,6 +53,7 @@ public sealed class TInputStorePaymentPremiumGiftCode : IInputStorePaymentPurpos
         if (Flags[0]) { writer.Write(BoostPeer); }
         writer.Write(Currency);
         writer.Write(Amount);
+        if (Flags[1]) { writer.Write(Message); }
     }
 
     public void Deserialize(ref SequenceReader<byte> reader)
@@ -61,5 +63,6 @@ public sealed class TInputStorePaymentPremiumGiftCode : IInputStorePaymentPurpos
         if (Flags[0]) { BoostPeer = reader.Read<MyTelegram.Schema.IInputPeer>(); }
         Currency = reader.ReadString();
         Amount = reader.ReadInt64();
+        if (Flags[1]) { Message = reader.Read<MyTelegram.Schema.ITextWithEntities>(); }
     }
 }

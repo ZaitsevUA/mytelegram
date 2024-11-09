@@ -29,39 +29,26 @@ namespace MyTelegram.Handlers.Messages;
 /// 400 USER_BANNED_IN_CHANNEL You're banned from sending messages in supergroups/channels.
 /// See <a href="https://corefork.telegram.org/method/messages.sendMultiMedia" />
 ///</summary>
-internal sealed class SendMultiMediaHandler : RpcResultObjectHandler<MyTelegram.Schema.Messages.RequestSendMultiMedia, MyTelegram.Schema.IUpdates>,
-    Messages.ISendMultiMediaHandler
+internal sealed class SendMultiMediaHandler(
+    IMessageAppService messageAppService,
+    IMediaHelper mediaHelper,
+    //IRequestCacheAppService requestCacheAppService,
+    IPeerHelper peerHelper,
+    IRandomHelper randomHelper,
+    IAccessHashHelper accessHashHelper)
+    : RpcResultObjectHandler<MyTelegram.Schema.Messages.RequestSendMultiMedia, MyTelegram.Schema.IUpdates>,
+        Messages.ISendMultiMediaHandler
 {
-    private readonly IMediaHelper _mediaHelper;
-
-    private readonly IMessageAppService _messageAppService;
-
     //private readonly IRequestCacheAppService _requestCacheAppService;
-    private readonly IPeerHelper _peerHelper;
-    private readonly IRandomHelper _randomHelper;
-    private readonly IAccessHashHelper _accessHashHelper;
-    public SendMultiMediaHandler(IMessageAppService messageAppService,
-        IMediaHelper mediaHelper,
-        //IRequestCacheAppService requestCacheAppService,
-        IPeerHelper peerHelper,
-        IRandomHelper randomHelper,
-        IAccessHashHelper accessHashHelper)
-    {
-        _messageAppService = messageAppService;
-        _mediaHelper = mediaHelper;
-        //_requestCacheAppService = requestCacheAppService;
-        _peerHelper = peerHelper;
-        _randomHelper = randomHelper;
-        _accessHashHelper = accessHashHelper;
-    }
+    //_requestCacheAppService = requestCacheAppService;
 
     protected override async Task<IUpdates> HandleCoreAsync(IRequestInput input,
         RequestSendMultiMedia obj)
     {
-        await _accessHashHelper.CheckAccessHashAsync(obj.Peer);
-        await _accessHashHelper.CheckAccessHashAsync(obj.SendAs);
+        await accessHashHelper.CheckAccessHashAsync(obj.Peer);
+        await accessHashHelper.CheckAccessHashAsync(obj.SendAs);
 
-        var groupId = _randomHelper.NextLong();
+        var groupId = randomHelper.NextLong();
         var groupItemCount = obj.MultiMedia.Count;
         var requestInfo = input.ToRequestInfo();
         int? replyToMsgId = null;
@@ -72,31 +59,39 @@ internal sealed class SendMultiMediaHandler : RpcResultObjectHandler<MyTelegram.
             topMsgId = replyToMessage.TopMsgId;
         }
 
-        var sendAs = _peerHelper.GetPeer(obj.SendAs, input.UserId);
+        var sendAs = peerHelper.GetPeer(obj.SendAs, input.UserId);
+        var inputs = new List<SendMessageInput>();
         foreach (var inputSingleMedia in obj.MultiMedia)
         {
-            var media = await _mediaHelper.SaveMediaAsync(inputSingleMedia.Media);
+            var media = await mediaHelper.SaveMediaAsync(inputSingleMedia.Media);
             var sendMessageInput = new SendMessageInput(requestInfo,
                 input.UserId,
-                _peerHelper.GetPeer(obj.Peer, input.UserId),
+                peerHelper.GetPeer(obj.Peer, input.UserId),
                 inputSingleMedia.Message,
                 inputSingleMedia.RandomId,
                 clearDraft: obj.ClearDraft,
                 entities: inputSingleMedia.Entities,
-                media: media.ToBytes(),
+                media: media,
                 //replyToMsgId: replyToMsgId,
                 inputReplyTo: obj.ReplyTo,
                 sendMessageType: SendMessageType.Media,
-                messageType: _mediaHelper.GeMessageType(media),
+                messageType: mediaHelper.GeMessageType(media),
                 groupId: groupId,
                 groupItemCount: groupItemCount,
                 topMsgId: topMsgId,
                 sendAs: sendAs,
-                effect: obj.Effect
+                effect: obj.Effect,
+                inputQuickReplyShortcut: obj.QuickReplyShortcut,
+                isSendGroupedMessage: true,
+                silent: obj.Silent,
+                scheduleDate: obj.ScheduleDate
             );
-            await _messageAppService.SendMessageAsync(sendMessageInput);
+            inputs.Add(sendMessageInput);
+            //await _messageAppService.SendMessageAsync(sendMessageInput);
             //_requestCacheAppService.AddRequest(input.ReqMsgId, input.AuthKeyId, input.RequestSessionId, input.SeqNumber);
         }
+
+        await messageAppService.SendMessageAsync(inputs);
 
         return null!;
     }

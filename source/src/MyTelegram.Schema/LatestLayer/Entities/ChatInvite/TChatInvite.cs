@@ -7,10 +7,10 @@ namespace MyTelegram.Schema;
 /// Chat invite info
 /// See <a href="https://corefork.telegram.org/constructor/chatInvite" />
 ///</summary>
-[TlObject(0xcde0ec40)]
+[TlObject(0xfe65389d)]
 public sealed class TChatInvite : IChatInvite
 {
-    public uint ConstructorId => 0xcde0ec40;
+    public uint ConstructorId => 0xfe65389d;
     ///<summary>
     /// Flags, see <a href="https://corefork.telegram.org/mtproto/TL-combinators#conditional-fields">TL conditional fields</a>
     ///</summary>
@@ -63,6 +63,7 @@ public sealed class TChatInvite : IChatInvite
     /// See <a href="https://corefork.telegram.org/type/true" />
     ///</summary>
     public bool Fake { get; set; }
+    public bool CanRefulfillSubscription { get; set; }
 
     ///<summary>
     /// Chat/supergroup/channel title
@@ -94,6 +95,8 @@ public sealed class TChatInvite : IChatInvite
     /// <a href="https://corefork.telegram.org/api/colors">Profile color palette ID</a>
     ///</summary>
     public int Color { get; set; }
+    public MyTelegram.Schema.IStarsSubscriptionPricing? SubscriptionPricing { get; set; }
+    public long? SubscriptionFormId { get; set; }
 
     public void ComputeFlag()
     {
@@ -105,9 +108,11 @@ public sealed class TChatInvite : IChatInvite
         if (Verified) { Flags[7] = true; }
         if (Scam) { Flags[8] = true; }
         if (Fake) { Flags[9] = true; }
+        if (CanRefulfillSubscription) { Flags[11] = true; }
         if (About != null) { Flags[5] = true; }
         if (Participants?.Count > 0) { Flags[4] = true; }
-
+        if (SubscriptionPricing != null) { Flags[10] = true; }
+        if (/*SubscriptionFormId != 0 &&*/ SubscriptionFormId.HasValue) { Flags[12] = true; }
     }
 
     public void Serialize(IBufferWriter<byte> writer)
@@ -121,6 +126,8 @@ public sealed class TChatInvite : IChatInvite
         writer.Write(ParticipantsCount);
         if (Flags[4]) { writer.Write(Participants); }
         writer.Write(Color);
+        if (Flags[10]) { writer.Write(SubscriptionPricing); }
+        if (Flags[12]) { writer.Write(SubscriptionFormId.Value); }
     }
 
     public void Deserialize(ref SequenceReader<byte> reader)
@@ -134,11 +141,14 @@ public sealed class TChatInvite : IChatInvite
         if (Flags[7]) { Verified = true; }
         if (Flags[8]) { Scam = true; }
         if (Flags[9]) { Fake = true; }
+        if (Flags[11]) { CanRefulfillSubscription = true; }
         Title = reader.ReadString();
         if (Flags[5]) { About = reader.ReadString(); }
         Photo = reader.Read<MyTelegram.Schema.IPhoto>();
         ParticipantsCount = reader.ReadInt32();
         if (Flags[4]) { Participants = reader.Read<TVector<MyTelegram.Schema.IUser>>(); }
         Color = reader.ReadInt32();
+        if (Flags[10]) { SubscriptionPricing = reader.Read<MyTelegram.Schema.IStarsSubscriptionPricing>(); }
+        if (Flags[12]) { SubscriptionFormId = reader.ReadInt64(); }
     }
 }

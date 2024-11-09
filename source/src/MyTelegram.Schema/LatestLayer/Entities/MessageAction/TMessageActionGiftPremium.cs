@@ -7,10 +7,10 @@ namespace MyTelegram.Schema;
 /// Info about a gifted Telegram Premium subscription
 /// See <a href="https://corefork.telegram.org/constructor/messageActionGiftPremium" />
 ///</summary>
-[TlObject(0xc83d6aec)]
+[TlObject(0x6c6274fa)]
 public sealed class TMessageActionGiftPremium : IMessageAction
 {
-    public uint ConstructorId => 0xc83d6aec;
+    public uint ConstructorId => 0x6c6274fa;
     ///<summary>
     /// Flags, see <a href="https://corefork.telegram.org/mtproto/TL-combinators#conditional-fields">TL conditional fields</a>
     ///</summary>
@@ -40,11 +40,13 @@ public sealed class TMessageActionGiftPremium : IMessageAction
     /// If the gift was bought using a cryptocurrency, price of the gift in the smallest units of a cryptocurrency.
     ///</summary>
     public long? CryptoAmount { get; set; }
+    public MyTelegram.Schema.ITextWithEntities? Message { get; set; }
 
     public void ComputeFlag()
     {
         if (CryptoCurrency != null) { Flags[0] = true; }
         if (/*CryptoAmount != 0 &&*/ CryptoAmount.HasValue) { Flags[0] = true; }
+        if (Message != null) { Flags[1] = true; }
     }
 
     public void Serialize(IBufferWriter<byte> writer)
@@ -57,6 +59,7 @@ public sealed class TMessageActionGiftPremium : IMessageAction
         writer.Write(Months);
         if (Flags[0]) { writer.Write(CryptoCurrency); }
         if (Flags[0]) { writer.Write(CryptoAmount.Value); }
+        if (Flags[1]) { writer.Write(Message); }
     }
 
     public void Deserialize(ref SequenceReader<byte> reader)
@@ -67,5 +70,6 @@ public sealed class TMessageActionGiftPremium : IMessageAction
         Months = reader.ReadInt32();
         if (Flags[0]) { CryptoCurrency = reader.ReadString(); }
         if (Flags[0]) { CryptoAmount = reader.ReadInt64(); }
+        if (Flags[1]) { Message = reader.Read<MyTelegram.Schema.ITextWithEntities>(); }
     }
 }

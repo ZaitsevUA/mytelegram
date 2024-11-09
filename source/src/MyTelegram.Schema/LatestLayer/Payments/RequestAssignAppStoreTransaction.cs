@@ -5,6 +5,9 @@ namespace MyTelegram.Schema.Payments;
 
 ///<summary>
 /// Informs server about a purchase made through the App Store: for official applications only.
+/// <para>Possible errors</para>
+/// Code Type Description
+/// 400 RECEIPT_EMPTY The specified receipt is empty.
 /// See <a href="https://corefork.telegram.org/method/payments.assignAppStoreTransaction" />
 ///</summary>
 [TlObject(0x80ed747d)]

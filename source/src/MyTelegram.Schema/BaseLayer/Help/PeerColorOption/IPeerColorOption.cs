@@ -25,7 +25,7 @@ public interface IPeerColorOption : IObject
     int ColorId { get; set; }
 
     ///<summary>
-    /// Light mode palette. <br>Will be empty for IDs <code>0</code> to <code>6</code> inclusive, in which case a palette containing a single color from the following colors should be used: red, orange, violet, green, cyan, blue, pink for indexes 0 to 6.
+    /// Light mode palette. <br>Will be empty for IDs <code>0</code> to <code>6</code> inclusive, in which case a palette containing a single color from the following colors should be used: red, orange, violet, green, cyan, blue, pink for indexes 0 to 6 (i.e. the same colors used for randomized fallback <a href="https://corefork.telegram.org/api/colors">message accent colors</a>).
     /// See <a href="https://corefork.telegram.org/type/help.PeerColorSet" />
     ///</summary>
     MyTelegram.Schema.Help.IPeerColorSet? Colors { get; set; }
@@ -40,5 +40,9 @@ public interface IPeerColorOption : IObject
     /// Channels can use this palette only after reaching at least the <a href="https://corefork.telegram.org/api/boost">boost level</a> specified in this field.
     ///</summary>
     int? ChannelMinLevel { get; set; }
+
+    ///<summary>
+    /// Supergroups can use this palette only after reaching at least the <a href="https://corefork.telegram.org/api/boost">boost level</a> specified in this field.
+    ///</summary>
     int? GroupMinLevel { get; set; }
 }

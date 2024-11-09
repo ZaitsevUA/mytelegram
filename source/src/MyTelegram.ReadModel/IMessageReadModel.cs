@@ -6,16 +6,17 @@ public interface IMessageReadModel : IReadModel, IHasReactions
     int? EditDate { get; }
     bool EditHide { get; }
     byte[]? Entities { get; }
+    TVector<IMessageEntity>? Entities2 { get; }
     MessageFwdHeader? FwdHeader { get; }
     long? GroupedId { get; }
     string Id { get; }
-
     byte[]? Media { get; }
+    IMessageMedia? Media2 { get; }
     string Message { get; }
     string? MessageActionData { get; }
+    IMessageAction? MessageAction { get; }
     MessageActionType MessageActionType { get; }
     MessageType MessageType { get; }
-    // int MessageId { get; }
     bool Out { get; }
     long OwnerPeerId { get; }
     bool Pinned { get; }
@@ -31,30 +32,24 @@ public interface IMessageReadModel : IReadModel, IHasReactions
     bool Silent { get; }
     long ToPeerId { get; }
     PeerType ToPeerType { get; }
-
     Peer? SavedPeerId { get; }
     int? Views { get; }
     long? LinkedChannelId { get; }
     int Replies { get; }
     long? PollId { get; }
     byte[]? ReplyMarkup { get; }
-    //bool Mentioned { get; }
-    //List<UserReaction>? UserReactions { get; }
-    //List<long>? ReactionUserIds { get; }
-    //List<ReactionCount>? Reactions { get; }
-    //List<Reaction>? RecentReactions { get; }
-
-    //IReplyTo? ReplyTo { get; }
+    IReplyMarkup? ReplyMarkup2 { get; }
     IInputReplyTo? ReplyTo { get; }
     Peer? SendAs { get; }
     MessageReply? Reply { get; }
     long? PostChannelId { get; }
     int? PostMessageId { get; }
-
-    bool HasQuickReplyShortcut { get; }
-    string? QuickReplyShortcut { get; }
-    // long RandomId { get; }
+    bool IsQuickReplyMessage { get; }
+    int? ShortcutId { get; }
     Guid BatchId { get; }
     long? Effect { get; }
-
+    bool FromScheduled { get; }
+    int? ScheduleDate { get; }
+    int? TtlPeriod { get; }
+    int? ExpirationTime { get; }
 }

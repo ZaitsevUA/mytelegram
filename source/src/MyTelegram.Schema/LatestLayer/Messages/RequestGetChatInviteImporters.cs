@@ -30,6 +30,7 @@ public sealed class RequestGetChatInviteImporters : IRequest<MyTelegram.Schema.M
     /// See <a href="https://corefork.telegram.org/type/true" />
     ///</summary>
     public bool Requested { get; set; }
+    public bool SubscriptionExpired { get; set; }
 
     ///<summary>
     /// Chat
@@ -66,6 +67,7 @@ public sealed class RequestGetChatInviteImporters : IRequest<MyTelegram.Schema.M
     public void ComputeFlag()
     {
         if (Requested) { Flags[0] = true; }
+        if (SubscriptionExpired) { Flags[3] = true; }
         if (Link != null) { Flags[1] = true; }
         if (Q != null) { Flags[2] = true; }
 
@@ -88,6 +90,7 @@ public sealed class RequestGetChatInviteImporters : IRequest<MyTelegram.Schema.M
     {
         Flags = reader.ReadBitArray();
         if (Flags[0]) { Requested = true; }
+        if (Flags[3]) { SubscriptionExpired = true; }
         Peer = reader.Read<MyTelegram.Schema.IInputPeer>();
         if (Flags[1]) { Link = reader.ReadString(); }
         if (Flags[2]) { Q = reader.ReadString(); }

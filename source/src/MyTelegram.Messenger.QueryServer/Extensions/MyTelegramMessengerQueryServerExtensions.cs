@@ -1,5 +1,4 @@
-﻿using EventFlow.Core.Caching;
-using EventFlow.MongoDB.Extensions;
+﻿using EventFlow.MongoDB.Extensions;
 using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Serializers;
 using MyTelegram.Caching.Redis;
@@ -12,11 +11,8 @@ using MyTelegram.Domain.EventFlow;
 using MyTelegram.Domain.Events.PushUpdates;
 using MyTelegram.Domain.Events.RpcResult;
 using MyTelegram.Domain.Events.Updates;
-using MyTelegram.EventFlow.MongoDB.ReadStores;
 using MyTelegram.EventFlow.ReadStores;
-using MyTelegram.Messenger.Extensions;
 using MyTelegram.Messenger.NativeAot;
-using MyTelegram.Messenger.QueryServer.BackgroundServices;
 using MyTelegram.Messenger.QueryServer.EventHandlers;
 using MyTelegram.Messenger.QueryServer.Services;
 using MyTelegram.QueryHandlers.MongoDB;
@@ -33,9 +29,6 @@ public static class MyTelegramMessengerQueryServerExtensions
     {
         eventBus.Subscribe<MessengerQueryDataReceivedEvent, MessengerEventHandler>();
         eventBus.Subscribe<StickerDataReceivedEvent, MessengerEventHandler>();
-        eventBus.Subscribe<NewPtsMessageHasSentEvent, PtsEventHandler>();
-        eventBus.Subscribe<RpcMessageHasSentEvent, PtsEventHandler>();
-        eventBus.Subscribe<AcksDataReceivedEvent, PtsEventHandler>();
 
         eventBus.Subscribe<UserIsOnlineEvent, UserIsOnlineEventHandler>();
 
@@ -45,11 +38,7 @@ public static class MyTelegramMessengerQueryServerExtensions
 
     public static void AddMyTelegramMessengerQueryServer(this IServiceCollection services, Action<IEventFlowOptions>? configure = null)
     {
-        services.AddTransient<PtsEventHandler>();
-        services.AddTransient<MessengerEventHandler>();
-        services.AddTransient<UserIsOnlineEventHandler>();
-        services.AddTransient<DistributedDomainEventHandler>();
-        services.AddTransient<DuplicateOperationExceptionHandler>();
+        services.RegisterServices();
         services.AddTransient<IPtsForAuthKeyIdReadModelLocator, PtsForAuthKeyIdReadModelLocator>();
 
         services.AddEventFlow(options =>
@@ -106,22 +95,11 @@ public static class MyTelegramMessengerQueryServerExtensions
 
             options.UseMongoDbEventStore();
             options.UseMongoDbSnapshotStore();
-            //options.AddPushUpdatesMongoDbReadModel();
 
-            //options.UseMongoDbReadModelWithContext<PtsReadModel, IPtsReadModelLocator, PushReadModelMongoDbContext>();
-            //options.UseMongoDbReadModel<PushUpdatesAggregate, PushUpdatesId, PushUpdatesReadModel, PushReadModelMongoDbContext>();
             options.UseMongoDbReadModel<UpdatesAggregate, UpdatesId, UpdatesReadModel, PushReadModelMongoDbContext>();
-            //options.UseMongoDbReadModel<PtsAggregate, PtsId, PtsForAuthKeyIdReadModel, PushReadModelMongoDbContext>();
             options.UseMongoDbReadModel<RpcResultAggregate, RpcResultId, RpcResultReadModel, PushReadModelMongoDbContext>();
             options.UseMongoDbReadModel<PtsAggregate, PtsId, PtsReadModel, PushReadModelMongoDbContext>();
-            options
-                .UseMongoDbReadModel<PtsAggregate, PtsId, PtsForAuthKeyIdReadModel, PushReadModelMongoDbContext>();
-
-            //options.UseMongoDbReadModelWithContext<PtsReadModel, IPtsReadModelLocator, PushReadModelMongoDbContext>();
-
-            //options.UseMongoDbReadModel<BotAggregate, BotId, ReadModel.MongoDB.BotReadModel, BotMongoDbContext>();
-
-            //options.AddMyMongoDbReadModelServices();
+            options.UseMongoDbReadModel<PtsAggregate, PtsId, PtsForAuthKeyIdReadModel, PushReadModelMongoDbContext>();
              
             configure?.Invoke(options);
         });
@@ -131,14 +109,6 @@ public static class MyTelegramMessengerQueryServerExtensions
         services.AddMyTelegramMessengerServices();
         services.AddMyEventFlow();
         services.AddMyTelegramIdGeneratorServices();
-
-        services.AddSingleton<PushReadModelMongoDbContext>();
-
-        //services.AddSingleton<IPtsHelper, QueryServerPtsHelper>();
-        services.AddTransient<IMongoDbIndexesCreator, QueryServerMongoDbIndexesCreator>();
-        //services.AddTransient<IReadModelCacheStrategy, MyTelegramReadModelCacheStrategy>();
-        //services.AddTransient<IReadModelUpdateStrategy, QueryServerReadModelUpdateStrategy>();
-        //services.AddTransient<IReadModelUpdateManager, MyTelegramQueryServerReadModelUpdateManager>();
 
         services.AddSingleton(typeof(IQueuedCommandExecutor<,,>), typeof(QueuedCommandExecutor<,,>));
 

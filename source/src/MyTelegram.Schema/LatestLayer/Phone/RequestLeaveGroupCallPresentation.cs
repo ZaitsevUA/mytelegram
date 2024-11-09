@@ -5,6 +5,9 @@ namespace MyTelegram.Schema.Phone;
 
 ///<summary>
 /// Stop screen sharing in a group call
+/// <para>Possible errors</para>
+/// Code Type Description
+/// 400 GROUPCALL_INVALID The specified group call is invalid.
 /// See <a href="https://corefork.telegram.org/method/phone.leaveGroupCallPresentation" />
 ///</summary>
 [TlObject(0x1c50d144)]

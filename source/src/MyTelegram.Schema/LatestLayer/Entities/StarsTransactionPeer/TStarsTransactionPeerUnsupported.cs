@@ -4,6 +4,7 @@
 namespace MyTelegram.Schema;
 
 ///<summary>
+/// Describes a <a href="https://corefork.telegram.org/api/stars">Telegram Star</a> transaction that cannot be described using the current layer.
 /// See <a href="https://corefork.telegram.org/constructor/starsTransactionPeerUnsupported" />
 ///</summary>
 [TlObject(0x95f2bfe4)]

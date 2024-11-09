@@ -11,11 +11,19 @@ namespace MyTelegram.Schema;
 public sealed class TWebViewResultUrl : IWebViewResult
 {
     public uint ConstructorId => 0x4d22ff98;
+    ///<summary>
+    /// Flags, see <a href="https://corefork.telegram.org/mtproto/TL-combinators#conditional-fields">TL conditional fields</a>
+    ///</summary>
     public BitArray Flags { get; set; } = new BitArray(32);
+
+    ///<summary>
+    /// If set, the app must be opened in fullsize mode instead of compact mode.
+    /// See <a href="https://corefork.telegram.org/type/true" />
+    ///</summary>
     public bool Fullsize { get; set; }
 
     ///<summary>
-    /// Webview session ID
+    /// Webview session ID (only returned by <a href="https://corefork.telegram.org/api/bots/webapps#inline-button-mini-apps">inline button mini apps</a>, <a href="https://corefork.telegram.org/api/bots/webapps#menu-button-mini-apps">menu button mini apps</a>, <a href="https://corefork.telegram.org/api/bots/webapps#attachment-menu-mini-apps">attachment menu mini apps</a>).
     ///</summary>
     public long? QueryId { get; set; }
 
