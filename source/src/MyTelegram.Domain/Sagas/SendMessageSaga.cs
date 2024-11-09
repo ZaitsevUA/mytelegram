@@ -18,7 +18,6 @@ public class PostChannelIdUpdatedSagaEvent(long channelId, int messageId, long p
 }
 
 public class SendMessageSaga : MyInMemoryAggregateSaga<SendMessageSaga, SendMessageSagaId, SendMessageSagaLocator>,
-    //ISagaIsStartedBy<MessageAggregate, MessageId, OutboxMessageCreatedEvent>,
     ISagaIsStartedBy<TempAggregate, TempId, SendMessageStartedEvent>,
     ISagaHandles<MessageAggregate, MessageId, OutboxMessageCreatedEvent>,
     ISagaHandles<MessageAggregate, MessageId, InboxMessageCreatedEvent>,
@@ -65,8 +64,7 @@ public class SendMessageSaga : MyInMemoryAggregateSaga<SendMessageSaga, SendMess
 
             var command = new CreateOutboxMessageCommand(
                 MessageId.Create(messageItem.OwnerPeer.PeerId,
-                    messageItem.MessageId,
-                    false
+                    messageItem.MessageId
                     ),
                 domainEvent.AggregateEvent.RequestInfo,
                 messageItem,
@@ -91,21 +89,6 @@ public class SendMessageSaga : MyInMemoryAggregateSaga<SendMessageSaga, SendMess
         await HandleSendOutboxMessageCompletedAsync(domainEvent.AggregateEvent.OutboxMessageItem);
 
         await CreateInboxMessageAsync(domainEvent.AggregateEvent);
-
-        CreateMentions(domainEvent.AggregateEvent.MentionedUserIds, domainEvent.AggregateEvent.OutboxMessageItem.MessageId);
-    }
-
-    private void CreateMentions(List<long>? mentionedUserIds, int messageId)
-    {
-        if (mentionedUserIds?.Count > 0)
-        {
-            foreach (var mentionedUserId in mentionedUserIds)
-            {
-                //var command = new CreateMentionCommand(DialogId.Create(mentionedUserId, _state.MessageItem.ToPeer),
-                //    mentionedUserId, /*_state.MessageItem.ToPeer.PeerId,*/ messageId);
-                //Publish(command);
-            }
-        }
     }
 
     public Task HandleAsync(IDomainEvent<MessageAggregate, MessageId, InboxMessageCreatedEvent> domainEvent, ISagaContext sagaContext, CancellationToken cancellationToken)
@@ -159,7 +142,7 @@ public class SendMessageSaga : MyInMemoryAggregateSaga<SendMessageSaga, SendMess
 
         var command = new AddInboxItemsToOutboxMessageCommand(
             MessageId.Create(inboxMessageItem.SenderPeer.PeerId,
-                senderMessageId, false),
+                senderMessageId),
             _state.RequestInfo,
             inboxItems ?? []
         );
@@ -219,53 +202,6 @@ public class SendMessageSaga : MyInMemoryAggregateSaga<SendMessageSaga, SendMess
         }
     }
 
-    //public async Task HandleAsync(IDomainEvent<DialogAggregate, DialogId, DialogUpdatedEvent> domainEvent, ISagaContext sagaContext, CancellationToken cancellationToken)
-    //{
-    //    if (domainEvent.AggregateEvent.IsNew)
-    //    {
-    //        if (_state.FirstMessageItem.MessageItem.DefaultHistoryTtl.HasValue)
-    //        {
-    //            var requestInfo = _state.RequestInfo;
-    //            var ownerPeerId = _state.RequestInfo.UserId;
-    //            var ownerPeer = _state.RequestInfo.UserId.ToUserPeer();
-    //            if (domainEvent.AggregateEvent.ToPeer.PeerType == PeerType.Channel)
-    //            {
-    //                ownerPeer = domainEvent.AggregateEvent.ToPeer;
-    //            }
-
-    //            var outMessageId = await _idGenerator.NextIdAsync(IdType.MessageId, ownerPeerId, cancellationToken: cancellationToken);
-    //            var messageItem = new MessageItem(
-    //                ownerPeer,
-    //                domainEvent.AggregateEvent.ToPeer,
-    //                requestInfo.UserId.ToUserPeer(),
-    //                requestInfo.UserId,
-    //                outMessageId,
-    //                string.Empty,
-    //                DateTime.UtcNow.ToTimestamp(),
-    //                Random.Shared.NextInt64(),
-    //                true,
-    //                SendMessageType.MessageService,
-    //                MessageSubType: MessageSubType.SetHistoryTtl,
-    //                MessageActionType: MessageActionType.SetMessagesTtl,
-    //                MessageAction: new TMessageActionSetMessagesTTL
-    //                {
-    //                    Period = _state.FirstMessageItem.MessageItem.DefaultHistoryTtl.Value,
-    //                    AutoSettingFrom = requestInfo.UserId
-    //                }
-    //            );
-
-    //            var command = new StartSendMessageCommand(TempId.New, requestInfo,
-    //                [new SendMessageItem(messageItem)]);
-    //            Publish(command);
-    //        }
-    //    }
-
-    //    if (domainEvent.AggregateEvent.ToPeer.PeerType == PeerType.Channel)
-    //    {
-    //        await CompleteAsync(cancellationToken);
-    //    }
-    //}
-
     private bool HandleReplyDiscussionMessage(MessageItem outboxMessageItem)
     {
         if (outboxMessageItem is { InputReplyTo: not null, ToPeer.PeerType: PeerType.Channel })
@@ -275,7 +211,7 @@ public class SendMessageSaga : MyInMemoryAggregateSaga<SendMessageSaga, SendMess
                 case TInputReplyToMessage inputReplyToMessage:
                     ReplyToMessage(outboxMessageItem, inputReplyToMessage.ReplyToMsgId);
                     return true;
-                case TInputReplyToStory inputReplyToStory:
+                case TInputReplyToStory:
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -379,6 +315,4 @@ public class SendMessageSaga : MyInMemoryAggregateSaga<SendMessageSaga, SendMess
 
         return CompleteAsync(cancellationToken);
     }
-
-
 }
