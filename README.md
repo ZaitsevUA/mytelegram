@@ -1,6 +1,6 @@
 # MyTelegram
 
-[![API Layer](https://img.shields.io/badge/API_Layer-183-blueviolet)](https://corefork.telegram.org/methods)
+[![API Layer](https://img.shields.io/badge/API_Layer-192-blueviolet)](https://corefork.telegram.org/methods)
 [![MTProto](https://img.shields.io/badge/MTProto_Protocol-2.0-green)](https://corefork.telegram.org/mtproto/)
 [![Support Chat](https://img.shields.io/badge/Chat_with_us-on_Telegram-0088cc)](https://t.me/+S-aNBoRvCRpPyXrR)
 
@@ -8,7 +8,7 @@ MyTelegram is telegram server side api implementation written in c#,support priv
 
 ## Features
 
-- API Layer: **`183`**
+- API Layer: **`192`**
 - [MTProto transports](https://corefork.telegram.org/mtproto/mtproto-transports): **`Abridged`**,**`Intermediate`**
 - Private chat
 - Group chat
@@ -30,15 +30,17 @@ MyTelegram is telegram server side api implementation written in c#,support priv
 
 ## Build docker images
 
-Run the following scripts
-
+- ### linux/amd64 (build)
 ```
-build\docker\1.build-messenger-command-server.sh
-build\docker\2.build-messenger-query-server.sh
-build\docker\3.build-messenger-server-grpcservice.sh
-build\docker\4.build-sms-sender.sh
-build\docker\5.build-gateway-server.sh
-build\docker\6.build-auth-server.sh
+build-all-amd64.sh
+```
+- ### linux/arm64 (build)
+```
+build-all-arm64.sh
+```
+- ### linux/amd64 & linux/arm64 (build and push)
+```
+build-and-push-all-amd64-arm64.sh
 ```
 
 ## Run MyTelegram server
