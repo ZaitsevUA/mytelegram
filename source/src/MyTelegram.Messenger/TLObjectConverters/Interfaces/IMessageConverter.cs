@@ -6,8 +6,8 @@ public interface IMessageConverter : ILayeredConverter
         long selfUserId = 0, long? linkedChannelId = null, int pts = 0,
         List<ReactionCount>? reactions = null,
         List<Reaction>? recentReactions = null,
-        int? editDate = null,
-        bool editHide = false,
+        //int? editDate = null,
+        //bool editHide = false,
         List<UserReaction>? userReactions = null,
         bool mentioned = false
         );

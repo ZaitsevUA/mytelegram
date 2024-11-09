@@ -28,8 +28,8 @@ public class MessageConverterLatest(
         int pts = 0,
         List<ReactionCount>? reactions = null,
         List<Reaction>? recentReactions = null,
-        int? editDate = null,
-        bool editHide = false,
+        //int? editDate = null,
+        //bool editHide = false,
         List<UserReaction>? userReactions = null,
         bool mentioned = false
     )
@@ -93,8 +93,8 @@ public class MessageConverterLatest(
                     var m = new TMessage
                     {
                         Date = item.Date,
-                        EditDate = editDate,
-                        EditHide = editHide,
+                        EditDate = item.EditDate,
+                        EditHide = item.EditHide,
                         Entities = item.Entities,
                         FromId = item.SenderPeer.ToPeer(),
                         PeerId = item.ToPeer.ToPeer(),
@@ -139,7 +139,7 @@ public class MessageConverterLatest(
                     }
 
                     // Process existing data
-                    if (editDate == 0)
+                    if (item.EditDate == 0)
                     {
                         m.EditDate = null;
                     }

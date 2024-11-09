@@ -1,7 +1,6 @@
 ﻿namespace MyTelegram.Messenger.TLObjectConverters.Impl.LatestLayer;
 
 public class UpdatesConverterLatest(
-    IObjectMapper objectMapper,
     ILayeredService<IChatConverter> layeredChatService,
     ILayeredService<IMessageConverter> layeredMessageService)
     : LayeredConverterBase, IUpdatesConverterLatest
@@ -254,50 +253,6 @@ public class UpdatesConverterLatest(
         };
     }
 
-    public IUpdates ToEditUpdates(OutboxMessageEditCompletedSagaEvent aggregateEvent,
-        long selfUserId)
-    {
-        IUpdate update = aggregateEvent.NewMessageItem.ToPeer.PeerType switch
-        {
-            PeerType.Channel => new TUpdateEditChannelMessage
-            {
-                Pts = aggregateEvent.NewMessageItem.Pts,
-                PtsCount = 1,
-                Message = GetMessageConverter().ToMessage(aggregateEvent, selfUserId)
-            },
-            _ => new TUpdateEditMessage
-            {
-                Message = GetMessageConverter().ToMessage(aggregateEvent, selfUserId),
-                Pts = aggregateEvent.NewMessageItem.Pts,
-                PtsCount = 1
-            }
-        };
-
-        return new TUpdates
-        {
-            Updates = new TVector<IUpdate>(update),
-            Users = [],
-            Chats = [],
-            Date = DateTime.UtcNow.ToTimestamp(),
-            Seq = 0
-        };
-    }
-
-    public IUpdates ToEditUpdates(InboxMessageEditCompletedSagaEvent aggregateEvent)
-    {
-        var update = new TUpdateEditMessage
-            { Message = GetMessageConverter().ToMessage(aggregateEvent), Pts = aggregateEvent.NewMessageItem.Pts, PtsCount = 1 };
-
-        return new TUpdates
-        {
-            Updates = new TVector<IUpdate>(update),
-            Users = [],
-            Chats = [],
-            Date = DateTime.UtcNow.ToTimestamp(),
-            Seq = 0
-        };
-    }
-
     public IUpdates ToInboxForwardMessageUpdates(ReceiveInboxMessageCompletedSagaEvent aggregateEvent)
     {
         var item = aggregateEvent.MessageItem;
@@ -524,164 +479,10 @@ public class UpdatesConverterLatest(
         return updates;
     }
 
-    //public IUpdates ToSelfOtherDeviceUpdates(SendOutboxMessageCompletedSagaEvent aggregateEvent)
-    //{
-    //    if (aggregateEvent.MessageItem.Media?.Length > 0)
-    //    {
-    //        return ToSelfUpdates(aggregateEvent);
-    //    }
-
-    //    var item = aggregateEvent.MessageItem;
-    //    switch (item.ToPeer.PeerType)
-    //    {
-    //        case PeerType.Self:
-    //        case PeerType.User:
-    //        {
-    //            var updates = new TUpdateShortMessage
-    //            {
-    //                Out = true,
-    //                Id = item.MessageId,
-    //                UserId = item.ToPeer.PeerId,
-    //                Message = item.Message,
-    //                Pts = aggregateEvent.Pts,
-    //                PtsCount = 1,
-    //                Date = item.Date,
-    //                FwdFrom =
-    //                    item.FwdHeader == null
-    //                        ? null
-    //                        : objectMapper.Map<MessageFwdHeader, TMessageFwdHeader>(item.FwdHeader),
-    //                ReplyTo = GetMessageConverter().ToMessageReplyHeader(item.InputReplyTo),
-    //                Entities = item.Entities.ToTObject<TVector<IMessageEntity>>()
-    //            };
-
-    //            return updates;
-    //        }
-    //        //break;
-    //        case PeerType.Chat:
-    //            //case PeerType.Channel:
-    //        {
-    //            var updates = new TUpdateShortChatMessage
-    //            {
-    //                Out = true,
-    //                Id = item.MessageId,
-    //                FromId = item.SenderPeer.PeerId,
-    //                ChatId = item.ToPeer.PeerId,
-    //                Message = item.Message,
-    //                Pts = aggregateEvent.Pts,
-    //                PtsCount = 1,
-    //                Date = item.Date,
-    //                FwdFrom =
-    //                    item.FwdHeader == null
-    //                        ? null
-    //                        : objectMapper.Map<MessageFwdHeader, TMessageFwdHeader>(item.FwdHeader),
-    //                ReplyTo = item.InputReplyTo.ToMessageReplyHeader(),
-    //                Entities = item.Entities.ToTObject<TVector<IMessageEntity>>()
-    //            };
-    //            return updates;
-    //        }
-    //        //break;
-    //        case PeerType.Channel:
-    //        {
-    //            var updateReadChannelInbox = new TUpdateReadChannelInbox
-    //            {
-    //                ChannelId = item.ToPeer.PeerId,
-    //                MaxId = item.MessageId,
-    //                // FolderId = 0,
-    //                Pts = aggregateEvent.Pts,
-    //                StillUnreadCount = 0
-    //            };
-    //            IUpdate updateNewChannelMessage = new TUpdateNewChannelMessage
-    //            {
-    //                Pts = aggregateEvent.Pts,
-    //                PtsCount = 1,
-    //                Message = GetMessageConverter().ToMessage(item,
-    //                    linkedChannelId: aggregateEvent.LinkedChannelId,
-    //                    pts: aggregateEvent.Pts)
-    //            };
-    //            if (item.MessageSubType == MessageSubType.ClearHistory)
-    //            {
-    //                updateNewChannelMessage = new TUpdateEditChannelMessage
-    //                {
-    //                    Pts = aggregateEvent.Pts,
-    //                    PtsCount = 1,
-    //                    Message = GetMessageConverter().ToMessage(item)
-    //                };
-    //            }
-
-    //            return new TUpdates
-    //            {
-    //                Updates = new TVector<IUpdate>(updateReadChannelInbox, updateNewChannelMessage),
-    //                Users = new TVector<IUser>(),
-    //                Chats = new TVector<IChat>(),
-    //                Date = item.Date,
-    //                Seq = 0
-    //            };
-    //        }
-    //        default:
-    //            throw new NotSupportedException($"Unsupported peer {item.ToPeer}");
-    //        //break;
-    //    }
-    //}
-
     public IUpdates ToSelfUpdatePinnedMessageUpdates(UpdatePinnedMessageCompletedSagaEvent aggregateEvent)
     {
         return ToUpdatePinnedMessageUpdates(aggregateEvent, true);
     }
-
-    //public IUpdates ToSelfUpdates(SendOutboxMessageCompletedSagaEvent aggregateEvent)
-    //{
-    //    if (aggregateEvent.MessageItem.ToPeer.PeerType == PeerType.Channel)
-    //    {
-    //        return ToSelfChannelUpdates(aggregateEvent);
-    //    }
-
-    //    var item = aggregateEvent.MessageItem;
-    //    if (item.Media?.Length > 0 ||
-    //        item.MessageSubType == MessageSubType.ForwardMessage ||
-    //        item.SendMessageType == SendMessageType.MessageService ||
-    //        item.Effect.HasValue
-    //       )
-    //    {
-    //        var updateMessageId = new TUpdateMessageID { Id = item.MessageId, RandomId = item.RandomId };
-    //        IUpdate updateNewMessage = new TUpdateNewMessage
-    //        {
-    //            Pts = aggregateEvent.Pts,
-    //            PtsCount = 1,
-    //            Message = GetMessageConverter().ToMessage(item)
-    //        };
-
-    //        if (item.MessageSubType == MessageSubType.ClearHistory)
-    //        {
-    //            updateNewMessage = new TUpdateEditMessage
-    //            {
-    //                Pts = aggregateEvent.Pts,
-    //                PtsCount = 1,
-    //                Message = GetMessageConverter().ToMessage(item)
-    //            };
-    //        }
-
-    //        return new TUpdates
-    //        {
-    //            Updates = new TVector<IUpdate>(updateMessageId, updateNewMessage),
-    //            Users = new TVector<IUser>(),
-    //            Chats = new TVector<IChat>(),
-    //            Date = item.Date,
-    //            Seq = 0
-    //        };
-    //    }
-
-    //    var updates = new TUpdateShortSentMessage
-    //    {
-    //        Date = item.Date,
-    //        Entities = item.Entities.ToTObject<TVector<IMessageEntity>>(),
-    //        Id = item.MessageId,
-    //        Out = item.IsOut,
-    //        Pts = aggregateEvent.Pts,
-    //        PtsCount = 1
-    //    };
-
-    //    return updates;
-    //}
 
     public IUpdates ToUpdatePinnedMessageServiceUpdates(SendOutboxMessageCompletedSagaEvent aggregateEvent)
     {
@@ -768,121 +569,6 @@ public class UpdatesConverterLatest(
         };
     }
 
-    //public IUpdates ToUpdates(ReceiveInboxMessageCompletedSagaEvent aggregateEvent)
-    //{
-    //    var item = aggregateEvent.MessageItem;
-
-    //    if (item.SendMessageType == SendMessageType.MessageService)
-    //    {
-    //        if (string.IsNullOrEmpty(item.MessageActionData))
-    //        {
-    //            throw new ArgumentNullException(nameof(aggregateEvent),
-    //                "MessageActionData can not be null for service message");
-    //        }
-
-    //        var messageAction = item.MessageActionData.ToBytes().ToTObject<IMessageAction>();
-    //        var update = ToMessageServiceUpdate(item.MessageId,
-    //            aggregateEvent.Pts,
-    //            item.SenderPeer,
-    //            item.ToPeer,
-    //            messageAction,
-    //            item.Date,
-    //            item.OwnerPeer.PeerId,
-    //            item.InputReplyTo);
-
-    //        var r = new TUpdates
-    //        {
-    //            Chats = new TVector<IChat>(),
-    //            Users = new TVector<IUser>(),
-    //            Date = item.Date,
-    //            Updates = new TVector<IUpdate>(update)
-    //        };
-    //        if (item.MessageSubType == MessageSubType.DeleteChatUser)
-    //        {
-    //            var action = (TMessageActionChatDeleteUser)messageAction;
-    //            if (action.UserId == item.OwnerPeer.PeerId)
-    //            {
-    //                r.Chats = new TVector<IChat>(new TChatForbidden
-    //                {
-    //                    Id = item.ToPeer.PeerId,
-    //                    Title = aggregateEvent.ChatTitle
-    //                });
-    //            }
-    //        }
-
-    //        return r;
-    //    }
-
-    //    if (item.Media?.Length > 0)
-    //    {
-    //        // media message and forward message use the same output updates
-    //        return ToInboxForwardMessageUpdates(item, aggregateEvent.Pts);
-    //    }
-
-    //    if (aggregateEvent.MessageItem.ReplyMarkup != null || aggregateEvent.MessageItem.Effect.HasValue)
-    //    {
-    //        var update = new TUpdateNewMessage
-    //        {
-    //            Message = GetMessageConverter().ToMessage(item, item.ToPeer.PeerId),
-    //            Pts = aggregateEvent.Pts,
-    //            PtsCount = 1
-    //        };
-
-    //        var updates = new TUpdates
-    //        {
-    //            Chats = new TVector<IChat>(),
-    //            Date = DateTime.UtcNow.ToTimestamp(),
-    //            Seq = 0,
-    //            Updates = new TVector<IUpdate>(update),
-    //            Users = new TVector<IUser>()
-    //        };
-    //        return updates;
-    //    }
-
-    //    switch (item.ToPeer.PeerType)
-    //    {
-    //        case PeerType.Self:
-    //        case PeerType.User:
-    //        {
-    //            var updates = new TUpdateShortMessage
-    //            {
-    //                Out = false,
-    //                Message = item.Message,
-    //                Date = item.Date,
-    //                Entities = item.Entities.ToTObject<TVector<IMessageEntity>>(),
-    //                Id = item.MessageId,
-    //                UserId = item.SenderPeer.PeerId,
-    //                Pts = aggregateEvent.Pts,
-    //                PtsCount = 1,
-    //                Mentioned = true,
-    //                ReplyTo = GetMessageConverter().ToMessageReplyHeader(item.InputReplyTo)
-    //            };
-
-    //            return updates;
-    //        }
-    //        case PeerType.Chat:
-    //        {
-    //            var updates = new TUpdateShortChatMessage
-    //            {
-    //                Out = false,
-    //                Message = item.Message,
-    //                Date = item.Date,
-    //                Entities = item.Entities.ToTObject<TVector<IMessageEntity>>(),
-    //                Id = item.MessageId,
-    //                //UserId = aggregateEvent.SenderPeerId,
-    //                FromId = item.SenderPeer.PeerId,
-    //                ChatId = item.ToPeer.PeerId,
-    //                Pts = aggregateEvent.Pts,
-    //                PtsCount = 1,
-    //                ReplyTo = GetMessageConverter().ToMessageReplyHeader(item.InputReplyTo)
-    //            };
-    //            return updates;
-    //        }
-    //        default:
-    //            throw new NotImplementedException();
-    //    }
-    //}
-
     protected virtual IChatConverter GetChatConverter()
     {
         return _chatConverter ??= layeredChatService.GetConverter(GetLayer());
@@ -959,65 +645,12 @@ public class UpdatesConverterLatest(
         return new List<IUpdate> { updateMessageId, updateReadChannelInbox, updateNewChannelMessage };
     }
 
-    private IUpdates ToEditUpdates(
-        List<ReactionCount>? oldReactions,
-        List<Reaction>? recentReactions,
-        MessageItem item,
-        int pts,
-        long selfUserId = 0,
-        int? editDate = null,
-        bool editHide = false,
-        List<UserReaction>? userReactions = null,
-        long? linkedChannelId = null
-    )
-    {
-        var reactions = oldReactions; // GetAllReactions(oldReactions, addedReactions, removedReactions);
-        var newRecentReactions = recentReactions; // GetRecentReactions(recentReactions, addedReactions);
-        IUpdate update = item.ToPeer.PeerType switch
-        {
-            PeerType.Channel => new TUpdateEditChannelMessage
-            {
-                Pts = pts,
-                PtsCount = 1,
-                Message = GetMessageConverter().ToMessage(item,
-                    selfUserId,
-                    linkedChannelId,
-                    reactions: reactions,
-                    recentReactions: newRecentReactions,
-                    editDate: editDate,
-                    editHide: editHide,
-                    userReactions: userReactions
-                )
-            },
-            _ => new TUpdateEditMessage
-            {
-                Pts = pts,
-                PtsCount = 1,
-                Message = GetMessageConverter().ToMessage(item,
-                    reactions: reactions,
-                    recentReactions: newRecentReactions,
-                    editDate: editDate,
-                    editHide: editHide
-                )
-            }
-        };
-
-        return new TUpdates
-        {
-            Updates = new TVector<IUpdate>(update, new TUpdateRecentReactions()),
-            Users = new TVector<IUser>(),
-            Chats = new TVector<IChat>(),
-            Date = DateTime.UtcNow.ToTimestamp(),
-            Seq = 0
-        };
-    }
-
     private IUpdates ToInboxForwardMessageUpdates(MessageItem aggregateEvent,
         int pts)
     {
         var updateNewMessage =
             new TUpdateNewMessage
-                { Message = GetMessageConverter().ToMessage(aggregateEvent), Pts = pts, PtsCount = 1 };
+            { Message = GetMessageConverter().ToMessage(aggregateEvent), Pts = pts, PtsCount = 1 };
         return new TUpdates
         {
             Chats = new TVector<IChat>(),
@@ -1073,47 +706,7 @@ public class UpdatesConverterLatest(
 
         return updateNewMessage;
     }
-
-    //private IUpdates ToSelfChannelUpdates(SendOutboxMessageCompletedSagaEvent aggregateEvent)
-    //{
-    //    var item = aggregateEvent.MessageItem;
-    //    var updateMessageId = new TUpdateMessageID { Id = item.MessageId, RandomId = item.RandomId };
-    //    var updateReadChannelInbox = new TUpdateReadChannelInbox
-    //    {
-    //        ChannelId = item.ToPeer.PeerId,
-    //        MaxId = item.MessageId,
-    //        // FolderId = 0,
-    //        Pts = aggregateEvent.Pts,
-    //        StillUnreadCount = 0
-    //    };
-    //    IUpdate updateNewChannelMessage = new TUpdateNewChannelMessage
-    //    {
-    //        Pts = aggregateEvent.Pts,
-    //        PtsCount = 1,
-    //        Message = GetMessageConverter().ToMessage(aggregateEvent.MessageItem,
-    //            linkedChannelId: aggregateEvent.LinkedChannelId,
-    //            pts: aggregateEvent.Pts)
-    //    };
-    //    if (item.MessageSubType == MessageSubType.ClearHistory)
-    //    {
-    //        updateNewChannelMessage = new TUpdateEditChannelMessage
-    //        {
-    //            Pts = aggregateEvent.Pts,
-    //            PtsCount = 1,
-    //            Message = GetMessageConverter().ToMessage(aggregateEvent.MessageItem)
-    //        };
-    //    }
-
-    //    return new TUpdates
-    //    {
-    //        Updates = new TVector<IUpdate>(updateMessageId, updateReadChannelInbox, updateNewChannelMessage),
-    //        Users = new TVector<IUser>(),
-    //        Chats = new TVector<IChat>(),
-    //        Date = item.Date,
-    //        Seq = 0
-    //    };
-    //}
-
+    
     private List<IUpdate> ToSelfMessageServiceUpdates(int messageId,
         long randomId,
         int pts,
