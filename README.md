@@ -80,5 +80,5 @@ Love MyTelegram? Please give a star to this repository ⭐
 
 ## Feedback
 
-Contact author:[https://t.me/mytelegram666](https://t.me/mytelegram666)  
-Join telegram group:[https://t.me/+S-aNBoRvCRpPyXrR](https://t.me/+S-aNBoRvCRpPyXrR)
+Contact author: [https://t.me/mytelegram666](https://t.me/mytelegram666)  
+Join telegram group: [https://t.me/+S-aNBoRvCRpPyXrR](https://t.me/+S-aNBoRvCRpPyXrR)
