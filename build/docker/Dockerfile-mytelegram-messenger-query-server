@@ -1,17 +1,18 @@
 # See https://aka.ms/customizecontainer to learn how to customize your debug container and how Visual Studio uses this Dockerfile to build your images for faster debugging.
 
 # This stage is used when running from VS in fast mode (Default for Debug configuration)
-FROM mcr.microsoft.com/dotnet/runtime:8.0 AS base
-USER app
+FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/runtime:8.0 AS base
+USER $APP_UID
 WORKDIR /app
 
 # This stage is used to build the service project
-FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
+ARG TARGETARCH
 WORKDIR /src
 COPY ["Directory.Packages.props", "."]
 COPY ["Directory.Build.props", "."]
-COPY ["src/MyTelegram.Messenger.CommandServer/MyTelegram.Messenger.CommandServer.csproj", "src/MyTelegram.Messenger.CommandServer/"]
+COPY ["src/MyTelegram.Messenger.QueryServer/MyTelegram.Messenger.QueryServer.csproj", "src/MyTelegram.Messenger.QueryServer/"]
 COPY ["src/Microsoft.Cuckoo/Microsoft.Cuckoo.csproj", "src/Microsoft.Cuckoo/"]
 COPY ["src/MyTelegram.Caching.Redis/MyTelegram.Caching.Redis.csproj", "src/MyTelegram.Caching.Redis/"]
 COPY ["src/MyTelegram.Core/MyTelegram.Core.csproj", "src/MyTelegram.Core/"]
@@ -30,18 +31,19 @@ COPY ["src/MyTelegram.ReadModel.MongoDB/MyTelegram.ReadModel.MongoDB.csproj", "s
 COPY ["src/MyTelegram.EventFlow.MongoDB/MyTelegram.EventFlow.MongoDB.csproj", "src/MyTelegram.EventFlow.MongoDB/"]
 COPY ["src/MyTelegram.ReadModel.InMemory/MyTelegram.ReadModel.InMemory.csproj", "src/MyTelegram.ReadModel.InMemory/"]
 COPY ["src/MyTelegram.Services/MyTelegram.Services.csproj", "src/MyTelegram.Services/"]
-RUN dotnet restore "./src/MyTelegram.Messenger.CommandServer/MyTelegram.Messenger.CommandServer.csproj"
+RUN dotnet restore  -a $TARGETARCH "./src/MyTelegram.Messenger.QueryServer/MyTelegram.Messenger.QueryServer.csproj"
 COPY . .
-WORKDIR "/src/src/MyTelegram.Messenger.CommandServer"
-RUN dotnet build "./MyTelegram.Messenger.CommandServer.csproj" -c $BUILD_CONFIGURATION -o /app/build
+WORKDIR "/src/src/MyTelegram.Messenger.QueryServer"
+RUN dotnet build "./MyTelegram.Messenger.QueryServer.csproj"  -a $TARGETARCH -c $BUILD_CONFIGURATION -o /app/build
 
 # This stage is used to publish the service project to be copied to the final stage
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "./MyTelegram.Messenger.CommandServer.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+ARG TARGETARCH
+RUN dotnet publish "./MyTelegram.Messenger.QueryServer.csproj"  -a $TARGETARCH -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
 # This stage is used in production or when running from VS in regular mode (Default when not using the Debug configuration)
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "MyTelegram.Messenger.CommandServer.dll"]
+ENTRYPOINT ["dotnet", "MyTelegram.Messenger.QueryServer.dll"]
