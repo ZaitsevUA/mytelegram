@@ -1,5 +1,7 @@
 ﻿// ReSharper disable All
 
+using MyTelegram.Schema.Payments;
+
 namespace MyTelegram.Handlers.Payments;
 
 ///<summary>
@@ -11,6 +13,11 @@ internal sealed class GetStarsSubscriptionsHandler : RpcResultObjectHandler<MyTe
     protected override Task<MyTelegram.Schema.Payments.IStarsStatus> HandleCoreAsync(IRequestInput input,
         MyTelegram.Schema.Payments.RequestGetStarsSubscriptions obj)
     {
-        throw new NotImplementedException();
+        return Task.FromResult<MyTelegram.Schema.Payments.IStarsStatus>(new TStarsStatus
+        {
+            Balance = 0,
+            Chats = [],
+            Users = []
+        });
     }
 }

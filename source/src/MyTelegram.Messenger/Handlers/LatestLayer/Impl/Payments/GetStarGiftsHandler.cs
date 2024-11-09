@@ -1,5 +1,7 @@
 ﻿// ReSharper disable All
 
+using MyTelegram.Schema.Payments;
+
 namespace MyTelegram.Handlers.Payments;
 
 ///<summary>
@@ -11,6 +13,9 @@ internal sealed class GetStarGiftsHandler : RpcResultObjectHandler<MyTelegram.Sc
     protected override Task<MyTelegram.Schema.Payments.IStarGifts> HandleCoreAsync(IRequestInput input,
         MyTelegram.Schema.Payments.RequestGetStarGifts obj)
     {
-        throw new NotImplementedException();
+        return Task.FromResult<MyTelegram.Schema.Payments.IStarGifts>(new TStarGifts
+        {
+            Gifts = []
+        });
     }
 }
