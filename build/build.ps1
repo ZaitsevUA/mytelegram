@@ -35,7 +35,7 @@ Build-Server "./MyTelegram.AuthServer" $authServerOutputFolder
 Build-Server "./MyTelegram.GatewayServer" $gatewayOutputFolder
 Build-Server "./MyTelegram.Messenger.CommandServer" $messengerProCommandOutputFolder
 Build-Server "./MyTelegram.Messenger.QueryServer" $messengerProQueryOutputFolder
-Build-Server "./MyTelegram.MessengerServer.GrpcService" $messengerGrpcOutputFolder
+#Build-Server "./MyTelegram.MessengerServer.GrpcService" $messengerGrpcOutputFolder
 Build-Server "./MyTelegram.SmsSender" $smsOutputFolder
 
 Set-Location $currentDir
