@@ -11,6 +11,17 @@ internal sealed class GetPaidReactionPrivacyHandler : RpcResultObjectHandler<MyT
     protected override Task<MyTelegram.Schema.IUpdates> HandleCoreAsync(IRequestInput input,
         MyTelegram.Schema.Messages.RequestGetPaidReactionPrivacy obj)
     {
-        throw new NotImplementedException();
+        var update = new TUpdatePaidReactionPrivacy
+        {
+            Private = false
+        };
+
+        return Task.FromResult<MyTelegram.Schema.IUpdates>(new TUpdates
+        {
+            Updates = [update],
+            Chats = [],
+            Date = CurrentDate,
+            Users = []
+        });
     }
 }
