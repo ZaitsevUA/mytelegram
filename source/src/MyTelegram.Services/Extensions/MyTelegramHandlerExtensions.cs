@@ -12,7 +12,7 @@ namespace MyTelegram.Services.Extensions
 
             services.AddSingleton(typeof(IInMemoryRepository<,>), typeof(InMemoryRepository<,>));
             services.AddTransient(typeof(IDataProcessor<>), typeof(DefaultDataProcessor<>));
-            services.AddSingleton(typeof(IMessageQueueProcessor<>), typeof(MessageQueueProcessor2<>));
+            services.AddSingleton(typeof(IMessageQueueProcessor<>), typeof(MessageQueueProcessor<>));
             services.AddTransient<IDataProcessor<ISessionMessage>, SessionMessageDataProcessor>();
 
             services.AddSystemTextJson();
