@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+﻿using System.Collections.Frozen;
+using System.Text.Json;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace MyTelegram.Messenger.Services.Impl;
@@ -10,17 +11,17 @@ public class CountryHelper : ICountryHelper, ISingletonDependency
                                                    """;
 
     private static List<CountryItem> _allCountries = [];
-    private static Dictionary<string, CountryCodeItem> _countryCodeToPatterns = new();
+    private static FrozenDictionary<string, CountryCodeItem>? _countryCodeToPatterns;
 
 
     public bool TryGetCountryCodeItem(string countryCode, [NotNullWhen(true)] out CountryCodeItem? countryCodeItem)
     {
         InitAllCountries();
 
-        return _countryCodeToPatterns.TryGetValue(countryCode, out countryCodeItem);
+        return _countryCodeToPatterns!.TryGetValue(countryCode, out countryCodeItem);
     }
 
-    public List<CountryItem> GetAllCountryList()
+    public IReadOnlyCollection<CountryItem> GetAllCountryList()
     {
         if (_allCountries.Any())
         {
@@ -52,7 +53,9 @@ public class CountryHelper : ICountryHelper, ISingletonDependency
                 .ToDictionary(k => k.Key,
                     v => new CountryCodeItem(v.Key, v.SelectMany(x => x.Prefixes ?? []).ToList(),
                         v.SelectMany(x => x.Patterns ?? []).ToList(),
-                        v.SelectMany(x => x.Patterns ?? []).Select(p => p.Replace(" ", string.Empty).Length).ToList()));
+                        v.SelectMany(x => x.Patterns ?? []).Select(p => p.Replace(" ", string.Empty).Length).ToList()))
+                .ToFrozenDictionary()
+                ;
         }
     }
 }

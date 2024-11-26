@@ -3,7 +3,7 @@
 public interface ICountryHelper
 {
     bool TryGetCountryCodeItem(string countryCode, [NotNullWhen(true)] out CountryCodeItem? countryCodeItem);
-    List<CountryItem> GetAllCountryList();
+    IReadOnlyCollection<CountryItem> GetAllCountryList();
     void InitAllCountries();
 }
 
