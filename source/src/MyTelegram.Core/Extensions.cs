@@ -1,4 +1,5 @@
-﻿using System.Numerics;
+﻿using System.Buffers.Text;
+using System.Numerics;
 using System.Reflection;
 
 namespace MyTelegram.Core;
@@ -77,21 +78,12 @@ public static class Extensions
 
     public static string ToBase64Url(this Span<byte> buffer)
     {
-        return Convert.ToBase64String(buffer).ToBase64Url();
+        return Base64Url.EncodeToString(buffer);
     }
-
 
     public static string ToBase64Url(this byte[] buffer)
     {
-        return Convert.ToBase64String(buffer).ToBase64Url();
-    }
-
-    public static string ToBase64Url(this string base64Data)
-    {
-        return base64Data
-            .Replace("=", string.Empty)
-            .Replace("/", "_")
-            .Replace("+", "-");
+        return Base64Url.EncodeToString(buffer);
     }
 
     private static byte[] HexToBytes(string hex)
