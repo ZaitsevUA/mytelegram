@@ -24,7 +24,7 @@ MyTelegram is telegram server side api implementation written in c#,support priv
 
 ## Build MyTelegram Server
 
-1. Install [.NET SDK 8.0](https://dotnet.microsoft.com/en-us/download/dotnet/8.0)
+1. Install [.NET SDK 9.0](https://dotnet.microsoft.com/en-us/download/dotnet/9.0)
 2. Run `build/build.ps1` or `build/build.sh`
 3. Build output folder is `out/{version}`
 
