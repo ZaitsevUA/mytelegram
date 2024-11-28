@@ -49,7 +49,7 @@ public class PeerHelper : IPeerHelper, ITransientDependency
 
     public bool IsBotUser(long userId)
     {
-        return userId >= MyTelegramServerDomainConsts.BotUserInitId;
+        return userId is >= MyTelegramServerDomainConsts.BotUserInitId and <= MyTelegramServerDomainConsts.ChatIdInitId;
     }
 
     public PeerType GetPeerType(long peerId)
