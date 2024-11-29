@@ -16,43 +16,30 @@ namespace MyTelegram.Handlers.Messages;
 /// 400 PEER_ID_INVALID The provided peer id is invalid.
 /// See <a href="https://corefork.telegram.org/method/messages.getExportedChatInvites" />
 ///</summary>
-internal sealed class GetExportedChatInvitesHandler : RpcResultObjectHandler<MyTelegram.Schema.Messages.RequestGetExportedChatInvites, MyTelegram.Schema.Messages.IExportedChatInvites>,
-    Messages.IGetExportedChatInvitesHandler
+internal sealed class GetExportedChatInvitesHandler(
+    IPeerHelper peerHelper,
+    IOptions<MyTelegramMessengerServerOptions> options,
+    IAccessHashHelper accessHashHelper,
+    IQueryProcessor queryProcessor,
+    IChannelAppService channelAppService,
+    IObjectMapper objectMapper,
+    IPhotoAppService photoAppService,
+    IPrivacyAppService privacyAppService,
+    ILayeredService<IUserConverter> layeredUserService,
+    IChatInviteLinkHelper chatInviteLinkHelper)
+    : RpcResultObjectHandler<MyTelegram.Schema.Messages.RequestGetExportedChatInvites,
+            MyTelegram.Schema.Messages.IExportedChatInvites>,
+        Messages.IGetExportedChatInvitesHandler
 {
-    private readonly IPeerHelper _peerHelper;
-    private readonly IOptions<MyTelegramMessengerServerOptions> _options;
-    private readonly IAccessHashHelper _accessHashHelper;
-    private readonly IQueryProcessor _queryProcessor;
-    private readonly IObjectMapper _objectMapper;
-    private readonly IPhotoAppService _photoAppService;
-    private readonly IPrivacyAppService _privacyAppService;
-    private readonly ILayeredService<IUserConverter> _layeredUserService;
-    private readonly IChatInviteLinkHelper _chatInviteLinkHelper;
-
-    public GetExportedChatInvitesHandler(IPeerHelper peerHelper,
-        IOptions<MyTelegramMessengerServerOptions> options,
-        IAccessHashHelper accessHashHelper, IQueryProcessor queryProcessor, IObjectMapper objectMapper, IPhotoAppService photoAppService, IPrivacyAppService privacyAppService, ILayeredService<IUserConverter> layeredUserService, IChatInviteLinkHelper chatInviteLinkHelper)
-    {
-        _peerHelper = peerHelper;
-        _options = options;
-        _accessHashHelper = accessHashHelper;
-        _queryProcessor = queryProcessor;
-        _objectMapper = objectMapper;
-        _photoAppService = photoAppService;
-        _privacyAppService = privacyAppService;
-        _layeredUserService = layeredUserService;
-        _chatInviteLinkHelper = chatInviteLinkHelper;
-    }
-
     protected async override Task<MyTelegram.Schema.Messages.IExportedChatInvites> HandleCoreAsync(IRequestInput input,
         RequestGetExportedChatInvites obj)
     {
-        await _accessHashHelper.CheckAccessHashAsync(obj.Peer);
-        await _accessHashHelper.CheckAccessHashAsync(obj.AdminId);
+        await accessHashHelper.CheckAccessHashAsync(obj.Peer);
+        await accessHashHelper.CheckAccessHashAsync(obj.AdminId);
 
         // todo:impl get chat invites
-        var peer = _peerHelper.GetPeer(obj.Peer, input.UserId);
-        var channelReadModel = await _queryProcessor.ProcessAsync(new GetChannelByIdQuery(peer.PeerId));
+        var peer = peerHelper.GetPeer(obj.Peer, input.UserId);
+        var channelReadModel = await channelAppService.GetAsync(peer.PeerId);
         if (channelReadModel == null)
         {
             RpcErrors.RpcErrors400.PeerIdInvalid.ThrowRpcError();
@@ -63,9 +50,9 @@ internal sealed class GetExportedChatInvitesHandler : RpcResultObjectHandler<MyT
             RpcErrors.RpcErrors400.ChatAdminRequired.ThrowRpcError();
         }
 
-        var admin = _peerHelper.GetPeer(obj.AdminId, input.UserId);
+        var admin = peerHelper.GetPeer(obj.AdminId, input.UserId);
 
-        var invites = await _queryProcessor
+        var invites = await queryProcessor
             .ProcessAsync(new GetChatInvitesQuery(obj.Revoked,
                     peer.PeerId,
                     admin.PeerId,
@@ -73,15 +60,15 @@ internal sealed class GetExportedChatInvitesHandler : RpcResultObjectHandler<MyT
                     obj.OffsetLink,
                     obj.Limit));
         var userIds = invites.Select(p => p.AdminId).ToList();
-        var userReadModels = await _queryProcessor.ProcessAsync(new GetUsersByUserIdListQuery(userIds));
-        var contactReadModels = await _queryProcessor.ProcessAsync(new GetContactListQuery(input.UserId, userIds));
-        var photoReadModels = await _photoAppService.GetPhotosAsync(userReadModels, contactReadModels);
-        var privacyReadModels = await _privacyAppService.GetPrivacyListAsync(userIds);
-        var users = _layeredUserService.GetConverter(input.Layer).ToUserList(input.UserId, userReadModels,
+        var userReadModels = await queryProcessor.ProcessAsync(new GetUsersByUserIdListQuery(userIds));
+        var contactReadModels = await queryProcessor.ProcessAsync(new GetContactListQuery(input.UserId, userIds));
+        var photoReadModels = await photoAppService.GetPhotosAsync(userReadModels, contactReadModels);
+        var privacyReadModels = await privacyAppService.GetPrivacyListAsync(userIds);
+        var users = layeredUserService.GetConverter(input.Layer).ToUserList(input.UserId, userReadModels,
             photoReadModels, contactReadModels, privacyReadModels);
 
-        var tInvites = invites.Select(p => _objectMapper.Map<IChatInviteReadModel, TChatInviteExported>(p)).ToList();
-        tInvites.ForEach(p => p.Link = _chatInviteLinkHelper.GetFullLink(_options.Value.JoinChatDomain, p.Link));
+        var tInvites = invites.Select(p => objectMapper.Map<IChatInviteReadModel, TChatInviteExported>(p)).ToList();
+        tInvites.ForEach(p => p.Link = chatInviteLinkHelper.GetFullLink(options.Value.JoinChatDomain, p.Link));
 
         var r = new TExportedChatInvites
         {

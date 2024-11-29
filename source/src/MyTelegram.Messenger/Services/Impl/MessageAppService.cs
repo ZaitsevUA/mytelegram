@@ -7,6 +7,8 @@ public class MessageAppService(
     IPeerHelper peerHelper,
     IBlockCacheAppService blockCacheAppService,
     IPhotoAppService photoAppService,
+    IChannelAppService channelAppService,
+    IUserAppService userAppService,
     IPrivacyAppService privacyAppService,
     IOffsetHelper offsetHelper,
     IIdGenerator idGenerator)
@@ -126,7 +128,7 @@ public class MessageAppService(
             return null;
         }
 
-        var channelReadModel = await queryProcessor.ProcessAsync(new GetChannelByIdQuery(input.ToPeer.PeerId));
+        var channelReadModel = await channelAppService.GetAsync(input.ToPeer.PeerId);
         if (channelReadModel!.Broadcast)
         {
             var admin = channelReadModel.AdminList.FirstOrDefault(p => p.UserId == input.SenderUserId);
@@ -289,8 +291,7 @@ public class MessageAppService(
         {
             if (input.SendAs?.PeerType != PeerType.Channel)
             {
-                var user = await queryProcessor.ProcessAsync(
-                    new GetUserByIdQuery(input.SendAs?.PeerId ?? input.RequestInfo.UserId));
+                var user = await userAppService.GetAsync(input.SendAs?.PeerId ?? input.RequestInfo.UserId);
                 postAuthor = $"{user!.FirstName} {user.LastName}";
             }
         }
@@ -458,7 +459,7 @@ public class MessageAppService(
         photoIds.AddRange(contactList.Select(p => p.PhotoId ?? 0));
         photoIds.RemoveAll(p => p == 0);
 
-        var photoList = await photoAppService.GetPhotosAsync(photoIds);
+        var photoList = await photoAppService.GetListAsync(photoIds);
 
         IReadOnlyCollection<long> joinedChannelIdList = new List<long>();
         if (channelIdList.Count > 0)

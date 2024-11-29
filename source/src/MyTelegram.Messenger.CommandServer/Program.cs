@@ -14,7 +14,7 @@ using MyTelegram.Services.NativeAot;
 using Serilog;
 using Serilog.Sinks.SystemConsole.Themes;
 
-Console.Title = "MyTelegram messenger command server";
+Console.Title = $"MyTelegram messenger command server (layer {MyTelegramServerDomainConsts.Layer})";
 
 Log.Logger = new LoggerConfiguration()
     .Enrich.FromLogContext()
@@ -111,7 +111,7 @@ builder.ConfigureServices((ctx,
 
     services.AddMyTelegramMessengerCommandServer();
 
-    services.AddHostedService<MyTelegramMessengerServerInitBackgroundService>();
+    services.AddHostedService<MyTelegramCommandServerBackgroundService>();
     //services.AddHostedService<DataProcessorBackgroundService>();
     //services.AddHostedService<ObjectMessageSenderBackgroundService>();
     services.AddHostedService<MyTelegramInvokeAfterMsgProcessorBackgroundService>();
@@ -119,6 +119,7 @@ builder.ConfigureServices((ctx,
     services.AddHostedService<MessageQueueDataProcessorBackgroundService<MessengerCommandDataReceivedEvent>>();
     services.AddHostedService<MessageQueueDataProcessorBackgroundService<NewDeviceCreatedEvent>>();
     services.AddHostedService<MessageQueueDataProcessorBackgroundService<ISessionMessage>>();
+    services.AddHostedService<MessageQueueDataProcessorBackgroundService<IDomainEvent>>();
     services.AddHostedService<QueuedCommandExecutorBackgroundService<DeviceAggregate, DeviceId>>();
     services.AddHostedService<QueuedCommandExecutorBackgroundService<PtsAggregate, PtsId>>();
 

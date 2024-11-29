@@ -13,43 +13,32 @@ namespace MyTelegram.Handlers.Messages;
 /// 400 TOPIC_ID_INVALID The specified topic ID is invalid.
 /// See <a href="https://corefork.telegram.org/method/messages.getDiscussionMessage" />
 ///</summary>
-internal sealed class GetDiscussionMessageHandler : RpcResultObjectHandler<MyTelegram.Schema.Messages.RequestGetDiscussionMessage, MyTelegram.Schema.Messages.IDiscussionMessage>,
-    Messages.IGetDiscussionMessageHandler
+internal sealed class GetDiscussionMessageHandler(
+    IPeerHelper peerHelper,
+    IQueryProcessor queryProcessor,
+    IChannelAppService channelAppService,
+    ILayeredService<IChatConverter> layeredChatService,
+    ILayeredService<IMessageConverter> layeredMessageService,
+    IAccessHashHelper accessHashHelper,
+    IPhotoAppService photoAppService)
+    : RpcResultObjectHandler<MyTelegram.Schema.Messages.RequestGetDiscussionMessage,
+            MyTelegram.Schema.Messages.IDiscussionMessage>,
+        Messages.IGetDiscussionMessageHandler
 {
-    private readonly IPeerHelper _peerHelper;
-    private readonly IQueryProcessor _queryProcessor;
-    private readonly ILayeredService<IChatConverter> _layeredChatService;
-    private readonly ILayeredService<IMessageConverter> _layeredMessageService;
-    private readonly IAccessHashHelper _accessHashHelper;
-    private readonly IPhotoAppService _photoAppService;
-    public GetDiscussionMessageHandler(IPeerHelper peerHelper,
-        IQueryProcessor queryProcessor,
-        ILayeredService<IChatConverter> layeredChatService,
-        ILayeredService<IMessageConverter> layeredMessageService,
-        IAccessHashHelper accessHashHelper, IPhotoAppService photoAppService)
-    {
-        _peerHelper = peerHelper;
-        _queryProcessor = queryProcessor;
-        _layeredChatService = layeredChatService;
-        _layeredMessageService = layeredMessageService;
-        _accessHashHelper = accessHashHelper;
-        _photoAppService = photoAppService;
-    }
-
     protected override async Task<IDiscussionMessage> HandleCoreAsync(IRequestInput input,
         RequestGetDiscussionMessage obj)
     {
-        await _accessHashHelper.CheckAccessHashAsync(obj.Peer);
+        await accessHashHelper.CheckAccessHashAsync(obj.Peer);
         // peer is the channel peer
-        var peer = _peerHelper.GetPeer(obj.Peer);
-        var channelReadModel = await _queryProcessor.ProcessAsync(new GetChannelByIdQuery(peer.PeerId));
+        var peer = peerHelper.GetPeer(obj.Peer);
+        var channelReadModel = await channelAppService.GetAsync(peer.PeerId);
         if (channelReadModel == null)
         {
             RpcErrors.RpcErrors400.ChatIdInvalid.ThrowRpcError();
         }
         var query = new GetDiscussionMessageQuery(channelReadModel!.Broadcast, peer.PeerId, obj.MsgId);
 
-        var messageReadModel = await _queryProcessor
+        var messageReadModel = await queryProcessor
             .ProcessAsync(query);
 
         if (messageReadModel == null)
@@ -62,13 +51,9 @@ internal sealed class GetDiscussionMessageHandler : RpcResultObjectHandler<MyTel
             };
         }
 
-        //var reply = await _queryProcessor.ProcessAsync(new GetReplyQuery(peer.PeerId, obj.MsgId));
-
-        //var messages = _messageConverter.ToMessages(new[] { messageReadModel }, input.UserId);
-
         var dialogReadModel =
-            await _queryProcessor.ProcessAsync(new GetDialogByIdQuery(DialogId.Create(input.UserId, PeerType.Channel, messageReadModel.ToPeerId)), default);
-        var channelReadModels = await _queryProcessor
+            await queryProcessor.ProcessAsync(new GetDialogByIdQuery(DialogId.Create(input.UserId, PeerType.Channel, messageReadModel.ToPeerId)), default);
+        var channelReadModels = await queryProcessor
             .ProcessAsync(new GetChannelByChannelIdListQuery(new long[] { peer.PeerId, messageReadModel.ToPeerId }), default)
      ;
 
@@ -83,11 +68,11 @@ internal sealed class GetDiscussionMessageHandler : RpcResultObjectHandler<MyTel
         //    readMaxId = reply.MaxId;
         //}
 
-        var message = _layeredMessageService.GetConverter(input.Layer).ToDiscussionMessage(input.UserId, messageReadModel);
+        var message = layeredMessageService.GetConverter(input.Layer).ToDiscussionMessage(input.UserId, messageReadModel);
 
-        var photoReadModels = await _photoAppService.GetPhotosAsync(channelReadModels);
+        var photoReadModels = await photoAppService.GetPhotosAsync(channelReadModels);
 
-        var chats = _layeredChatService.GetConverter(input.Layer).ToChannelList(
+        var chats = layeredChatService.GetConverter(input.Layer).ToChannelList(
             input.UserId,
             channelReadModels,
             photoReadModels,

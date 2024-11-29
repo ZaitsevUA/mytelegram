@@ -6,16 +6,11 @@ namespace MyTelegram.Handlers.Account;
 /// Get recently used <a href="https://corefork.telegram.org/api/emoji-status">emoji statuses</a>
 /// See <a href="https://corefork.telegram.org/method/account.getRecentEmojiStatuses" />
 ///</summary>
-internal sealed class GetRecentEmojiStatusesHandler : RpcResultObjectHandler<MyTelegram.Schema.Account.RequestGetRecentEmojiStatuses, MyTelegram.Schema.Account.IEmojiStatuses>,
-    Account.IGetRecentEmojiStatusesHandler
+internal sealed class GetRecentEmojiStatusesHandler(IUserAppService userAppService)
+    : RpcResultObjectHandler<MyTelegram.Schema.Account.RequestGetRecentEmojiStatuses,
+            MyTelegram.Schema.Account.IEmojiStatuses>,
+        Account.IGetRecentEmojiStatusesHandler
 {
-    private readonly IQueryProcessor _queryProcessor;
-
-    public GetRecentEmojiStatusesHandler(IQueryProcessor queryProcessor)
-    {
-        _queryProcessor = queryProcessor;
-    }
-
     protected override async Task<MyTelegram.Schema.Account.IEmojiStatuses> HandleCoreAsync(IRequestInput input,
         MyTelegram.Schema.Account.RequestGetRecentEmojiStatuses obj)
     {
@@ -27,7 +22,7 @@ internal sealed class GetRecentEmojiStatusesHandler : RpcResultObjectHandler<MyT
             };
         }
 
-        var user = await _queryProcessor.ProcessAsync(new GetUserByIdQuery(input.UserId), default);
+        var user = await userAppService.GetAsync(input.UserId);
         if (user == null)
         {
             RpcErrors.RpcErrors400.PeerIdInvalid.ThrowRpcError();

@@ -11,66 +11,33 @@ namespace MyTelegram.Handlers.Channels;
 /// 403 CHAT_ADMIN_REQUIRED You must be an admin in this chat to do this.
 /// See <a href="https://corefork.telegram.org/method/channels.getParticipants" />
 ///</summary>
-internal sealed class GetParticipantsHandler : RpcResultObjectHandler<MyTelegram.Schema.Channels.RequestGetParticipants, MyTelegram.Schema.Channels.IChannelParticipants>,
-    Channels.IGetParticipantsHandler
+internal sealed class GetParticipantsHandler(
+    IQueryProcessor queryProcessor,
+    ILayeredService<IChatConverter> layeredService,
+    IAccessHashHelper accessHashHelper,
+    ILayeredService<IUserConverter> layeredUserService,
+    IUserAppService userAppService,
+    IChannelAppService channelAppService,
+    IPhotoAppService photoAppService,
+    IPrivacyAppService privacyAppService)
+    : RpcResultObjectHandler<MyTelegram.Schema.Channels.RequestGetParticipants,
+            MyTelegram.Schema.Channels.IChannelParticipants>,
+        Channels.IGetParticipantsHandler
 {
-    private readonly IQueryProcessor _queryProcessor;
-    private readonly ILayeredService<IChatConverter> _layeredService;
-    private readonly ILayeredService<IUserConverter> _layeredUserService;
-    private readonly IAccessHashHelper _accessHashHelper;
-    private readonly IPhotoAppService _photoAppService;
-    private readonly IPrivacyAppService _privacyAppService;
-    public GetParticipantsHandler(IQueryProcessor queryProcessor,
-        ILayeredService<IChatConverter> layeredService,
-        IAccessHashHelper accessHashHelper,
-        ILayeredService<IUserConverter> layeredUserService,
-        IPhotoAppService photoAppService,
-        IPrivacyAppService privacyAppService //,
-    )
-    {
-        _queryProcessor = queryProcessor;
-        _layeredService = layeredService;
-        _accessHashHelper = accessHashHelper;
-        _layeredUserService = layeredUserService;
-        _photoAppService = photoAppService;
-        _privacyAppService = privacyAppService;
-    }
+    //,
 
     protected override async Task<MyTelegram.Schema.Channels.IChannelParticipants> HandleCoreAsync(IRequestInput input,
         RequestGetParticipants obj)
     {
         if (obj.Channel is TInputChannel inputChannel)
         {
-            await _accessHashHelper.CheckAccessHashAsync(inputChannel.ChannelId, inputChannel.AccessHash);
-            var channelReadModel = await _queryProcessor
-                .ProcessAsync(new GetChannelByIdQuery(inputChannel.ChannelId));
+            await accessHashHelper.CheckAccessHashAsync(inputChannel.ChannelId, inputChannel.AccessHash);
+            var channelReadModel = await channelAppService.GetAsync(inputChannel.ChannelId);
 
             channelReadModel.ThrowExceptionIfChannelDeleted();
 
-            var joinedChannelIdList = await _queryProcessor.ProcessAsync(new GetJoinedChannelIdListQuery(input.UserId,
+            var joinedChannelIdList = await queryProcessor.ProcessAsync(new GetJoinedChannelIdListQuery(input.UserId,
                     new List<long> { inputChannel.ChannelId }));
-
-
-            // Only channel creator or admin can access channel participants
-            //if (channelReadModel.Broadcast)
-            //{
-            //    if (channelReadModel.CreatorId != input.UserId &&
-            //        channelReadModel.AdminList.FirstOrDefault(p => p.UserId == input.UserId) == null)
-            //    {
-            //        _logger.LogWarning("None admin get channel participants,userId={UserId},channelId={ChannelId},filter={Filter}",
-            //            input.UserId,
-            //            inputChannel.ChannelId,
-            //            obj.Filter
-            //            );
-            //        return new TChannelParticipants
-            //        {
-            //            Chats = new TVector<IChat>(),
-            //            Count = 0,
-            //            Participants = new TVector<IChannelParticipant>(),
-            //            Users = new TVector<IUser>()
-            //        };
-            //    }
-            //}
 
             if (joinedChannelIdList.Count == 0 && channelReadModel!.Broadcast)
             {
@@ -81,7 +48,6 @@ internal sealed class GetParticipantsHandler : RpcResultObjectHandler<MyTelegram
                     Participants = new(),
                     Users = new TVector<IUser>()
                 };
-                //ThrowHelper.ThrowUserFriendlyException("CHANNEL_PRIVATE");
             }
 
             void CheckAdminPermission(IChannelReadModel channel,
@@ -105,7 +71,7 @@ internal sealed class GetParticipantsHandler : RpcResultObjectHandler<MyTelegram
             {
                 case TChannelParticipantsAdmins channelParticipantsAdmins:
                     //CheckAdminPermission(channelReadModel, input.UserId);
-                    chatAdminReadModels = await _queryProcessor.ProcessAsync(
+                    chatAdminReadModels = await queryProcessor.ProcessAsync(
                         new GetChatAdminListByChannelIdQuery(inputChannel.ChannelId, obj.Offset, obj.Limit));
 
                     break;
@@ -135,7 +101,7 @@ internal sealed class GetParticipantsHandler : RpcResultObjectHandler<MyTelegram
                 forceNotLeft = true;
             }
 
-            var channelMemberReadModels = query == null ? Array.Empty<IChannelMemberReadModel>() : await _queryProcessor
+            var channelMemberReadModels = query == null ? Array.Empty<IChannelMemberReadModel>() : await queryProcessor
                 .ProcessAsync(query);
 
             var userIdList = channelMemberReadModels.Select(p => p.UserId).ToList();
@@ -145,16 +111,15 @@ internal sealed class GetParticipantsHandler : RpcResultObjectHandler<MyTelegram
                 userIdList.Add(selfChannelMember.InviterId);
             }
 
-            var userReadModels = await _queryProcessor
-                .ProcessAsync(new GetUsersByUserIdListQuery(userIdList), default);
-            var contactReadModels = await _queryProcessor
+            var userReadModels = await userAppService.GetListAsync(userIdList);
+            var contactReadModels = await queryProcessor
                 .ProcessAsync(new GetContactListQuery(input.UserId, userIdList));
-            var privacies = await _privacyAppService.GetPrivacyListAsync(userIdList);
+            var privacies = await privacyAppService.GetPrivacyListAsync(userIdList);
 
-            var photos = await _photoAppService.GetPhotosAsync(userReadModels, contactReadModels);
-            var users = _layeredUserService.GetConverter(input.Layer)
+            var photos = await photoAppService.GetPhotosAsync(userReadModels, contactReadModels);
+            var users = layeredUserService.GetConverter(input.Layer)
                 .ToUserList(input.UserId, userReadModels, photos, contactReadModels, privacies);
-            var chatPhoto = await _photoAppService.GetPhotoAsync(channelReadModel.PhotoId);
+            var chatPhoto = await photoAppService.GetAsync(channelReadModel.PhotoId);
 
             var creatorId = channelReadModel.CreatorId;
             if (channelReadModel.Broadcast || (channelReadModel.HasLink && input.UserId != creatorId))
@@ -191,7 +156,7 @@ internal sealed class GetParticipantsHandler : RpcResultObjectHandler<MyTelegram
                 };
             }
 
-            return _layeredService.GetConverter(input.Layer).ToChannelParticipants(
+            return layeredService.GetConverter(input.Layer).ToChannelParticipants(
                 input.UserId,
                 channelReadModel,
                 chatPhoto,

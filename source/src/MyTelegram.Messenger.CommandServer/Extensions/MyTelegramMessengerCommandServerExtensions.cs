@@ -3,7 +3,7 @@ using MyTelegram.EventFlow;
 using MyTelegram.Messenger.CommandServer.BackgroundServices;
 using MyTelegram.Messenger.CommandServer.EventHandlers;
 using MyTelegram.Messenger.NativeAot;
-using MyTelegram.Services.Extensions;
+using MyTelegram.Messenger.Services.Impl;
 using MyTelegram.Services.NativeAot;
 
 namespace MyTelegram.Messenger.CommandServer.Extensions;
@@ -25,11 +25,10 @@ public static class MyTelegramMessengerCommandServerExtensions
     public static void AddMyTelegramMessengerCommandServer(this IServiceCollection services,
         Action<IEventFlowOptions>? configure = null)
     {
+        services.AddTransient<IDataProcessor<IDomainEvent>, DomainEventDataProcessor>();
         services.RegisterServices();
-        //services.AddTransient<PtsEventHandler>();
         services.AddTransient<MessengerEventHandler>();
         services.AddTransient<IDataProcessor<NewDeviceCreatedEvent>, NewDeviceCreatedEventDataProcessor>();
-        //services.AddTransient<IReadModelUpdateManager, MyTelegramCommandServerReadModelUpdateManager>();
 
         services.AddCacheJsonSerializer(jsonOptions =>
         {

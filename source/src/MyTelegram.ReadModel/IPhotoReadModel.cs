@@ -2,6 +2,7 @@
 
 public interface IPhotoReadModel : IReadModel
 {
+    string Id { get; }
     long AccessHash { get; }
     int Date { get; }
     int DcId { get; }

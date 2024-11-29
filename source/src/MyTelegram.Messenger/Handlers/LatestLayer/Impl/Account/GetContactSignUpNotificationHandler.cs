@@ -6,22 +6,14 @@ namespace MyTelegram.Handlers.Account;
 /// Whether the user will receive notifications when contacts sign up
 /// See <a href="https://corefork.telegram.org/method/account.getContactSignUpNotification" />
 ///</summary>
-internal sealed class GetContactSignUpNotificationHandler : RpcResultObjectHandler<MyTelegram.Schema.Account.RequestGetContactSignUpNotification, IBool>,
-    Account.IGetContactSignUpNotificationHandler
+internal sealed class GetContactSignUpNotificationHandler(IUserAppService userAppService)
+    : RpcResultObjectHandler<MyTelegram.Schema.Account.RequestGetContactSignUpNotification, IBool>,
+        Account.IGetContactSignUpNotificationHandler
 {
-    private readonly IQueryProcessor _queryProcessor;
-
-    public GetContactSignUpNotificationHandler(IQueryProcessor queryProcessor)
-    {
-        _queryProcessor = queryProcessor;
-    }
-
     protected override async Task<IBool> HandleCoreAsync(IRequestInput input,
         MyTelegram.Schema.Account.RequestGetContactSignUpNotification obj)
     {
-        var user = await _queryProcessor
-                .ProcessAsync(new GetUserByIdQuery(input.UserId), CancellationToken.None)
-            ;
+        var user = await userAppService.GetAsync(input.UserId);
 
         return user!.ShowContactSignUpNotification ? new TBoolTrue() : new TBoolFalse();
     }

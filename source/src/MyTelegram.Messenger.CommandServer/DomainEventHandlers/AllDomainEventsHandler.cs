@@ -2,6 +2,7 @@
 public class AllDomainEventsHandler(
     IEventBus eventBus,
     IDomainEventMessageFactory domainEventMessageFactory,
+    IMessageQueueProcessor<IDomainEvent> domainEventMessageQueueProcessor,
     ILogger<AllDomainEventsHandler> logger)
     : ISubscribeSynchronousToAll
 {
@@ -9,6 +10,7 @@ public class AllDomainEventsHandler(
     {
         foreach (var domainEvent in domainEvents)
         {
+            domainEventMessageQueueProcessor.Enqueue(domainEvent, 0);
             var aggregateEvent = domainEvent.GetAggregateEvent();
             if (aggregateEvent is IHasRequestInfo requestInfo)
             {

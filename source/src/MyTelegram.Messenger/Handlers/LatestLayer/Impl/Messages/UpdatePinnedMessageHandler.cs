@@ -22,9 +22,8 @@ namespace MyTelegram.Handlers.Messages;
 internal sealed class UpdatePinnedMessageHandler(
     ICommandBus commandBus,
     IPeerHelper peerHelper,
-    IRandomHelper randomHelper,
     IQueryProcessor queryProcessor,
-    IPtsHelper ptsHelper,
+    IChannelAppService channelAppService,
     IChannelAdminRightsChecker channelAdminRightsChecker,
     IAccessHashHelper accessHashHelper)
     : RpcResultObjectHandler<MyTelegram.Schema.Messages.RequestUpdatePinnedMessage, MyTelegram.Schema.IUpdates>,
@@ -37,7 +36,7 @@ internal sealed class UpdatePinnedMessageHandler(
         var peer = peerHelper.GetPeer(obj.Peer, input.UserId);
         if (peer.PeerType == PeerType.Channel)
         {
-            var channelReadModel = await queryProcessor.ProcessAsync(new GetChannelByIdQuery(peer.PeerId));
+            var channelReadModel = await channelAppService.GetAsync(peer.PeerId);
             if (channelReadModel!.DefaultBannedRights?.PinMessages ?? true)
             {
                 await channelAdminRightsChecker.CheckAdminRightAsync(peer.PeerId, input.UserId,

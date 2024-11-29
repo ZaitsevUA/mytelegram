@@ -22,30 +22,22 @@ namespace MyTelegram.Handlers.Channels;
 /// 400 USER_CHANNELS_TOO_MUCH One of the users you tried to add is already in too many channels/supergroups.
 /// See <a href="https://corefork.telegram.org/method/channels.joinChannel" />
 ///</summary>
-internal sealed class JoinChannelHandler : RpcResultObjectHandler<MyTelegram.Schema.Channels.RequestJoinChannel, MyTelegram.Schema.IUpdates>,
-    Channels.IJoinChannelHandler
+internal sealed class JoinChannelHandler(
+    ICommandBus commandBus,
+    IRandomHelper randomHelper,
+    IChannelAppService channelAppService,
+    IAccessHashHelper accessHashHelper,
+    IQueryProcessor queryProcessor)
+    : RpcResultObjectHandler<MyTelegram.Schema.Channels.RequestJoinChannel, MyTelegram.Schema.IUpdates>,
+        Channels.IJoinChannelHandler
 {
-    private readonly ICommandBus _commandBus;
-    private readonly IRandomHelper _randomHelper;
-    private readonly IAccessHashHelper _accessHashHelper;
-    private readonly IQueryProcessor _queryProcessor;
-    public JoinChannelHandler(ICommandBus commandBus,
-        IRandomHelper randomHelper,
-        IAccessHashHelper accessHashHelper, IQueryProcessor queryProcessor)
-    {
-        _commandBus = commandBus;
-        _randomHelper = randomHelper;
-        _accessHashHelper = accessHashHelper;
-        _queryProcessor = queryProcessor;
-    }
-
     protected override async Task<IUpdates> HandleCoreAsync(IRequestInput input,
         RequestJoinChannel obj)
     {
         if (obj.Channel is TInputChannel inputChannel)
         {
-            await _accessHashHelper.CheckAccessHashAsync(inputChannel.ChannelId, inputChannel.AccessHash);
-            var channelReadModel = await _queryProcessor.ProcessAsync(new GetChannelByIdQuery(inputChannel.ChannelId));
+            await accessHashHelper.CheckAccessHashAsync(inputChannel.ChannelId, inputChannel.AccessHash);
+            var channelReadModel = await channelAppService.GetAsync(inputChannel.ChannelId);
             channelReadModel.ThrowExceptionIfChannelDeleted();
 
             var userIdList = new[] { input.UserId };
@@ -59,12 +51,12 @@ internal sealed class JoinChannelHandler : RpcResultObjectHandler<MyTelegram.Sch
                 null,
                 new List<long>(),
                 CurrentDate,
-                _randomHelper.NextLong(),
+                randomHelper.NextLong(),
                 new TMessageActionChatAddUser { Users = new TVector<long>(userIdList) }.ToBytes().ToHexString(),
                 ChatJoinType.ByRequest
                 );
 
-            await _commandBus.PublishAsync(command, default);
+            await commandBus.PublishAsync(command, default);
             return null!;
         }
 

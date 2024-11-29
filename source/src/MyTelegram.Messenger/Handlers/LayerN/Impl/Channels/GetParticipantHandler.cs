@@ -15,73 +15,56 @@ namespace MyTelegram.Handlers.Channels.LayerN;
 /// 400 USER_NOT_PARTICIPANT You're not a member of this supergroup/channel.
 /// See <a href="https://corefork.telegram.org/method/channels.getParticipant" />
 ///</summary>
-internal sealed class GetParticipantHandler : RpcResultObjectHandler<MyTelegram.Schema.Channels.LayerN.RequestGetParticipant, MyTelegram.Schema.Channels.IChannelParticipant>,
-    Channels.LayerN.IGetParticipantHandler
+internal sealed class GetParticipantHandler(
+    IQueryProcessor queryProcessor,
+    IUserAppService userAppService,
+    IPeerHelper peerHelper,
+    ILayeredService<IChatConverter> layeredService,
+    IAccessHashHelper accessHashHelper,
+    ILayeredService<IUserConverter> layeredUserService,
+    ILayeredService<IPhotoConverter> layeredPhotoService,
+    IChannelAppService channelAppService,
+    IPhotoAppService photoAppService,
+    IPrivacyAppService privacyAppService)
+    : RpcResultObjectHandler<MyTelegram.Schema.Channels.LayerN.RequestGetParticipant,
+            MyTelegram.Schema.Channels.IChannelParticipant>,
+        Channels.LayerN.IGetParticipantHandler
 {
-    private readonly IPeerHelper _peerHelper;
-    private readonly IQueryProcessor _queryProcessor;
-    private readonly ILayeredService<IChatConverter> _layeredService;
-    private readonly ILayeredService<IUserConverter> _layeredUserService;
-    private readonly ILayeredService<IPhotoConverter> _layeredPhotoService;
-    private readonly IAccessHashHelper _accessHashHelper;
-    private readonly IPhotoAppService _photoAppService;
-    private readonly IPrivacyAppService _privacyAppService;
-    public GetParticipantHandler(IQueryProcessor queryProcessor,
-        IPeerHelper peerHelper,
-        ILayeredService<IChatConverter> layeredService,
-        IAccessHashHelper accessHashHelper,
-        ILayeredService<IUserConverter> layeredUserService,
-        ILayeredService<IPhotoConverter> layeredPhotoService, IPhotoAppService photoAppService, IPrivacyAppService privacyAppService)
-    {
-        _queryProcessor = queryProcessor;
-        _peerHelper = peerHelper;
-        _layeredService = layeredService;
-        _accessHashHelper = accessHashHelper;
-        _layeredUserService = layeredUserService;
-        _layeredPhotoService = layeredPhotoService;
-        _photoAppService = photoAppService;
-        _privacyAppService = privacyAppService;
-    }
+    private readonly ILayeredService<IPhotoConverter> _layeredPhotoService = layeredPhotoService;
 
     protected override async Task<MyTelegram.Schema.Channels.IChannelParticipant> HandleCoreAsync(IRequestInput input,
         MyTelegram.Schema.Channels.LayerN.RequestGetParticipant obj)
     {
-        var peer = _peerHelper.GetPeer(obj.UserId, input.UserId);
+        var peer = peerHelper.GetPeer(obj.UserId, input.UserId);
         if (obj.Channel is TInputChannel inputChannel)
         {
-            await _accessHashHelper.CheckAccessHashAsync(inputChannel.ChannelId, inputChannel.AccessHash);
+            await accessHashHelper.CheckAccessHashAsync(inputChannel.ChannelId, inputChannel.AccessHash);
 
-            var channelMemberReadModel = await _queryProcessor
+            var channelMemberReadModel = await queryProcessor
                     .ProcessAsync(new GetChannelMemberByUserIdQuery(inputChannel.ChannelId, peer.PeerId), default)
                 ;
 
             if (channelMemberReadModel == null)
             {
-                //ThrowHelper.ThrowUserFriendlyException("USER_NOT_PARTICIPANT");
                 RpcErrors.RpcErrors400.UserNotParticipant.ThrowRpcError();
             }
 
-            var userReadModel = await _queryProcessor
-                    .ProcessAsync(new GetUserByIdQuery(channelMemberReadModel!.UserId), default)
-                ;
+            var userReadModel = await userAppService.GetAsync(channelMemberReadModel!.UserId);
 
             if (userReadModel == null)
             {
-                //ThrowHelper.ThrowUserFriendlyException("USER_ID_INVALID");
                 RpcErrors.RpcErrors400.UserIdInvalid.ThrowRpcError();
             }
 
-            var channelReadModel = await _queryProcessor
-                .ProcessAsync(new GetChannelByIdQuery(inputChannel.ChannelId), default);
+            var channelReadModel = await channelAppService.GetAsync(inputChannel.ChannelId);
 
-            var privacies = await _privacyAppService.GetPrivacyListAsync(userReadModel!.UserId);
-            var photos = await _photoAppService.GetPhotosAsync(userReadModel);
-            var user = _layeredUserService.GetConverter(input.Layer)
+            var privacies = await privacyAppService.GetPrivacyListAsync(userReadModel!.UserId);
+            var photos = await photoAppService.GetPhotosAsync(userReadModel);
+            var user = layeredUserService.GetConverter(input.Layer)
                 .ToUser(input.UserId, userReadModel, photos, privacies: privacies);
-            //var chatPhoto = _layeredPhotoService.GetConverter(input.Layer).GetChatPhoto(channelReadModel.Photo);
-            var chatPhoto = await _photoAppService.GetPhotoAsync(channelReadModel.PhotoId);
+            var chatPhoto = await photoAppService.GetAsync(channelReadModel!.PhotoId);
 
-            return _layeredService.GetConverter(input.Layer).ToChannelParticipantLayerN(
+            return layeredService.GetConverter(input.Layer).ToChannelParticipantLayerN(
                 input.UserId,
                 channelReadModel,
                 chatPhoto,

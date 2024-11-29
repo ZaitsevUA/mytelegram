@@ -171,7 +171,7 @@ public class DialogAppService(
         photoIds.AddRange(contactList.Select(p => p.PhotoId ?? 0));
         photoIds.RemoveAll(p => p == 0);
 
-        var photos = await photoAppService.GetPhotosAsync(photoIds);
+        var photos = await photoAppService.GetListAsync(photoIds);
 
         return new GetDialogOutput(input.OwnerId,
             dialogList,

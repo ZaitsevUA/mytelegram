@@ -12,27 +12,20 @@ namespace MyTelegram.Handlers.Contacts;
 /// 400 MSG_ID_INVALID Invalid message ID provided.
 /// See <a href="https://corefork.telegram.org/method/contacts.acceptContact" />
 ///</summary>
-internal sealed class AcceptContactHandler : RpcResultObjectHandler<MyTelegram.Schema.Contacts.RequestAcceptContact, MyTelegram.Schema.IUpdates>,
-    Contacts.IAcceptContactHandler
+internal sealed class AcceptContactHandler(
+    ICommandBus commandBus,
+    IUserAppService userAppService,
+    IPeerHelper peerHelper,
+    IAccessHashHelper accessHashHelper)
+    : RpcResultObjectHandler<MyTelegram.Schema.Contacts.RequestAcceptContact, MyTelegram.Schema.IUpdates>,
+        Contacts.IAcceptContactHandler
 {
-    private readonly ICommandBus _commandBus;
-    private readonly IQueryProcessor _queryProcessor;
-    private readonly IPeerHelper _peerHelper;
-    private readonly IAccessHashHelper _accessHashHelper;
-    public AcceptContactHandler(ICommandBus commandBus, IQueryProcessor queryProcessor, IPeerHelper peerHelper, IAccessHashHelper accessHashHelper)
-    {
-        _commandBus = commandBus;
-        _queryProcessor = queryProcessor;
-        _peerHelper = peerHelper;
-        _accessHashHelper = accessHashHelper;
-    }
-
     protected override async Task<MyTelegram.Schema.IUpdates> HandleCoreAsync(IRequestInput input,
         MyTelegram.Schema.Contacts.RequestAcceptContact obj)
     {
-        var peer = _peerHelper.GetPeer(obj.Id);
-        await _accessHashHelper.CheckAccessHashAsync(obj.Id);
-        var userReadModel = await _queryProcessor.ProcessAsync(new GetUserByIdQuery(peer.PeerId));
+        var peer = peerHelper.GetPeer(obj.Id);
+        await accessHashHelper.CheckAccessHashAsync(obj.Id);
+        var userReadModel = await userAppService.GetAsync(peer.PeerId);
         if (userReadModel == null)
         {
             RpcErrors.RpcErrors400.UserIdInvalid.ThrowRpcError();
@@ -48,7 +41,7 @@ internal sealed class AcceptContactHandler : RpcResultObjectHandler<MyTelegram.S
             false
         );
 
-        await _commandBus.PublishAsync(command, default);
+        await commandBus.PublishAsync(command, default);
 
         return null!;
     }

@@ -11,33 +11,24 @@ namespace MyTelegram.Handlers.Contacts;
 /// 400 USERNAME_NOT_OCCUPIED The provided username is not occupied.
 /// See <a href="https://corefork.telegram.org/method/contacts.resolveUsername" />
 ///</summary>
-internal sealed class ResolveUsernameHandler : RpcResultObjectHandler<MyTelegram.Schema.Contacts.RequestResolveUsername, MyTelegram.Schema.Contacts.IResolvedPeer>,
-    Contacts.IResolveUsernameHandler
+internal sealed class ResolveUsernameHandler(
+    IQueryProcessor queryProcessor,
+    IUserAppService userAppService,
+    IChannelAppService channelAppService,
+    ILayeredService<IChatConverter> layeredChatService,
+    ILayeredService<IUserConverter> layeredUserService,
+    IPhotoAppService photoAppService,
+    IPrivacyAppService privacyAppService)
+    : RpcResultObjectHandler<MyTelegram.Schema.Contacts.RequestResolveUsername,
+            MyTelegram.Schema.Contacts.IResolvedPeer>,
+        Contacts.IResolveUsernameHandler
 {
-    private readonly IQueryProcessor _queryProcessor;
-    private readonly ILayeredService<IChatConverter> _layeredChatService;
-    private readonly ILayeredService<IUserConverter> _layeredUserService;
-    private readonly IPhotoAppService _photoAppService;
-    private readonly IPrivacyAppService _privacyAppService;
-
-    public ResolveUsernameHandler(IQueryProcessor queryProcessor,
-        ILayeredService<IChatConverter> layeredChatService,
-        ILayeredService<IUserConverter> layeredUserService, IPhotoAppService photoAppService, IPrivacyAppService privacyAppService)
-    {
-        _queryProcessor = queryProcessor;
-        _layeredChatService = layeredChatService;
-        _layeredUserService = layeredUserService;
-        _photoAppService = photoAppService;
-        _privacyAppService = privacyAppService;
-    }
-
     protected override async Task<IResolvedPeer> HandleCoreAsync(IRequestInput input,
         RequestResolveUsername obj)
     {
-        //Console.WriteLine($"RequestResolveUsername:{obj.Username}");
         if (!string.IsNullOrEmpty(obj.Username))
         {
-            var userNameReadModel = await _queryProcessor
+            var userNameReadModel = await queryProcessor
                 .ProcessAsync(new GetUserNameByNameQuery(obj.Username), default)
          ;
             if (userNameReadModel != null)
@@ -45,22 +36,21 @@ internal sealed class ResolveUsernameHandler : RpcResultObjectHandler<MyTelegram
                 switch (userNameReadModel.PeerType)
                 {
                     case PeerType.User:
-                        var userReadModel = await _queryProcessor
-                            .ProcessAsync(new GetUserByIdQuery(userNameReadModel.PeerId), default)
-                     ;
+                        var userReadModel = await userAppService.GetAsync(userNameReadModel.PeerId);
+
                         if (userReadModel != null)
                         {
                             var contactReadModel =
-                                await _queryProcessor.ProcessAsync(
+                                await queryProcessor.ProcessAsync(
                                     new GetContactQuery(input.UserId, userReadModel.UserId), default);
-                            var photos = await _photoAppService.GetPhotosAsync(userReadModel, contactReadModel);
-                            var privacies = await _privacyAppService.GetPrivacyListAsync(userReadModel!.UserId);
+                            var photos = await photoAppService.GetPhotosAsync(userReadModel, contactReadModel);
+                            var privacies = await privacyAppService.GetPrivacyListAsync(userReadModel!.UserId);
 
                             return new TResolvedPeer
                             {
                                 Chats = new TVector<IChat>(),
                                 Peer = new TPeerUser { UserId = userNameReadModel.PeerId },
-                                Users = new TVector<IUser>(_layeredUserService.GetConverter(input.Layer).ToUser(
+                                Users = new TVector<IUser>(layeredUserService.GetConverter(input.Layer).ToUser(
                                     input.UserId,
                                     userReadModel,
                                     photos,
@@ -72,15 +62,15 @@ internal sealed class ResolveUsernameHandler : RpcResultObjectHandler<MyTelegram
                         break;
                     case PeerType.Chat:
                         {
-                            var chatReadModel = await _queryProcessor
+                            var chatReadModel = await queryProcessor
                                 .ProcessAsync(new GetChatByChatIdQuery(userNameReadModel.PeerId), default)
                          ;
                             if (chatReadModel != null)
                             {
-                                var photoReadModel = await _photoAppService.GetPhotoAsync(chatReadModel.PhotoId);
+                                var photoReadModel = await photoAppService.GetAsync(chatReadModel.PhotoId);
                                 return new TResolvedPeer
                                 {
-                                    Chats = new TVector<IChat>(_layeredChatService.GetConverter(input.Layer).ToChat(input.UserId, chatReadModel, photoReadModel)),
+                                    Chats = new TVector<IChat>(layeredChatService.GetConverter(input.Layer).ToChat(input.UserId, chatReadModel, photoReadModel)),
                                     Peer = new TPeerChat { ChatId = userNameReadModel.PeerId },
                                     Users = new TVector<IUser>()
                                 };
@@ -89,17 +79,15 @@ internal sealed class ResolveUsernameHandler : RpcResultObjectHandler<MyTelegram
                         break;
                     case PeerType.Channel:
                         {
-                            var channelReadModel = await _queryProcessor
-                                .ProcessAsync(new GetChannelByIdQuery(userNameReadModel.PeerId), default)
-                         ;
+                            var channelReadModel = await channelAppService.GetAsync(userNameReadModel.PeerId);
                             if (channelReadModel != null)
                             {
-                                var photoReadModel = await _photoAppService.GetPhotoAsync(channelReadModel.PhotoId);
+                                var photoReadModel = await photoAppService.GetAsync(channelReadModel.PhotoId);
 
                                 return new TResolvedPeer
                                 {
                                     Chats =
-                                        new TVector<IChat>(_layeredChatService.GetConverter(input.Layer).ToChannel(
+                                        new TVector<IChat>(layeredChatService.GetConverter(input.Layer).ToChannel(
                                             input.UserId,
                                             channelReadModel,
                                             photoReadModel,
@@ -110,8 +98,6 @@ internal sealed class ResolveUsernameHandler : RpcResultObjectHandler<MyTelegram
                             }
                         }
                         break;
-                    //case PeerType.EncryptionChat:
-                    //    break;
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
@@ -119,13 +105,7 @@ internal sealed class ResolveUsernameHandler : RpcResultObjectHandler<MyTelegram
         }
 
         RpcErrors.RpcErrors400.UsernameNotOccupied.ThrowRpcError();
+
         return null!;
-        //throw new BadRequestException("USERNAME_NOT_OCCUPIED");
-        //return new TResolvedPeer
-        //{
-        //    Chats = new TVector<IChat>(),
-        //    Users = new TVector<IUser>(),
-        //    Peer = new TPeerUser { UserId = 0 }
-        //};
     }
 }

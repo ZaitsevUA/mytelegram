@@ -15,6 +15,7 @@ using MyTelegram.EventFlow.ReadStores;
 using MyTelegram.Messenger.NativeAot;
 using MyTelegram.Messenger.QueryServer.EventHandlers;
 using MyTelegram.Messenger.QueryServer.Services;
+using MyTelegram.Messenger.Services.Impl;
 using MyTelegram.QueryHandlers.MongoDB;
 using MyTelegram.ReadModel.MongoDB;
 using MyTelegram.ReadModel.ReadModelLocators;
@@ -38,6 +39,8 @@ public static class MyTelegramMessengerQueryServerExtensions
 
     public static void AddMyTelegramMessengerQueryServer(this IServiceCollection services, Action<IEventFlowOptions>? configure = null)
     {
+        services.AddTransient<IDataProcessor<IDomainEvent>, DomainEventDataProcessor>();
+        
         services.RegisterServices();
         services.AddTransient<IPtsForAuthKeyIdReadModelLocator, PtsForAuthKeyIdReadModelLocator>();
 
@@ -110,7 +113,7 @@ public static class MyTelegramMessengerQueryServerExtensions
         services.AddMyEventFlow();
         services.AddMyTelegramIdGeneratorServices();
 
-        services.AddSingleton(typeof(IQueuedCommandExecutor<,,>), typeof(QueuedCommandExecutor<,,>));
+        // services.AddSingleton(typeof(IQueuedCommandExecutor<,,>), typeof(QueuedCommandExecutor<,,>));
 
         services.AddSystemTextJson(options =>
         {

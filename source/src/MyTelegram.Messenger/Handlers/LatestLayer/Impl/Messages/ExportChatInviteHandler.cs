@@ -16,46 +16,35 @@ namespace MyTelegram.Handlers.Messages;
 /// 400 USAGE_LIMIT_INVALID The specified usage limit is invalid.
 /// See <a href="https://corefork.telegram.org/method/messages.exportChatInvite" />
 ///</summary>
-internal sealed class ExportChatInviteHandler : RpcResultObjectHandler<MyTelegram.Schema.Messages.RequestExportChatInvite, MyTelegram.Schema.IExportedChatInvite>,
-    Messages.IExportChatInviteHandler
+internal sealed class ExportChatInviteHandler(
+    ICommandBus commandBus,
+    IRandomHelper randomHelper,
+    IAccessHashHelper accessHashHelper,
+    IIdGenerator idGenerator,
+    IChannelAppService channelAppService,
+    IChatInviteLinkHelper chatInviteLinkHelper,
+    IChannelAdminRightsChecker channelAdminRightsChecker)
+    : RpcResultObjectHandler<MyTelegram.Schema.Messages.RequestExportChatInvite, MyTelegram.Schema.IExportedChatInvite>,
+        Messages.IExportChatInviteHandler
 {
-    private readonly ICommandBus _commandBus;
-    private readonly IRandomHelper _randomHelper;
-    private readonly IAccessHashHelper _accessHashHelper;
-    private readonly IIdGenerator _idGenerator;
-    private readonly IQueryProcessor _queryProcessor;
-    private readonly IChatInviteLinkHelper _chatInviteLinkHelper;
-    private readonly IChannelAdminRightsChecker _channelAdminRightsChecker;
-    public ExportChatInviteHandler(ICommandBus commandBus,
-        IRandomHelper randomHelper,
-        IAccessHashHelper accessHashHelper, IIdGenerator idGenerator, IQueryProcessor queryProcessor, IChatInviteLinkHelper chatInviteLinkHelper, IChannelAdminRightsChecker channelAdminRightsChecker)
-    {
-        _commandBus = commandBus;
-        _randomHelper = randomHelper;
-        _accessHashHelper = accessHashHelper;
-        _idGenerator = idGenerator;
-        _queryProcessor = queryProcessor;
-        _chatInviteLinkHelper = chatInviteLinkHelper;
-        _channelAdminRightsChecker = channelAdminRightsChecker;
-    }
+    private readonly IRandomHelper _randomHelper = randomHelper;
 
     protected override async Task<MyTelegram.Schema.IExportedChatInvite> HandleCoreAsync(IRequestInput input,
         RequestExportChatInvite obj)
     {
         if (obj.Peer is TInputPeerChannel inputPeerChannel)
         {
-            await _accessHashHelper.CheckAccessHashAsync(inputPeerChannel.ChannelId, inputPeerChannel.AccessHash);
+            await accessHashHelper.CheckAccessHashAsync(inputPeerChannel.ChannelId, inputPeerChannel.AccessHash);
 
-            var chatInviteId = await _idGenerator.NextLongIdAsync(IdType.InviteId, inputPeerChannel.ChannelId);
-            var inviteHash = _chatInviteLinkHelper.GenerateInviteLink();
-            var channelReadModel =
-                await _queryProcessor.ProcessAsync(new GetChannelByIdQuery(inputPeerChannel.ChannelId));
+            var chatInviteId = await idGenerator.NextLongIdAsync(IdType.InviteId, inputPeerChannel.ChannelId);
+            var inviteHash = chatInviteLinkHelper.GenerateInviteLink();
+            var channelReadModel = await channelAppService.GetAsync(inputPeerChannel.ChannelId);
             if (channelReadModel == null)
             {
                 RpcErrors.RpcErrors400.ChannelIdInvalid.ThrowRpcError();
             }
 
-            await _channelAdminRightsChecker.CheckAdminRightAsync(inputPeerChannel.ChannelId, input.UserId,
+            await channelAdminRightsChecker.CheckAdminRightAsync(inputPeerChannel.ChannelId, input.UserId,
                 (p) => p.AdminRights.ChangeInfo, RpcErrors.RpcErrors403.ChatAdminRequired);
 
             var command = new CreateChatInviteCommand(ChatInviteId.Create(inputPeerChannel.ChannelId, chatInviteId),
@@ -73,7 +62,7 @@ internal sealed class ExportChatInviteHandler : RpcResultObjectHandler<MyTelegra
                 CurrentDate
             );
 
-            await _commandBus.PublishAsync(command, default);
+            await commandBus.PublishAsync(command, default);
             return null!;
         }
 

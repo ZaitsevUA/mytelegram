@@ -1,13 +1,13 @@
 ﻿namespace MyTelegram.Messenger.Services.Impl;
 
-public class PhotoAppService(IQueryProcessor queryProcessor) : IPhotoAppService, ITransientDependency
+public class PhotoAppService(IQueryProcessor queryProcessor, IReadModelCacheHelper<IPhotoReadModel> photoReadModelCacheHelper) : ReadModelWithCacheAppService<IPhotoReadModel>(photoReadModelCacheHelper), IPhotoAppService, ITransientDependency
 {
-    public Task<IReadOnlyCollection<IPhotoReadModel>> GetPhotosAsync(IUserReadModel? userReadModel,
-        IContactReadModel? contactReadModel = null)
+    public Task<IReadOnlyCollection<IPhotoReadModel>> GetPhotosAsync(IUserReadModel? userReadModel, IContactReadModel? contactReadModel = null)
     {
+        IReadOnlyCollection<IPhotoReadModel> photos = [];
         if (userReadModel == null)
         {
-            return Task.FromResult<IReadOnlyCollection<IPhotoReadModel>>(Array.Empty<IPhotoReadModel>());
+            return Task.FromResult(photos);
         }
 
         var photoIds = new List<long>();
@@ -26,16 +26,10 @@ public class PhotoAppService(IQueryProcessor queryProcessor) : IPhotoAppService,
             photoIds.Add(contactReadModel.PhotoId.Value);
         }
 
-        if (photoIds.Count == 0)
-        {
-            return Task.FromResult<IReadOnlyCollection<IPhotoReadModel>>(Array.Empty<IPhotoReadModel>());
-        }
-
-        return queryProcessor.ProcessAsync(new GetPhotosByPhotoIdLisQuery(photoIds));
+        return GetListAsync(photoIds);
     }
 
-    public Task<IReadOnlyCollection<IPhotoReadModel>> GetPhotosAsync(IReadOnlyCollection<IUserReadModel> userReadModels,
-        IReadOnlyCollection<IContactReadModel>? contactReadModels = null)
+    public Task<IReadOnlyCollection<IPhotoReadModel>> GetPhotosAsync(IReadOnlyCollection<IUserReadModel> userReadModels, IReadOnlyCollection<IContactReadModel>? contactReadModels = null)
     {
         var photoIds = new List<long>();
         foreach (var userReadModel in userReadModels)
@@ -62,16 +56,10 @@ public class PhotoAppService(IQueryProcessor queryProcessor) : IPhotoAppService,
             }
         }
 
-        if (photoIds.Count == 0)
-        {
-            return Task.FromResult<IReadOnlyCollection<IPhotoReadModel>>(Array.Empty<IPhotoReadModel>());
-        }
-
-        return queryProcessor.ProcessAsync(new GetPhotosByPhotoIdLisQuery(photoIds.Distinct().ToList()));
+        return GetListAsync(photoIds);
     }
 
-    public Task<IReadOnlyCollection<IPhotoReadModel>> GetPhotosAsync(
-        IReadOnlyCollection<IChannelReadModel> channelReadModels)
+    public Task<IReadOnlyCollection<IPhotoReadModel>> GetPhotosAsync(IReadOnlyCollection<IChannelReadModel> channelReadModels)
     {
         var photoIds = new List<long>();
         foreach (var channelReadModel in channelReadModels)
@@ -82,33 +70,20 @@ public class PhotoAppService(IQueryProcessor queryProcessor) : IPhotoAppService,
             }
         }
 
-        if (photoIds.Count == 0)
-        {
-            return Task.FromResult<IReadOnlyCollection<IPhotoReadModel>>(Array.Empty<IPhotoReadModel>());
-        }
-
-        return queryProcessor.ProcessAsync(new GetPhotosByPhotoIdLisQuery(photoIds.Distinct().ToList()));
+        return GetListAsync(photoIds);
     }
 
-    public Task<IPhotoReadModel?> GetPhotoAsync(long? photoId)
+    protected override Task<IPhotoReadModel?> GetReadModelAsync(long id)
     {
-        if (!photoId.HasValue)
-        {
-            return Task.FromResult<IPhotoReadModel?>(null);
-        }
-
-        return queryProcessor.ProcessAsync(new GetPhotoByIdQuery(photoId.Value));
+        return queryProcessor.ProcessAsync(new GetPhotoByIdQuery(id));
     }
 
-    public Task<IReadOnlyCollection<IPhotoReadModel>> GetPhotosAsync(List<long> photoIds)
+    protected override string GetReadModelId(IPhotoReadModel readModel) => readModel.Id;
+
+    protected override long GetReadModelInt64Id(IPhotoReadModel readModel) => readModel.PhotoId;
+
+    protected override Task<IReadOnlyCollection<IPhotoReadModel>> GetReadModelListAsync(List<long> ids)
     {
-        photoIds.RemoveAll(p => p == 0);
-
-        if (photoIds.Count == 0)
-        {
-            return Task.FromResult<IReadOnlyCollection<IPhotoReadModel>>(Array.Empty<IPhotoReadModel>());
-        }
-
-        return queryProcessor.ProcessAsync(new GetPhotosByPhotoIdLisQuery(photoIds.Distinct().ToList()));
+        return queryProcessor.ProcessAsync(new GetPhotosByPhotoIdLisQuery(ids));
     }
 }

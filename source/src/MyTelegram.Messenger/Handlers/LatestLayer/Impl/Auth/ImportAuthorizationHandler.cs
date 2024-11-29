@@ -10,42 +10,24 @@ namespace MyTelegram.Handlers.Auth;
 /// 400 USER_ID_INVALID The provided user ID is invalid.
 /// See <a href="https://corefork.telegram.org/method/auth.importAuthorization" />
 ///</summary>
-internal sealed class ImportAuthorizationHandler : RpcResultObjectHandler<MyTelegram.Schema.Auth.RequestImportAuthorization, MyTelegram.Schema.Auth.IAuthorization>,
-    Auth.IImportAuthorizationHandler
+internal sealed class ImportAuthorizationHandler(
+    IHashHelper hashHelper,
+    IUserAppService userAppService,
+    ICacheManager<string> cacheManager,
+    IEventBus eventBus,
+    ILayeredService<IAuthorizationConverter> layeredService,
+    ILayeredService<IUserConverter> layeredUserService,
+    IPhotoAppService photoAppService)
+    : RpcResultObjectHandler<MyTelegram.Schema.Auth.RequestImportAuthorization, MyTelegram.Schema.Auth.IAuthorization>,
+        Auth.IImportAuthorizationHandler
 {
-    private readonly ICacheManager<string> _cacheManager;
-    private readonly IEventBus _eventBus;
-
-    private readonly IHashHelper _hashHelper;
-
-    private readonly IQueryProcessor _queryProcessor;
-    private readonly ILayeredService<IAuthorizationConverter> _layeredService;
-    private readonly ILayeredService<IUserConverter> _layeredUserService;
-    private readonly IPhotoAppService _photoAppService;
-    public ImportAuthorizationHandler(
-        IHashHelper hashHelper,
-        IQueryProcessor queryProcessor,
-        ICacheManager<string> cacheManager,
-        IEventBus eventBus,
-        ILayeredService<IAuthorizationConverter> layeredService,
-        ILayeredService<IUserConverter> layeredUserService, IPhotoAppService photoAppService)
-    {
-        _hashHelper = hashHelper;
-        _queryProcessor = queryProcessor;
-        _cacheManager = cacheManager;
-        _eventBus = eventBus;
-        _layeredService = layeredService;
-        _layeredUserService = layeredUserService;
-        _photoAppService = photoAppService;
-    }
-
     protected override async Task<MyTelegram.Schema.Auth.IAuthorization> HandleCoreAsync(IRequestInput input,
         RequestImportAuthorization obj)
     {
-        var keyBytes = _hashHelper.Sha1(obj.Bytes);
+        var keyBytes = hashHelper.Sha1(obj.Bytes);
         var key = BitConverter.ToString(keyBytes).Replace("-", string.Empty);
         var cacheKey = MyCacheKey.With("authorizations", key);
-        var userIdText = await _cacheManager.GetAsync(cacheKey);
+        var userIdText = await cacheManager.GetAsync(cacheKey);
 
         if (long.TryParse(userIdText, out var userId))
         {
@@ -54,20 +36,20 @@ internal sealed class ImportAuthorizationHandler : RpcResultObjectHandler<MyTele
                 RpcErrors.RpcErrors400.UserIdInvalid.ThrowRpcError();
             }
 
-            var userReadModel = await _queryProcessor.ProcessAsync(new GetUserByIdQuery(userId));
+            var userReadModel = await userAppService.GetAsync(userId);
             if (userReadModel == null)
             {
                 RpcErrors.RpcErrors400.UserIdInvalid.ThrowRpcError();
             }
 
-            await _eventBus.PublishAsync(new BindUidToSessionEvent(userReadModel!.UserId, input.AuthKeyId, input.PermAuthKeyId));
+            await eventBus.PublishAsync(new BindUidToSessionEvent(userReadModel!.UserId, input.AuthKeyId, input.PermAuthKeyId));
 
-            await _cacheManager.RemoveAsync(key);
+            await cacheManager.RemoveAsync(key);
 
-            var photos = await _photoAppService.GetPhotosAsync(userReadModel);
-            ILayeredUser? user = userReadModel == null ? null : _layeredUserService.GetConverter(input.Layer).ToUser(input.UserId, userReadModel, photos);
+            var photos = await photoAppService.GetPhotosAsync(userReadModel);
+            ILayeredUser? user = userReadModel == null ? null : layeredUserService.GetConverter(input.Layer).ToUser(input.UserId, userReadModel, photos);
 
-            return _layeredService.GetConverter(input.Layer).CreateAuthorization(user);
+            return layeredService.GetConverter(input.Layer).CreateAuthorization(user);
         }
         RpcErrors.RpcErrors400.UserIdInvalid.ThrowRpcError();
         return null!;

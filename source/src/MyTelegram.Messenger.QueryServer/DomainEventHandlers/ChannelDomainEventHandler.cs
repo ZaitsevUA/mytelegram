@@ -15,6 +15,7 @@ public class ChannelDomainEventHandler(
     IResponseCacheAppService responseCacheAppService,
     IChatEventCacheHelper chatEventCacheHelper,
     IQueryProcessor queryProcessor,
+    IChannelAppService channelAppService,
     ILayeredService<IChatConverter> chatLayeredService,
     IPhotoAppService photoAppService,
     IOptions<MyTelegramMessengerServerOptions> options,
@@ -421,10 +422,8 @@ public class ChannelDomainEventHandler(
 
     private async Task<(IChannelReadModel, IPhotoReadModel?)> GetChannelAsync(long channelId)
     {
-        var channelReadModel = await queryProcessor.ProcessAsync(new GetChannelByIdQuery(channelId));
-        var photoReadModel = channelReadModel!.PhotoId.HasValue
-            ? await queryProcessor.ProcessAsync(new GetPhotoByIdQuery(channelReadModel.PhotoId.Value))
-            : null;
+        var channelReadModel = await channelAppService.GetAsync(channelId);
+        var photoReadModel = await photoAppService.GetAsync(channelReadModel!.PhotoId);
 
         return (channelReadModel, photoReadModel);
     }
@@ -476,9 +475,8 @@ public class ChannelDomainEventHandler(
         int date
     )
     {
-        var channelReadModel = await queryProcessor
-            .ProcessAsync(new GetChannelByIdQuery(channelId));
-        var photoReadModel = await photoAppService.GetPhotoAsync(channelReadModel!.PhotoId);
+        var channelReadModel = await channelAppService.GetAsync(channelId);
+        var photoReadModel = await photoAppService.GetAsync(channelReadModel!.PhotoId);
 
         var updates = new TUpdates
         {

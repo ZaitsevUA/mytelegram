@@ -53,30 +53,21 @@ namespace MyTelegram.Handlers.Messages;
 /// 400 YOU_BLOCKED_USER You blocked this user.
 /// See <a href="https://corefork.telegram.org/method/messages.sendMessage" />
 ///</summary>
-internal sealed class SendMessageHandler : RpcResultObjectHandler<MyTelegram.Schema.Messages.RequestSendMessage, MyTelegram.Schema.IUpdates>,
-    Messages.ISendMessageHandler
+internal sealed class SendMessageHandler(
+    IMessageAppService messageAppService,
+    IPeerHelper peerHelper,
+    IAccessHashHelper accessHashHelper,
+    IOptions<MyTelegramMessengerServerOptions> options,
+    IChannelAppService channelAppService,
+    IQueryProcessor queryProcessor)
+    : RpcResultObjectHandler<MyTelegram.Schema.Messages.RequestSendMessage, MyTelegram.Schema.IUpdates>,
+        Messages.ISendMessageHandler
 {
-    private readonly IMessageAppService _messageAppService;
-    private readonly IPeerHelper _peerHelper;
-    private readonly IAccessHashHelper _accessHashHelper;
-    private readonly IOptions<MyTelegramMessengerServerOptions> _options;
-    private readonly IQueryProcessor _queryProcessor;
-    public SendMessageHandler(IMessageAppService messageAppService,
-        IPeerHelper peerHelper,
-        IAccessHashHelper accessHashHelper, IOptions<MyTelegramMessengerServerOptions> options, IQueryProcessor queryProcessor)
-    {
-        _messageAppService = messageAppService;
-        _peerHelper = peerHelper;
-        _accessHashHelper = accessHashHelper;
-        _options = options;
-        _queryProcessor = queryProcessor;
-    }
-
     protected override async Task<IUpdates> HandleCoreAsync(IRequestInput input,
         RequestSendMessage obj)
     {
-        await _accessHashHelper.CheckAccessHashAsync(obj.Peer);
-        await _accessHashHelper.CheckAccessHashAsync(obj.SendAs);
+        await accessHashHelper.CheckAccessHashAsync(obj.Peer);
+        await accessHashHelper.CheckAccessHashAsync(obj.SendAs);
         var media = await ProcessUrlsInMessageAsync(obj);
         if (obj.Message.StartsWith("/"))
         {
@@ -99,10 +90,10 @@ internal sealed class SendMessageHandler : RpcResultObjectHandler<MyTelegram.Sch
             topMsgId = replyToMessage.TopMsgId;
         }
 
-        var sendAs = _peerHelper.GetPeer(obj.SendAs, input.UserId);
+        var sendAs = peerHelper.GetPeer(obj.SendAs, input.UserId);
         var sendMessageInput = new SendMessageInput(input.ToRequestInfo(),
             input.UserId,
-            _peerHelper.GetPeer(obj.Peer, input.UserId),
+            peerHelper.GetPeer(obj.Peer, input.UserId),
             obj.Message,
             obj.RandomId,
             obj.Entities,
@@ -119,14 +110,14 @@ internal sealed class SendMessageHandler : RpcResultObjectHandler<MyTelegram.Sch
             scheduleDate: obj.ScheduleDate
         );
 
-        await _messageAppService.SendMessageAsync([sendMessageInput]);
+        await messageAppService.SendMessageAsync([sendMessageInput]);
 
         return null!;
     }
     private async Task<TMessageMediaWebPage?> ProcessUrlsInMessageAsync(MyTelegram.Schema.Messages.RequestSendMessage obj)
     {
         var pattern = @"(?:^|\s)(https?://[^\s]+)(?=\s|$)";
-        var pattern2 = @$"{_options.Value.JoinChatDomain}/\+([\S]{{16}})";
+        var pattern2 = @$"{options.Value.JoinChatDomain}/\+([\S]{{16}})";
         var matches = Regex.Matches(obj.Message, pattern);
         var isInviteUrlAdded = false;
         TMessageMediaWebPage? media = null;
@@ -141,18 +132,17 @@ internal sealed class SendMessageHandler : RpcResultObjectHandler<MyTelegram.Sch
             if (m2.Success && !isInviteUrlAdded)
             {
                 var link = m2.Groups[1].Value;
-                var chatInvite = await _queryProcessor.ProcessAsync(new GetChatInviteByLinkQuery(link));
+                var chatInvite = await queryProcessor.ProcessAsync(new GetChatInviteByLinkQuery(link));
                 if (chatInvite != null)
                 {
-                    var channelReadModel =
-                        await _queryProcessor.ProcessAsync(new GetChannelByIdQuery(chatInvite.PeerId));
+                    var channelReadModel = await channelAppService.GetAsync(chatInvite.PeerId);
                     media = new TMessageMediaWebPage
                     {
                         Webpage = new Schema.TWebPage
                         {
                             Id = Random.Shared.NextInt64(),
-                            Url = $"{_options.Value.JoinChatDomain}/+{link}",
-                            DisplayUrl = $"{_options.Value.JoinChatDomain}/+{link}",
+                            Url = $"{options.Value.JoinChatDomain}/+{link}",
+                            DisplayUrl = $"{options.Value.JoinChatDomain}/+{link}",
                             Type = channelReadModel.Broadcast ? "telegram_channel" : "telegram_megagroup",
                             SiteName = "MyTelegram",
                             Title = channelReadModel.Title,

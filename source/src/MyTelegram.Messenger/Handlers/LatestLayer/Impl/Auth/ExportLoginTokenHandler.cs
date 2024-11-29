@@ -16,7 +16,7 @@ internal sealed class ExportLoginTokenHandler(
     ICommandBus commandBus,
     IQueryProcessor queryProcessor,
     IRandomHelper randomHelper,
-    ILogger<ExportLoginTokenHandler> logger,
+    IUserAppService userAppService,
     IEventBus eventBus,
     ILayeredService<IAuthorizationConverter> layeredService,
     ILayeredService<IUserConverter> layeredUserService,
@@ -32,8 +32,7 @@ internal sealed class ExportLoginTokenHandler(
             await eventBus
                 .PublishAsync(new BindUidToSessionEvent(userId, input.AuthKeyId, input.PermAuthKeyId));
 
-            var userReadModel = await queryProcessor
-                .ProcessAsync(new GetUserByIdQuery(userId));
+            var userReadModel = await userAppService.GetAsync(userId);
             var photos = await photoAppService.GetPhotosAsync(userReadModel);
             ILayeredUser? user = userReadModel == null ? null : layeredUserService.GetConverter(input.Layer).ToUser(userReadModel.UserId, userReadModel, photos);
             return new TLoginTokenSuccess

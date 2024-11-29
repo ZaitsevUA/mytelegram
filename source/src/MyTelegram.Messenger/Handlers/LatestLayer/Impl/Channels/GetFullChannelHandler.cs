@@ -17,6 +17,7 @@ internal sealed class GetFullChannelHandler(
     IQueryProcessor queryProcessor,
     ILayeredService<IChatConverter> layeredService,
     IAccessHashHelper accessHashHelper,
+    IChannelAppService channelAppService,
     IPhotoAppService photoAppService,
     ILogger<GetFullChannelHandler> logger,
     IOptions<MyTelegramMessengerServerOptions> options,
@@ -31,7 +32,7 @@ internal sealed class GetFullChannelHandler(
         {
             await accessHashHelper.CheckAccessHashAsync(inputChannel.ChannelId, inputChannel.AccessHash);
 
-            var channel = await queryProcessor.ProcessAsync(new GetChannelByIdQuery(inputChannel.ChannelId));
+            var channel = await channelAppService.GetAsync(inputChannel.ChannelId);
             channel.ThrowExceptionIfChannelDeleted();
 
             var channelFull = await queryProcessor.ProcessAsync(new GetChannelFullByIdQuery(inputChannel.ChannelId));
@@ -65,7 +66,7 @@ internal sealed class GetFullChannelHandler(
                         PeerType.Channel,
                         inputChannel.ChannelId)));
             //var chatPhoto = _layeredPhotoService.GetConverter(input.Layer).ToChatPhoto(channel!.Photo);
-            var photoReadModel = await photoAppService.GetPhotoAsync(channel!.PhotoId);
+            var photoReadModel = await photoAppService.GetAsync(channel!.PhotoId);
             IChatInviteReadModel? chatInviteReadModel = null;
             if (channel.AdminList.Any(p => p.UserId == input.UserId))
             {
@@ -92,10 +93,10 @@ internal sealed class GetFullChannelHandler(
 
             if (channelFull!.LinkedChatId.HasValue)
             {
-                var linkedChannelReadModel = await queryProcessor.ProcessAsync(new GetChannelByIdQuery(channelFull.LinkedChatId.Value));
+                var linkedChannelReadModel = await channelAppService.GetAsync(channelFull.LinkedChatId);
                 if (linkedChannelReadModel != null)
                 {
-                    var linkedChannelPhotoReadModel = await photoAppService.GetPhotoAsync(linkedChannelReadModel.PhotoId);
+                    var linkedChannelPhotoReadModel = await photoAppService.GetAsync(linkedChannelReadModel.PhotoId);
                     var linkedChannelMemberReadModel =
                      await queryProcessor.ProcessAsync(
                             new GetChannelMemberByUserIdQuery(linkedChannelReadModel.ChannelId, input.UserId));

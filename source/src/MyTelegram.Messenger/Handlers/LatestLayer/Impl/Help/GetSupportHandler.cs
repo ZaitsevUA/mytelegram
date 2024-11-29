@@ -8,6 +8,7 @@ namespace MyTelegram.Handlers.Help;
 ///</summary>
 internal sealed class GetSupportHandler(IQueryProcessor queryProcessor,
     ILayeredService<IUserConverter> userLayeredService,
+    IUserAppService userAppService,
     IPhotoAppService photoAppService,
     IPrivacyAppService privacyAppService,
     IOptionsMonitor<MyTelegramMessengerServerOptions> options) : RpcResultObjectHandler<MyTelegram.Schema.Help.RequestGetSupport, MyTelegram.Schema.Help.ISupport>,
@@ -24,8 +25,8 @@ internal sealed class GetSupportHandler(IQueryProcessor queryProcessor,
                 supportUserId = MyTelegramServerDomainConsts.DefaultSupportUserId;
             }
         }
-        var userReadModel = await queryProcessor.ProcessAsync(new GetUserByIdQuery(supportUserId));
 
+        var userReadModel = await userAppService.GetAsync(supportUserId);
         if (userReadModel == null)
         {
             supportUserId = MyTelegramServerDomainConsts.DefaultSupportUserId;

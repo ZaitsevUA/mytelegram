@@ -53,6 +53,7 @@ internal sealed class ForwardMessagesHandler(
     IPeerHelper peerHelper,
     IChannelAdminRightsChecker channelAdminRightsChecker,
     IQueryProcessor queryProcessor,
+    IChannelAppService channelAppService,
     IMessageAppService messageAppService,
     IAccessHashHelper accessHashHelper)
     : RpcResultObjectHandler<MyTelegram.Schema.Messages.RequestForwardMessages, MyTelegram.Schema.IUpdates>,
@@ -72,10 +73,7 @@ internal sealed class ForwardMessagesHandler(
         if (toPeer.PeerType == PeerType.Channel)
         {
             await messageAppService.CheckSendAsAsync(input.UserId, toPeer, sendAs);
-            //await channelAdminRightsChecker.CheckAdminRightAsync(toPeer.PeerId, input.UserId,
-            //    rights => rights.AdminRights.PostMessages, RpcErrors.RpcErrors400.ChatAdminRequired);
-
-            var channelReadModel = await queryProcessor.ProcessAsync(new GetChannelByIdQuery(toPeer.PeerId));
+            var channelReadModel = await channelAppService.GetAsync(toPeer.PeerId);
             post = channelReadModel!.Broadcast;
 
             var admin = channelReadModel.AdminList.FirstOrDefault(p => p.UserId == input.UserId);
@@ -109,6 +107,7 @@ internal sealed class ForwardMessagesHandler(
             post
             );
         await commandBus.PublishAsync(command);
+
         return null!;
     }
 }

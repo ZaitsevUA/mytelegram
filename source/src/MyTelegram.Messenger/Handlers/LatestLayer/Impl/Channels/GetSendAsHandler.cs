@@ -13,6 +13,7 @@ namespace MyTelegram.Handlers.Channels;
 ///</summary>
 internal sealed class GetSendAsHandler(
     IQueryProcessor queryProcessor,
+    IUserAppService userAppService,
     ILayeredService<IChatConverter> layeredChatService,
     ILayeredService<IUserConverter> layeredUserService,
     ILayeredService<ISendAsPeerConverter> layeredSendAsPeerService,
@@ -30,7 +31,7 @@ internal sealed class GetSendAsHandler(
             var channelReadModels = await queryProcessor.ProcessAsync(new GetSendAsQuery(inputPeerChannel.ChannelId));
             if (channelReadModels.Any(p => p.CreatorId != input.UserId))
             {
-                var userReadModel = await queryProcessor.ProcessAsync(new GetUserByIdQuery(input.UserId));
+                var userReadModel = await userAppService.GetAsync(input.UserId);
                 var userPhotoReadModels = await photoAppService.GetPhotosAsync(userReadModel);
                 var user = layeredUserService.GetConverter(input.Layer)
                     .ToUser(input.UserId, userReadModel!, userPhotoReadModels);

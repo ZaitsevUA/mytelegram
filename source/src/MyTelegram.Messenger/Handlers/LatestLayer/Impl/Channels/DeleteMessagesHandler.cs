@@ -12,41 +12,33 @@ namespace MyTelegram.Handlers.Channels;
 /// 400 MSG_ID_INVALID Invalid message ID provided.
 /// See <a href="https://corefork.telegram.org/method/channels.deleteMessages" />
 ///</summary>
-internal sealed class DeleteMessagesHandler : RpcResultObjectHandler<MyTelegram.Schema.Channels.RequestDeleteMessages, MyTelegram.Schema.Messages.IAffectedMessages>,
-    Channels.IDeleteMessagesHandler
+internal sealed class DeleteMessagesHandler(
+    ICommandBus commandBus,
+    IPtsHelper ptsHelper,
+    IAccessHashHelper accessHashHelper,
+    IQueryProcessor queryProcessor,
+    IChannelAppService channelAppService,
+    IChannelAdminRightsChecker channelAdminRightsChecker)
+    : RpcResultObjectHandler<MyTelegram.Schema.Channels.RequestDeleteMessages,
+            MyTelegram.Schema.Messages.IAffectedMessages>,
+        Channels.IDeleteMessagesHandler
 {
-    private readonly ICommandBus _commandBus;
-    private readonly IPtsHelper _ptsHelper;
-    private readonly IAccessHashHelper _accessHashHelper;
-    private readonly IChannelAdminRightsChecker _channelAdminRightsChecker;
-    private readonly IQueryProcessor _queryProcessor;
-    public DeleteMessagesHandler(ICommandBus commandBus,
-        IPtsHelper ptsHelper,
-        IAccessHashHelper accessHashHelper, IQueryProcessor queryProcessor, IChannelAdminRightsChecker channelAdminRightsChecker)
-    {
-        _commandBus = commandBus;
-        _ptsHelper = ptsHelper;
-        _accessHashHelper = accessHashHelper;
-        _queryProcessor = queryProcessor;
-        _channelAdminRightsChecker = channelAdminRightsChecker;
-    }
-
     protected override async Task<IAffectedMessages> HandleCoreAsync(IRequestInput input,
         MyTelegram.Schema.Channels.RequestDeleteMessages obj)
     {
         if (obj.Channel is TInputChannel inputChannel)
         {
-            await _accessHashHelper.CheckAccessHashAsync(inputChannel.ChannelId, inputChannel.AccessHash);
+            await accessHashHelper.CheckAccessHashAsync(inputChannel.ChannelId, inputChannel.AccessHash);
 
             if (obj.Id.Count > 0)
             {
                 var ids = obj.Id.ToList();
 
-                if (!await _channelAdminRightsChecker.HasChatAdminRightAsync(inputChannel.ChannelId, input.UserId,
+                if (!await channelAdminRightsChecker.HasChatAdminRightAsync(inputChannel.ChannelId, input.UserId,
                         p => p.AdminRights.DeleteMessages))
                 {
                     var firstInboxMessageId =
-                        await _queryProcessor.ProcessAsync(
+                        await queryProcessor.ProcessAsync(
                             new GetFirstInboxMessageIdByMessageIdListQuery(inputChannel.ChannelId, ids));
                     if (firstInboxMessageId > 0)
                     {
@@ -57,26 +49,26 @@ internal sealed class DeleteMessagesHandler : RpcResultObjectHandler<MyTelegram.
                 // Delete channel post message: delete all repies
                 // Delete forwarded post message: update post message channelId to 777
                 var channelReadModel =
-                    await _queryProcessor.ProcessAsync(new GetChannelByIdQuery(inputChannel.ChannelId));
+                    await channelAppService.GetAsync(inputChannel.ChannelId);
                 channelReadModel.ThrowExceptionIfChannelDeleted();
 
                 IReadOnlyCollection<int>? repliesMessageIds = null;
                 long? discussionGroupChannelId = null;
                 var newTopMessageId =
-                    await _queryProcessor.ProcessAsync(new GetTopMessageIdQuery(inputChannel.ChannelId, ids));
+                    await queryProcessor.ProcessAsync(new GetTopMessageIdQuery(inputChannel.ChannelId, ids));
                 int? newTopMessageIdForDiscussionGroup = null;
 
                 if (channelReadModel!.Broadcast && channelReadModel.LinkedChatId.HasValue)
                 {
                     discussionGroupChannelId = channelReadModel.LinkedChatId;
                     repliesMessageIds =
-                      await _queryProcessor.ProcessAsync(
+                      await queryProcessor.ProcessAsync(
                           new GetCommentsMessageIdListQuery(channelReadModel.ChannelId, ids));
 
                     if (repliesMessageIds.Any())
                     {
                         newTopMessageIdForDiscussionGroup =
-                          await _queryProcessor.ProcessAsync(new GetTopMessageIdQuery(channelReadModel.LinkedChatId.Value,
+                          await queryProcessor.ProcessAsync(new GetTopMessageIdQuery(channelReadModel.LinkedChatId.Value,
                               repliesMessageIds.ToList()));
                     }
                 }
@@ -90,12 +82,12 @@ internal sealed class DeleteMessagesHandler : RpcResultObjectHandler<MyTelegram.
                         discussionGroupChannelId,
                         repliesMessageIds
                         );
-                await _commandBus.PublishAsync(command);
+                await commandBus.PublishAsync(command);
 
                 return null!;
             }
 
-            var pts = _ptsHelper.GetCachedPts(input.UserId);
+            var pts = ptsHelper.GetCachedPts(input.UserId);
 
             return new TAffectedMessages { Pts = pts, PtsCount = 0 };
         }

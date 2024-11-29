@@ -20,6 +20,8 @@ public partial class MessageDomainEventHandler(
     ILayeredService<IUserConverter> userLayeredService,
     ILayeredService<IMessageConverter> messageLayeredService,
     IPrivacyAppService privacyAppService,
+    IUserAppService userAppService,
+    IChannelAppService channelAppService,
     ISendMessageDataConverter sendMessageDataConverter,
     IEditMessageDataConverter editMessageDataConverter,
     IPhotoAppService photoAppService)
@@ -123,15 +125,15 @@ public partial class MessageDomainEventHandler(
     private async Task<(IChannelReadModel channelReadModel, IPhotoReadModel? photoReadModel)> GetChannelAsync(
         long channelId)
     {
-        var channelReadModel = await queryProcessor.ProcessAsync(new GetChannelByIdQuery(channelId));
-        var photoReadModel = await photoAppService.GetPhotoAsync(channelReadModel!.PhotoId);
+        var channelReadModel = await channelAppService.GetAsync(channelId);
+        var photoReadModel = await photoAppService.GetAsync(channelReadModel!.PhotoId);
 
         return (channelReadModel, photoReadModel);
     }
 
     private async Task<IUser> GetUserAsync(long userId, long selfUserId)
     {
-        var userReadModel = await queryProcessor.ProcessAsync(new GetUserByIdQuery(userId));
+        var userReadModel = await userAppService.GetAsync(userId);
         var photos = await photoAppService.GetPhotosAsync(userReadModel);
         var privacyList = await privacyAppService.GetPrivacyListAsync(userId);
         return userLayeredService.Converter.ToUser(selfUserId, userReadModel!, photos, privacies: privacyList);
@@ -251,8 +253,7 @@ public partial class MessageDomainEventHandler(
         if (chatEventCacheHelper.TryRemoveStartInviteToChannelEvent(item.ToPeer.PeerId,
                 out var startInviteToChannelEvent))
         {
-            var channelReadModel = await queryProcessor
-                .ProcessAsync(new GetChannelByIdQuery(item.ToPeer.PeerId));
+            var channelReadModel = await channelAppService.GetAsync(item.ToPeer.PeerId);
 
             var updates = updatesLayeredService.GetConverter(aggregateEvent.RequestInfo.Layer)
                 .ToInviteToChannelUpdates(
@@ -298,8 +299,8 @@ public partial class MessageDomainEventHandler(
         if (chatEventCacheHelper.TryGetMigrateChannelId(chatId, out var channelId))
         {
             var chatReadModel = await queryProcessor.ProcessAsync(new GetChatByChatIdQuery(chatId));
-            var channelReadModel = await queryProcessor.ProcessAsync(new GetChannelByIdQuery(channelId));
-            var chatPhoto = await photoAppService.GetPhotoAsync(chatReadModel!.PhotoId);
+            var channelReadModel = await channelAppService.GetAsync(channelId);
+            var chatPhoto = await photoAppService.GetAsync(chatReadModel!.PhotoId);
 
             var updates = updatesLayeredService.GetConverter(aggregateEvent.RequestInfo.Layer)
                 .ToMigrateChatUpdates(aggregateEvent, channelReadModel!, chatReadModel);
@@ -348,8 +349,8 @@ public partial class MessageDomainEventHandler(
             var userId = item.OwnerPeer.PeerId;
             var chatReadModel =
                 await queryProcessor.ProcessAsync(new GetChatByChatIdQuery(item.ToPeer.PeerId));
-            var channelReadModel = await queryProcessor.ProcessAsync(new GetChannelByIdQuery(channelId));
-            var chatPhoto = await photoAppService.GetPhotoAsync(chatReadModel!.PhotoId);
+            var channelReadModel = await channelAppService.GetAsync(channelId);
+            var chatPhoto = await photoAppService.GetAsync(chatReadModel!.PhotoId);
 
             var updates = updatesLayeredService.Converter.ToMigrateChatUpdates(aggregateEvent, channelId);
             var latestLayerChannel = chatLayeredService.Converter

@@ -10,6 +10,8 @@ using MyTelegram.Messenger.Services.Impl;
 using MyTelegram.QueryHandlers.MongoDB;
 using MyTelegram.ReadModel.MongoDB;
 using System.Text.Json.Serialization;
+using EventFlow.ReadStores;
+using MyTelegram.ReadModel.ReadModelLocators;
 
 namespace MyTelegram.Messenger.Extensions;
 
@@ -98,6 +100,19 @@ public static class MyTelegramMessengerServerExtensions
 
         services.AddSingleton(typeof(IDomainEventCacheHelper<>), typeof(DomainEventCacheHelper<>));
         services.AddSingleton<ICountryHelper, CountryHelper>();
+
+        services.AddSingleton(typeof(IReadModelCacheHelper<>), typeof(ReadModelCacheHelper<>));
+        services.AddSingleton<IReadModelDomainEventApplier, MyReadModelDomainEventApplier>();
+
+        services.AddTransient<ICachedReadModelManager, MultipleAggregateCachedReadModelManager<IUserReadModel, UserReadModel, IUserReadModelLocator>>();
+        services.AddTransient<ICachedReadModelManager, MultipleAggregateCachedReadModelManager<IChannelReadModel, ChannelReadModel, IChannelReadModelLocator>>();
+        services.AddTransient<ICachedReadModelManager, SingleAggregateCachedReadModelManager<IChatReadModel, ChatReadModel>>();
+        services.AddTransient<ICachedReadModelManager, SingleAggregateCachedReadModelManager<IPhotoReadModel, PhotoReadModel>>();
+        services.AddTransient<ICachedReadModelManager, MultipleAggregateCachedReadModelManager<IChannelFullReadModel, ChannelFullReadModel, IChannelFullReadModelLocator>>();
+        //services.AddTransient<ICachedReadModelManager, SingleAggregateCachedReadModelManager<IUserFullReadModel, UserFullReadModel>>();
+        //services.AddTransient<ICachedReadModelManager, SingleAggregateCachedReadModelManager<IBotReadModel, BotReadModel>>();
+        services.AddTransient<ICachedReadModelManager, SingleAggregateCachedReadModelManager<IPtsReadModel, PtsReadModel>>();
+        services.AddTransient<ICachedReadModelManager, SingleAggregateCachedReadModelManager<IPtsForAuthKeyIdReadModel, PtsForAuthKeyIdReadModel>>();
 
         return services;
     }

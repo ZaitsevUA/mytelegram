@@ -26,43 +26,31 @@ namespace MyTelegram.Handlers.Channels;
 /// 403 USER_PRIVACY_RESTRICTED The user's privacy settings do not allow you to do this.
 /// See <a href="https://corefork.telegram.org/method/channels.inviteToChannel" />
 ///</summary>
-internal sealed class InviteToChannelHandler : RpcResultObjectHandler<MyTelegram.Schema.Channels.RequestInviteToChannel, MyTelegram.Schema.Messages.IInvitedUsers>,
-    Channels.IInviteToChannelHandler
+internal sealed class InviteToChannelHandler(
+    ICommandBus commandBus,
+    IRandomHelper randomHelper,
+    IPeerHelper peerHelper,
+    IChannelAppService channelAppService,
+    IAccessHashHelper accessHashHelper,
+    IPrivacyAppService privacyAppService)
+    : RpcResultObjectHandler<MyTelegram.Schema.Channels.RequestInviteToChannel,
+            MyTelegram.Schema.Messages.IInvitedUsers>,
+        Channels.IInviteToChannelHandler
 {
-    private readonly ICommandBus _commandBus;
-    private readonly IPeerHelper _peerHelper;
-    private readonly IRandomHelper _randomHelper;
-    private readonly IAccessHashHelper _accessHashHelper;
-    private readonly IPrivacyAppService _privacyAppService;
-    private readonly IQueryProcessor _queryProcessor;
-
-    public InviteToChannelHandler(ICommandBus commandBus,
-        IRandomHelper randomHelper,
-        IPeerHelper peerHelper,
-        IAccessHashHelper accessHashHelper, IPrivacyAppService privacyAppService, IQueryProcessor queryProcessor)
-    {
-        _commandBus = commandBus;
-        _randomHelper = randomHelper;
-        _peerHelper = peerHelper;
-        _accessHashHelper = accessHashHelper;
-        _privacyAppService = privacyAppService;
-        _queryProcessor = queryProcessor;
-    }
-
     protected override async Task<MyTelegram.Schema.Messages.IInvitedUsers> HandleCoreAsync(IRequestInput input,
         RequestInviteToChannel obj)
     {
         if (obj.Channel is TInputChannel inputChannel)
         {
-            await _accessHashHelper.CheckAccessHashAsync(inputChannel.ChannelId, inputChannel.AccessHash);
-            var channelReadModel = await _queryProcessor.ProcessAsync(new GetChannelByIdQuery(inputChannel.ChannelId));
+            await accessHashHelper.CheckAccessHashAsync(inputChannel.ChannelId, inputChannel.AccessHash);
+            var channelReadModel = await channelAppService.GetAsync(inputChannel.ChannelId);
             channelReadModel.ThrowExceptionIfChannelDeleted();
 
             if (obj.Users.Count == 1)
             {
                 if (obj.Users[0] is TInputUser inputUser)
                 {
-                    await _privacyAppService.ApplyPrivacyAsync(input.UserId,
+                    await privacyAppService.ApplyPrivacyAsync(input.UserId,
                         inputUser.UserId,
                         () => RpcErrors.RpcErrors403.UserPrivacyRestricted.ThrowRpcError(),
                         new List<PrivacyType>()
@@ -78,14 +66,14 @@ internal sealed class InviteToChannelHandler : RpcResultObjectHandler<MyTelegram
             foreach (TInputUser inputUser in obj.Users)
             {
                 userIdList.Add(inputUser.UserId);
-                if (_peerHelper.IsBotUser(inputUser.UserId))
+                if (peerHelper.IsBotUser(inputUser.UserId))
                 {
                     botList.Add(inputUser.UserId);
                 }
             }
 
             var privacyRestrictedUserIdList = new List<long>();
-            await _privacyAppService.ApplyPrivacyListAsync(input.UserId, userIdList,
+            await privacyAppService.ApplyPrivacyListAsync(input.UserId, userIdList,
                  privacyRestrictedUserIdList.Add, new List<PrivacyType>
                 {
                     PrivacyType.ChatInvite
@@ -108,11 +96,11 @@ internal sealed class InviteToChannelHandler : RpcResultObjectHandler<MyTelegram
                 privacyRestrictedUserIdList,
                 botList,
                 CurrentDate,
-                _randomHelper.NextLong(),
+                randomHelper.NextLong(),
                 new TMessageActionChatAddUser { Users = new TVector<long>(userIdList) }.ToBytes().ToHexString(),
                 ChatJoinType.InvitedByAdmin
                 );
-            await _commandBus.PublishAsync(command);
+            await commandBus.PublishAsync(command);
 
             return null!;
         }

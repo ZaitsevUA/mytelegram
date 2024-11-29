@@ -16,7 +16,7 @@ namespace MyTelegram.Handlers.Users;
 internal sealed class GetFullUserHandler(
     IPeerHelper peerHelper,
     IQueryProcessor queryProcessor,
-    IBlockCacheAppService blockCacheAppService,
+    IUserAppService userAppService,
     ILayeredService<IUserConverter> layeredUserService,
     IAccessHashHelper accessHashHelper,
     IPeerSettingsAppService peerSettingsAppService,
@@ -34,14 +34,10 @@ internal sealed class GetFullUserHandler(
         await accessHashHelper.CheckAccessHashAsync(obj.Id);
 
         var userId = input.UserId;
-        //var userId = await GetUserIdAsync(input);
         var targetPeer = peerHelper.GetPeer(obj.Id, userId);
-
-        //var targetUserId = UserId.Create(targetPeer.PeerId);
-        var user = await queryProcessor.ProcessAsync(new GetUserByIdQuery(targetPeer.PeerId));
+        var user = await userAppService.GetAsync(targetPeer.PeerId);
         if (user == null)
         {
-            //ThrowHelper.ThrowUserFriendlyException("USER_ID_INVALID");
             RpcErrors.RpcErrors400.UserIdInvalid.ThrowRpcError();
         }
 
@@ -49,8 +45,6 @@ internal sealed class GetFullUserHandler(
             await queryProcessor.ProcessAsync(
                 new GetContactListBySelfIdAndTargetUserIdQuery(input.UserId, targetPeer.PeerId));
 
-        //var contactReadModel = await _queryProcessor
-        //    .ProcessAsync(new GetContactQuery(input.UserId, targetPeer.PeerId));
         var contactType = ContactType.None;
 
         var contactReadModel = contactReadModels.FirstOrDefault(p =>

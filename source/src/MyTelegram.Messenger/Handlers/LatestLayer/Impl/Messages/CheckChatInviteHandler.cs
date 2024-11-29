@@ -13,21 +13,15 @@ namespace MyTelegram.Handlers.Messages;
 /// 400 INVITE_HASH_INVALID The invite hash is invalid.
 /// See <a href="https://corefork.telegram.org/method/messages.checkChatInvite" />
 ///</summary>
-internal sealed class CheckChatInviteHandler : RpcResultObjectHandler<MyTelegram.Schema.Messages.RequestCheckChatInvite, MyTelegram.Schema.IChatInvite>,
-    Messages.ICheckChatInviteHandler
+internal sealed class CheckChatInviteHandler(
+    IQueryProcessor queryProcessor,
+    IChannelAppService channelAppService,
+    IPhotoAppService photoAppService,
+    ILayeredService<IChatConverter> layeredChatService,
+    ILayeredService<IPhotoConverter> layeredPhotoService)
+    : RpcResultObjectHandler<MyTelegram.Schema.Messages.RequestCheckChatInvite, MyTelegram.Schema.IChatInvite>,
+        Messages.ICheckChatInviteHandler
 {
-    private readonly IQueryProcessor _queryProcessor;
-    private readonly IPhotoAppService _photoAppService;
-    private readonly ILayeredService<IChatConverter> _layeredChatService;
-    private readonly ILayeredService<IPhotoConverter> _layeredPhotoService;
-    public CheckChatInviteHandler(IQueryProcessor queryProcessor, IPhotoAppService photoAppService, ILayeredService<IChatConverter> layeredChatService, ILayeredService<IPhotoConverter> layeredPhotoService)
-    {
-        _queryProcessor = queryProcessor;
-        _photoAppService = photoAppService;
-        _layeredChatService = layeredChatService;
-        _layeredPhotoService = layeredPhotoService;
-    }
-
     protected override async Task<IChatInvite> HandleCoreAsync(IRequestInput input,
         RequestCheckChatInvite obj)
     {
@@ -36,7 +30,7 @@ internal sealed class CheckChatInviteHandler : RpcResultObjectHandler<MyTelegram
             RpcErrors.RpcErrors400.InviteHashEmpty.ThrowRpcError();
         }
 
-        var chatInviteReadModel = await _queryProcessor.ProcessAsync(new GetChatInviteByLinkQuery(obj.Hash));
+        var chatInviteReadModel = await queryProcessor.ProcessAsync(new GetChatInviteByLinkQuery(obj.Hash));
         if (chatInviteReadModel == null)
         {
             RpcErrors.RpcErrors400.InviteHashInvalid.ThrowRpcError();
@@ -50,16 +44,16 @@ internal sealed class CheckChatInviteHandler : RpcResultObjectHandler<MyTelegram
             }
         }
 
-        var channelReadModel = await _queryProcessor.ProcessAsync(new GetChannelByIdQuery(chatInviteReadModel.PeerId));
+        var channelReadModel = await channelAppService.GetAsync(chatInviteReadModel.PeerId);
         var channelMemberReadModel =
-            await _queryProcessor.ProcessAsync(new GetChannelMemberByUserIdQuery(channelReadModel.ChannelId,
+            await queryProcessor.ProcessAsync(new GetChannelMemberByUserIdQuery(channelReadModel.ChannelId,
                 input.UserId));
-        var chatPhoto = await _photoAppService.GetPhotoAsync(channelReadModel.PhotoId);
+        var chatPhoto = await photoAppService.GetAsync(channelReadModel.PhotoId);
         if (channelMemberReadModel != null)
         {
             return new TChatInviteAlready
             {
-                Chat = _layeredChatService.GetConverter(input.Layer).ToChannel(input.UserId, channelReadModel,
+                Chat = layeredChatService.GetConverter(input.Layer).ToChannel(input.UserId, channelReadModel,
                     chatPhoto, channelMemberReadModel, false)
             };
         }
@@ -71,7 +65,7 @@ internal sealed class CheckChatInviteHandler : RpcResultObjectHandler<MyTelegram
             Channel = true,
             Megagroup = channelReadModel.MegaGroup,
             ParticipantsCount = channelReadModel.ParticipantsCount ?? 0,
-            Photo = _layeredPhotoService.GetConverter(input.Layer).ToPhoto(chatPhoto),
+            Photo = layeredPhotoService.GetConverter(input.Layer).ToPhoto(chatPhoto),
             RequestNeeded = chatInviteReadModel.RequestNeeded,
             Title = channelReadModel.Title,
         };
