@@ -60,12 +60,6 @@ public static class Extension
             case TInputPeerChannel inputPeerChannel:
                 peerType = PeerType.Channel;
                 peerId = inputPeerChannel.ChannelId;
-                //accessHash = inputPeerChannel.AccessHash;
-                break;
-                //case TInputPeerChannelFromMessage inputPeerChannelFromMessage:
-                //    peerType = PeerType.Channel;
-                //    peerId = inputPeerChannelFromMessage.ChannelId;
-
                 break;
             case TInputPeerChat inputPeerChat:
                 peerType = PeerType.Chat;
@@ -84,8 +78,6 @@ public static class Extension
                 peerId = inputPeerUser.UserId;
                 //accessHash = inputPeerUser.AccessHash;
                 break;
-            //case TInputPeerUserFromMessage inputPeerUserFromMessage:
-            //break;
             default:
                 throw new NotSupportedException(peer.GetType().Name);
         }

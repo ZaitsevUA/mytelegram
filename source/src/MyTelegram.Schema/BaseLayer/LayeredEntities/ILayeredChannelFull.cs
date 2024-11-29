@@ -35,7 +35,7 @@ public interface ILayeredChannelFull : IChatFull
     ///See <a href="https://core.telegram.org/type/ExportedChatInvite" />
     ///</summary>
     MyTelegram.Schema.IExportedChatInvite? ExportedInvite { get; set; }
-    TVector<MyTelegram.Schema.IBotInfo> BotInfo { get; set; }
+    //TVector<MyTelegram.Schema.IBotInfo> BotInfo { get; set; }
     //long? MigratedFromChatId { get; set; }
     //int? MigratedFromMaxId { get; set; }
     //int? PinnedMsgId { get; set; }
