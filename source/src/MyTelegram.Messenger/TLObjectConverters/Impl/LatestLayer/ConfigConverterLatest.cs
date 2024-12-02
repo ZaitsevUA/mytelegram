@@ -35,7 +35,7 @@ public class ConfigConverterLatest(IObjectMapper objectMapper) : IConfigConverte
             ForceTryIpv6 = true,
             //DcOptions = new TVector<IDcOption>(),
             DcOptions = new TVector<IDcOption>(options),
-            DcTxtDomainName = "apv2.stel.com",
+            DcTxtDomainName = "test.com",
             ChatSizeMax = 200, // _options.ChatSizeMax, //200
             MegagroupSizeMax = 200000, // _options.MegagroupSizeMax, //200000
             ForwardedCountMax = 100, // _options.ForwardedCountMax, //100
