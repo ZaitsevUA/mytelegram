@@ -9,38 +9,6 @@ public class ExceptionProcessor(
     IEventBus eventBus)
     : IExceptionProcessor, ITransientDependency
 {
-    //private const int BufferSize = 1024 * 4;
-
-    public Task HandleExceptionAsync(Exception ex,
-        //int errorCode,
-        //string errorMessage,
-        long userId,
-        string? handlerName,
-        long reqMsgId,
-        //byte[] authKeyData,
-        //byte[] serverSalt,
-        //string connectionId,
-        //int seqNumber,
-        long authKeyId,
-        //long sessionId, 
-        bool isInMsgContainer,
-        DeviceType deviceType
-        )
-    {
-        logger.LogError(ex,
-            "Process request {ReqMsgId} {IsInMsgContainer} failed, handler: {HandlerName}, userId: {UserId}, authKeyId: {AuthKeyId:x2}, deviceType: {DeviceType}",
-            reqMsgId,
-            isInMsgContainer ? "in msgContainer" : string.Empty,
-            handlerName,
-            //connectionId,
-            userId,
-            authKeyId,
-            deviceType
-        );
-
-        return ProcessExceptionCoreAsync(ex, userId, reqMsgId);
-    }
-
     public Task HandleExceptionAsync(Exception ex, IRequestInput input, IObject? requestData, string? handlerName)
     {
         logger.LogError(ex,
@@ -50,17 +18,17 @@ public class ExceptionProcessor(
             input,
             requestData
         );
-        return ProcessExceptionCoreAsync(ex, input.UserId, input.ReqMsgId);
+        return ProcessExceptionCoreAsync(ex, input);
     }
 
-    private async Task ProcessExceptionCoreAsync(Exception ex, long userId, long reqMsgId)
+    private async Task ProcessExceptionCoreAsync(Exception ex, IRequestInput input)
     {
         string errorMessage;
         int errorCode;
         switch (ex)
         {
             case DuplicateOperationException:
-                var eventData = new DuplicateCommandEvent(userId, reqMsgId);
+                var eventData = new DuplicateCommandEvent(input.PermAuthKeyId, input.UserId, input.ReqMsgId);
                 await eventBus.PublishAsync(eventData);
                 return;
             //break;
@@ -102,7 +70,7 @@ public class ExceptionProcessor(
         }
 
         var rpcError = new TRpcError { ErrorCode = errorCode, ErrorMessage = errorMessage };
-        var rpcResult = new TRpcResult { ReqMsgId = reqMsgId, Result = rpcError };
-        await objectMessageSender.SendMessageToPeerAsync(reqMsgId, rpcResult);
+        var rpcResult = new TRpcResult { ReqMsgId = input.ReqMsgId, Result = rpcError };
+        await objectMessageSender.SendMessageToPeerAsync(input.ToRequestInfo(), rpcResult);
     }
 }

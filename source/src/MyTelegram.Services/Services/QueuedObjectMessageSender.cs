@@ -7,8 +7,6 @@ public class QueuedObjectMessageSender(
     IGZipHelper gzipHelper)
     : IObjectMessageSender, ITransientDependency
 {
-    private readonly int _maxQueueCount = 10;
-
     public Task PushSessionMessageToAuthKeyIdAsync<TData>(long authKeyId,
         TData data,
         int pts = 0,
@@ -23,34 +21,9 @@ public class QueuedObjectMessageSender(
                 qts,
                 globalSeqNo, new LayeredData<byte[]>(layeredByteData)),
             authKeyId);
+
         return Task.CompletedTask;
     }
-
-    //public Task PushSessionMessageToPeerAsync<TData>(Peer peer,
-    //    TData data,
-    //    long? excludeAuthKeyId = null,
-    //    long? excludeUserId = null,
-    //    long? onlySendToUserId = null,
-    //    long? onlySendToThisAuthKeyId = null,
-    //    int pts = 0,
-    //    int? qts = null,
-    //    long globalSeqNo = 0,
-    //    LayeredData<TData>? layeredData = null) where TData : IObject
-    //{
-    //    sessionMessageQueueProcessor.Enqueue(new LayeredPushMessageCreatedIntegrationEvent((int)peer.PeerType,
-    //            peer.PeerId,
-    //            data.ToBytes(),
-    //            excludeAuthKeyId,
-    //            excludeUserId,
-    //            onlySendToUserId,
-    //            onlySendToThisAuthKeyId,
-    //            pts,
-    //            qts,
-    //            globalSeqNo,
-    //            new LayeredData<byte[]>(layeredData?.DataWithLayer?.ToDictionary(k => k.Key, v => v.Value.ToBytes()))),
-    //        peer.PeerId);
-    //    return Task.CompletedTask;
-    //}
 
     public Task PushMessageToPeerAsync<TData>(Peer peer,
         TData data,
@@ -63,7 +36,7 @@ public class QueuedObjectMessageSender(
         long globalSeqNo = 0,
         LayeredData<TData>? layeredData = null,
         PushData? pushData = null
-        ) where TData : IObject
+    ) where TData : IObject
     {
         sessionMessageQueueProcessor.Enqueue(new LayeredPushMessageCreatedIntegrationEvent((int)peer.PeerType,
                 peer.PeerId,
@@ -76,9 +49,10 @@ public class QueuedObjectMessageSender(
                 qts,
                 globalSeqNo,
                 new LayeredData<byte[]>(layeredData?.DataWithLayer?.ToDictionary(k => k.Key, v => v.Value.ToBytes())),
-                PushData: pushData
+                pushData
             ),
             peer.PeerId);
+
         return Task.CompletedTask;
     }
 
@@ -94,7 +68,7 @@ public class QueuedObjectMessageSender(
         LayeredData<TData>? layeredData = null,
         TExtraData? extraData = default,
         PushData? pushData = null
-        ) where TData : IObject
+    ) where TData : IObject
     {
         if (extraData == null)
         {
@@ -109,7 +83,7 @@ public class QueuedObjectMessageSender(
                 globalSeqNo,
                 layeredData,
                 pushData
-                );
+            );
         }
 
         sessionMessageQueueProcessor.Enqueue(new LayeredPushMessageCreatedIntegrationEvent<TExtraData>(
@@ -128,46 +102,55 @@ public class QueuedObjectMessageSender(
                 pushData
             ),
             peer.PeerId);
+
         return Task.CompletedTask;
     }
 
-    public Task SendMessageToPeerAsync<TData>(long reqMsgId,
+    public Task SendMessageToPeerAsync<TData>(RequestInfo requestInfo,
         TData data) where TData : IObject
     {
-        sessionMessageQueueProcessor.Enqueue(new DataResultResponseReceivedEvent(reqMsgId, data.ToBytes()),
-            reqMsgId % _maxQueueCount);
+        sessionMessageQueueProcessor.Enqueue(new DataResultResponseReceivedEvent(requestInfo.ReqMsgId, data.ToBytes()),
+            requestInfo.PermAuthKeyId);
 
         return Task.CompletedTask;
     }
 
-    public Task SendFileDataToPeerAsync<TData>(long reqMsgId,
+    public Task SendFileDataToPeerAsync<TData>(RequestInfo requestInfo,
         TData data) where TData : IObject
     {
-        sessionMessageQueueProcessor.Enqueue(new FileDataResultResponseReceivedEvent(reqMsgId, data.ToBytes()),
-            reqMsgId % _maxQueueCount);
+        sessionMessageQueueProcessor.Enqueue(new FileDataResultResponseReceivedEvent(requestInfo.ReqMsgId, data.ToBytes()),
+            requestInfo.PermAuthKeyId);
+
         return Task.CompletedTask;
     }
 
-    public Task SendRpcMessageToClientAsync<TData>(long reqMsgId,
+    public Task SendRpcMessageToClientAsync<TData>(RequestInfo requestInfo,
         TData data,
         int pts = 0) where TData : IObject
+    {
+        return SendRpcMessageToClientAsync(requestInfo.PermAuthKeyId, data, pts, requestInfo.PermAuthKeyId);
+    }
+
+    public Task SendRpcMessageToClientAsync<TData>(long reqMsgId, TData data, int pts = 0, long permAuthKeyId = 0) where TData : IObject
     {
         var rpcResult = CreateRpcResult(reqMsgId, data);
 
         sessionMessageQueueProcessor.Enqueue(new DataResultResponseReceivedEvent(reqMsgId, rpcResult.ToBytes()),
-            reqMsgId % _maxQueueCount);
+            permAuthKeyId);
+
         return Task.CompletedTask;
     }
 
-    public Task SendRpcMessageToClientAsync<TData>(long reqMsgId, TData data,
+    public Task SendRpcMessageToClientAsync<TData>(RequestInfo requestInfo, TData data,
         long authKeyId, long permAuthKeyId, long userId,
         int pts = 0) where TData : IObject
     {
-        var rpcResult = CreateRpcResult(reqMsgId, data);
+        var rpcResult = CreateRpcResult(requestInfo.ReqMsgId, data);
         sessionMessageQueueProcessor.Enqueue(
-            new DataResultResponseWithUserIdReceivedEvent(reqMsgId, rpcResult.ToBytes(), userId, authKeyId,
+            new DataResultResponseWithUserIdReceivedEvent(requestInfo.ReqMsgId, rpcResult.ToBytes(), userId, authKeyId,
                 permAuthKeyId),
-            reqMsgId % _maxQueueCount);
+            requestInfo.PermAuthKeyId);
+
         return Task.CompletedTask;
     }
 

@@ -24,7 +24,7 @@ public class DefaultDataProcessor<TData>(
                 if (rpcResultCacheAppService.TryGetRpcResult(obj.UserId, obj.ReqMsgId, out var rpcResult))
                 {
                     sw.Stop();
-                    await SendMessageToPeerAsync(obj.ReqMsgId, rpcResult);
+                    await SendMessageToPeerAsync(GetRequestInput(obj), rpcResult);
                     return;
                 }
 
@@ -52,7 +52,7 @@ public class DefaultDataProcessor<TData>(
 
                     if (r != null!)
                     {
-                        await SendMessageToPeerAsync(obj.ReqMsgId, r);
+                        await SendMessageToPeerAsync(GetRequestInput(obj), r);
                     }
 
                     await invokeAfterMsgProcessor.AddCompletedReqMsgIdAsync(obj.ReqMsgId);
@@ -92,9 +92,9 @@ public class DefaultDataProcessor<TData>(
         return req;
     }
 
-    protected virtual Task SendMessageToPeerAsync(long reqMsgId,
+    protected virtual Task SendMessageToPeerAsync(IRequestInput input,
         IObject data)
     {
-        return objectMessageSender.SendMessageToPeerAsync(reqMsgId, data);
+        return objectMessageSender.SendMessageToPeerAsync(input.ToRequestInfo(), data);
     }
 }

@@ -39,7 +39,7 @@ public class MessengerEventHandler(
 
     public Task HandleEventAsync(NewDeviceCreatedEvent eventData)
     {
-        newDeviceCreatedProcessor.Enqueue(eventData, 0);
+        newDeviceCreatedProcessor.Enqueue(eventData, eventData.PermAuthKeyId);
         return Task.CompletedTask;
         //try
         //{

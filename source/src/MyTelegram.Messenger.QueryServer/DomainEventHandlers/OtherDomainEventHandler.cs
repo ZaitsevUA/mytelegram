@@ -126,7 +126,7 @@ public class OtherDomainEventHandler(
         var r = layeredAuthorizationService.GetConverter(domainEvent.AggregateEvent.RequestInfo.Layer)
             .CreateAuthorization(user);
 
-        await _objectMessageSender.SendRpcMessageToClientAsync(domainEvent.AggregateEvent.RequestInfo.ReqMsgId,
+        await _objectMessageSender.SendRpcMessageToClientAsync(domainEvent.AggregateEvent.RequestInfo,
             r,
             domainEvent.AggregateEvent.RequestInfo.AuthKeyId,
             domainEvent.AggregateEvent.RequestInfo.PermAuthKeyId,

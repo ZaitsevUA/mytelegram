@@ -7,7 +7,7 @@ public class MessengerEventHandler(
     :
         IEventHandler<MessengerQueryDataReceivedEvent>,
         IEventHandler<StickerDataReceivedEvent>,
-	    ITransientDependency
+        ITransientDependency
 {
     public Task HandleEventAsync(MessengerQueryDataReceivedEvent eventData)
     {
@@ -20,7 +20,8 @@ public class MessengerEventHandler(
         processor.Enqueue(
             new MessengerQueryDataReceivedEvent(eventData.ConnectionId, eventData.RequestId, eventData.ObjectId,
                 eventData.UserId, eventData.ReqMsgId, eventData.SeqNumber, eventData.AuthKeyId, eventData.PermAuthKeyId,
-                eventData.Data, eventData.Layer, eventData.Date, eventData.DeviceType, eventData.ClientIp), eventData.AuthKeyId);
+                eventData.Data, eventData.Layer, eventData.Date, eventData.DeviceType, eventData.ClientIp),
+            eventData.AuthKeyId);
         return Task.CompletedTask;
     }
 

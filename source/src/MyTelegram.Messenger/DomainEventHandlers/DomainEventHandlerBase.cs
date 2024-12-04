@@ -426,7 +426,7 @@ public abstract class DomainEventHandlerBase(
          ;
         }
 
-        await objectMessageSender.SendRpcMessageToClientAsync(requestInfo.ReqMsgId, data);
+        await objectMessageSender.SendRpcMessageToClientAsync(requestInfo, data);
     }
 
 

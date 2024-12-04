@@ -53,19 +53,28 @@ public interface IObjectMessageSender
     //    int? qts = null,
     //    long globalSeqNo = 0, LayeredData<TData>? layeredData = null) where TData : IObject;
 
-    Task SendFileDataToPeerAsync<TData>(long reqMsgId,
+    Task SendFileDataToPeerAsync<TData>(/*long reqMsgId,*/
+        RequestInfo requestInfo,
         TData data) where TData : IObject;
 
-    Task SendMessageToPeerAsync<TData>(long reqMsgId,
+    Task SendMessageToPeerAsync<TData>(/*long reqMsgId,*/
+        RequestInfo requestInfo,
         TData data) where TData : IObject;
 
     Task SendRpcMessageToClientAsync<TData>(
-        long reqMsgId,
+        //long reqMsgId,
+        RequestInfo requestInfo,
         TData data,
         int pts = 0) where TData : IObject;
 
     Task SendRpcMessageToClientAsync<TData>(
         long reqMsgId,
+        TData data,
+        int pts = 0, long permAuthKeyId = 0) where TData : IObject;
+
+    Task SendRpcMessageToClientAsync<TData>(
+        //long reqMsgId,
+        RequestInfo requestInfo,
         TData data,
         long authKeyId,
         long permAuthKeyId,

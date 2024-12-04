@@ -1,88 +1,83 @@
-﻿using System.Threading.Channels;
+﻿using System.Collections.Concurrent;
+using System.Threading.Channels;
 
 namespace MyTelegram.Services.Services;
 
-public class MessageQueueProcessor<TData> : IMessageQueueProcessor<TData>
+public class MessageQueueProcessor<TData>(
+    IDataProcessor<TData> dataProcessor,
+    ILogger<MessageQueueProcessor<TData>> logger) : IMessageQueueProcessor<TData>
 {
-    private const int MaxQueueCount = 100;
+    private readonly TimeSpan _idleTimeSpan = TimeSpan.FromMinutes(5);
+    private readonly ConcurrentDictionary<long, Channel<TData>> _queues = [];
+    private readonly ConcurrentDictionary<long, CancellationTokenSource> _timeoutTokens = [];
 
-    private readonly IDataProcessor<TData> _dataProcessor;
-    private readonly ILogger<MessageQueueProcessor<TData>> _logger;
-    private readonly Channel<TData>[] _queues = new Channel<TData>[MaxQueueCount];
-
-    public MessageQueueProcessor(ILogger<MessageQueueProcessor<TData>> logger,
-        IDataProcessor<TData> dataProcessor)
+    public void Enqueue(TData data, long key)
     {
-        _logger = logger;
-        _dataProcessor = dataProcessor;
-        CreateQueues();
-    }
-
-    protected virtual bool RunInTask { get; set; } = true;
-
-    public void Enqueue(TData data, long key = 0)
-    {
-        var index = key % MaxQueueCount;
-        if (index < 0)
+        if (_timeoutTokens.TryGetValue(key, out var cts))
         {
-            index += MaxQueueCount;
+            cts.Cancel();
         }
 
-        var queue = _queues[index];
-        queue.Writer.TryWrite(data);
+        cts = new CancellationTokenSource();
+        _timeoutTokens.TryAdd(key, cts);
+
+        if (_queues.TryGetValue(key, out var channel))
+        {
+            channel.Writer.TryWrite(data);
+            _ = ProcessTimeoutTaskAsync(key, cts.Token);
+        }
+        else
+        {
+            channel = Channel.CreateUnbounded<TData>();
+            _queues.TryAdd(key, channel);
+            channel.Writer.TryWrite(data);
+
+            var task = ProcessAsync(channel);
+            var releaseQueueTask = ProcessTimeoutTaskAsync(key, cts.Token);
+            Task.WhenAll(task, releaseQueueTask);
+        }
     }
 
     public Task ProcessAsync(CancellationToken cancellationToken = default)
     {
-        Task.Factory.StartNew(async () =>
-        {
-            var tasks = new List<Task>(MaxQueueCount);
-            for (int i = 0; i < MaxQueueCount; i++)
-            {
-                var queue = _queues[i];
-
-                if (RunInTask)
-                {
-                    var task = Task.Run(() => ProcessQueueAsync(queue, cancellationToken), cancellationToken);
-                    tasks.Add(task);
-                }
-                else
-                {
-                    var task = ProcessQueueAsync(queue,
-                        cancellationToken);
-                    tasks.Add(task);
-                }
-            }
-
-            await Task.WhenAll(tasks);
-        }, TaskCreationOptions.LongRunning);
-
         return Task.CompletedTask;
+        //throw new NotImplementedException();
     }
 
-    private void CreateQueues()
+    private async Task ProcessTimeoutTaskAsync(long key, CancellationToken cancellationToken)
     {
-        for (int i = 0; i < MaxQueueCount; i++)
+        await Task.Delay(_idleTimeSpan, cancellationToken)
+            .ConfigureAwait(ConfigureAwaitOptions.SuppressThrowing);
+        if (!cancellationToken.IsCancellationRequested)
         {
-            var queue = Channel.CreateUnbounded<TData>();
-            _queues[i] = queue;
+            ReleaseQueue(key);
         }
-        _logger.LogInformation("Created {MaxQueueCount} queues to process {MessageType} messages", MaxQueueCount, typeof(TData).Name);
     }
 
-    private async Task ProcessQueueAsync(Channel<TData> queue, CancellationToken cancellationToken)
+    private void ReleaseQueue(long key)
     {
-        while (await queue.Reader.WaitToReadAsync(cancellationToken))
+        if (_queues.TryRemove(key, out var queue))
         {
-            while (queue.Reader.TryRead(out var item))
+            queue.Writer.Complete();
+
+            _timeoutTokens.TryRemove(key, out var cts);
+            cts?.Cancel();
+        }
+    }
+
+    private async Task ProcessAsync(Channel<TData> channel)
+    {
+        while (await channel.Reader.WaitToReadAsync())
+        {
+            await foreach (var data in channel.Reader.ReadAllAsync())
             {
                 try
                 {
-                    await _dataProcessor.ProcessAsync(item);
+                    await dataProcessor.ProcessAsync(data);
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, "Process {MessageType} queue failed", typeof(TData));
+                    logger.LogError(ex, "Process {MessageType} queue failed", typeof(TData));
                 }
             }
         }

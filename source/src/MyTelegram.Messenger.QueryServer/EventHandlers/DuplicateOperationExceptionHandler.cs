@@ -15,7 +15,7 @@ public class DuplicateOperationExceptionHandler(
         if (rpcResult != null)
         {
             await messageSender.SendRpcMessageToClientAsync(eventData.ReqMsgId,
-                rpcResult.RpcData.ToTObject<IObject>());
+                rpcResult.RpcData.ToTObject<IObject>(), 0, eventData.PermAuthKeyId);
         }
         else
         {
