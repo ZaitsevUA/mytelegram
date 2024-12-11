@@ -12,7 +12,8 @@
 
   <ItemGroup>
     <PackageReference Include="EventFlow.MongoDB" />
-        <ProjectReference Include="..\MyTelegram.EventFlow\MyTelegram.EventFlow.csproj" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" />
+    <ProjectReference Include="..\MyTelegram.EventFlow\MyTelegram.EventFlow.csproj" />
   </ItemGroup>
 
   <ItemGroup>
