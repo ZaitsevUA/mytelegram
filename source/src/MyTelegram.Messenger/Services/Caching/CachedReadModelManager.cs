@@ -5,13 +5,13 @@ namespace MyTelegram.Messenger.Services.Caching;
 public abstract class CachedReadModelManager<TReadModelInterface, TReadModel>(
     IReadModelDomainEventApplier readModelDomainEventApplier,
     IServiceProvider serviceProvider,
-    ILogger<CachedReadModelManager<TReadModelInterface, TReadModel>> logger,
     IReadModelCacheHelper<TReadModelInterface> readModelCacheHelper) : ICachedReadModelManager
 
     where TReadModel : class, IReadModel
     where TReadModelInterface : IReadModel
 {
     private static readonly Type StaticReadModelType = typeof(TReadModel);
+    // ReSharper disable once StaticMemberInGenericType
     private static readonly HashSet<Type> AggregateEventTypes;
 
 

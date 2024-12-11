@@ -23,7 +23,8 @@ public class SimpleStreamSerializer : ICuckooSerializer
     public virtual CuckooFilter Deserialize(Stream source, IHashAlgorithm hashAlgorithm = null)
     {
         var paramsReadBuffer = new byte[16];
-        source.Read(paramsReadBuffer, 0, 16);
+        //source.Read(paramsReadBuffer, 0, 16);
+        source.ReadExactly(paramsReadBuffer);
 
         var entriesPerBucket = ReadBigEndianUint(paramsReadBuffer, 0);
         var fingerprintLength = ReadBigEndianUint(paramsReadBuffer, 4);
@@ -31,7 +32,8 @@ public class SimpleStreamSerializer : ICuckooSerializer
         var maxKicks = ReadBigEndianUint(paramsReadBuffer, 12);
 
         var contents = new byte[buckets * entriesPerBucket * fingerprintLength];
-        source.Read(contents, 0, contents.Length);
+        //source.Read(contents, 0, contents.Length);
+        source.ReadExactly(contents);
 
         return new CuckooFilter(
             contents,

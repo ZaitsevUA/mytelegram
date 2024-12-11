@@ -1,4 +1,5 @@
-﻿namespace MyTelegram.ReadModel.Impl;
+﻿// Resharper Disable All
+namespace MyTelegram.ReadModel.Impl;
 
 public class DocumentReadModel : IDocumentReadModel,
     IAmReadModelFor<DocumentAggregate, DocumentId, EmptyDocumentEvent>
@@ -21,7 +22,7 @@ public class DocumentReadModel : IDocumentReadModel,
     public string Id { get; private set; } = default!;
     public string? Md5CheckSum { get; private set; }
     public string? Name { get; private set; }
-    public string? MimeType { get; private set; }
+    public string MimeType { get; private set; } = string.Empty;
     public long Size { get; private set; }
     public byte[]? Stickers { get; private set; }
     public long? ThumbId { get; private set; }

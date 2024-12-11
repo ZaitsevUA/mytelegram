@@ -1,60 +1,4 @@
-﻿using MyTelegram.EventFlow.MongoDB;
-
-namespace MyTelegram.ReadModel.MongoDB;
-
-//public interface IMongoDbIndexesCreator
-//{
-//    Task CreateAllIndexesAsync();
-//}
-
-//public abstract class MongoDbIndexesCreatorBase : IMongoDbIndexesCreator
-//{
-//    private readonly IMongoDatabase _database;
-//    private readonly IReadModelDescriptionProvider _descriptionProvider;
-//    private readonly IMongoDbEventPersistenceInitializer _eventPersistenceInitializer;
-
-//    protected MongoDbIndexesCreatorBase(IMongoDatabase database,
-//        IReadModelDescriptionProvider descriptionProvider,
-//        IMongoDbEventPersistenceInitializer eventPersistenceInitializer)
-//    {
-//        _database = database;
-//        _descriptionProvider = descriptionProvider;
-//        _eventPersistenceInitializer = eventPersistenceInitializer;
-//    }
-
-//    public async Task CreateAllIndexesAsync()
-//    {
-//        _eventPersistenceInitializer.Initialize();
-//        var snapShotCollectionName = "snapShots";
-//        await CreateIndexAsync<MongoDbSnapshotDataModel>(p => p.AggregateId, snapShotCollectionName)
-//            ;
-//        await CreateIndexAsync<MongoDbSnapshotDataModel>(p => p.AggregateName, snapShotCollectionName)
-//            ;
-//        await CreateIndexAsync<MongoDbSnapshotDataModel>(p => p.AggregateSequenceNumber, snapShotCollectionName)
-//            ;
-
-//        await CreateAllIndexesCoreAsync();
-//    }
-
-//    protected abstract Task CreateAllIndexesCoreAsync();
-
-//    protected async Task CreateIndexAsync<TReadModel>(Expression<Func<TReadModel, object>> field)
-//        where TReadModel : IMongoDbReadModel
-//    {
-//        var indexDefine = Builders<TReadModel>.IndexKeys.Ascending(field);
-//        var collectionName = _descriptionProvider.GetReadModelDescription<TReadModel>().RootCollectionName;
-//        await _database.GetCollection<TReadModel>(collectionName.Value).Indexes
-//            .CreateOneAsync(new CreateIndexModel<TReadModel>(indexDefine));
-//    }
-
-//    protected async Task CreateIndexAsync<TSnapshot>(Expression<Func<TSnapshot, object>> field,
-//        string collectionName)
-//    {
-//        var indexDefine = Builders<TSnapshot>.IndexKeys.Ascending(field);
-//        await _database.GetCollection<TSnapshot>(collectionName).Indexes
-//            .CreateOneAsync(new CreateIndexModel<TSnapshot>(indexDefine));
-//    }
-//}
+﻿namespace MyTelegram.ReadModel.MongoDB;
 
 public class MongoDbIndexesCreator(
     IMongoDatabase database,
@@ -76,7 +20,6 @@ public class MongoDbIndexesCreator(
         await CreateIndexAsync<MessageReadModel>(p => p.Pts);
         await CreateIndexAsync<MessageReadModel>(p => p.ToPeerType);
         await CreateIndexAsync<MessageReadModel>(p => p.SendMessageType);
-        await CreateIndexAsync<MessageReadModel>(p => p.ReplyToMsgId);
 
         await CreateIndexAsync<UserReadModel>(p => p.UserId);
         await CreateIndexAsync<UserReadModel>(p => p.PhoneNumber);

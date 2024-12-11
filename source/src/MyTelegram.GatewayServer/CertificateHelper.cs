@@ -17,7 +17,7 @@ public static class CertificateHelper
             // https://github.com/dotnet/runtime/issues/27493
             if (OperatingSystem.IsWindows())
             {
-                return new X509Certificate2(cert.Export(X509ContentType.Pfx));
+                return X509CertificateLoader.LoadCertificate(cert.Export(X509ContentType.Pfx));
             }
 
             return cert;

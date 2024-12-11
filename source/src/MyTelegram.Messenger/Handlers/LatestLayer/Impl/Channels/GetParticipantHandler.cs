@@ -65,7 +65,7 @@ internal sealed class GetParticipantHandler(
             var user = layeredUserService.GetConverter(input.Layer)
                 .ToUser(input.UserId, userReadModel, photos, contactReadModel, privacies: privacies);
 
-            var photoReadModel = await photoAppService.GetAsync(channelReadModel.PhotoId);
+            var photoReadModel = await photoAppService.GetAsync(channelReadModel!.PhotoId);
             var r = layeredService.GetConverter(input.Layer).ToChannelParticipant(
                 input.UserId,
                 channelReadModel,

@@ -3,7 +3,7 @@
 public class PeerSettingsState : AggregateState<PeerSettingsAggregate, PeerSettingsId, PeerSettingsState>,
     IApply<PeerSettingsBarHiddenEvent>
 {
-    public ValueObjects.PeerSettings PeerSettings { get; private set; }
+    public ValueObjects.PeerSettings PeerSettings { get; private set; } = default!;
     public bool HidePeerSettingsBar { get; private set; }
     public long OwnerPeerId { get; private set; }
     public long PeerId { get; private set; }

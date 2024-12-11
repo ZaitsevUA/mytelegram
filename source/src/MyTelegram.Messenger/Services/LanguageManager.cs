@@ -114,14 +114,16 @@ public class LanguageManager : ILanguageManager, ISingletonDependency
         var items = new List<LangItem>();
         var doc = new XmlDocument();
         doc.Load(fileName);
-        foreach (var node in doc.DocumentElement.ChildNodes)
+        if (doc.DocumentElement?.ChildNodes != null)
         {
-            if (node is XmlElement element)
+            foreach (var node in doc.DocumentElement.ChildNodes)
             {
-                items.Add(new LangItem(element.GetAttribute("name"), element.InnerText));
+                if (node is XmlElement element)
+                {
+                    items.Add(new LangItem(element.GetAttribute("name"), element.InnerText));
+                }
             }
         }
-
 
         return items;
     }

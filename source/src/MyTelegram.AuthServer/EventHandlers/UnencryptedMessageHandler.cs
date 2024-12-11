@@ -43,7 +43,7 @@ public class UnencryptedMessageHandler(
                     eventData.AuthKeyId, 0, eventData.Date, DeviceType.Unknown, eventData.ClientIp),
                 obj);
 
-            if (r != null)
+            if (r != null!)
             {
                 var unencryptedResponse = new UnencryptedMessageResponse(
                     eventData.AuthKeyId,

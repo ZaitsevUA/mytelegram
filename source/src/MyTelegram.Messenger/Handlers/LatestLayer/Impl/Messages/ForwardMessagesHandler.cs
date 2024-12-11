@@ -51,8 +51,6 @@ namespace MyTelegram.Handlers.Messages;
 internal sealed class ForwardMessagesHandler(
     ICommandBus commandBus,
     IPeerHelper peerHelper,
-    IChannelAdminRightsChecker channelAdminRightsChecker,
-    IQueryProcessor queryProcessor,
     IChannelAppService channelAppService,
     IMessageAppService messageAppService,
     IAccessHashHelper accessHashHelper)

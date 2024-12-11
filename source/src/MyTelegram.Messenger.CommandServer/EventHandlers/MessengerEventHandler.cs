@@ -7,7 +7,6 @@ public class MessengerEventHandler(
     ICommandBus commandBus,
     IMessageQueueProcessor<MessengerCommandDataReceivedEvent> processor,
     IObjectMessageSender objectMessageSender,
-    ILogger<MessengerEventHandler> logger,
     IMessageQueueProcessor<NewDeviceCreatedEvent> newDeviceCreatedProcessor)
     :
         IEventHandler<MessengerCommandDataReceivedEvent>,

@@ -2,8 +2,8 @@
 
 public class GetUpdatesOutput
 {
-    public List<IUpdatesReadModel> UpdatesReadModels { get; set; }
-    public GetMessageOutput MessageOutput { get; set; }
+    public List<IUpdatesReadModel> UpdatesReadModels { get; set; } = [];
+    public GetMessageOutput MessageOutput { get; set; } = new();
 }
 
 public class GetMessageOutput(

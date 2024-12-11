@@ -1,8 +1,5 @@
 ﻿// ReSharper disable All
 
-using EventFlow.Aggregates.ExecutionResults;
-using MyTelegram.Domain.Aggregates.Device;
-
 namespace MyTelegram.Handlers.Account;
 
 /// <summary>
@@ -11,8 +8,6 @@ namespace MyTelegram.Handlers.Account;
 /// </summary>
 internal sealed class ResetWebAuthorizationsHandler(
     IQueryProcessor queryProcessor,
-    IObjectMessageSender messageSender,
-    IQueuedCommandExecutor<DeviceAggregate, DeviceId, IExecutionResult> commandExecutor,
     IEventBus eventBus) : RpcResultObjectHandler<Schema.Account.RequestResetWebAuthorizations, IBool>,
     Account.IResetWebAuthorizationsHandler
 {

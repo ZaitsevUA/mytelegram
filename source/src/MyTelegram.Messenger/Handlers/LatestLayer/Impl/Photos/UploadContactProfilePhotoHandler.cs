@@ -1,8 +1,5 @@
 ﻿// ReSharper disable All
 
-using MyTelegram.Schema;
-using MyTelegram.Schema;
-
 namespace MyTelegram.Handlers.Photos;
 
 ///<summary>
@@ -71,8 +68,8 @@ internal sealed class UploadContactProfilePhotoHandler : RpcResultObjectHandler<
                     parts,
                     name,
                     md5 ?? string.Empty);
-            photoId = r.PhotoId;
-            photo = r.Photo;
+            photoId = r?.PhotoId ?? 0;
+            photo = r?.Photo;
         }
 
         var peer = _peerHelper.GetPeer(obj.UserId);

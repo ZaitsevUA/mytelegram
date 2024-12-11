@@ -8,7 +8,6 @@ public class UpdateMessagePinDomainEventHandler(
     ICommandBus commandBus,
     IIdGenerator idGenerator,
     IAckCacheService ackCacheService,
-    IQueryProcessor queryProcessor,
     IResponseCacheAppService responseCacheAppService) : DomainEventHandlerBase(objectMessageSender, commandBus,
     idGenerator, ackCacheService, responseCacheAppService),
     ISubscribeSynchronousTo<UpdateMessagePinnedSaga, UpdateMessagePinnedSagaId, UpdateMessagePinnedCompletedSagaEvent>,

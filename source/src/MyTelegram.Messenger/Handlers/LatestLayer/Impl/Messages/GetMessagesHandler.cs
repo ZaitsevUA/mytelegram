@@ -8,7 +8,6 @@ namespace MyTelegram.Handlers.Messages;
 ///</summary>
 internal sealed class GetMessagesHandler(
     IMessageAppService messageAppService,
-    ILogger<GetMessagesHandler> logger,
     ILayeredService<IRpcResultProcessor> layeredService)
     : RpcResultObjectHandler<MyTelegram.Schema.Messages.RequestGetMessages, MyTelegram.Schema.Messages.IMessages>,
         Messages.IGetMessagesHandler

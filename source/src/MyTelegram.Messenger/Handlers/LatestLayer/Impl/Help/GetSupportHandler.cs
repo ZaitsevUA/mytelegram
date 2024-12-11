@@ -34,8 +34,8 @@ internal sealed class GetSupportHandler(IQueryProcessor queryProcessor,
         }
 
         var photos = await photoAppService.GetPhotosAsync(userReadModel);
-        var user = userLayeredService.GetConverter(input.Layer).ToUser(input.UserId, userReadModel, photos);
-        var privacies = await privacyAppService.GetPrivacyListAsync(userReadModel.UserId);
+        var user = userLayeredService.GetConverter(input.Layer).ToUser(input.UserId, userReadModel!, photos);
+        var privacies = await privacyAppService.GetPrivacyListAsync(userReadModel!.UserId);
 
         return new TSupport
         {

@@ -14,13 +14,10 @@ public class ChannelDomainEventHandler(
     IAckCacheService ackCacheService,
     IResponseCacheAppService responseCacheAppService,
     IChatEventCacheHelper chatEventCacheHelper,
-    IQueryProcessor queryProcessor,
     IChannelAppService channelAppService,
     ILayeredService<IChatConverter> chatLayeredService,
     IPhotoAppService photoAppService,
-    IOptions<MyTelegramMessengerServerOptions> options,
-    ILayeredService<IUpdatesConverter> layeredUpdatesService,
-    IChatInviteLinkHelper chatInviteLinkHelper)
+    ILayeredService<IUpdatesConverter> layeredUpdatesService)
     : DomainEventHandlerBase(objectMessageSender,
             commandBus,
             idGenerator,
@@ -51,12 +48,6 @@ public class ChannelDomainEventHandler(
         ISubscribeSynchronousTo<ChannelAggregate, ChannelId, ChannelDeletedEvent>,
         ISubscribeSynchronousTo<UpdatePinnedMessageSaga, UpdatePinnedMessageSagaId, UpdatePinnedMessageCompletedSagaEvent>
 {
-    //private readonly ITlChatConverter _chatConverter;
-    private readonly IChatInviteLinkHelper _chatInviteLinkHelper = chatInviteLinkHelper;
-    private readonly IOptions<MyTelegramMessengerServerOptions> _options = options;
-
-    //_chatConverter = chatConverter;
-
     public Task HandleAsync(IDomainEvent<ChannelAggregate, ChannelId, ChannelAboutEditedEvent> domainEvent,
         CancellationToken cancellationToken)
     {
@@ -391,16 +382,6 @@ public class ChannelDomainEventHandler(
 
             if (domainEvent.AggregateEvent.ToPeer.PeerType == PeerType.Channel)
             {
-                var updates2 = new TUpdates
-                {
-                    Updates = new TVector<IUpdate>([
-                        new TUpdateChannel { ChannelId = domainEvent.AggregateEvent.ToPeer.PeerId }
-                    ]),
-                    Chats = new TVector<IChat>(),
-                    Users = new TVector<IUser>(),
-                    Date = domainEvent.AggregateEvent.Date
-                };
-
                 await NotifyUpdateChannelAsync(domainEvent.AggregateEvent.RequestInfo,
                     domainEvent.AggregateEvent.ToPeer.PeerId);
             }

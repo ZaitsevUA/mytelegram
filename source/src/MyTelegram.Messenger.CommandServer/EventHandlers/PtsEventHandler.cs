@@ -6,8 +6,7 @@ namespace MyTelegram.Messenger.CommandServer.EventHandlers;
 
 public class PtsEventHandler(
     IAckCacheService ackCacheService,
-    ICommandBus commandBus,
-    ILogger<PtsEventHandler> logger)
+    ICommandBus commandBus)
     :
         ITransientDependency,
         IEventHandler<NewPtsMessageHasSentEvent>,

@@ -27,8 +27,6 @@ internal sealed class SendCodeHandler(
     ICacheManager<FutureAuthTokenCacheItem> cacheManager,
     IHashHelper hashHelper,
     ICountryHelper countryHelper,
-    ICacheHelper<long, long> cacheHelper,
-    IScheduleAppService scheduleAppService,
     ILayeredService<IAuthorizationConverter> authorizationLayeredService,
     ILayeredService<IUserConverter> userLayeredService,
     IVerificationCodeGenerator verificationCodeGenerator,

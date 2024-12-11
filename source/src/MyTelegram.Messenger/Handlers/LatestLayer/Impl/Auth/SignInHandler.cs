@@ -42,7 +42,7 @@ internal sealed class SignInHandler(
 
         var command = new CheckSignInCodeCommand(AppCodeId.Create(obj.PhoneNumber.ToPhoneNumber(), obj.PhoneCodeHash),
             input.ToRequestInfo() with { UserId = userId },
-            obj.PhoneCode,
+            obj.PhoneCode ?? string.Empty,
             userId
         );
 

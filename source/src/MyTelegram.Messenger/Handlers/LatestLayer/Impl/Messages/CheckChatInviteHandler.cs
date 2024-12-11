@@ -7,7 +7,7 @@ namespace MyTelegram.Handlers.Messages;
 /// <para>Possible errors</para>
 /// Code Type Description
 /// 406 CHANNEL_PRIVATE You haven't joined this channel/supergroup.
-/// 500 CHAT_MEMBERS_CHANNEL &nbsp;
+/// 500 CHAT_MEMBERS_CHANNEL
 /// 400 INVITE_HASH_EMPTY The invite hash is empty.
 /// 406 INVITE_HASH_EXPIRED The invite link has expired.
 /// 400 INVITE_HASH_INVALID The invite hash is invalid.
@@ -40,13 +40,17 @@ internal sealed class CheckChatInviteHandler(
         {
             if (chatInviteReadModel.ExpireDate.Value < CurrentDate)
             {
-                RpcErrors.RpcErrors400.InviteHashExpired.ThrowRpcError();
+                RpcErrors.RpcErrors400.InviteHashInvalid.ThrowRpcError();
             }
         }
 
         var channelReadModel = await channelAppService.GetAsync(chatInviteReadModel.PeerId);
+        if (channelReadModel == null)
+        {
+            RpcErrors.RpcErrors400.ChannelIdInvalid.ThrowRpcError();
+        }
         var channelMemberReadModel =
-            await queryProcessor.ProcessAsync(new GetChannelMemberByUserIdQuery(channelReadModel.ChannelId,
+            await queryProcessor.ProcessAsync(new GetChannelMemberByUserIdQuery(channelReadModel!.ChannelId,
                 input.UserId));
         var chatPhoto = await photoAppService.GetAsync(channelReadModel.PhotoId);
         if (channelMemberReadModel != null)

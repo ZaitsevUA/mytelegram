@@ -106,7 +106,7 @@ public interface IChatConverter : ILayeredConverter, IHasRequestLayer
         //IChatPhoto chatPhoto,
         //IReadOnlyCollection<IUserReadModel> userList,
         IEnumerable<IUser> users,
-        IPeerNotifySettingsReadModel peerNotifySettingsReadModel,
+        IPeerNotifySettingsReadModel? peerNotifySettingsReadModel,
         IChannelReadModel? migratedToChannelReadModel = null,
         IChatInviteReadModel? chatInviteReadModel=null
     //,

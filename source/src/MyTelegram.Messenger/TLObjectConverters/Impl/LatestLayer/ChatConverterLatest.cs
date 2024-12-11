@@ -368,23 +368,16 @@ public class ChatConverterLatest(
         long selfUserId,
         IChatReadModel chat,
         IPhotoReadModel? photoReadModel,
-        //IChatPhoto chatPhoto,
-        //IReadOnlyCollection<IUserReadModel> userList,
         IEnumerable<IUser> users,
-        IPeerNotifySettingsReadModel peerNotifySettingsReadModel,
+        IPeerNotifySettingsReadModel? peerNotifySettingsReadModel,
         IChannelReadModel? migratedToChannelReadModel = null,
         IChatInviteReadModel? chatInviteReadModel = null
-    //,
-    //IReadOnlyCollection<IContactReadModel>? contactReadModels = null,
-    //IReadOnlyCollection<IPrivacyReadModel>? privacies = null
     )
     {
         var tChat = ToChat(selfUserId, chat, photoReadModel);
         var fullChat = ToChatFull(chat);
 
         fullChat.ChatPhoto = GetPhotoConverter().ToPhoto(photoReadModel);
-        //fullChat.NotifySettings = ObjectMapper.Map<PeerNotifySettings, TPeerNotifySettings>(
-        //    peerNotifySettingsReadModel?.NotifySettings ?? PeerNotifySettings.DefaultSettings);
         fullChat.NotifySettings = GetPeerNotifySettings(peerNotifySettingsReadModel?.NotifySettings);
 
         fullChat.Participants = chat.IsDeleted
@@ -521,7 +514,7 @@ public class ChatConverterLatest(
             var newExportedChatInvite = new TChatInviteExported
             {
                 RequestNeeded = aggregateEvent.RequestNeeded,
-                Link = chatInviteLinkHelper.GetFullLink(options.Value.JoinChatDomain, aggregateEvent.NewHash),
+                Link = chatInviteLinkHelper.GetFullLink(options.Value.JoinChatDomain, aggregateEvent.NewHash ?? string.Empty),
                 AdminId = aggregateEvent.AdminId,
                 Date = DateTime.UtcNow.ToTimestamp(),
                 StartDate = aggregateEvent.StartDate,

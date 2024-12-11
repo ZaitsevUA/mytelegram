@@ -5,8 +5,6 @@ public class WebSocketMiddleware(
     IMtpMessageDispatcher messageDispatcher,
     IClientManager clientManager,
     IClientDataSender clientDataSender,
-    IOptionsMonitor<MyTelegramGatewayServerOption> options,
-    IProxyProtocolParser proxyProtocolParser,
     IMessageQueueProcessor<ClientDisconnectedEvent> messageQueueProcessor)
     : IMiddleware
 {

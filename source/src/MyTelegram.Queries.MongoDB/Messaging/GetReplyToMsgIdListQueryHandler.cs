@@ -26,7 +26,7 @@ public class
                     // Reply to a message sent by ToPeerId
                     if (!messageReadModel.Out)
                     {
-                        return new[] { new ReplyToMsgItem(messageReadModel.SenderPeerId, messageReadModel.SenderMessageId) };
+                        return [new ReplyToMsgItem(messageReadModel.SenderPeerId, messageReadModel.SenderMessageId)];
                     }
 
                     // Reply to a message sent by myself
@@ -34,7 +34,12 @@ public class
                         p.OwnerPeerId == query.ToPeer.PeerId && p.ToPeerId == query.SelfUserId &&
                         p.SenderMessageId == query.ReplyToMsgId, p => new ReplyToMsgItem(p.OwnerPeerId, p.MessageId), cancellationToken: cancellationToken);
 
-                    return new[] { item };
+                    if (item != null)
+                    {
+                        return [item];
+                    }
+
+                    return [];
                 }
             case PeerType.Chat:
                 {

@@ -14,7 +14,6 @@ public class OtherDomainEventHandler(
     IAckCacheService ackCacheService,
     IResponseCacheAppService responseCacheAppService,
     IEventBus eventBus,
-    ILogger<OtherDomainEventHandler> logger,
     ILayeredService<IUpdatesConverter> layeredUpdatesService,
     ILayeredService<IAuthorizationConverter> layeredAuthorizationService,
     ILayeredService<IUserConverter> layeredUserService,

@@ -12,7 +12,7 @@ public class PrivacyAppService(
 
     public Task<IReadOnlyCollection<IPrivacyReadModel>> GetPrivacyListAsync(long userId)
     {
-        return GetPrivacyListAsync(new[] { userId });
+        return GetPrivacyListAsync([userId]);
     }
 
     public Task ApplyPrivacyAsync(long selfUserId, long targetUserId, Action executeOnPrivacyNotMatch, List<PrivacyType> privacyTypes)
@@ -53,39 +53,11 @@ public class PrivacyAppService(
         return item;
     }
 
-    public async Task<SetPrivacyOutput> SetPrivacyAsync(RequestInfo requestInfo,
+    public Task<SetPrivacyOutput> SetPrivacyAsync(RequestInfo requestInfo,
         long selfUserId,
         IInputPrivacyKey key,
         IReadOnlyList<IInputPrivacyRule> ruleList)
     {
-        return new SetPrivacyOutput(new List<IPrivacyRule>());
-    }
-
-    // ReSharper disable once UnusedParameter.Local
-    private static List<IPrivacyRule> GetDefaultPrivacyRules(PrivacyType privacyType)
-    {
-        return new List<IPrivacyRule> { new TPrivacyValueAllowAll() };
-    }
-
-    private List<long> GetUserIds(TVector<IInputUser> users)
-    {
-        return users.Select(GetUserId).Where(p => p != 0).ToList();
-    }
-
-    private long GetUserId(IInputUser user)
-    {
-        switch (user)
-        {
-            case TInputUser inputUser:
-                return inputUser.UserId;
-            case TInputUserEmpty:
-                break;
-            case TInputUserFromMessage inputUserFromMessage:
-                return inputUserFromMessage.UserId;
-            case TInputUserSelf:
-                break;
-        }
-
-        return 0;
+        return Task.FromResult(new SetPrivacyOutput(new List<IPrivacyRule>()));
     }
 }

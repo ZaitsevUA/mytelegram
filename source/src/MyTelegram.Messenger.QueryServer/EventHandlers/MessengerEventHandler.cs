@@ -1,9 +1,7 @@
 ﻿namespace MyTelegram.Messenger.QueryServer.EventHandlers;
 
 public class MessengerEventHandler(
-    IMessageQueueProcessor<MessengerQueryDataReceivedEvent> processor,
-    IObjectMessageSender objectMessageSender,
-    ILogger<MessengerEventHandler> logger)
+    IMessageQueueProcessor<MessengerQueryDataReceivedEvent> processor)
     :
         IEventHandler<MessengerQueryDataReceivedEvent>,
         IEventHandler<StickerDataReceivedEvent>,
@@ -23,11 +21,5 @@ public class MessengerEventHandler(
                 eventData.Data, eventData.Layer, eventData.Date, eventData.DeviceType, eventData.ClientIp),
             eventData.AuthKeyId);
         return Task.CompletedTask;
-    }
-
-    public Task HandleEventAsync(UserIsOnlineEvent eventData)
-    {
-        var updatesTooLong = new TUpdatesTooLong();
-        return objectMessageSender.PushSessionMessageToAuthKeyIdAsync(eventData.TempAuthKeyId, updatesTooLong);
     }
 }

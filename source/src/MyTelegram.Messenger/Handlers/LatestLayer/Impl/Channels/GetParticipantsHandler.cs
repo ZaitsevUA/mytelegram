@@ -83,7 +83,7 @@ internal sealed class GetParticipantsHandler(
                         Chats = new TVector<IChat>()
                     };
                 case TChannelParticipantsKicked:
-                    CheckAdminPermission(channelReadModel, input.UserId);
+                    CheckAdminPermission(channelReadModel!, input.UserId);
                     forceNotLeft = true;
                     query = new GetKickedChannelMembersQuery(inputChannel.ChannelId, obj.Offset, obj.Limit);
                     break;
@@ -96,7 +96,7 @@ internal sealed class GetParticipantsHandler(
                     break;
             }
 
-            if (joinedChannelIdList.Contains(channelReadModel.ChannelId))
+            if (joinedChannelIdList.Contains(channelReadModel!.ChannelId))
             {
                 forceNotLeft = true;
             }

@@ -3,6 +3,7 @@
 public class ReadModelCacheHelper<TReadModel> : IReadModelCacheHelper<TReadModel>
 {
     private static readonly ConcurrentDictionary<long, TReadModel> ReadModels = [];
+    // ReSharper disable once StaticMemberInGenericType
     private static readonly ConcurrentDictionary<string, long> ReadModelIds = [];
 
     public async Task<TReadModel?> GetOrCreateAsync(long readModelId, Func<Task<TReadModel?>> createFactory, Func<TReadModel, string> createReadModelIdFunc)
@@ -18,12 +19,12 @@ public class ReadModelCacheHelper<TReadModel> : IReadModelCacheHelper<TReadModel
             return readModel;
         }
 
-        ReadModels.TryAdd(readModelId, readModel!);
+        ReadModels.TryAdd(readModelId, readModel);
 
-        var id = createReadModelIdFunc(readModel!);
+        var id = createReadModelIdFunc(readModel);
         ReadModelIds.TryAdd(id, readModelId);
 
-        return readModel!;
+        return readModel;
     }
 
     public bool TryGetReadModel(long readModelId, [NotNullWhen(true)] out TReadModel? readModel)

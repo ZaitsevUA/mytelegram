@@ -11,7 +11,7 @@ public class MySagaAggregateStore(
         Func<ISaga, CancellationToken, Task> updateSaga,
         CancellationToken cancellationToken)
     {
-        ISaga saga = null;
+        ISaga? saga = null;
         await UpdateInternalAsync(sagaId,
             sagaType,
             sourceId,

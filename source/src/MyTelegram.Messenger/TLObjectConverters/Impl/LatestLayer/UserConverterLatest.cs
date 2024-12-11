@@ -9,11 +9,9 @@ namespace MyTelegram.Messenger.TLObjectConverters.Impl.LatestLayer;
 public class UserConverterLatest(
     IObjectMapper objectMapper,
     IUserStatusCacheAppService userStatusCacheAppService,
-    IPrivacyHelper privacyHelper,
     IBlockCacheAppService blockCacheAppService,
     ILayeredService<IPhotoConverter> layeredPhotoService,
     ILayeredService<IPeerSettingsConverter> layeredPeerSettingsConverter,
-    ILayeredService<IDocumentConverter> layeredDocumentService,
     ILayeredService<IPeerNotifySettingsConverter> layeredPeerNotifySettingsService)
     : UserConverterBase, IUserConverterLatest
 {
@@ -55,12 +53,6 @@ public class UserConverterLatest(
             tUser.BotChatHistory = true; // bot.AllowAccessGroupMessages;
         }
 
-        if (!tUser.Self && privacies?.Count > 0)
-        {
-            var fallbackPhotoReadModel = photos?.FirstOrDefault(p => p.PhotoId == user.FallbackPhotoId);
-            ApplyPrivacyToUser(selfUserId, fallbackPhotoReadModel, tUser, privacies);
-        }
-
         SetContactPersonalProfilePhoto(contactReadModel, tUser, photos);
 
         return tUser;
@@ -100,11 +92,7 @@ public class UserConverterLatest(
         fullUser.Settings = layeredPeerSettingsConverter.GetConverter(GetLayer())
             .ToPeerSettings(selfUserId, user.UserId, peerSettingsReadModel, contactType);
 
-
         CallAfterUserFullCreated(user, tUser, fullUser);
-
-        ApplyPrivacyToUserFull(user, fullUser, tUser, privacies, photos, selfUserId);
-
         SetContactPersonalProfilePhoto(contactReadModel, tUser, photos, fullUser);
 
         var userFull = new TUserFull
@@ -295,28 +283,5 @@ public class UserConverterLatest(
     protected virtual ILayeredUser ToUser(UserItem userItem)
     {
         return ObjectMapper.Map<UserItem, TUser>(userItem);
-    }
-
-    private void ApplyPrivacyToUser(
-        long selfUserId,
-        IPhotoReadModel? fallbackPhotoReadModel,
-        ILayeredUser user,
-        IReadOnlyCollection<IPrivacyReadModel> privacies
-    )
-    {
-    }
-
-    private void ApplyPrivacyToUserFull(
-        IUserReadModel userReadModel,
-        Schema.IUserFull userFull,
-        ILayeredUser user,
-        IReadOnlyCollection<IPrivacyReadModel>? privacies,
-        IReadOnlyCollection<IPhotoReadModel>? photos,
-        long selfUserId
-    )
-    {
-        if (selfUserId == userReadModel.UserId)
-        {
-        }
     }
 }

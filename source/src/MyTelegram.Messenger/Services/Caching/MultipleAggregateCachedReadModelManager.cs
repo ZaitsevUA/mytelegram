@@ -5,8 +5,8 @@ namespace MyTelegram.Messenger.Services.Caching;
 public class MultipleAggregateCachedReadModelManager<TReadModelInterface, TReadModel, TReadModelLocator>(IReadModelDomainEventApplier readModelDomainEventApplier,
     IServiceProvider serviceProvider,
     TReadModelLocator readModelLocator,
-    ILogger<CachedReadModelManager<TReadModelInterface, TReadModel>> logger, IReadModelCacheHelper<TReadModelInterface> readModelCacheHelper) :
-    CachedReadModelManager<TReadModelInterface, TReadModel>(readModelDomainEventApplier, serviceProvider, logger, readModelCacheHelper)
+     IReadModelCacheHelper<TReadModelInterface> readModelCacheHelper) :
+    CachedReadModelManager<TReadModelInterface, TReadModel>(readModelDomainEventApplier, serviceProvider, readModelCacheHelper)
     where TReadModel : class, IReadModel
     where TReadModelInterface : IReadModel
     where TReadModelLocator : IReadModelLocator

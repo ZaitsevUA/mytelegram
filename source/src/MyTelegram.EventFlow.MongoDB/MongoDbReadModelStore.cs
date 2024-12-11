@@ -69,7 +69,7 @@ public class MongoDbReadModelStore<TReadModel>(
     }
 
     public async Task<IAsyncCursor<TReadModel>> FindAsync(Expression<Func<TReadModel, bool>> filter,
-        FindOptions<TReadModel, TReadModel> options = null,
+        FindOptions<TReadModel, TReadModel>? options = null,
         CancellationToken cancellationToken = new CancellationToken())
     {
         var readModelDescription = readModelDescriptionProvider.GetReadModelDescription<TReadModel>();

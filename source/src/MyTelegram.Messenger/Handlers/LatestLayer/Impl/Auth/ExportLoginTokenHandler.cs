@@ -3,7 +3,7 @@
 namespace MyTelegram.Handlers.Auth;
 
 ///<summary>
-/// Generate a login token, for <a href="https://corefork.telegram.org/api/qr-login">login via QR code</a>.<br>
+/// Generate a login token, for <a href="https://corefork.telegram.org/api/qr-login">login via QR code</a>
 /// The generated login token should be encoded using base64url, then shown as a <code>tg://login?token=base64encodedtoken</code> <a href="https://corefork.telegram.org/api/links#qr-code-login-links">deep link »</a> in the QR code.For more info, see <a href="https://corefork.telegram.org/api/qr-login">login via QR code</a>.
 /// <para>Possible errors</para>
 /// Code Type Description
@@ -14,7 +14,6 @@ namespace MyTelegram.Handlers.Auth;
 internal sealed class ExportLoginTokenHandler(
     ICacheHelper<long, long> cacheHelper,
     ICommandBus commandBus,
-    IQueryProcessor queryProcessor,
     IRandomHelper randomHelper,
     IUserAppService userAppService,
     IEventBus eventBus,

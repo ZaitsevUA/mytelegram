@@ -27,12 +27,12 @@ Log.Information("{Description} {Url}",
 Log.Information("MyTelegram messenger query server(API layer={Layer}) starting...",
     MyTelegramServerDomainConsts.Layer);
 
-AppDomain.CurrentDomain.UnhandledException += (s,
+AppDomain.CurrentDomain.UnhandledException += (_,
     e) =>
 {
-    Log.Error(e.ExceptionObject.ToString());
+    Log.Error(e.ExceptionObject.ToString() ?? string.Empty);
 };
-TaskScheduler.UnobservedTaskException += (s,
+TaskScheduler.UnobservedTaskException += (_,
     e) =>
 {
     Log.Error(e.Exception.ToString());
@@ -74,8 +74,8 @@ builder.ConfigureServices((ctx,
         options.Transport(t =>
         {
             t.UseRabbitMq(
-                    $"amqp://{rabbitMqOptions.UserName}:{rabbitMqOptions.Password}@{rabbitMqOptions.HostName}:{rabbitMqOptions.Port}",
-                    eventBusOptions.ClientName)
+                    $"amqp://{rabbitMqOptions!.UserName}:{rabbitMqOptions.Password}@{rabbitMqOptions.HostName}:{rabbitMqOptions.Port}",
+                    eventBusOptions!.ClientName)
                 .ExchangeNames(eventBusOptions.ExchangeName, eventBusOptions.TopicExchangeName ?? "RebusTopics")
                 ;
         });

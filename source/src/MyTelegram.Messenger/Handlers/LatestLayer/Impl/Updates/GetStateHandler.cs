@@ -9,11 +9,7 @@ namespace MyTelegram.Handlers.Updates;
 /// See <a href="https://corefork.telegram.org/method/updates.getState" />
 ///</summary>
 internal sealed class GetStateHandler(
-    IPtsHelper ptsHelper,
-    IQueryProcessor queryProcessor,
-    IObjectMapper objectMapper,
-    IObjectMessageSender objectMessageSender,
-    ILogger<GetStateHandler> logger)
+    IPtsHelper ptsHelper)
     : RpcResultObjectHandler<MyTelegram.Schema.Updates.RequestGetState, MyTelegram.Schema.Updates.IState>,
         Updates.IGetStateHandler
 {

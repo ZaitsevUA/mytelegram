@@ -32,12 +32,12 @@ public class MyTelegramMessengerServerOptions
     public bool EnableEmailLogin { get; set; }
 
     [RegularExpression("^([\\d]{6})|(\\s*)$")]
-    public string? FixedEmailVerificationCode { get; set; }
+    public string FixedEmailVerificationCode { get; set; }
 
     //public long? SupportUserId { get; set; }
     // https://github.com/dotnet/runtime/issues/36510
     [RegularExpression("^([\\d]{1,19})|(\\s*)$")]
-    public string? SupportUserId { get; set; }
+    public string SupportUserId { get; set; }
 
     public bool CheckPhoneNumberFormat { get; set; }
     public bool EnableSearchNonContacts { get; set; }

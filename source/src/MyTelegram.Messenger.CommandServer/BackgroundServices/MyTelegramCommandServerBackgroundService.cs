@@ -1,5 +1,4 @@
-﻿using EventFlow.Core;
-using Microsoft.Extensions.Hosting;
+﻿using Microsoft.Extensions.Hosting;
 using MyTelegram.Messenger.Services.Filters;
 
 namespace MyTelegram.Messenger.CommandServer.BackgroundServices;
@@ -9,13 +8,10 @@ public class MyTelegramCommandServerBackgroundService(
     ILogger<MyTelegramCommandServerBackgroundService> logger,
     IHandlerHelper handlerHelper,
     IDataSeeder dataSeeder,
-    IIdGenerator idGenerator,
-    IJsonSerializer jsonSerializer,
     IOptions<MyTelegramMessengerServerOptions> options,
     IMongoDbIndexesCreator mongoDbIndexesCreator)
     : BackgroundService
 {
-    private readonly IIdGenerator _idGenerator = idGenerator;
     private readonly MyTelegramMessengerServerOptions _options = options.Value;
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)

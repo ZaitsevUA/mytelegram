@@ -12,7 +12,6 @@ namespace MyTelegram.Handlers.Auth;
 internal sealed class ResetAuthorizationsHandler(
     IQueryProcessor queryProcessor,
     IObjectMessageSender messageSender,
-    IQueuedCommandExecutor<DeviceAggregate, DeviceId, IExecutionResult> commandExecutor,
     IEventBus eventBus)
     : RpcResultObjectHandler<MyTelegram.Schema.Auth.RequestResetAuthorizations, IBool>,
         Auth.IResetAuthorizationsHandler

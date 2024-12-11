@@ -22,7 +22,6 @@ internal sealed class CreateChatHandler(
     IIdGenerator idGenerator,
     IRandomHelper randomHelper,
     IAccessHashHelper accessHashHelper,
-    IQueryProcessor queryProcessor,
     IPeerHelper peerHelper,
     IPrivacyAppService privacyAppService,
     IOptions<MyTelegramMessengerServerOptions> options)

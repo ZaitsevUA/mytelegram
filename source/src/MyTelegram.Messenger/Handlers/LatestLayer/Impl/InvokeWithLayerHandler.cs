@@ -16,10 +16,6 @@ namespace MyTelegram.Handlers;
 
 internal sealed class InvokeWithLayerHandler(
     IHandlerHelper handlerHelper,
-    ICommandBus commandBus,
-    ILogger<InvokeWithLayerHandler> logger,
-    IHashHelper hashHelper,
-    IRandomHelper randomHelper,
     IEventBus eventBus)
     : BaseObjectHandler<RequestInvokeWithLayer, IObject>,
         IInvokeWithLayerHandler

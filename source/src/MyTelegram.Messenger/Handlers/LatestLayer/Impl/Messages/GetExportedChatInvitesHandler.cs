@@ -57,7 +57,7 @@ internal sealed class GetExportedChatInvitesHandler(
                     peer.PeerId,
                     admin.PeerId,
                     obj.OffsetDate,
-                    obj.OffsetLink,
+                    obj.OffsetLink ?? string.Empty,
                     obj.Limit));
         var userIds = invites.Select(p => p.AdminId).ToList();
         var userReadModels = await queryProcessor.ProcessAsync(new GetUsersByUserIdListQuery(userIds));

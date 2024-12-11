@@ -9,9 +9,8 @@ namespace MyTelegram.Handlers.Account;
 /// 400 HASH_INVALID The provided hash is invalid.
 /// See <a href="https://corefork.telegram.org/method/account.resetWebAuthorization" />
 ///</summary>
-internal sealed class ResetWebAuthorizationHandler(ICommandBus commandBus,
+internal sealed class ResetWebAuthorizationHandler(
     IQueryProcessor queryProcessor,
-    IObjectMessageSender messageSender,
     ILogger<ResetAuthorizationHandler> logger,
     IEventBus eventBus) : RpcResultObjectHandler<MyTelegram.Schema.Account.RequestResetWebAuthorization, IBool>,
     Account.IResetWebAuthorizationHandler
@@ -19,7 +18,6 @@ internal sealed class ResetWebAuthorizationHandler(ICommandBus commandBus,
     protected override async Task<IBool> HandleCoreAsync(IRequestInput input,
         MyTelegram.Schema.Account.RequestResetWebAuthorization obj)
     {
-
         var deviceReadModel = await queryProcessor
             .ProcessAsync(new GetDeviceByHashQuery(input.UserId, obj.Hash));
         if (deviceReadModel != null)

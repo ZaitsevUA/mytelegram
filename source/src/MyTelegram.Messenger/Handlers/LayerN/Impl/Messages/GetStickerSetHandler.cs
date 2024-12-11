@@ -16,7 +16,7 @@ namespace MyTelegram.Handlers.Messages.LayerN;
 internal sealed class GetStickerSetHandler : RpcResultObjectHandler<MyTelegram.Schema.Messages.LayerN.RequestGetStickerSet, MyTelegram.Schema.Messages.IStickerSet>,
     Messages.LayerN.IGetStickerSetHandler
 {
-    protected override async Task<MyTelegram.Schema.Messages.IStickerSet> HandleCoreAsync(IRequestInput input,
+    protected override Task<MyTelegram.Schema.Messages.IStickerSet> HandleCoreAsync(IRequestInput input,
         MyTelegram.Schema.Messages.LayerN.RequestGetStickerSet obj)
     {
         if (obj.Stickerset is TInputStickerSetAnimatedEmoji)
@@ -37,12 +37,12 @@ internal sealed class GetStickerSetHandler : RpcResultObjectHandler<MyTelegram.S
 
             IStickerSet r = new Schema.Messages.TStickerSet { Set = set, Packs = packs, Documents = documents };
 
-            return r;
+            return Task.FromResult(r);
         }
 
         if (obj.Stickerset is TInputStickerSetShortName inputStickerSetShortName)
         {
-            return new Schema.Messages.TStickerSet
+            return Task.FromResult<IStickerSet>(new Schema.Messages.TStickerSet
             {
                 Documents = new TVector<IDocument>(),
                 Packs = new TVector<IStickerPack>(),
@@ -60,7 +60,7 @@ internal sealed class GetStickerSetHandler : RpcResultObjectHandler<MyTelegram.S
                     Title = "Animated Emojies",
                     Thumbs = new TVector<IPhotoSize>()
                 }
-            };
+            });
         }
 
         {
@@ -84,7 +84,7 @@ internal sealed class GetStickerSetHandler : RpcResultObjectHandler<MyTelegram.S
                 }
             };
 
-            return r;
+            return Task.FromResult(r);
         }
     }
 }

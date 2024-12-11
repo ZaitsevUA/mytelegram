@@ -8,7 +8,6 @@ using MyTelegram.Domain.Aggregates.Pts;
 using MyTelegram.Messenger;
 using MyTelegram.Messenger.CommandServer.BackgroundServices;
 using MyTelegram.Messenger.CommandServer.Extensions;
-using MyTelegram.Messenger.Extensions;
 using MyTelegram.Messenger.NativeAot;
 using MyTelegram.Services.NativeAot;
 using Serilog;
@@ -30,12 +29,12 @@ Log.Information("{Description} {Url}",
 Log.Information("MyTelegram messenger command server(API layer={Layer}) starting...",
     MyTelegramServerDomainConsts.Layer);
 
-AppDomain.CurrentDomain.UnhandledException += (s,
+AppDomain.CurrentDomain.UnhandledException += (_,
     e) =>
 {
-    Log.Error(e.ExceptionObject.ToString());
+    Log.Error(e.ExceptionObject.ToString() ?? string.Empty);
 };
-TaskScheduler.UnobservedTaskException += (s,
+TaskScheduler.UnobservedTaskException += (_,
     e) =>
 {
     Log.Error(e.Exception.ToString());
@@ -80,8 +79,8 @@ builder.ConfigureServices((ctx,
         options.Transport(t =>
         {
             t.UseRabbitMq(
-                    $"amqp://{rabbitMqOptions.UserName}:{rabbitMqOptions.Password}@{rabbitMqOptions.HostName}:{rabbitMqOptions.Port}",
-                    eventBusOptions.ClientName)
+                    $"amqp://{rabbitMqOptions!.UserName}:{rabbitMqOptions.Password}@{rabbitMqOptions.HostName}:{rabbitMqOptions.Port}",
+                    eventBusOptions!.ClientName)
                 .ExchangeNames(eventBusOptions.ExchangeName, eventBusOptions.TopicExchangeName ?? "RebusTopics")
                 ;
         });

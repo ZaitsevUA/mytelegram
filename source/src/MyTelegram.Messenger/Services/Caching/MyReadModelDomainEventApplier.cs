@@ -28,7 +28,7 @@ public class MyReadModelDomainEventApplier : IReadModelDomainEventApplier
         {
             var applyMethods = ApplyMethods.GetOrAdd(
                 readModelType,
-                t => new ConcurrentDictionary<Type, ApplyMethod>());
+                _ => new ConcurrentDictionary<Type, ApplyMethod>());
             var applyMethod = applyMethods.GetOrAdd(
                 domainEvent.EventType,
                 t =>
@@ -65,7 +65,7 @@ public class MyReadModelDomainEventApplier : IReadModelDomainEventApplier
         return appliedAny;
     }
 
-    private static MethodInfo GetMethod(Type instanceType, Type interfaceType, string name, Type[] parameters)
+    private static MethodInfo? GetMethod(Type instanceType, Type interfaceType, string name, Type[] parameters)
     {
         var methodInfo = instanceType
             .GetTypeInfo()

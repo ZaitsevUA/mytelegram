@@ -143,7 +143,7 @@ internal sealed class SendMessageHandler(
                             Id = Random.Shared.NextInt64(),
                             Url = $"{options.Value.JoinChatDomain}/+{link}",
                             DisplayUrl = $"{options.Value.JoinChatDomain}/+{link}",
-                            Type = channelReadModel.Broadcast ? "telegram_channel" : "telegram_megagroup",
+                            Type = channelReadModel!.Broadcast ? "telegram_channel" : "telegram_megagroup",
                             SiteName = "MyTelegram",
                             Title = channelReadModel.Title,
                             Description = $"Join this group on MyTelegram.",

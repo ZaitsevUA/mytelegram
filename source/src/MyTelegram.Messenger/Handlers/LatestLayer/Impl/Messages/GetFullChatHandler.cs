@@ -16,7 +16,6 @@ internal sealed class GetFullChatHandler(
     IQueryProcessor queryProcessor,
     IPeerHelper peerHelper,
     ILayeredService<IChatConverter> layeredChatService,
-    ILayeredService<IPhotoConverter> layeredPhotoService,
     ILayeredService<IUserConverter> layeredUserService,
     IUserAppService userAppService,
     IChannelAppService channelAppService,
@@ -34,8 +33,7 @@ internal sealed class GetFullChatHandler(
             case PeerType.Channel:
                 {
                     var channel = await channelAppService.GetAsync(obj.ChatId);
-                    var channelFull = await queryProcessor.ProcessAsync(new GetChannelFullByIdQuery(obj.ChatId),
-                        CancellationToken.None);
+                    var channelFull = await queryProcessor.ProcessAsync(new GetChannelFullByIdQuery(obj.ChatId));
                     var migratedFromChatReadModel = channelFull!.MigratedFromChatId == null
                         ? null
                         : await queryProcessor.ProcessAsync(new GetChatByChatIdQuery(channelFull.MigratedFromChatId.Value));
@@ -49,7 +47,7 @@ internal sealed class GetFullChatHandler(
                                 PeerType.Channel,
                                 obj.ChatId)),
                             CancellationToken.None);
-                    var photoReadModel = await photoAppService.GetAsync(channel.PhotoId);
+                    var photoReadModel = await photoAppService.GetAsync(channel!.PhotoId);
                     return layeredChatService.GetConverter(input.Layer).ToChatFull(
                         input.UserId,
                         channel,

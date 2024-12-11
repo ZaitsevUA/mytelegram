@@ -40,8 +40,8 @@ builder.Services.AddRebusEventBus(options =>
     options.Transport(t =>
     {
         t.UseRabbitMq(
-                $"amqp://{rabbitMqOptions.UserName}:{rabbitMqOptions.Password}@{rabbitMqOptions.HostName}:{rabbitMqOptions.Port}",
-                eventBusOptions.ClientName)
+                $"amqp://{rabbitMqOptions!.UserName}:{rabbitMqOptions.Password}@{rabbitMqOptions.HostName}:{rabbitMqOptions.Port}",
+                eventBusOptions!.ClientName)
             .ExchangeNames(eventBusOptions.ExchangeName, eventBusOptions.TopicExchangeName ?? "RebusTopics")
             ;
     });

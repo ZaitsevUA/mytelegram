@@ -1,7 +1,5 @@
-﻿using EventFlow.ReadStores;
-using Microsoft.Extensions.Hosting;
+﻿using Microsoft.Extensions.Hosting;
 using MyTelegram.Messenger.Services.Filters;
-using MyTelegram.Messenger.Services.Interfaces;
 
 namespace MyTelegram.Messenger.QueryServer.BackgroundServices;
 
@@ -9,11 +7,8 @@ public class MyTelegramMessengerServerInitBackgroundService(
     IServiceProvider serviceProvider,
     ILogger<MyTelegramMessengerServerInitBackgroundService> logger,
     IHandlerHelper handlerHelper,
-    IDataSeeder dataSeeder,
-    IIdGenerator idGenerator,
     IOptionsMonitor<MyTelegramMessengerServerOptions> options,
-    IMongoDbIndexesCreator mongoDbIndexesCreator,
-    IEnumerable<IReadStoreManager> readStoreManagers)
+    IMongoDbIndexesCreator mongoDbIndexesCreator)
     : BackgroundService
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)

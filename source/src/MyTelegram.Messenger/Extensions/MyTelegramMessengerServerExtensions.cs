@@ -98,7 +98,7 @@ public static class MyTelegramMessengerServerExtensions
         services.RegisterAllMappers();
         services.AddSingleton<ISagaStore, MySagaAggregateStore>();
 
-        services.AddSingleton(typeof(IDomainEventCacheHelper<>), typeof(DomainEventCacheHelper<>));
+        //services.AddSingleton(typeof(IDomainEventCacheHelper<>), typeof(DomainEventCacheHelper<>));
         services.AddSingleton<ICountryHelper, CountryHelper>();
 
         services.AddSingleton(typeof(IReadModelCacheHelper<>), typeof(ReadModelCacheHelper<>));

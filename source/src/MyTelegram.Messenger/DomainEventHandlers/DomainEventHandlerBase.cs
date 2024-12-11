@@ -249,25 +249,26 @@ public abstract class DomainEventHandlerBase(
 
         var globalSeqNo = await idGenerator.NextLongIdAsync(IdType.GlobalSeqNo);
 
-        Task.Run(() =>
-        {
-            var command = new CreateUpdatesCommand(UpdatesId.New,
-                ownerPeerId,
-                excludeAuthKeyId,
-                excludeUserId,
-                onlySendToUserId,
-                onlySendToThisAuthKeyId,
-                updatesType,
-                pts,
-                messageId,
-                date,
-                globalSeqNo,
-                allUpdates,
-                userIds,
-                chatIds
-            );
-            commandBus.PublishAsync(command, default);
-        });
+        _ = Task.Run(() =>
+          {
+              var command = new CreateUpdatesCommand(UpdatesId.New,
+                  ownerPeerId,
+                  excludeAuthKeyId,
+                  excludeUserId,
+                  onlySendToUserId,
+                  onlySendToThisAuthKeyId,
+                  updatesType,
+                  pts,
+                  messageId,
+                  date,
+                  globalSeqNo,
+                  allUpdates,
+                  userIds,
+                  chatIds
+              );
+              commandBus.PublishAsync(command, default);
+          });
+
         return globalSeqNo;
     }
 
@@ -418,8 +419,6 @@ public abstract class DomainEventHandlerBase(
             return;
         }
 
-        await SaveRpcResultAsync(requestInfo, data);
-
         if (pts > 0 && selfUserId != 0 && toPeerType != PeerType.Channel)
         {
             await ackCacheService.AddRpcPtsToCacheAsync(requestInfo.ReqMsgId, pts, 0, new Peer(PeerType.User, selfUserId))
@@ -440,21 +439,5 @@ public abstract class DomainEventHandlerBase(
         });
 
         return Task.CompletedTask;
-    }
-
-    private Task SaveRpcResultAsync<TData>(
-        //long reqMsgId,
-        RequestInfo requestInfo,
-        TData data) where TData : IObject
-    {
-        return Task.CompletedTask;
-
-        //var command = new CreateRpcResultCommand(
-        //    RpcResultId.New,
-        //    //RpcResultId.Create(requestInfo.UserId, requestInfo.ReqMsgId),
-        //    //reqMsgId,
-        //    requestInfo,
-        //    data.ToBytes());
-        //return _commandBus.PublishAsync(command, default);
     }
 }

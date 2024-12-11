@@ -135,7 +135,7 @@ public class UpdatePinnedMessageSaga : MyInMemoryAggregateSaga<UpdatePinnedMessa
     {
         if (_state.IsCompleted || forceCompleted)
         {
-            switch (_state.ToPeer.PeerType)
+            switch (_state.ToPeer!.PeerType)
             {
                 case PeerType.Channel:
                     {
@@ -197,7 +197,7 @@ public class UpdatePinnedMessageSaga : MyInMemoryAggregateSaga<UpdatePinnedMessa
         }
 
         var shouldReplyRpcResult =
-            (_state.ToPeer.PeerType == PeerType.Channel || _state.RequestInfo.UserId == peerId) && !_state.Pinned;
+            (_state.ToPeer!.PeerType == PeerType.Channel || _state.RequestInfo.UserId == peerId) && !_state.Pinned;
         Emit(new UpdatePinnedMessageCompletedSagaEvent(_state.RequestInfo,
             shouldReplyRpcResult,
             _state.RequestInfo.UserId,
