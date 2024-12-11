@@ -128,7 +128,7 @@ public class QueuedObjectMessageSender(
         TData data,
         int pts = 0) where TData : IObject
     {
-        return SendRpcMessageToClientAsync(requestInfo.PermAuthKeyId, data, pts, requestInfo.PermAuthKeyId);
+        return SendRpcMessageToClientAsync(requestInfo.ReqMsgId, data, pts, requestInfo.PermAuthKeyId);
     }
 
     public Task SendRpcMessageToClientAsync<TData>(long reqMsgId, TData data, int pts = 0, long permAuthKeyId = 0) where TData : IObject
