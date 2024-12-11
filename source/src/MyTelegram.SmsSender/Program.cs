@@ -8,10 +8,6 @@ using MyTelegram.SmsSender;
 using Rebus.Config;
 using Serilog;
 using Serilog.Sinks.SystemConsole.Themes;
-using System.Net;
-
-// Twilio new accounts and subaccounts are now required to use TLS 1.2 when accessing the REST API. 
-ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
 
 Log.Logger = new LoggerConfiguration()
     .Enrich.FromLogContext()

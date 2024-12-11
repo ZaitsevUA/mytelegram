@@ -14,42 +14,19 @@ namespace MyTelegram.Handlers.Account.LayerN;
 /// 400 WEBPUSH_TOKEN_INVALID The specified web push token is invalid.
 /// See <a href="https://corefork.telegram.org/method/account.registerDevice" />
 ///</summary>
-internal sealed class RegisterDeviceHandler : RpcResultObjectHandler<MyTelegram.Schema.Account.LayerN.RequestRegisterDevice, IBool>,
-    Account.LayerN.IRegisterDeviceHandler
+internal sealed class RegisterDeviceHandler(IHandlerHelper handlerHelper) :
+    ForwardRequestToNewHandler<MyTelegram.Schema.Account.LayerN.RequestRegisterDevice,
+        MyTelegram.Schema.Account.RequestRegisterDevice,
+        IBool>(handlerHelper),
+    LayerN.IRegisterDeviceHandler
 {
-    private readonly ICommandBus _commandBus;
-    private readonly IEventBus _eventBus;
-    public RegisterDeviceHandler(ICommandBus commandBus, IEventBus eventBus)
+    protected override RequestRegisterDevice GetNewData(IRequestInput input, Schema.Account.LayerN.RequestRegisterDevice obj)
     {
-        _commandBus = commandBus;
-        _eventBus = eventBus;
-    }
-
-    protected override async Task<IBool> HandleCoreAsync(IRequestInput input,
-        MyTelegram.Schema.Account.LayerN.RequestRegisterDevice obj)
-    {
-        var command = new RegisterDeviceCommand(PushDeviceId.Create(obj.Token),
-            input.ToRequestInfo(),
-            input.UserId,
-            input.AuthKeyId,
-            obj.TokenType,
-            obj.Token,
-            false,
-            false,
-            null,
-            null);
-        await _commandBus.PublishAsync(command, CancellationToken.None);
-
-        // tokenType:7 - MTProto separate session
-        if (obj.TokenType == 7)
+        return new RequestRegisterDevice
         {
-            if (long.TryParse(obj.Token, out var sessionId))
-            {
-                await _eventBus.PublishAsync(new DeviceRegisteredEvent(input.AuthKeyId, input.PermAuthKeyId,
-                    sessionId));
-            }
-        }
-
-        return new TBoolTrue();
+            Token = obj.Token,
+            TokenType = obj.TokenType,
+            OtherUids = []
+        };
     }
 }

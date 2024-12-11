@@ -1,5 +1,7 @@
 ﻿// ReSharper disable All
 
+using MyTelegram.Schema.Langpack;
+
 namespace MyTelegram.Handlers.Langpack.LayerN;
 
 ///<summary>
@@ -10,32 +12,18 @@ namespace MyTelegram.Handlers.Langpack.LayerN;
 /// 400 LANG_PACK_INVALID The provided language pack is invalid.
 /// See <a href="https://corefork.telegram.org/method/langpack.getLangPack" />
 ///</summary>
-internal sealed class GetLangPackHandler : RpcResultObjectHandler<MyTelegram.Schema.Langpack.LayerN.RequestGetLangPack, ILangPackDifference>,
+internal sealed class GetLangPackHandler(IHandlerHelper handlerHelper) : ForwardRequestToNewHandler<
+        MyTelegram.Schema.Langpack.LayerN.RequestGetLangPack,
+        MyTelegram.Schema.Langpack.RequestGetLangPack,
+        ILangPackDifference>(handlerHelper),
     Langpack.LayerN.IGetLangPackHandler
 {
-    private readonly ILanguageManager _languageManager;
-
-    public GetLangPackHandler(ILanguageManager languageManager)
+    protected override RequestGetLangPack GetNewData(IRequestInput input, Schema.Langpack.LayerN.RequestGetLangPack obj)
     {
-        _languageManager = languageManager;
-    }
-
-    protected override async Task<ILangPackDifference> HandleCoreAsync(IRequestInput input,
-        MyTelegram.Schema.Langpack.LayerN.RequestGetLangPack obj)
-    {
-        var langPack = _languageManager.GetDefaultLangPack(input);
-        ILangPackDifference r = new TLangPackDifference
+        return new RequestGetLangPack
         {
-            FromVersion = 0,
             LangCode = obj.LangCode,
-            Strings = new TVector<ILangPackString>((await _languageManager.GetAllLangPacksAsync(obj.LangCode, langPack)).Select(p => new TLangPackString
-            {
-                Key = p.Key,
-                Value = p.Value
-            })),
-            Version = 9999
+            LangPack = input.DeviceType.ToString().ToLower()
         };
-
-        return r;
     }
 }

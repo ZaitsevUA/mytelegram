@@ -42,7 +42,6 @@ internal sealed class GetStickerSetHandler : RpcResultObjectHandler<MyTelegram.S
 
         if (obj.Stickerset is TInputStickerSetShortName inputStickerSetShortName)
         {
-            //Logger.LogDebug($"get sticker short name:{inputStickerSetShortName.ShortName}");
             return new Schema.Messages.TStickerSet
             {
                 Documents = new TVector<IDocument>(),

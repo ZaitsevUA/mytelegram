@@ -3,6 +3,6 @@
 
 namespace MyTelegram.Handlers.Account.LayerN;
 
-public interface IRegisterDeviceHandler : IObjectHandler
+public interface IGetThemeHandler : IObjectHandler
 {
 }

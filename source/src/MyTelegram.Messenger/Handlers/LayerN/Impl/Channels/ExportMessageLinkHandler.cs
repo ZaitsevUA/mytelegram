@@ -12,12 +12,18 @@ namespace MyTelegram.Handlers.Channels.LayerN;
 /// 400 MSG_ID_INVALID Invalid message ID provided.
 /// See <a href="https://corefork.telegram.org/method/channels.exportMessageLink" />
 ///</summary>
-internal sealed class ExportMessageLinkHandler : RpcResultObjectHandler<MyTelegram.Schema.Channels.LayerN.RequestExportMessageLink, IExportedMessageLink>,
+internal sealed class ExportMessageLinkHandler(IHandlerHelper handlerHelper) : ForwardRequestToNewHandler<
+        MyTelegram.Schema.Channels.LayerN.RequestExportMessageLink,
+        MyTelegram.Schema.Channels.RequestExportMessageLink,
+        IExportedMessageLink>(handlerHelper),
     Channels.LayerN.IExportMessageLinkHandler
 {
-    protected override Task<IExportedMessageLink> HandleCoreAsync(IRequestInput input,
-        MyTelegram.Schema.Channels.LayerN.RequestExportMessageLink obj)
+    protected override RequestExportMessageLink GetNewData(IRequestInput input, Schema.Channels.LayerN.RequestExportMessageLink obj)
     {
-        throw new NotImplementedException();
+        return new RequestExportMessageLink
+        {
+            Channel = obj.Channel,
+            Id = obj.Id
+        };
     }
 }

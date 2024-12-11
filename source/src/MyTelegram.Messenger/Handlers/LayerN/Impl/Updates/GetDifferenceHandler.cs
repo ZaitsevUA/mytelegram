@@ -23,26 +23,20 @@ namespace MyTelegram.Handlers.Updates.LayerN;
 ///</summary>
 internal sealed class GetDifferenceHandlerLayerN(
     IHandlerHelper handlerHelper)
-    : BaseObjectHandler<MyTelegram.Schema.Updates.LayerN.RequestGetDifference, IObject>,
+    : ForwardRequestToNewHandler<
+            MyTelegram.Schema.Updates.LayerN.RequestGetDifference,
+            MyTelegram.Schema.Updates.RequestGetDifference,
+            MyTelegram.Schema.Updates.IDifference>(handlerHelper),
         Updates.IGetDifferenceHandler
 {
-    protected override async Task<IObject> HandleCoreAsync(IRequestInput input,
-        MyTelegram.Schema.Updates.LayerN.RequestGetDifference obj)
+    protected override RequestGetDifference GetNewData(IRequestInput request, Schema.Updates.LayerN.RequestGetDifference obj)
     {
-        const uint getDifferenceConstructorId = 0x19c2f763;
-        if (handlerHelper.TryGetHandler(getDifferenceConstructorId, out var handler))
+        return new RequestGetDifference
         {
-            var response = await handler.HandleAsync(input, new MyTelegram.Schema.Updates.RequestGetDifference
-            {
-                Date = obj.Date,
-                Pts = obj.Pts,
-                Qts = obj.Qts,
-                PtsTotalLimit = obj.PtsTotalLimit
-            });
-
-            return response!;
-        }
-
-        return null!;
+            Date = obj.Date,
+            Pts = obj.Pts,
+            Qts = obj.Qts,
+            PtsTotalLimit = obj.PtsTotalLimit
+        };
     }
 }

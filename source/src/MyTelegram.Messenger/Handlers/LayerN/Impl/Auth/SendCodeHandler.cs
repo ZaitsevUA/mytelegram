@@ -19,12 +19,22 @@ namespace MyTelegram.Handlers.Auth.LayerN;
 /// 400 Sorry, too many invalid attempts to enter your password. Please try again later. &nbsp;
 /// See <a href="https://corefork.telegram.org/method/auth.sendCode" />
 ///</summary>
-internal sealed class SendCodeHandler : RpcResultObjectHandler<MyTelegram.Schema.Auth.LayerN.RequestSendCode, MyTelegram.Schema.Auth.ISentCode>,
+internal sealed class SendCodeHandler(IHandlerHelper handlerHelper) : ForwardRequestToNewHandler<MyTelegram.Schema.Auth.LayerN.RequestSendCode,
+        MyTelegram.Schema.Auth.RequestSendCode,
+        MyTelegram.Schema.Auth.ISentCode>(handlerHelper),
     Auth.LayerN.ISendCodeHandler
 {
-    protected override Task<MyTelegram.Schema.Auth.ISentCode> HandleCoreAsync(IRequestInput input,
-        MyTelegram.Schema.Auth.LayerN.RequestSendCode obj)
+    protected override RequestSendCode GetNewData(IRequestInput input, Schema.Auth.LayerN.RequestSendCode obj)
     {
-        throw new NotImplementedException();
+        return new RequestSendCode
+        {
+            ApiHash = obj.ApiHash,
+            ApiId = obj.ApiId,
+            PhoneNumber = obj.PhoneNumber,
+            Settings = new TCodeSettings
+            {
+                AllowFlashcall = obj.AllowFlashcall,
+            }
+        };
     }
 }

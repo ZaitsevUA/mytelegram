@@ -16,43 +16,20 @@ namespace MyTelegram.Handlers.Auth.LayerN;
 /// 400 PHONE_NUMBER_OCCUPIED The phone number is already in use.
 /// See <a href="https://corefork.telegram.org/method/auth.signUp" />
 ///</summary>
-internal sealed class SignUpHandler : RpcResultObjectHandler<MyTelegram.Schema.Auth.LayerN.RequestSignUp, MyTelegram.Schema.Auth.IAuthorization>,
+internal sealed class SignUpHandler(IHandlerHelper handlerHelper) :
+    ForwardRequestToNewHandler<MyTelegram.Schema.Auth.LayerN.RequestSignUp,
+        MyTelegram.Schema.Auth.RequestSignUp,
+        MyTelegram.Schema.Auth.IAuthorization>(handlerHelper),
     Auth.ISignUpHandler
 {
-    private readonly ICommandBus _commandBus;
-    private readonly IQueryProcessor _queryProcessor;
-    private readonly IRandomHelper _randomHelper;
-
-    public SignUpHandler(
-        ICommandBus commandBus,
-        IRandomHelper randomHelper,
-        IQueryProcessor queryProcessor)
+    protected override RequestSignUp GetNewData(IRequestInput input, Schema.Auth.LayerN.RequestSignUp obj)
     {
-        _commandBus = commandBus;
-        _randomHelper = randomHelper;
-        _queryProcessor = queryProcessor;
-    }
-
-    protected override async Task<MyTelegram.Schema.Auth.IAuthorization> HandleCoreAsync(IRequestInput input,
-        MyTelegram.Schema.Auth.LayerN.RequestSignUp obj)
-    {
-        var phoneNumber = obj.PhoneNumber.ToPhoneNumber();
-        var userReadModel = await _queryProcessor
-            .ProcessAsync(new GetUserByPhoneNumberQuery(phoneNumber), default)
-     ;
-        var userId = userReadModel?.UserId ?? 0;
-
-        var command = new CheckSignUpCodeCommand(AppCodeId.Create(phoneNumber, obj.PhoneCodeHash),
-            input.ToRequestInfo(),
-            obj.PhoneCodeHash,
-            userId,
-            _randomHelper.NextLong(),
-            phoneNumber,
-            obj.FirstName,
-            obj.LastName);
-
-        await _commandBus.PublishAsync(command, CancellationToken.None);
-
-        return null!;
+        return new RequestSignUp
+        {
+            FirstName = obj.FirstName,
+            LastName = obj.LastName,
+            PhoneCodeHash = obj.PhoneCodeHash,
+            PhoneNumber = obj.PhoneNumber,
+        };
     }
 }

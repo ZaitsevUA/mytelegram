@@ -1,5 +1,7 @@
 ﻿// ReSharper disable All
 
+using MyTelegram.Schema.Langpack;
+
 namespace MyTelegram.Handlers.Langpack.LayerN;
 
 ///<summary>
@@ -10,18 +12,19 @@ namespace MyTelegram.Handlers.Langpack.LayerN;
 /// 400 LANG_PACK_INVALID The provided language pack is invalid.
 /// See <a href="https://corefork.telegram.org/method/langpack.getStrings" />
 ///</summary>
-internal sealed class GetStringsHandler : RpcResultObjectHandler<MyTelegram.Schema.Langpack.LayerN.RequestGetStrings, TVector<MyTelegram.Schema.ILangPackString>>,
+internal sealed class GetStringsHandler(IHandlerHelper handlerHelper) : ForwardRequestToNewHandler<
+        MyTelegram.Schema.Langpack.LayerN.RequestGetStrings,
+        MyTelegram.Schema.Langpack.RequestGetStrings,
+        TVector<MyTelegram.Schema.ILangPackString>>(handlerHelper),
     Langpack.LayerN.IGetStringsHandler
 {
-    protected override Task<TVector<ILangPackString>> HandleCoreAsync(IRequestInput input,
-        MyTelegram.Schema.Langpack.LayerN.RequestGetStrings obj)
+    protected override RequestGetStrings GetNewData(IRequestInput request, Schema.Langpack.LayerN.RequestGetStrings obj)
     {
-        var r = new TVector<ILangPackString>(obj.Keys.Select(p => new TLangPackString
+        return new RequestGetStrings
         {
-            Key = p,
-            Value = p
-        }));
-
-        return Task.FromResult(r);
+            LangCode = obj.LangCode,
+            Keys = obj.Keys,
+            LangPack = request.DeviceType.ToString().ToLower()
+        };
     }
 }
