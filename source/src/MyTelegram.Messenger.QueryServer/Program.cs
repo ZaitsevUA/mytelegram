@@ -103,7 +103,7 @@ builder.ConfigureServices((ctx,
         options.TypeInfoResolverChain.Add(MyMessengerJsonContext.Default);
     });
 
-    services.AddHostedService<MyTelegramMessengerServerInitBackgroundService>();
+    services.AddHostedService<MyTelegramQueryServerBackgroundService>();
     services.AddHostedService<DataProcessorBackgroundService>();
     services.AddHostedService<ObjectMessageSenderBackgroundService>();
     services.AddHostedService<MyTelegramInvokeAfterMsgProcessorBackgroundService>();

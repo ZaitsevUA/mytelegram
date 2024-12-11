@@ -3,9 +3,9 @@ using MyTelegram.Messenger.Services.Filters;
 
 namespace MyTelegram.Messenger.QueryServer.BackgroundServices;
 
-public class MyTelegramMessengerServerInitBackgroundService(
+public class MyTelegramQueryServerBackgroundService(
     IServiceProvider serviceProvider,
-    ILogger<MyTelegramMessengerServerInitBackgroundService> logger,
+    ILogger<MyTelegramQueryServerBackgroundService> logger,
     IHandlerHelper handlerHelper,
     IOptionsMonitor<MyTelegramMessengerServerOptions> options,
     IMongoDbIndexesCreator mongoDbIndexesCreator)
