@@ -45,7 +45,14 @@ public class HandlerHelper(IServiceProvider serviceProvider, ILogger<HandlerHelp
 
     public bool TryGetHandler(uint objectId, [NotNullWhen(true)] out IObjectHandler? handler)
     {
-        return _handlers.TryGetValue(objectId, out handler);
+        if (_handlers.TryGetValue(objectId, out handler))
+        {
+            return true;
+        }
+
+        logger.LogWarning("****************** Unsupported request, objectId: {ObjectId:x2}", objectId);
+
+        throw new NotImplementedException();
     }
 
     public bool TryGetHandlerName(uint objectId, [NotNullWhen(true)] out string? handlerName)
