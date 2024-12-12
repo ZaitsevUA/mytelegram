@@ -1,12 +1,11 @@
 ﻿using MyTelegram.Schema;
 using System.Diagnostics.CodeAnalysis;
-using System.Reflection;
 
 namespace MyTelegram.Services.Services;
 
 public interface IHandlerHelper
 {
-    void InitAllHandlers(Assembly assembly, int totalHandlersCount = 0);
+    void InitAllHandlers();
 
     bool TryGetHandler(uint objectId,
         [NotNullWhen(true)] out IObjectHandler? handler);

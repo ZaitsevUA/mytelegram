@@ -17,7 +17,7 @@ public class MyTelegramCommandServerBackgroundService(
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         logger.LogInformation("Command server starting...");
-        handlerHelper.InitAllHandlers(typeof(MyTelegramMessengerServerExtensions).Assembly);
+        handlerHelper.InitAllHandlers();
         //IdGeneratorFactory.SetDefaultIdGenerator(_idGenerator);
         await mongoDbIndexesCreator.CreateAllIndexesAsync();
         if (_options.UseInMemoryFilters)

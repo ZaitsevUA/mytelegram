@@ -2,7 +2,7 @@
 
 namespace MyTelegram.Services.Services;
 
-public abstract class BaseObjectHandler<TInput, TOutput> : IObjectHandler
+public abstract class BaseObjectHandler<TInput, TOutput> : IObjectHandler, ITransientDependency
     where TInput : IRequest<TOutput>
     where TOutput : IObject
 {

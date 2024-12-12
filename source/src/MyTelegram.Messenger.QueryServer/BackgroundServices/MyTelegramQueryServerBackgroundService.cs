@@ -14,7 +14,7 @@ public class MyTelegramQueryServerBackgroundService(
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         logger.LogInformation("Query server starting...");
-        handlerHelper.InitAllHandlers(typeof(MyTelegramMessengerServerExtensions).Assembly);
+        handlerHelper.InitAllHandlers();
         await mongoDbIndexesCreator.CreateAllIndexesAsync();
         if (options.CurrentValue.UseInMemoryFilters)
         {
