@@ -206,3 +206,13 @@ public class DocumentReadModel : Impl.DocumentReadModel, IMongoDbReadModel
 //{
 
 //}
+
+public class LanguageReadModel : Impl.LanguageReadModel, IMongoDbReadModel
+{
+
+}
+
+public class LanguageTextReadModel : Impl.LanguageTextReadModel, IMongoDbReadModel
+{
+
+}

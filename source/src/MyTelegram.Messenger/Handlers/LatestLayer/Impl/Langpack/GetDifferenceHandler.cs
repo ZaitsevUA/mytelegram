@@ -9,19 +9,28 @@ namespace MyTelegram.Handlers.Langpack;
 /// 400 LANG_PACK_INVALID The provided language pack is invalid.
 /// See <a href="https://corefork.telegram.org/method/langpack.getDifference" />
 ///</summary>
-internal sealed class GetDifferenceHandler : RpcResultObjectHandler<MyTelegram.Schema.Langpack.RequestGetDifference, MyTelegram.Schema.ILangPackDifference>,
+internal sealed class GetDifferenceHandler(ILanguageCacheService languageCacheService) : RpcResultObjectHandler<MyTelegram.Schema.Langpack.RequestGetDifference, MyTelegram.Schema.ILangPackDifference>,
     Langpack.IGetDifferenceHandler
 {
-    protected override Task<ILangPackDifference> HandleCoreAsync(IRequestInput input,
+    protected override async Task<ILangPackDifference> HandleCoreAsync(IRequestInput input,
         MyTelegram.Schema.Langpack.RequestGetDifference obj)
     {
-        ILangPackDifference r = new TLangPackDifference
+        var texts = await languageCacheService.GetLanguageDifferenceAsync(obj.LangCode, obj.LangPack, obj.FromVersion);
+
+        var version = texts.FirstOrDefault()?.LanguageVersion ?? obj.FromVersion;
+
+        var langPackDifference = new TLangPackDifference
         {
-            FromVersion = 9999,
+            FromVersion = obj.FromVersion,
             LangCode = obj.LangCode,
-            Strings = new(),
-            Version = 9999
+            Strings = new(texts.Select(p => new TLangPackString
+            {
+                Key = p.Key,
+                Value = p.Value
+            })),
+            Version = version
         };
-        return Task.FromResult(r);
+
+        return langPackDifference;
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Hosting;
+using MyTelegram.Messenger.Services.Caching;
 using MyTelegram.Messenger.Services.Filters;
 
 namespace MyTelegram.Messenger.QueryServer.BackgroundServices;
@@ -8,6 +9,7 @@ public class MyTelegramQueryServerBackgroundService(
     ILogger<MyTelegramQueryServerBackgroundService> logger,
     IHandlerHelper handlerHelper,
     IOptionsMonitor<MyTelegramMessengerServerOptions> options,
+    ILanguageCacheService languageCacheService,
     IMongoDbIndexesCreator mongoDbIndexesCreator)
     : BackgroundService
 {
@@ -21,7 +23,9 @@ public class MyTelegramQueryServerBackgroundService(
             await serviceProvider.GetRequiredService<IInMemoryFilterDataLoader>().LoadAllFilterDataAsync()
          ;
         }
-        //await _dataSeeder.SeedAsync();
+        await languageCacheService.LoadAllLanguagesAsync();
+        await languageCacheService.LoadAllLanguageTextAsync();
+
         logger.LogInformation("Query server started");
     }
 }

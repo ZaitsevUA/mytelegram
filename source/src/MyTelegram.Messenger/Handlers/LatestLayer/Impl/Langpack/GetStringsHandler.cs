@@ -10,23 +10,34 @@ namespace MyTelegram.Handlers.Langpack;
 /// 400 LANG_PACK_INVALID The provided language pack is invalid.
 /// See <a href="https://corefork.telegram.org/method/langpack.getStrings" />
 ///</summary>
-internal sealed class GetStringsHandler : RpcResultObjectHandler<MyTelegram.Schema.Langpack.RequestGetStrings, TVector<MyTelegram.Schema.ILangPackString>>,
+internal sealed class GetStringsHandler(ILanguageCacheService languageCacheService) : RpcResultObjectHandler<MyTelegram.Schema.Langpack.RequestGetStrings, TVector<MyTelegram.Schema.ILangPackString>>,
     Langpack.IGetStringsHandler
 {
-    protected override Task<TVector<ILangPackString>> HandleCoreAsync(IRequestInput input,
+    protected override async Task<TVector<ILangPackString>> HandleCoreAsync(IRequestInput input,
         MyTelegram.Schema.Langpack.RequestGetStrings obj)
     {
-        // foreach (var objKey in obj.Keys)
-        // {
-        //     Console.WriteLine($"Lang key:{objKey}");
-        // }
+        var texts = (await languageCacheService.GetLanguageTextsAsync(obj.LangCode, obj.LangPack, obj.Keys)).ToDictionary(k => k.Key, v => v);
+        var langPackStrings = new TVector<ILangPackString>();
 
-        var r = new TVector<ILangPackString>(obj.Keys.Select(p => new TLangPackString
+        foreach (var key in obj.Keys)
         {
-            Key = p,
-            Value = p
-        }));
+            if (texts.TryGetValue(key, out var item))
+            {
+                langPackStrings.Add(new TLangPackString
+                {
+                    Key = item.Key,
+                    Value = item.Value
+                });
+            }
+            else
+            {
+                langPackStrings.Add(new TLangPackStringDeleted
+                {
+                    Key = key
+                });
+            }
+        }
 
-        return Task.FromResult(r);
+        return langPackStrings;
     }
 }

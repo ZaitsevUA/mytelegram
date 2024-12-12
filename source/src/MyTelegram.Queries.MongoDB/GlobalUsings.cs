@@ -48,3 +48,5 @@ global using ChatAdminReadModel = MyTelegram.ReadModel.MongoDB.ChatAdminReadMode
 global using UpdatesReadModel = MyTelegram.ReadModel.MongoDB.UpdatesReadModel;
 global using ChatInviteImporterReadModel = MyTelegram.ReadModel.MongoDB.ChatInviteImporterReadModel;
 global using ContactReadModel = MyTelegram.ReadModel.MongoDB.ContactReadModel;
+global using LanguageReadModel = MyTelegram.ReadModel.MongoDB.LanguageReadModel;
+global using LanguageTextReadModel = MyTelegram.ReadModel.MongoDB.LanguageTextReadModel;

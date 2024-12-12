@@ -10,36 +10,33 @@ namespace MyTelegram.Handlers.Langpack;
 /// 400 LANG_PACK_INVALID The provided language pack is invalid.
 /// See <a href="https://corefork.telegram.org/method/langpack.getLangPack" />
 ///</summary>
-internal sealed class GetLangPackHandler : RpcResultObjectHandler<MyTelegram.Schema.Langpack.RequestGetLangPack, MyTelegram.Schema.ILangPackDifference>,
+internal sealed class GetLangPackHandler(ILanguageCacheService languageCacheService) : RpcResultObjectHandler<MyTelegram.Schema.Langpack.RequestGetLangPack, MyTelegram.Schema.ILangPackDifference>,
     Langpack.IGetLangPackHandler
 {
-    private readonly ILanguageManager _languageManager;
-
-    public GetLangPackHandler(ILanguageManager languageManager)
-    {
-        _languageManager = languageManager;
-    }
-
     protected override async Task<ILangPackDifference> HandleCoreAsync(IRequestInput input,
         MyTelegram.Schema.Langpack.RequestGetLangPack obj)
     {
-        var langPack = obj.LangPack;
-        if (string.IsNullOrEmpty(langPack))
+        var langPack = obj.LangPack ?? input.DeviceType.ToString().ToLower();
+        var languageReadModel = await languageCacheService.GetLanguageAsync(obj.LangCode, langPack);
+        if (languageReadModel == null)
         {
-            langPack = _languageManager.GetDefaultLangPack(input);
+            RpcErrors.RpcErrors400.LangPackInvalid.ThrowRpcError();
         }
-        ILangPackDifference r = new TLangPackDifference
+
+        var texts = await languageCacheService.GetLanguageTextAsync(obj.LangCode, langPack);
+
+        var langPackDifference = new TLangPackDifference
         {
             FromVersion = 0,
             LangCode = obj.LangCode,
-            Strings = new TVector<ILangPackString>((await _languageManager.GetAllLangPacksAsync(obj.LangCode, langPack)).Select(p => new TLangPackString
+            Version = languageReadModel!.LanguageVersion,
+            Strings = new TVector<ILangPackString>(texts.Select(p => new TLangPackString
             {
                 Key = p.Key,
                 Value = p.Value
-            })),
-            Version = 9999
+            }))
         };
 
-        return r;
+        return langPackDifference;
     }
 }

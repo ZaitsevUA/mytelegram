@@ -8,5 +8,8 @@ public enum DeviceType
     Ios,
     WebA,
     WebK,
-    TdLib
+    TdLib,
+    MacOs,
+    AndroidX,
+    Unigram
 }

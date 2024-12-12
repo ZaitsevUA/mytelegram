@@ -3,6 +3,7 @@ using MyTelegram.EventFlow.MongoDB;
 using MyTelegram.Domain.Aggregates.PeerSettings;
 using MyTelegram.Domain.Aggregates.Photo;
 using MongoDB.Bson.Serialization.Conventions;
+using MyTelegram.Domain.Aggregates.Language;
 
 namespace MyTelegram.ReadModel.MongoDB;
 
@@ -96,6 +97,8 @@ public static class MyTelegramServerReadModelMongoDbExtensions
             .UseMongoDbReadModel<ImportedContactAggregate, ImportedContactId, ImportedContactReadModel>()
             .UseMongoDbReadModel<PtsAggregate, PtsId, PtsReadModel>()
             .UseMongoDbReadModel<PtsAggregate, PtsId, PtsForAuthKeyIdReadModel>()
+            .UseMongoDbReadModel<LanguageAggregate, LanguageId, LanguageReadModel>()
+            .UseMongoDbReadModel<LanguageTextAggregate, LanguageTextId, LanguageTextReadModel>()
             ;
     }
 }
