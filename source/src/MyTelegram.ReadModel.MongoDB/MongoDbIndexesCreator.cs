@@ -69,6 +69,11 @@ public class MongoDbIndexesCreator(
         await CreateIndexAsync<PollReadModel>(p => p.PollId);
         await CreateIndexAsync<PollAnswerVoterReadModel>(p => p.PollId);
         await CreateIndexAsync<PollAnswerVoterReadModel>(p => p.Option);
+
+        await CreateIndexAsync<LanguageReadModel>(p => p.LanguageCode);
+        await CreateIndexAsync<LanguageTextReadModel>(p => p.LanguageCode);
+        await CreateIndexAsync<LanguageTextReadModel>(p => p.Platform);
+
         var snapShotCollectionName = "snapShots";
         await CreateIndexAsync<MongoDbSnapshotDataModel>(p => p.AggregateId, snapShotCollectionName)
             ;
