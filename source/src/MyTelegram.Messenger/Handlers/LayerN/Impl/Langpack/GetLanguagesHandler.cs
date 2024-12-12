@@ -13,8 +13,7 @@ namespace MyTelegram.Handlers.Langpack.LayerN;
 ///</summary>
 internal sealed class GetLanguagesHandler(IHandlerHelper handlerHelper) : ForwardRequestToNewHandler<
         MyTelegram.Schema.Langpack.LayerN.RequestGetLanguages,
-        MyTelegram.Schema.Langpack.RequestGetLanguages,
-        TVector<ILangPackLanguage>>(handlerHelper),
+        MyTelegram.Schema.Langpack.RequestGetLanguages>(handlerHelper),
     Langpack.LayerN.IGetLanguagesHandler
 {
     protected override RequestGetLanguages GetNewData(IRequestInput request, Schema.Langpack.LayerN.RequestGetLanguages obj)

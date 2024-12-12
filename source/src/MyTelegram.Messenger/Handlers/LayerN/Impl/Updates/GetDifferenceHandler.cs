@@ -25,8 +25,7 @@ internal sealed class GetDifferenceHandlerLayerN(
     IHandlerHelper handlerHelper)
     : ForwardRequestToNewHandler<
             MyTelegram.Schema.Updates.LayerN.RequestGetDifference,
-            MyTelegram.Schema.Updates.RequestGetDifference,
-            MyTelegram.Schema.Updates.IDifference>(handlerHelper),
+            MyTelegram.Schema.Updates.RequestGetDifference>(handlerHelper),
         Updates.IGetDifferenceHandler
 {
     protected override RequestGetDifference GetNewData(IRequestInput request, Schema.Updates.LayerN.RequestGetDifference obj)

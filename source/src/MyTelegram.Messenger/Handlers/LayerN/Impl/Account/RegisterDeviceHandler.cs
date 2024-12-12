@@ -16,8 +16,7 @@ namespace MyTelegram.Handlers.Account.LayerN;
 ///</summary>
 internal sealed class RegisterDeviceHandler(IHandlerHelper handlerHelper) :
     ForwardRequestToNewHandler<MyTelegram.Schema.Account.LayerN.RequestRegisterDevice,
-        MyTelegram.Schema.Account.RequestRegisterDevice,
-        IBool>(handlerHelper),
+        MyTelegram.Schema.Account.RequestRegisterDevice>(handlerHelper),
     LayerN.IRegisterDeviceHandler
 {
     protected override RequestRegisterDevice GetNewData(IRequestInput input, Schema.Account.LayerN.RequestRegisterDevice obj)

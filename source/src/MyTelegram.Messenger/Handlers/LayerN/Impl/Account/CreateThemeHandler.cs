@@ -12,8 +12,7 @@ namespace MyTelegram.Handlers.Account.LayerN;
 ///</summary>
 internal sealed class CreateThemeHandler(IHandlerHelper handlerHelper) :
     ForwardRequestToNewHandler<MyTelegram.Schema.Account.LayerN.RequestCreateTheme,
-        MyTelegram.Schema.Account.RequestCreateTheme,
-        MyTelegram.Schema.ITheme>(handlerHelper),
+        MyTelegram.Schema.Account.RequestCreateTheme>(handlerHelper),
     LayerN.ICreateThemeHandler
 {
     protected override RequestCreateTheme GetNewData(IRequestInput input, Schema.Account.LayerN.RequestCreateTheme obj)

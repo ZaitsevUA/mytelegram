@@ -14,8 +14,7 @@ namespace MyTelegram.Handlers.Messages.LayerN;
 /// See <a href="https://corefork.telegram.org/method/messages.getHistory" />
 ///</summary>
 internal sealed class GetHistoryHandler(IHandlerHelper handlerHelper) : ForwardRequestToNewHandler<MyTelegram.Schema.Messages.LayerN.RequestGetHistory,
-        MyTelegram.Schema.Messages.RequestGetHistory,
-        MyTelegram.Schema.Messages.IMessages>(handlerHelper),
+        MyTelegram.Schema.Messages.RequestGetHistory>(handlerHelper),
     Messages.LayerN.IGetHistoryHandler
 {
     protected override RequestGetHistory GetNewData(IRequestInput request, Schema.Messages.LayerN.RequestGetHistory obj)

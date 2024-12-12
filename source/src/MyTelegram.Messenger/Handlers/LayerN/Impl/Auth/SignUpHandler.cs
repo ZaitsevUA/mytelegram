@@ -18,8 +18,7 @@ namespace MyTelegram.Handlers.Auth.LayerN;
 ///</summary>
 internal sealed class SignUpHandler(IHandlerHelper handlerHelper) :
     ForwardRequestToNewHandler<MyTelegram.Schema.Auth.LayerN.RequestSignUp,
-        MyTelegram.Schema.Auth.RequestSignUp,
-        MyTelegram.Schema.Auth.IAuthorization>(handlerHelper),
+        MyTelegram.Schema.Auth.RequestSignUp>(handlerHelper),
     Auth.ISignUpHandler
 {
     protected override RequestSignUp GetNewData(IRequestInput input, Schema.Auth.LayerN.RequestSignUp obj)

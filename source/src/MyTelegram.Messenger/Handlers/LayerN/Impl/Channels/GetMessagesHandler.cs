@@ -17,8 +17,7 @@ namespace MyTelegram.Handlers.Channels.LayerN;
 ///</summary>
 internal sealed class GetMessagesHandler(IHandlerHelper handlerHelper) : ForwardRequestToNewHandler<
         MyTelegram.Schema.Channels.LayerN.RequestGetMessages,
-        MyTelegram.Schema.Channels.RequestGetMessages,
-        MyTelegram.Schema.Messages.IMessages>(handlerHelper),
+        MyTelegram.Schema.Channels.RequestGetMessages>(handlerHelper),
     Channels.LayerN.IGetMessagesHandler
 {
     protected override RequestGetMessages GetNewData(IRequestInput input, Schema.Channels.LayerN.RequestGetMessages obj)

@@ -19,8 +19,7 @@ namespace MyTelegram.Handlers.Channels.LayerN;
 ///</summary>
 internal sealed class GetParticipantHandler(IHandlerHelper handlerHelper)
     : ForwardRequestToNewHandler<MyTelegram.Schema.Channels.LayerN.RequestGetParticipant,
-            MyTelegram.Schema.Channels.RequestGetParticipant,
-            MyTelegram.Schema.Channels.IChannelParticipant>(handlerHelper),
+            MyTelegram.Schema.Channels.RequestGetParticipant>(handlerHelper),
         Channels.LayerN.IGetParticipantHandler
 {
     protected override RequestGetParticipant GetNewData(IRequestInput input, Schema.Channels.LayerN.RequestGetParticipant obj)

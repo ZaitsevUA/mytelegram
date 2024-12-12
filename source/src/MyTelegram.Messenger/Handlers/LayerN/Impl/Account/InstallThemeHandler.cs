@@ -7,9 +7,7 @@ namespace MyTelegram.Handlers.Account.LayerN;
 ///</summary>
 internal sealed class InstallThemeHandler(IHandlerHelper handlerHelper) :
     ForwardRequestToNewHandler<MyTelegram.Schema.Account.LayerN.RequestInstallTheme,
-        MyTelegram.Schema.Account.RequestInstallTheme,
-        IBool
-    >(handlerHelper),
+        MyTelegram.Schema.Account.RequestInstallTheme>(handlerHelper),
     LayerN.IInstallThemeHandler
 {
     protected override RequestInstallTheme GetNewData(IRequestInput input, Schema.Account.LayerN.RequestInstallTheme obj)

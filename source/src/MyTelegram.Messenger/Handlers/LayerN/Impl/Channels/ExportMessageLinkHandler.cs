@@ -14,8 +14,7 @@ namespace MyTelegram.Handlers.Channels.LayerN;
 ///</summary>
 internal sealed class ExportMessageLinkHandler(IHandlerHelper handlerHelper) : ForwardRequestToNewHandler<
         MyTelegram.Schema.Channels.LayerN.RequestExportMessageLink,
-        MyTelegram.Schema.Channels.RequestExportMessageLink,
-        IExportedMessageLink>(handlerHelper),
+        MyTelegram.Schema.Channels.RequestExportMessageLink>(handlerHelper),
     Channels.LayerN.IExportMessageLinkHandler
 {
     protected override RequestExportMessageLink GetNewData(IRequestInput input, Schema.Channels.LayerN.RequestExportMessageLink obj)

@@ -12,8 +12,7 @@ namespace MyTelegram.Handlers.Messages.LayerN;
 ///</summary>
 internal sealed class UnpinAllMessagesHandler(IHandlerHelper handlerHelper)
     : ForwardRequestToNewHandler<MyTelegram.Schema.Messages.LayerN.RequestUnpinAllMessages,
-            MyTelegram.Schema.Messages.RequestUnpinAllMessages,
-            MyTelegram.Schema.Messages.IAffectedHistory>(handlerHelper),
+            MyTelegram.Schema.Messages.RequestUnpinAllMessages>(handlerHelper),
         Messages.IUnpinAllMessagesHandler
 {
     protected override RequestUnpinAllMessages GetNewData(IRequestInput request, Schema.Messages.LayerN.RequestUnpinAllMessages obj)

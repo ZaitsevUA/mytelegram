@@ -19,9 +19,9 @@ namespace MyTelegram.Handlers.Auth.LayerN;
 /// 400 Sorry, too many invalid attempts to enter your password. Please try again later. &nbsp;
 /// See <a href="https://corefork.telegram.org/method/auth.sendCode" />
 ///</summary>
-internal sealed class SendCodeHandler(IHandlerHelper handlerHelper) : ForwardRequestToNewHandler<MyTelegram.Schema.Auth.LayerN.RequestSendCode,
-        MyTelegram.Schema.Auth.RequestSendCode,
-        MyTelegram.Schema.Auth.ISentCode>(handlerHelper),
+internal sealed class SendCodeHandler(IHandlerHelper handlerHelper) : ForwardRequestToNewHandler<
+        MyTelegram.Schema.Auth.LayerN.RequestSendCode,
+        MyTelegram.Schema.Auth.RequestSendCode>(handlerHelper),
     Auth.LayerN.ISendCodeHandler
 {
     protected override RequestSendCode GetNewData(IRequestInput input, Schema.Auth.LayerN.RequestSendCode obj)

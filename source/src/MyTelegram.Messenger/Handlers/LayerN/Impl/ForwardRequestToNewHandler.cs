@@ -1,12 +1,11 @@
 ﻿// ReSharper disable All
 
 namespace MyTelegram.Messenger.Handlers;
-public abstract class ForwardRequestToNewHandler<TInput, TNewInput, TOutput>(IHandlerHelper handlerHelper) : BaseObjectHandler<TInput, TOutput>
-    where TInput : IRequest<TOutput>
-    where TNewInput : IRequest<TOutput>
-    where TOutput : IObject
+public abstract class ForwardRequestToNewHandler<TInput, TNewInput>(IHandlerHelper handlerHelper) : BaseObjectHandler<TInput, IObject>
+    where TInput : IRequest<IObject>
+    where TNewInput : IRequest<IObject>
 {
-    protected override async Task<TOutput> HandleCoreAsync(IRequestInput request, TInput obj)
+    protected override async Task<IObject> HandleCoreAsync(IRequestInput request, TInput obj)
     {
         var newRequestData = GetNewData(request, obj);
         if (newRequestData.ConstructorId == obj.ConstructorId)
@@ -18,7 +17,7 @@ public abstract class ForwardRequestToNewHandler<TInput, TNewInput, TOutput>(IHa
         {
             var result = await handler.HandleAsync(request, GetNewData(request, obj));
 
-            return (TOutput)result;
+            return result;
         }
 
         throw new NotImplementedException();
