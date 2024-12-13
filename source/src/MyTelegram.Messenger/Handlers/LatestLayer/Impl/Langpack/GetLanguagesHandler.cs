@@ -18,7 +18,12 @@ internal sealed class GetLanguagesHandler(ILanguageCacheService languageCacheSer
     protected override async Task<TVector<ILangPackLanguage>> HandleCoreAsync(IRequestInput input,
         RequestGetLanguages obj)
     {
-        var languageReadModels = await languageCacheService.GetAllLanguagesAsync();
+        var langPack = obj.LangPack;
+        if (string.IsNullOrEmpty(langPack))
+        {
+            langPack = input.DeviceType.ToString().ToLower();
+        }
+        var languageReadModels = await languageCacheService.GetAllLanguagesAsync(langPack);
         var languages = new TVector<ILangPackLanguage>();
         foreach (var languageReadModel in languageReadModels)
         {

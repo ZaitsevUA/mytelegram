@@ -1,4 +1,6 @@
-﻿namespace MyTelegram.Messenger.Services.Caching;
+﻿using System.Collections.Frozen;
+
+namespace MyTelegram.Messenger.Services.Caching;
 
 public class LanguageTextItem(string key, string value, int languageVersion)
 {
@@ -11,7 +13,7 @@ public interface ILanguageCacheService
 {
     Task LoadAllLanguagesAsync();
     Task LoadAllLanguageTextAsync();
-    Task<IReadOnlyCollection<ILanguageReadModel>> GetAllLanguagesAsync();
+    Task<IReadOnlyCollection<ILanguageReadModel>> GetAllLanguagesAsync(string languagePack);
 
     Task<IReadOnlyCollection<LanguageTextItem>> GetLanguageTextAsync(string languageCode,
         string languagePack);
@@ -28,13 +30,16 @@ public interface ILanguageCacheService
 
 public class LanguageCacheService(IQueryProcessor queryProcessor, ILogger<LanguageCacheService> logger) : ILanguageCacheService, ISingletonDependency
 {
-    private Dictionary<string, ILanguageReadModel> _languageReadModels = [];
-    private Dictionary<string, Dictionary<string, LanguageTextItem>> _languageTexts = [];
+    private FrozenDictionary<string, FrozenDictionary<string, ILanguageReadModel>> _languageReadModels = new Dictionary<string, FrozenDictionary<string, ILanguageReadModel>>().ToFrozenDictionary();
+    private FrozenDictionary<string, Dictionary<string, LanguageTextItem>> _languageTexts = new Dictionary<string, Dictionary<string, LanguageTextItem>>().ToFrozenDictionary();
 
     public async Task LoadAllLanguagesAsync()
     {
         var languages = await queryProcessor.ProcessAsync(new GetAllLanguagesQuery());
-        _languageReadModels = languages.ToDictionary(k => GetLanguageTextKey(k.LanguageCode, k.Platform), v => v);
+        var groupedLanguages = languages.GroupBy(p => p.Platform)
+            .ToDictionary(k => k.Key.ToString().ToLower(),
+                v => v.ToFrozenDictionary(x => GetLanguageTextKey(x.LanguageCode, x.Platform)));
+        _languageReadModels = groupedLanguages.ToFrozenDictionary();
         logger.LogInformation("Loading all languages completed, count: {Count}", languages.Count);
     }
 
@@ -44,7 +49,7 @@ public class LanguageCacheService(IQueryProcessor queryProcessor, ILogger<Langua
         var languageTexts = await queryProcessor.ProcessAsync(new GetAllLanguageTextsQuery());
         _languageTexts = languageTexts.GroupBy(p => new { p.LanguageCode, p.Platform },
                 v => new LanguageTextItem(v.Key, v.Value, v.LanguageVersion))
-            .ToDictionary(k => GetLanguageTextKey(k.Key.LanguageCode, k.Key.Platform),
+            .ToFrozenDictionary(k => GetLanguageTextKey(k.Key.LanguageCode, k.Key.Platform),
                 v => v.ToDictionary(k1 => k1.Key, v1 => v1));
         sw.Stop();
         logger.LogInformation("Loading all language texts completed, count: {Count}, timespan: {TimeSpan}", languageTexts.Count, sw.Elapsed);
@@ -68,14 +73,19 @@ public class LanguageCacheService(IQueryProcessor queryProcessor, ILogger<Langua
         return GetLanguageTextKey(languageCode, langPack);
     }
 
-    public async Task<IReadOnlyCollection<ILanguageReadModel>> GetAllLanguagesAsync()
+    public async Task<IReadOnlyCollection<ILanguageReadModel>> GetAllLanguagesAsync(string languagePack)
     {
         if (!_languageReadModels.Any())
         {
             await LoadAllLanguagesAsync();
         }
 
-        return _languageReadModels.Values;
+        if (_languageReadModels.TryGetValue(languagePack, out var languages))
+        {
+            return languages.Values;
+        }
+
+        return [];
     }
 
     public async Task<IReadOnlyCollection<LanguageTextItem>> GetLanguageTextAsync(string languageCode,
@@ -143,19 +153,24 @@ public class LanguageCacheService(IQueryProcessor queryProcessor, ILogger<Langua
 
     public Task<ILanguageReadModel?> GetLanguageAsync(string languageCode, string languagePack)
     {
-        _languageReadModels.TryGetValue(GetLanguageTextKey(languageCode, languagePack), out var languageReadModel);
+        ILanguageReadModel? languageReadModel = null;
+        if (_languageReadModels.TryGetValue(languagePack, out var languages))
+        {
+            var key = GetLanguageTextKey(languageCode, languagePack);
+            languages.TryGetValue(key, out languageReadModel);
+        }
 
         return Task.FromResult(languageReadModel);
     }
 
-    public async Task<List<LanguageTextItem>> GetLanguageDifferenceAsync(string languageCode, string languagePack, int fromVersion)
+    public Task<List<LanguageTextItem>> GetLanguageDifferenceAsync(string languageCode, string languagePack, int fromVersion)
     {
         var languageKey = GetLanguageTextKey(languageCode, languagePack);
         if (_languageTexts.TryGetValue(languageKey, out var texts))
         {
-            return texts.Values.Where(p => p.LanguageVersion > fromVersion).ToList();
+            return Task.FromResult(texts.Values.Where(p => p.LanguageVersion > fromVersion).ToList());
         }
 
-        return [];
+        return Task.FromResult<List<LanguageTextItem>>([]);
     }
 }
