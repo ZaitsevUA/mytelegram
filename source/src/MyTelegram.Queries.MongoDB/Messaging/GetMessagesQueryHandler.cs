@@ -11,7 +11,7 @@ public class
         Expression<Func<MessageReadModel, bool>> predicate;
         if (query.IsSearchGlobal)
         {
-            predicate = x => x.OwnerPeerId == query.OwnerPeerId || x.SenderPeerId == query.SelfUserId;
+            predicate = x => x.OwnerPeerId == query.OwnerPeerId;
         }
         else
         {
