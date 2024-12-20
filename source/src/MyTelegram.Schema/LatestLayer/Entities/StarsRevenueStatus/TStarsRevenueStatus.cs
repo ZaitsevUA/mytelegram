@@ -7,35 +7,38 @@ namespace MyTelegram.Schema;
 /// Describes <a href="https://corefork.telegram.org/api/stars">Telegram Star revenue balances »</a>.
 /// See <a href="https://corefork.telegram.org/constructor/starsRevenueStatus" />
 ///</summary>
-[TlObject(0x79342946)]
+[TlObject(0xfebe5491)]
 public sealed class TStarsRevenueStatus : IStarsRevenueStatus
 {
-    public uint ConstructorId => 0x79342946;
+    public uint ConstructorId => 0xfebe5491;
     ///<summary>
     /// Flags, see <a href="https://corefork.telegram.org/mtproto/TL-combinators#conditional-fields">TL conditional fields</a>
     ///</summary>
     public BitArray Flags { get; set; } = new BitArray(32);
 
     ///<summary>
-    /// If set, the user may <a href="https://corefork.telegram.org/api/stars#withdrawing-revenue">withdraw</a> up to <code>available_balance</code> stars.
+    /// If set, the user may <a href="https://corefork.telegram.org/api/stars#withdrawing-stars">withdraw</a> up to <code>available_balance</code> stars.
     /// See <a href="https://corefork.telegram.org/type/true" />
     ///</summary>
     public bool WithdrawalEnabled { get; set; }
 
     ///<summary>
     /// Amount of not-yet-withdrawn Telegram Stars.
+    /// See <a href="https://corefork.telegram.org/type/StarsAmount" />
     ///</summary>
-    public long CurrentBalance { get; set; }
+    public MyTelegram.Schema.IStarsAmount CurrentBalance { get; set; }
 
     ///<summary>
     /// Amount of withdrawable Telegram Stars.
+    /// See <a href="https://corefork.telegram.org/type/StarsAmount" />
     ///</summary>
-    public long AvailableBalance { get; set; }
+    public MyTelegram.Schema.IStarsAmount AvailableBalance { get; set; }
 
     ///<summary>
     /// Total amount of earned Telegram Stars.
+    /// See <a href="https://corefork.telegram.org/type/StarsAmount" />
     ///</summary>
-    public long OverallRevenue { get; set; }
+    public MyTelegram.Schema.IStarsAmount OverallRevenue { get; set; }
 
     ///<summary>
     /// Unixtime indicating when will withdrawal be available to the user. If not set, withdrawal can be started now.
@@ -63,9 +66,9 @@ public sealed class TStarsRevenueStatus : IStarsRevenueStatus
     {
         Flags = reader.ReadBitArray();
         if (Flags[0]) { WithdrawalEnabled = true; }
-        CurrentBalance = reader.ReadInt64();
-        AvailableBalance = reader.ReadInt64();
-        OverallRevenue = reader.ReadInt64();
+        CurrentBalance = reader.Read<MyTelegram.Schema.IStarsAmount>();
+        AvailableBalance = reader.Read<MyTelegram.Schema.IStarsAmount>();
+        OverallRevenue = reader.Read<MyTelegram.Schema.IStarsAmount>();
         if (Flags[1]) { NextWithdrawalAt = reader.ReadInt32(); }
     }
 }

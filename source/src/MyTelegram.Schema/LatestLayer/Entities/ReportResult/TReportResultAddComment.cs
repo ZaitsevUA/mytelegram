@@ -4,14 +4,27 @@
 namespace MyTelegram.Schema;
 
 ///<summary>
+/// The user should enter an additional comment for the moderators, and then <a href="https://corefork.telegram.org/method/messages.report">messages.report</a> must be re-invoked, passing the comment to <a href="https://corefork.telegram.org/method/messages.report">messages.report</a>.<code>message</code>.
 /// See <a href="https://corefork.telegram.org/constructor/reportResultAddComment" />
 ///</summary>
 [TlObject(0x6f09ac31)]
 public sealed class TReportResultAddComment : IReportResult
 {
     public uint ConstructorId => 0x6f09ac31;
+    ///<summary>
+    /// Flags, see <a href="https://corefork.telegram.org/mtproto/TL-combinators#conditional-fields">TL conditional fields</a>
+    ///</summary>
     public BitArray Flags { get; set; } = new BitArray(32);
+
+    ///<summary>
+    /// Whether this step can be skipped by the user, passing an empty <code>message</code> to <a href="https://corefork.telegram.org/method/messages.report">messages.report</a>, or if a non-empty <code>message</code> is mandatory.
+    /// See <a href="https://corefork.telegram.org/type/true" />
+    ///</summary>
     public bool Optional { get; set; }
+
+    ///<summary>
+    /// The <a href="https://corefork.telegram.org/method/messages.report">messages.report</a> method must be re-invoked, passing this option to <code>option</code>
+    ///</summary>
     public byte[] Option { get; set; }
 
     public void ComputeFlag()

@@ -123,6 +123,11 @@ public sealed class TChannelAdminLogEventsFilter : IChannelAdminLogEventsFilter
     /// See <a href="https://corefork.telegram.org/type/true" />
     ///</summary>
     public bool Forums { get; set; }
+
+    ///<summary>
+    /// <a href="https://corefork.telegram.org/constructor/channelAdminLogEventActionParticipantSubExtend">Telegram Star subscription extension events »</a>
+    /// See <a href="https://corefork.telegram.org/type/true" />
+    ///</summary>
     public bool SubExtend { get; set; }
 
     public void ComputeFlag()

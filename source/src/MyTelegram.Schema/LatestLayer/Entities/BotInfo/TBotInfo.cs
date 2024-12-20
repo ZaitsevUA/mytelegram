@@ -7,10 +7,10 @@ namespace MyTelegram.Schema;
 /// Info about bots (available bot commands, etc)
 /// See <a href="https://corefork.telegram.org/constructor/botInfo" />
 ///</summary>
-[TlObject(0x82437e74)]
+[TlObject(0x36607333)]
 public sealed class TBotInfo : IBotInfo
 {
-    public uint ConstructorId => 0x82437e74;
+    public uint ConstructorId => 0x36607333;
     ///<summary>
     /// Flags, see <a href="https://corefork.telegram.org/mtproto/TL-combinators#conditional-fields">TL conditional fields</a>
     ///</summary>
@@ -54,7 +54,17 @@ public sealed class TBotInfo : IBotInfo
     /// See <a href="https://corefork.telegram.org/type/BotMenuButton" />
     ///</summary>
     public MyTelegram.Schema.IBotMenuButton? MenuButton { get; set; }
+
+    ///<summary>
+    /// The HTTP link to the privacy policy of the bot. If not set, then the <code>/privacy</code> command must be used, if supported by the bot (i.e. if it's present in the <code>commands</code> vector). If it isn't supported, then <a href="https://telegram.org/privacy-tpa">https://telegram.org/privacy-tpa</a> must be opened, instead.
+    ///</summary>
     public string? PrivacyPolicyUrl { get; set; }
+
+    ///<summary>
+    /// &nbsp;
+    /// See <a href="https://corefork.telegram.org/type/BotAppSettings" />
+    ///</summary>
+    public MyTelegram.Schema.IBotAppSettings? AppSettings { get; set; }
 
     public void ComputeFlag()
     {
@@ -66,6 +76,7 @@ public sealed class TBotInfo : IBotInfo
         if (Commands?.Count > 0) { Flags[2] = true; }
         if (MenuButton != null) { Flags[3] = true; }
         if (PrivacyPolicyUrl != null) { Flags[7] = true; }
+        if (AppSettings != null) { Flags[8] = true; }
     }
 
     public void Serialize(IBufferWriter<byte> writer)
@@ -80,6 +91,7 @@ public sealed class TBotInfo : IBotInfo
         if (Flags[2]) { writer.Write(Commands); }
         if (Flags[3]) { writer.Write(MenuButton); }
         if (Flags[7]) { writer.Write(PrivacyPolicyUrl); }
+        if (Flags[8]) { writer.Write(AppSettings); }
     }
 
     public void Deserialize(ref SequenceReader<byte> reader)
@@ -93,5 +105,6 @@ public sealed class TBotInfo : IBotInfo
         if (Flags[2]) { Commands = reader.Read<TVector<MyTelegram.Schema.IBotCommand>>(); }
         if (Flags[3]) { MenuButton = reader.Read<MyTelegram.Schema.IBotMenuButton>(); }
         if (Flags[7]) { PrivacyPolicyUrl = reader.ReadString(); }
+        if (Flags[8]) { AppSettings = reader.Read<MyTelegram.Schema.IBotAppSettings>(); }
     }
 }

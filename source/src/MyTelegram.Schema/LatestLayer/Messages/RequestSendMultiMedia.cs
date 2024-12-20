@@ -80,6 +80,11 @@ public sealed class RequestSendMultiMedia : IRequest<MyTelegram.Schema.IUpdates>
     /// See <a href="https://corefork.telegram.org/type/true" />
     ///</summary>
     public bool InvertMedia { get; set; }
+
+    ///<summary>
+    /// Bots only: if set, allows sending up to 1000 messages per second, ignoring <a href="https://corefork.telegram.org/bots/faq#how-can-i-message-all-of-my-bot-39s-subscribers-at-once">broadcasting limits</a> for a fee of 0.1 Telegram Stars per message. The relevant Stars will be withdrawn from the bot's balance.
+    /// See <a href="https://corefork.telegram.org/type/true" />
+    ///</summary>
     public bool AllowPaidFloodskip { get; set; }
 
     ///<summary>

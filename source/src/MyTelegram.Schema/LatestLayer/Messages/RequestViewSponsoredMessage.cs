@@ -4,13 +4,22 @@
 namespace MyTelegram.Schema.Messages;
 
 ///<summary>
+/// Mark a specific <a href="https://corefork.telegram.org/api/sponsored-messages">sponsored message »</a> as read
 /// See <a href="https://corefork.telegram.org/method/messages.viewSponsoredMessage" />
 ///</summary>
 [TlObject(0x673ad8f1)]
 public sealed class RequestViewSponsoredMessage : IRequest<IBool>
 {
     public uint ConstructorId => 0x673ad8f1;
+    ///<summary>
+    /// The channel/bot where the ad is located
+    /// See <a href="https://corefork.telegram.org/type/InputPeer" />
+    ///</summary>
     public MyTelegram.Schema.IInputPeer Peer { get; set; }
+
+    ///<summary>
+    /// The ad's unique ID.
+    ///</summary>
     public byte[] RandomId { get; set; }
 
     public void ComputeFlag()

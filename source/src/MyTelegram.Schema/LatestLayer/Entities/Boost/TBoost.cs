@@ -68,6 +68,10 @@ public sealed class TBoost : IBoost
     /// If set, this boost counts as <code>multiplier</code> boosts, otherwise it counts as a single boost.
     ///</summary>
     public int? Multiplier { get; set; }
+
+    ///<summary>
+    /// Number of Telegram Stars distributed among the winners of the giveaway.
+    ///</summary>
     public long? Stars { get; set; }
 
     public void ComputeFlag()

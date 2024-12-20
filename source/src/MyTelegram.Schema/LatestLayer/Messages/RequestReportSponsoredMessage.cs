@@ -4,14 +4,27 @@
 namespace MyTelegram.Schema.Messages;
 
 ///<summary>
+/// Report a <a href="https://corefork.telegram.org/api/sponsored-messages">sponsored message »</a>, see <a href="https://corefork.telegram.org/api/sponsored-messages#reporting-sponsored-messages">here »</a> for more info on the full flow.
 /// See <a href="https://corefork.telegram.org/method/messages.reportSponsoredMessage" />
 ///</summary>
 [TlObject(0x1af3dbb8)]
 public sealed class RequestReportSponsoredMessage : IRequest<MyTelegram.Schema.Channels.ISponsoredMessageReportResult>
 {
     public uint ConstructorId => 0x1af3dbb8;
+    ///<summary>
+    /// The channel/bot where the ad is located
+    /// See <a href="https://corefork.telegram.org/type/InputPeer" />
+    ///</summary>
     public MyTelegram.Schema.IInputPeer Peer { get; set; }
+
+    ///<summary>
+    /// The ad's unique ID.
+    ///</summary>
     public byte[] RandomId { get; set; }
+
+    ///<summary>
+    /// Chosen report option, initially an empty string, see <a href="https://corefork.telegram.org/api/sponsored-messages#reporting-sponsored-messages">here »</a> for more info on the full flow.
+    ///</summary>
     public byte[] Option { get; set; }
 
     public void ComputeFlag()

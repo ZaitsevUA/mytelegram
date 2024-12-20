@@ -4,6 +4,7 @@
 namespace MyTelegram.Schema;
 
 ///<summary>
+/// Official clients only, invoke with Apple push verification.
 /// See <a href="https://corefork.telegram.org/method/invokeWithApnsSecret" />
 ///</summary>
 [TlObject(0x0dae54f8)]
@@ -11,17 +12,17 @@ public sealed class RequestInvokeWithApnsSecret : IRequest<IObject>, IHasSubQuer
 {
     public uint ConstructorId => 0x0dae54f8;
     ///<summary>
-    /// &nbsp;
+    /// Nonce.
     ///</summary>
     public string Nonce { get; set; }
 
     ///<summary>
-    /// &nbsp;
+    /// Secret.
     ///</summary>
     public string Secret { get; set; }
 
     ///<summary>
-    /// &nbsp;
+    /// Query.
     ///</summary>
     public IObject Query { get; set; }
 

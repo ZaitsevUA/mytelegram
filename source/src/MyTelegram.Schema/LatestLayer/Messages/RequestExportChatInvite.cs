@@ -59,6 +59,11 @@ public sealed class RequestExportChatInvite : IRequest<MyTelegram.Schema.IExport
     /// Description of the invite link, visible only to administrators
     ///</summary>
     public string? Title { get; set; }
+
+    ///<summary>
+    /// For <a href="https://corefork.telegram.org/api/stars#star-subscriptions">Telegram Star subscriptions »</a>, contains the pricing of the subscription the user must activate to join the private channel.
+    /// See <a href="https://corefork.telegram.org/type/StarsSubscriptionPricing" />
+    ///</summary>
     public MyTelegram.Schema.IStarsSubscriptionPricing? SubscriptionPricing { get; set; }
 
     public void ComputeFlag()

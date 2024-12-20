@@ -4,13 +4,23 @@
 namespace MyTelegram.Schema;
 
 ///<summary>
+/// A paid subscriber has extended their <a href="https://corefork.telegram.org/api/stars#star-subscriptions">Telegram Star subscription »</a>.
 /// See <a href="https://corefork.telegram.org/constructor/channelAdminLogEventActionParticipantSubExtend" />
 ///</summary>
 [TlObject(0x64642db3)]
 public sealed class TChannelAdminLogEventActionParticipantSubExtend : IChannelAdminLogEventAction
 {
     public uint ConstructorId => 0x64642db3;
+    ///<summary>
+    /// Same as <code>new_participant</code>.
+    /// See <a href="https://corefork.telegram.org/type/ChannelParticipant" />
+    ///</summary>
     public MyTelegram.Schema.IChannelParticipant PrevParticipant { get; set; }
+
+    ///<summary>
+    /// The subscriber that extended the subscription.
+    /// See <a href="https://corefork.telegram.org/type/ChannelParticipant" />
+    ///</summary>
     public MyTelegram.Schema.IChannelParticipant NewParticipant { get; set; }
 
     public void ComputeFlag()

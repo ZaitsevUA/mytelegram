@@ -3,6 +3,7 @@
 namespace MyTelegram.Schema;
 
 ///<summary>
+/// Represents a report menu or result
 /// See <a href="https://corefork.telegram.org/constructor/ReportResult" />
 ///</summary>
 [JsonDerivedType(typeof(TReportResultChooseOption), nameof(TReportResultChooseOption))]

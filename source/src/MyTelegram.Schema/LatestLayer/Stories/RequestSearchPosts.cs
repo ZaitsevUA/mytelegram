@@ -29,6 +29,11 @@ public sealed class RequestSearchPosts : IRequest<MyTelegram.Schema.Stories.IFou
     /// See <a href="https://corefork.telegram.org/type/MediaArea" />
     ///</summary>
     public MyTelegram.Schema.IMediaArea? Area { get; set; }
+
+    ///<summary>
+    /// If set, returns only stories posted by this peer.
+    /// See <a href="https://corefork.telegram.org/type/InputPeer" />
+    ///</summary>
     public MyTelegram.Schema.IInputPeer? Peer { get; set; }
 
     ///<summary>

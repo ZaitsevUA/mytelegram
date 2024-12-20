@@ -37,6 +37,10 @@ public sealed class RequestGetStarsTransactions : IRequest<MyTelegram.Schema.Pay
     /// See <a href="https://corefork.telegram.org/type/true" />
     ///</summary>
     public bool Ascending { get; set; }
+
+    ///<summary>
+    /// If set, fetches only transactions for the specified <a href="https://corefork.telegram.org/api/stars#star-subscriptions">Telegram Star subscription »</a>.
+    ///</summary>
     public string? SubscriptionId { get; set; }
 
     ///<summary>

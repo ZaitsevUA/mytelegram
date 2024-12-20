@@ -26,6 +26,12 @@ public sealed class RequestRequestMainWebView : IRequest<MyTelegram.Schema.IWebV
     public bool Compact { get; set; }
 
     ///<summary>
+    /// &nbsp;
+    /// See <a href="https://corefork.telegram.org/type/true" />
+    ///</summary>
+    public bool Fullscreen { get; set; }
+
+    ///<summary>
     /// Currently open chat, may be <a href="https://corefork.telegram.org/constructor/inputPeerEmpty">inputPeerEmpty</a> if no chat is currently open.
     /// See <a href="https://corefork.telegram.org/type/InputPeer" />
     ///</summary>
@@ -56,6 +62,7 @@ public sealed class RequestRequestMainWebView : IRequest<MyTelegram.Schema.IWebV
     public void ComputeFlag()
     {
         if (Compact) { Flags[7] = true; }
+        if (Fullscreen) { Flags[8] = true; }
         if (StartParam != null) { Flags[1] = true; }
         if (ThemeParams != null) { Flags[0] = true; }
 
@@ -77,6 +84,7 @@ public sealed class RequestRequestMainWebView : IRequest<MyTelegram.Schema.IWebV
     {
         Flags = reader.ReadBitArray();
         if (Flags[7]) { Compact = true; }
+        if (Flags[8]) { Fullscreen = true; }
         Peer = reader.Read<MyTelegram.Schema.IInputPeer>();
         Bot = reader.Read<MyTelegram.Schema.IInputUser>();
         if (Flags[1]) { StartParam = reader.ReadString(); }

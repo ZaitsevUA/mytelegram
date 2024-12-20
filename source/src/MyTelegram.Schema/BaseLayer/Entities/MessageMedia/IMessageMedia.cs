@@ -12,7 +12,6 @@ namespace MyTelegram.Schema;
 [JsonDerivedType(typeof(TMessageMediaContact), nameof(TMessageMediaContact))]
 [JsonDerivedType(typeof(TMessageMediaUnsupported), nameof(TMessageMediaUnsupported))]
 [JsonDerivedType(typeof(TMessageMediaDocument), nameof(TMessageMediaDocument))]
-[JsonDerivedType(typeof(TMessageMediaDocument2), nameof(TMessageMediaDocument2))]
 [JsonDerivedType(typeof(TMessageMediaWebPage), nameof(TMessageMediaWebPage))]
 [JsonDerivedType(typeof(TMessageMediaVenue), nameof(TMessageMediaVenue))]
 [JsonDerivedType(typeof(TMessageMediaGame), nameof(TMessageMediaGame))]

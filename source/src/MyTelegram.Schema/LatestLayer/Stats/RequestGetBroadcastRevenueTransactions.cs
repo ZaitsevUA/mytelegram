@@ -14,6 +14,10 @@ namespace MyTelegram.Schema.Stats;
 public sealed class RequestGetBroadcastRevenueTransactions : IRequest<MyTelegram.Schema.Stats.IBroadcastRevenueTransactions>
 {
     public uint ConstructorId => 0x70990b6d;
+    ///<summary>
+    /// Get ad revenue transactions for the specified channel or bot
+    /// See <a href="https://corefork.telegram.org/type/InputPeer" />
+    ///</summary>
     public MyTelegram.Schema.IInputPeer Peer { get; set; }
 
     ///<summary>

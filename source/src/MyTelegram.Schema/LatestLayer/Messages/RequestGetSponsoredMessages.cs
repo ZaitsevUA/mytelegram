@@ -4,12 +4,17 @@
 namespace MyTelegram.Schema.Messages;
 
 ///<summary>
+/// Get a list of <a href="https://corefork.telegram.org/api/sponsored-messages">sponsored messages for a peer, see here »</a> for more info.
 /// See <a href="https://corefork.telegram.org/method/messages.getSponsoredMessages" />
 ///</summary>
 [TlObject(0x9bd2f439)]
 public sealed class RequestGetSponsoredMessages : IRequest<MyTelegram.Schema.Messages.ISponsoredMessages>
 {
     public uint ConstructorId => 0x9bd2f439;
+    ///<summary>
+    /// The currently open channel/bot.
+    /// See <a href="https://corefork.telegram.org/type/InputPeer" />
+    ///</summary>
     public MyTelegram.Schema.IInputPeer Peer { get; set; }
 
     public void ComputeFlag()

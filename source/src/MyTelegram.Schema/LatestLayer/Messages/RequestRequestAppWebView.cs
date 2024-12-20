@@ -33,6 +33,12 @@ public sealed class RequestRequestAppWebView : IRequest<MyTelegram.Schema.IWebVi
     public bool Compact { get; set; }
 
     ///<summary>
+    /// &nbsp;
+    /// See <a href="https://corefork.telegram.org/type/true" />
+    ///</summary>
+    public bool Fullscreen { get; set; }
+
+    ///<summary>
     /// If the client has clicked on the link in a Telegram chat, pass the chat's peer information; otherwise pass the bot's peer information, instead.
     /// See <a href="https://corefork.telegram.org/type/InputPeer" />
     ///</summary>
@@ -64,6 +70,7 @@ public sealed class RequestRequestAppWebView : IRequest<MyTelegram.Schema.IWebVi
     {
         if (WriteAllowed) { Flags[0] = true; }
         if (Compact) { Flags[7] = true; }
+        if (Fullscreen) { Flags[8] = true; }
         if (StartParam != null) { Flags[1] = true; }
         if (ThemeParams != null) { Flags[2] = true; }
 
@@ -86,6 +93,7 @@ public sealed class RequestRequestAppWebView : IRequest<MyTelegram.Schema.IWebVi
         Flags = reader.ReadBitArray();
         if (Flags[0]) { WriteAllowed = true; }
         if (Flags[7]) { Compact = true; }
+        if (Flags[8]) { Fullscreen = true; }
         Peer = reader.Read<MyTelegram.Schema.IInputPeer>();
         App = reader.Read<MyTelegram.Schema.IInputBotApp>();
         if (Flags[1]) { StartParam = reader.ReadString(); }

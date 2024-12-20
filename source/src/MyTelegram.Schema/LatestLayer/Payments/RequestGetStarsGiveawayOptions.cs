@@ -4,6 +4,7 @@
 namespace MyTelegram.Schema.Payments;
 
 ///<summary>
+/// Fetch a list of <a href="https://corefork.telegram.org/api/giveaways#star-giveaways">star giveaway options »</a>.
 /// See <a href="https://corefork.telegram.org/method/payments.getStarsGiveawayOptions" />
 ///</summary>
 [TlObject(0xbd1efd3e)]

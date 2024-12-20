@@ -20,6 +20,11 @@ public interface IWebViewResult : IObject
     bool Fullsize { get; set; }
 
     ///<summary>
+    /// &nbsp;
+    ///</summary>
+    bool Fullscreen { get; set; }
+
+    ///<summary>
     /// Webview session ID (only returned by <a href="https://corefork.telegram.org/api/bots/webapps#inline-button-mini-apps">inline button mini apps</a>, <a href="https://corefork.telegram.org/api/bots/webapps#menu-button-mini-apps">menu button mini apps</a>, <a href="https://corefork.telegram.org/api/bots/webapps#attachment-menu-mini-apps">attachment menu mini apps</a>).
     ///</summary>
     long? QueryId { get; set; }

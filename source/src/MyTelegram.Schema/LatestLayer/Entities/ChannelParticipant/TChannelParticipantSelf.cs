@@ -36,6 +36,10 @@ public sealed class TChannelParticipantSelf : IChannelParticipant
     /// When did I join the channel/supergroup
     ///</summary>
     public int Date { get; set; }
+
+    ///<summary>
+    /// If set, contains the expiration date of the current <a href="https://corefork.telegram.org/api/stars#star-subscriptions">Telegram Star subscription period »</a> for the specified participant.
+    ///</summary>
     public int? SubscriptionUntilDate { get; set; }
 
     public void ComputeFlag()

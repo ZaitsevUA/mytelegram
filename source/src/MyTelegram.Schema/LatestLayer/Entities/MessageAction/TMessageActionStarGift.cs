@@ -4,19 +4,52 @@
 namespace MyTelegram.Schema;
 
 ///<summary>
+/// You received a <a href="https://corefork.telegram.org/api/gifts">gift, see here »</a> for more info.
 /// See <a href="https://corefork.telegram.org/constructor/messageActionStarGift" />
 ///</summary>
-[TlObject(0x9bb3ef44)]
+[TlObject(0x8557637)]
 public sealed class TMessageActionStarGift : IMessageAction
 {
-    public uint ConstructorId => 0x9bb3ef44;
+    public uint ConstructorId => 0x8557637;
+    ///<summary>
+    /// Flags, see <a href="https://corefork.telegram.org/mtproto/TL-combinators#conditional-fields">TL conditional fields</a>
+    ///</summary>
     public BitArray Flags { get; set; } = new BitArray(32);
+
+    ///<summary>
+    /// If set, the name of the sender of the gift will be hidden if the destination user decides to display the gift on their profile
+    /// See <a href="https://corefork.telegram.org/type/true" />
+    ///</summary>
     public bool NameHidden { get; set; }
+
+    ///<summary>
+    /// Whether this gift was added to the destination user's profile (may be toggled using <a href="https://corefork.telegram.org/method/payments.saveStarGift">payments.saveStarGift</a> and fetched using <a href="https://corefork.telegram.org/method/payments.getUserStarGifts">payments.getUserStarGifts</a>)
+    /// See <a href="https://corefork.telegram.org/type/true" />
+    ///</summary>
     public bool Saved { get; set; }
+
+    ///<summary>
+    /// Whether this gift was converted to <a href="https://corefork.telegram.org/api/stars">Telegram Stars</a> and cannot be displayed on the profile anymore.
+    /// See <a href="https://corefork.telegram.org/type/true" />
+    ///</summary>
     public bool Converted { get; set; }
+
+    ///<summary>
+    /// Info about the gift
+    /// See <a href="https://corefork.telegram.org/type/StarGift" />
+    ///</summary>
     public MyTelegram.Schema.IStarGift Gift { get; set; }
+
+    ///<summary>
+    /// Additional message from the sender of the gift
+    /// See <a href="https://corefork.telegram.org/type/TextWithEntities" />
+    ///</summary>
     public MyTelegram.Schema.ITextWithEntities? Message { get; set; }
-    public long ConvertStars { get; set; }
+
+    ///<summary>
+    /// The receiver of this gift may convert it to this many Telegram Stars, instead of displaying it on their profile page.<br><code>convert_stars</code> will be equal to <code>stars</code> only if the gift was bought using recently bought Telegram Stars, otherwise it will be less than <code>stars</code>.
+    ///</summary>
+    public long? ConvertStars { get; set; }
 
     public void ComputeFlag()
     {
@@ -24,7 +57,7 @@ public sealed class TMessageActionStarGift : IMessageAction
         if (Saved) { Flags[2] = true; }
         if (Converted) { Flags[3] = true; }
         if (Message != null) { Flags[1] = true; }
-
+        if (/*ConvertStars != 0 &&*/ ConvertStars.HasValue) { Flags[4] = true; }
     }
 
     public void Serialize(IBufferWriter<byte> writer)
@@ -34,7 +67,7 @@ public sealed class TMessageActionStarGift : IMessageAction
         writer.Write(Flags);
         writer.Write(Gift);
         if (Flags[1]) { writer.Write(Message); }
-        writer.Write(ConvertStars);
+        if (Flags[4]) { writer.Write(ConvertStars.Value); }
     }
 
     public void Deserialize(ref SequenceReader<byte> reader)
@@ -45,6 +78,6 @@ public sealed class TMessageActionStarGift : IMessageAction
         if (Flags[3]) { Converted = true; }
         Gift = reader.Read<MyTelegram.Schema.IStarGift>();
         if (Flags[1]) { Message = reader.Read<MyTelegram.Schema.ITextWithEntities>(); }
-        ConvertStars = reader.ReadInt64();
+        if (Flags[4]) { ConvertStars = reader.ReadInt64(); }
     }
 }

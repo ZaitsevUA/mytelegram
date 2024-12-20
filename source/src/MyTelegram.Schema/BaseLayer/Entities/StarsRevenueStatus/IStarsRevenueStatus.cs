@@ -15,24 +15,27 @@ public interface IStarsRevenueStatus : IObject
     BitArray Flags { get; set; }
 
     ///<summary>
-    /// If set, the user may <a href="https://corefork.telegram.org/api/stars#withdrawing-revenue">withdraw</a> up to <code>available_balance</code> stars.
+    /// If set, the user may <a href="https://corefork.telegram.org/api/stars#withdrawing-stars">withdraw</a> up to <code>available_balance</code> stars.
     ///</summary>
     bool WithdrawalEnabled { get; set; }
 
     ///<summary>
     /// Amount of not-yet-withdrawn Telegram Stars.
+    /// See <a href="https://corefork.telegram.org/type/StarsAmount" />
     ///</summary>
-    long CurrentBalance { get; set; }
+    MyTelegram.Schema.IStarsAmount CurrentBalance { get; set; }
 
     ///<summary>
     /// Amount of withdrawable Telegram Stars.
+    /// See <a href="https://corefork.telegram.org/type/StarsAmount" />
     ///</summary>
-    long AvailableBalance { get; set; }
+    MyTelegram.Schema.IStarsAmount AvailableBalance { get; set; }
 
     ///<summary>
     /// Total amount of earned Telegram Stars.
+    /// See <a href="https://corefork.telegram.org/type/StarsAmount" />
     ///</summary>
-    long OverallRevenue { get; set; }
+    MyTelegram.Schema.IStarsAmount OverallRevenue { get; set; }
 
     ///<summary>
     /// Unixtime indicating when will withdrawal be available to the user. If not set, withdrawal can be started now.

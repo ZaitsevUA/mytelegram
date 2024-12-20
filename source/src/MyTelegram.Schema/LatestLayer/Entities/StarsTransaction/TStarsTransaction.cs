@@ -7,10 +7,10 @@ namespace MyTelegram.Schema;
 /// Represents a <a href="https://corefork.telegram.org/api/stars">Telegram Stars transaction »</a>.
 /// See <a href="https://corefork.telegram.org/constructor/starsTransaction" />
 ///</summary>
-[TlObject(0x35d4f276)]
+[TlObject(0x64dfc926)]
 public sealed class TStarsTransaction : IStarsTransaction
 {
-    public uint ConstructorId => 0x35d4f276;
+    public uint ConstructorId => 0x64dfc926;
     ///<summary>
     /// Flags, see <a href="https://corefork.telegram.org/mtproto/TL-combinators#conditional-fields">TL conditional fields</a>
     ///</summary>
@@ -39,6 +39,11 @@ public sealed class TStarsTransaction : IStarsTransaction
     /// See <a href="https://corefork.telegram.org/type/true" />
     ///</summary>
     public bool Gift { get; set; }
+
+    ///<summary>
+    /// This transaction is a <a href="https://corefork.telegram.org/api/reactions#paid-reactions">paid reaction »</a>.
+    /// See <a href="https://corefork.telegram.org/type/true" />
+    ///</summary>
     public bool Reaction { get; set; }
 
     ///<summary>
@@ -48,8 +53,9 @@ public sealed class TStarsTransaction : IStarsTransaction
 
     ///<summary>
     /// Amount of Stars (negative for outgoing transactions).
+    /// See <a href="https://corefork.telegram.org/type/StarsAmount" />
     ///</summary>
-    public long Stars { get; set; }
+    public MyTelegram.Schema.IStarsAmount Stars { get; set; }
 
     ///<summary>
     /// Date of the transaction (unixtime).
@@ -102,10 +108,44 @@ public sealed class TStarsTransaction : IStarsTransaction
     /// The purchased <a href="https://corefork.telegram.org/api/paid-media">paid media »</a>.
     ///</summary>
     public TVector<MyTelegram.Schema.IMessageMedia>? ExtendedMedia { get; set; }
+
+    ///<summary>
+    /// The number of seconds between consecutive Telegram Star debiting for <a href="https://corefork.telegram.org/api/stars#star-subscriptions">Telegram Star subscriptions »</a>.
+    ///</summary>
     public int? SubscriptionPeriod { get; set; }
+
+    ///<summary>
+    /// ID of the message containing the <a href="https://corefork.telegram.org/constructor/messageMediaGiveaway">messageMediaGiveaway</a>, for incoming <a href="https://corefork.telegram.org/api/giveaways#star-giveaways">star giveaway prizes</a>.
+    ///</summary>
     public int? GiveawayPostId { get; set; }
+
+    ///<summary>
+    /// This transaction indicates a purchase or a sale (conversion back to Stars) of a <a href="https://corefork.telegram.org/api/stars">gift »</a>.
+    /// See <a href="https://corefork.telegram.org/type/StarGift" />
+    ///</summary>
     public MyTelegram.Schema.IStarGift? Stargift { get; set; }
+
+    ///<summary>
+    /// This transaction is payment for <a href="https://corefork.telegram.org/bots/faq#how-can-i-message-all-of-my-bot-39s-subscribers-at-once">paid bot broadcasts</a>.  <br>Paid broadcasts are only allowed if the <code>allow_paid_floodskip</code> parameter of <a href="https://corefork.telegram.org/method/messages.sendMessage">messages.sendMessage</a> and other message sending methods is set while trying to broadcast more than 30 messages per second to bot users. <br>The integer value returned by this flag indicates the number of billed API calls.
+    ///</summary>
     public int? FloodskipNumber { get; set; }
+
+    ///<summary>
+    /// &nbsp;
+    ///</summary>
+    public int? StarrefCommissionPermille { get; set; }
+
+    ///<summary>
+    /// &nbsp;
+    /// See <a href="https://corefork.telegram.org/type/Peer" />
+    ///</summary>
+    public MyTelegram.Schema.IPeer? StarrefPeer { get; set; }
+
+    ///<summary>
+    /// &nbsp;
+    /// See <a href="https://corefork.telegram.org/type/StarsAmount" />
+    ///</summary>
+    public MyTelegram.Schema.IStarsAmount? StarrefAmount { get; set; }
 
     public void ComputeFlag()
     {
@@ -126,6 +166,9 @@ public sealed class TStarsTransaction : IStarsTransaction
         if (/*GiveawayPostId != 0 && */GiveawayPostId.HasValue) { Flags[13] = true; }
         if (Stargift != null) { Flags[14] = true; }
         if (/*FloodskipNumber != 0 && */FloodskipNumber.HasValue) { Flags[15] = true; }
+        if (/*StarrefCommissionPermille != 0 && */StarrefCommissionPermille.HasValue) { Flags[16] = true; }
+        if (StarrefPeer != null) { Flags[17] = true; }
+        if (StarrefAmount != null) { Flags[17] = true; }
     }
 
     public void Serialize(IBufferWriter<byte> writer)
@@ -149,6 +192,9 @@ public sealed class TStarsTransaction : IStarsTransaction
         if (Flags[13]) { writer.Write(GiveawayPostId.Value); }
         if (Flags[14]) { writer.Write(Stargift); }
         if (Flags[15]) { writer.Write(FloodskipNumber.Value); }
+        if (Flags[16]) { writer.Write(StarrefCommissionPermille.Value); }
+        if (Flags[17]) { writer.Write(StarrefPeer); }
+        if (Flags[17]) { writer.Write(StarrefAmount); }
     }
 
     public void Deserialize(ref SequenceReader<byte> reader)
@@ -160,7 +206,7 @@ public sealed class TStarsTransaction : IStarsTransaction
         if (Flags[10]) { Gift = true; }
         if (Flags[11]) { Reaction = true; }
         Id = reader.ReadString();
-        Stars = reader.ReadInt64();
+        Stars = reader.Read<MyTelegram.Schema.IStarsAmount>();
         Date = reader.ReadInt32();
         Peer = reader.Read<MyTelegram.Schema.IStarsTransactionPeer>();
         if (Flags[0]) { Title = reader.ReadString(); }
@@ -175,5 +221,8 @@ public sealed class TStarsTransaction : IStarsTransaction
         if (Flags[13]) { GiveawayPostId = reader.ReadInt32(); }
         if (Flags[14]) { Stargift = reader.Read<MyTelegram.Schema.IStarGift>(); }
         if (Flags[15]) { FloodskipNumber = reader.ReadInt32(); }
+        if (Flags[16]) { StarrefCommissionPermille = reader.ReadInt32(); }
+        if (Flags[17]) { StarrefPeer = reader.Read<MyTelegram.Schema.IPeer>(); }
+        if (Flags[17]) { StarrefAmount = reader.Read<MyTelegram.Schema.IStarsAmount>(); }
     }
 }

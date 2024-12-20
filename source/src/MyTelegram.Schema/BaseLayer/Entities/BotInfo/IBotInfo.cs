@@ -52,5 +52,15 @@ public interface IBotInfo : IObject
     /// See <a href="https://corefork.telegram.org/type/BotMenuButton" />
     ///</summary>
     MyTelegram.Schema.IBotMenuButton? MenuButton { get; set; }
+
+    ///<summary>
+    /// The HTTP link to the privacy policy of the bot. If not set, then the <code>/privacy</code> command must be used, if supported by the bot (i.e. if it's present in the <code>commands</code> vector). If it isn't supported, then <a href="https://telegram.org/privacy-tpa">https://telegram.org/privacy-tpa</a> must be opened, instead.
+    ///</summary>
     string? PrivacyPolicyUrl { get; set; }
+
+    ///<summary>
+    /// &nbsp;
+    /// See <a href="https://corefork.telegram.org/type/BotAppSettings" />
+    ///</summary>
+    MyTelegram.Schema.IBotAppSettings? AppSettings { get; set; }
 }

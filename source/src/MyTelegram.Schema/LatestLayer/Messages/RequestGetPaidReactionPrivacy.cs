@@ -4,6 +4,7 @@
 namespace MyTelegram.Schema.Messages;
 
 ///<summary>
+/// Fetches an <a href="https://corefork.telegram.org/constructor/updatePaidReactionPrivacy">updatePaidReactionPrivacy</a> update with the current <a href="https://corefork.telegram.org/api/reactions#paid-reactions">default paid reaction privacy, see here »</a> for more info.
 /// See <a href="https://corefork.telegram.org/method/messages.getPaidReactionPrivacy" />
 ///</summary>
 [TlObject(0x472455aa)]

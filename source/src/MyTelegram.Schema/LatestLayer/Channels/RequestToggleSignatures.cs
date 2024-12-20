@@ -17,8 +17,21 @@ namespace MyTelegram.Schema.Channels;
 public sealed class RequestToggleSignatures : IRequest<MyTelegram.Schema.IUpdates>
 {
     public uint ConstructorId => 0x418d549c;
+    ///<summary>
+    /// Flags, see <a href="https://corefork.telegram.org/mtproto/TL-combinators#conditional-fields">TL conditional fields</a>
+    ///</summary>
     public BitArray Flags { get; set; } = new BitArray(32);
+
+    ///<summary>
+    /// If set, enables message signatures.
+    /// See <a href="https://corefork.telegram.org/type/true" />
+    ///</summary>
     public bool SignaturesEnabled { get; set; }
+
+    ///<summary>
+    /// If set, messages from channel admins will link to their profiles, just like for group messages: can only be set if the <code>signatures_enabled</code> flag is set.
+    /// See <a href="https://corefork.telegram.org/type/true" />
+    ///</summary>
     public bool ProfilesEnabled { get; set; }
 
     ///<summary>

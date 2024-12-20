@@ -4,28 +4,95 @@
 namespace MyTelegram.Schema;
 
 ///<summary>
+/// Represents a <a href="https://corefork.telegram.org/api/invites#paid-invite-links">Telegram Star subscription »</a>.
 /// See <a href="https://corefork.telegram.org/constructor/starsSubscription" />
 ///</summary>
-[TlObject(0x538ecf18)]
+[TlObject(0x2e6eab1a)]
 public sealed class TStarsSubscription : IStarsSubscription
 {
-    public uint ConstructorId => 0x538ecf18;
+    public uint ConstructorId => 0x2e6eab1a;
+    ///<summary>
+    /// Flags, see <a href="https://corefork.telegram.org/mtproto/TL-combinators#conditional-fields">TL conditional fields</a>
+    ///</summary>
     public BitArray Flags { get; set; } = new BitArray(32);
+
+    ///<summary>
+    /// Whether this subscription was cancelled.
+    /// See <a href="https://corefork.telegram.org/type/true" />
+    ///</summary>
     public bool Canceled { get; set; }
+
+    ///<summary>
+    /// Whether we left the associated private channel, but we can still rejoin it using <a href="https://corefork.telegram.org/method/payments.fulfillStarsSubscription">payments.fulfillStarsSubscription</a> because the current subscription period hasn't expired yet.
+    /// See <a href="https://corefork.telegram.org/type/true" />
+    ///</summary>
     public bool CanRefulfill { get; set; }
+
+    ///<summary>
+    /// Whether this subscription has expired because there are not enough stars on the user's balance to extend it.
+    /// See <a href="https://corefork.telegram.org/type/true" />
+    ///</summary>
     public bool MissingBalance { get; set; }
+
+    ///<summary>
+    /// &nbsp;
+    /// See <a href="https://corefork.telegram.org/type/true" />
+    ///</summary>
+    public bool BotCanceled { get; set; }
+
+    ///<summary>
+    /// Subscription ID.
+    ///</summary>
     public string Id { get; set; }
+
+    ///<summary>
+    /// Identifier of the associated private chat.
+    /// See <a href="https://corefork.telegram.org/type/Peer" />
+    ///</summary>
     public MyTelegram.Schema.IPeer Peer { get; set; }
+
+    ///<summary>
+    /// Expiration date of the current subscription period.
+    ///</summary>
     public int UntilDate { get; set; }
+
+    ///<summary>
+    /// Pricing of the subscription in Telegram Stars.
+    /// See <a href="https://corefork.telegram.org/type/StarsSubscriptionPricing" />
+    ///</summary>
     public MyTelegram.Schema.IStarsSubscriptionPricing Pricing { get; set; }
+
+    ///<summary>
+    /// Invitation link, used to renew the subscription after cancellation or expiration.
+    ///</summary>
     public string? ChatInviteHash { get; set; }
+
+    ///<summary>
+    /// &nbsp;
+    ///</summary>
+    public string? Title { get; set; }
+
+    ///<summary>
+    /// &nbsp;
+    /// See <a href="https://corefork.telegram.org/type/WebDocument" />
+    ///</summary>
+    public MyTelegram.Schema.IWebDocument? Photo { get; set; }
+
+    ///<summary>
+    /// &nbsp;
+    ///</summary>
+    public string? InvoiceSlug { get; set; }
 
     public void ComputeFlag()
     {
         if (Canceled) { Flags[0] = true; }
         if (CanRefulfill) { Flags[1] = true; }
         if (MissingBalance) { Flags[2] = true; }
+        if (BotCanceled) { Flags[7] = true; }
         if (ChatInviteHash != null) { Flags[3] = true; }
+        if (Title != null) { Flags[4] = true; }
+        if (Photo != null) { Flags[5] = true; }
+        if (InvoiceSlug != null) { Flags[6] = true; }
     }
 
     public void Serialize(IBufferWriter<byte> writer)
@@ -38,6 +105,9 @@ public sealed class TStarsSubscription : IStarsSubscription
         writer.Write(UntilDate);
         writer.Write(Pricing);
         if (Flags[3]) { writer.Write(ChatInviteHash); }
+        if (Flags[4]) { writer.Write(Title); }
+        if (Flags[5]) { writer.Write(Photo); }
+        if (Flags[6]) { writer.Write(InvoiceSlug); }
     }
 
     public void Deserialize(ref SequenceReader<byte> reader)
@@ -46,10 +116,14 @@ public sealed class TStarsSubscription : IStarsSubscription
         if (Flags[0]) { Canceled = true; }
         if (Flags[1]) { CanRefulfill = true; }
         if (Flags[2]) { MissingBalance = true; }
+        if (Flags[7]) { BotCanceled = true; }
         Id = reader.ReadString();
         Peer = reader.Read<MyTelegram.Schema.IPeer>();
         UntilDate = reader.ReadInt32();
         Pricing = reader.Read<MyTelegram.Schema.IStarsSubscriptionPricing>();
         if (Flags[3]) { ChatInviteHash = reader.ReadString(); }
+        if (Flags[4]) { Title = reader.ReadString(); }
+        if (Flags[5]) { Photo = reader.Read<MyTelegram.Schema.IWebDocument>(); }
+        if (Flags[6]) { InvoiceSlug = reader.ReadString(); }
     }
 }

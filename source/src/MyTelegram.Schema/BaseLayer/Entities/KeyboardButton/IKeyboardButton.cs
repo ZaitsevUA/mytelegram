@@ -26,5 +26,8 @@ namespace MyTelegram.Schema;
 [JsonDerivedType(typeof(TKeyboardButtonCopy), nameof(TKeyboardButtonCopy))]
 public interface IKeyboardButton : IObject
 {
+    ///<summary>
+    /// Title of the button
+    ///</summary>
     string Text { get; set; }
 }

@@ -11,7 +11,14 @@ namespace MyTelegram.Schema;
 public sealed class TMessageActionGiveawayLaunch : IMessageAction
 {
     public uint ConstructorId => 0xa80f51e4;
+    ///<summary>
+    /// Flags, see <a href="https://corefork.telegram.org/mtproto/TL-combinators#conditional-fields">TL conditional fields</a>
+    ///</summary>
     public BitArray Flags { get; set; } = new BitArray(32);
+
+    ///<summary>
+    /// For <a href="https://corefork.telegram.org/api/stars#star-giveaways">Telegram Star giveaways</a>, the total number of Telegram Stars being given away.
+    ///</summary>
     public long? Stars { get; set; }
 
     public void ComputeFlag()

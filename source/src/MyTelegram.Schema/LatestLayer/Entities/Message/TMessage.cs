@@ -92,6 +92,11 @@ public sealed class TMessage : IMessage
     /// See <a href="https://corefork.telegram.org/type/true" />
     ///</summary>
     public bool Offline { get; set; }
+
+    ///<summary>
+    /// The video contained in the message is currently being processed by the server (i.e. to generate alternative qualities, that will be contained in the final <a href="https://corefork.telegram.org/constructor/messageMediaDocument">messageMediaDocument</a>.<code>alt_document</code>), and will be sent once the video is processed, which will happen approximately at the specified <code>date</code> (i.e. messages with this flag set should be treated similarly to <a href="https://corefork.telegram.org/api/scheduled-messages">scheduled messages</a>, but instead of the scheduled date, <code>date</code> contains the estimated conversion date). <br>See <a href="https://corefork.telegram.org/api/files#video-qualities">here »</a> for more info.
+    /// See <a href="https://corefork.telegram.org/type/true" />
+    ///</summary>
     public bool VideoProcessingPending { get; set; }
 
     ///<summary>

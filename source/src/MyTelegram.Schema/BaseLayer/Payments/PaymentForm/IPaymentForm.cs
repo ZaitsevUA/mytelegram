@@ -11,6 +11,14 @@ namespace MyTelegram.Schema.Payments;
 [JsonDerivedType(typeof(TPaymentFormStarGift), nameof(TPaymentFormStarGift))]
 public interface IPaymentForm : IObject
 {
+    ///<summary>
+    /// Form ID.
+    ///</summary>
     long FormId { get; set; }
+
+    ///<summary>
+    /// Invoice
+    /// See <a href="https://corefork.telegram.org/type/Invoice" />
+    ///</summary>
     MyTelegram.Schema.IInvoice Invoice { get; set; }
 }

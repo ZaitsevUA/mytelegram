@@ -11,6 +11,9 @@ namespace MyTelegram.Schema;
 public sealed class TInputMediaPaidMedia : IInputMedia
 {
     public uint ConstructorId => 0xc4103386;
+    ///<summary>
+    /// Flags, see <a href="https://corefork.telegram.org/mtproto/TL-combinators#conditional-fields">TL conditional fields</a>
+    ///</summary>
     public BitArray Flags { get; set; } = new BitArray(32);
 
     ///<summary>
@@ -22,6 +25,10 @@ public sealed class TInputMediaPaidMedia : IInputMedia
     /// Photos or videos.
     ///</summary>
     public TVector<MyTelegram.Schema.IInputMedia> ExtendedMedia { get; set; }
+
+    ///<summary>
+    /// Bots only, specifies a custom payload that will then be passed in <a href="https://corefork.telegram.org/constructor/updateBotPurchasedPaidMedia">updateBotPurchasedPaidMedia</a> when a payment is made (this field will not be visible to the user)
+    ///</summary>
     public string? Payload { get; set; }
 
     public void ComputeFlag()

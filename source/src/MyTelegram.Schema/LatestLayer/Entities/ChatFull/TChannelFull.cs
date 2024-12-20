@@ -128,6 +128,11 @@ public sealed class TChannelFull : MyTelegram.Schema.IChatFull, ILayeredChannelF
     /// See <a href="https://corefork.telegram.org/type/true" />
     ///</summary>
     public bool CanViewStarsRevenue { get; set; }
+
+    ///<summary>
+    /// If set, users may send <a href="https://corefork.telegram.org/api/reactions#paid-reactions">paid Telegram Star reactions »</a> to messages of this channel.
+    /// See <a href="https://corefork.telegram.org/type/true" />
+    ///</summary>
     public bool PaidReactionsAvailable { get; set; }
 
     ///<summary>

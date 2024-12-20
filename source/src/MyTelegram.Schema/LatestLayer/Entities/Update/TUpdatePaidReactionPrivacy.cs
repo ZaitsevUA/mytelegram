@@ -4,12 +4,17 @@
 namespace MyTelegram.Schema;
 
 ///<summary>
+/// Contains the current <a href="https://corefork.telegram.org/api/reactions#paid-reactions">default paid reaction privacy, see here »</a> for more info.Clients should invoke <a href="https://corefork.telegram.org/method/messages.getPaidReactionPrivacy">messages.getPaidReactionPrivacy</a> on startup to fetch the current default reaction privacy because this update is only sent to currently online sessions and cannot be fetched using getDifference on client startup.
 /// See <a href="https://corefork.telegram.org/constructor/updatePaidReactionPrivacy" />
 ///</summary>
 [TlObject(0x51ca7aec)]
 public sealed class TUpdatePaidReactionPrivacy : IUpdate
 {
     public uint ConstructorId => 0x51ca7aec;
+    ///<summary>
+    /// Whether paid reaction privacy is enabled or disabled.
+    /// See <a href="https://corefork.telegram.org/type/Bool" />
+    ///</summary>
     public bool Private { get; set; }
 
     public void ComputeFlag()

@@ -177,38 +177,38 @@ public sealed class TUser : IUser, ILayeredUser
     public long Id { get; set; }
 
     ///<summary>
-    /// Access hash of the user, see <a href="https://corefork.telegram.org/api/peers#access-hash">here »</a> for more info. <br>If this flag is set, when updating the <a href="https://corefork.telegram.org/api/peers">local peer database</a>, generate a virtual flag called <code>min_access_hash</code>, which is: <br>- Set to <code>true</code> if <code>min</code> is set AND <br>- The <code>phone</code> flag is <strong>not</strong> set OR <br>- The <code>phone</code> flag is set and the associated phone number string is non-empty <br>- Set to <code>false</code> otherwise. <br><br>Then, apply both <code>access_hash</code> and <code>min_access_hash</code> to the local database if: <br>- <code>min_access_hash</code> is false OR <br>- <code>min_access_hash</code> is true AND <br>- There is no locally cached object for this user OR <br>- There is no <code>access_hash</code> in the local cache OR <br>- The cached object's <code>min_access_hash</code> is also true <br>If the final merged object stored to the database has the <code>min_access_hash</code> field set to true, the related <code>access_hash</code> is <strong>only</strong> suitable to use in <a href="https://corefork.telegram.org/constructor/inputPeerPhotoFileLocation"><code>inputPeerPhotoFileLocation</code> »</a>, to directly <a href="https://corefork.telegram.org/api/files">download the profile pictures</a> of users, everywhere else a <code>inputPeer*FromMessage</code> constructor will have to be generated as specified <a href="https://corefork.telegram.org/api/min">here »</a>. <br>Bots can also use min access hashes in some conditions, by passing <code>0</code> instead of the min access hash.
+    /// Access hash of the user, see <a href="https://corefork.telegram.org/api/peers#access-hash">here »</a> for more info. <br>If this flag is set, when updating the <a href="https://corefork.telegram.org/api/peers">local peer database</a>, generate a virtual flag called <code>min_access_hash</code>, which is: <br>- Set to <code>true</code> if <code>min</code> is set AND <br>-- The <code>phone</code> flag is <strong>not</strong> set OR <br>-- The <code>phone</code> flag is set and the associated phone number string is non-empty <br>- Set to <code>false</code> otherwise. <br><br>Then, apply both <code>access_hash</code> and <code>min_access_hash</code> to the local database if: <br>- <code>min_access_hash</code> is false OR <br>- <code>min_access_hash</code> is true AND <br>-- There is no locally cached object for this user OR <br>-- There is no <code>access_hash</code> in the local cache OR <br>-- The cached object's <code>min_access_hash</code> is also true <br><br>If the final merged object stored to the database has the <code>min_access_hash</code> field set to true, the related <code>access_hash</code> is <strong>only</strong> suitable to use in <a href="https://corefork.telegram.org/constructor/inputPeerPhotoFileLocation"><code>inputPeerPhotoFileLocation</code> »</a>, to directly <a href="https://corefork.telegram.org/api/files">download the profile pictures</a> of users, everywhere else a <code>inputPeer*FromMessage</code> constructor will have to be generated as specified <a href="https://corefork.telegram.org/api/min">here »</a>. <br>Bots can also use min access hashes in some conditions, by passing <code>0</code> instead of the min access hash.
     ///</summary>
     public long? AccessHash { get; set; }
 
     ///<summary>
-    /// First name. <br>When updating the <a href="https://corefork.telegram.org/api/peers">local peer database</a>, apply changes to this field only if: <br>- The <code>min</code> flag is not set OR <br>- The <code>min</code> flag is set AND <br>- The <code>min</code> flag of the locally cached user entry is set.
+    /// First name. <br>When updating the <a href="https://corefork.telegram.org/api/peers">local peer database</a>, apply changes to this field only if: <br>- The <code>min</code> flag is not set OR <br>- The <code>min</code> flag is set AND <br>-- The <code>min</code> flag of the locally cached user entry is set.
     ///</summary>
     public string? FirstName { get; set; }
 
     ///<summary>
-    /// Last name. <br>When updating the <a href="https://corefork.telegram.org/api/peers">local peer database</a>, apply changes to this field only if: <br>- The <code>min</code> flag is not set OR <br>- The <code>min</code> flag is set AND <br>- The <code>min</code> flag of the locally cached user entry is set.
+    /// Last name. <br>When updating the <a href="https://corefork.telegram.org/api/peers">local peer database</a>, apply changes to this field only if: <br>- The <code>min</code> flag is not set OR <br>- The <code>min</code> flag is set AND <br>-- The <code>min</code> flag of the locally cached user entry is set.
     ///</summary>
     public string? LastName { get; set; }
 
     ///<summary>
-    /// Main active username. <br>When updating the <a href="https://corefork.telegram.org/api/peers">local peer database</a>, apply changes to this field only if: <br>- The <code>min</code> flag is not set OR <br>- The <code>min</code> flag is set AND <br>- The <code>min</code> flag of the locally cached user entry is set. <br>Changes to this flag should invalidate the local <a href="https://corefork.telegram.org/constructor/userFull">userFull</a> cache for this user ID if the above conditions are respected and the <code>bot_can_edit</code> flag is also set.
+    /// Main active username. <br>When updating the <a href="https://corefork.telegram.org/api/peers">local peer database</a>, apply changes to this field only if: <br>- The <code>min</code> flag is not set OR <br>- The <code>min</code> flag is set AND <br>-- The <code>min</code> flag of the locally cached user entry is set. <br>Changes to this flag should invalidate the local <a href="https://corefork.telegram.org/constructor/userFull">userFull</a> cache for this user ID if the above conditions are respected and the <code>bot_can_edit</code> flag is also set.
     ///</summary>
     public string? Username { get; set; }
 
     ///<summary>
-    /// Phone number. <br>When updating the <a href="https://corefork.telegram.org/api/peers">local peer database</a>, apply changes to this field only if: <br>- The <code>min</code> flag is not set OR <br>- The <code>min</code> flag is set AND <br>- The <code>min</code> flag of the locally cached user entry is set.
+    /// Phone number. <br>When updating the <a href="https://corefork.telegram.org/api/peers">local peer database</a>, apply changes to this field only if: <br>- The <code>min</code> flag is not set OR <br>- The <code>min</code> flag is set AND <br>-- The <code>min</code> flag of the locally cached user entry is set.
     ///</summary>
     public string? Phone { get; set; }
 
     ///<summary>
-    /// Profile picture of user. <br>When updating the <a href="https://corefork.telegram.org/api/peers">local peer database</a>, apply changes to this field only if: <br>- The <code>min</code> flag is not set OR <br>- The <code>min</code> flag is set AND <br>- The <code>apply_min_photo</code> flag is set OR <br>- The <code>min</code> flag of the locally cached user entry is set.
+    /// Profile picture of user. <br>When updating the <a href="https://corefork.telegram.org/api/peers">local peer database</a>, apply changes to this field only if: <br>- The <code>min</code> flag is not set OR <br>- The <code>min</code> flag is set AND <br>-- The <code>apply_min_photo</code> flag is set OR <br>-- The <code>min</code> flag of the locally cached user entry is set.
     /// See <a href="https://corefork.telegram.org/type/UserProfilePhoto" />
     ///</summary>
     public MyTelegram.Schema.IUserProfilePhoto? Photo { get; set; }
 
     ///<summary>
-    /// Online status of user. <br>When updating the <a href="https://corefork.telegram.org/api/peers">local peer database</a>, apply changes to this field only if: <br>- The <code>min</code> flag is not set OR <br>- The <code>min</code> flag is set AND <br>- The <code>min</code> flag of the locally cached user entry is set OR <br>- The locally cached user entry is equal to <a href="https://corefork.telegram.org/constructor/userStatusEmpty">userStatusEmpty</a>.
+    /// Online status of user. <br>When updating the <a href="https://corefork.telegram.org/api/peers">local peer database</a>, apply changes to this field only if: <br>- The <code>min</code> flag is not set OR <br>- The <code>min</code> flag is set AND <br>-- The <code>min</code> flag of the locally cached user entry is set OR <br>-- The locally cached user entry is equal to <a href="https://corefork.telegram.org/constructor/userStatusEmpty">userStatusEmpty</a>.
     /// See <a href="https://corefork.telegram.org/type/UserStatus" />
     ///</summary>
     public MyTelegram.Schema.IUserStatus? Status { get; set; }
@@ -240,7 +240,7 @@ public sealed class TUser : IUser, ILayeredUser
     public MyTelegram.Schema.IEmojiStatus? EmojiStatus { get; set; }
 
     ///<summary>
-    /// Additional usernames. <br>When updating the <a href="https://corefork.telegram.org/api/peers">local peer database</a>, apply changes to this field only if: <br>- The <code>min</code> flag is not set OR <br>- The <code>min</code> flag is set AND <br>- The <code>min</code> flag of the locally cached user entry is set. <br>Changes to this flag (if the above conditions are respected) should invalidate the local <a href="https://corefork.telegram.org/constructor/userFull">userFull</a> cache for this user ID.
+    /// Additional usernames. <br>When updating the <a href="https://corefork.telegram.org/api/peers">local peer database</a>, apply changes to this field only if: <br>- The <code>min</code> flag is not set OR <br>- The <code>min</code> flag is set AND <br>-- The <code>min</code> flag of the locally cached user entry is set. <br>Changes to this flag (if the above conditions are respected) should invalidate the local <a href="https://corefork.telegram.org/constructor/userFull">userFull</a> cache for this user ID.
     ///</summary>
     public TVector<MyTelegram.Schema.IUsername>? Usernames { get; set; }
 

@@ -52,6 +52,10 @@ public sealed class TMessageMediaGiveaway : IMessageMedia
     /// Duration in months of each <a href="https://corefork.telegram.org/api/premium">Telegram Premium</a> subscription in the giveaway.
     ///</summary>
     public int? Months { get; set; }
+
+    ///<summary>
+    /// For <a href="https://corefork.telegram.org/api/stars#star-giveaways">Telegram Star giveaways</a>, the total number of Telegram Stars being given away.
+    ///</summary>
     public long? Stars { get; set; }
 
     ///<summary>

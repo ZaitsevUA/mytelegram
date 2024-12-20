@@ -23,6 +23,12 @@ public sealed class TWebViewResultUrl : IWebViewResult
     public bool Fullsize { get; set; }
 
     ///<summary>
+    /// &nbsp;
+    /// See <a href="https://corefork.telegram.org/type/true" />
+    ///</summary>
+    public bool Fullscreen { get; set; }
+
+    ///<summary>
     /// Webview session ID (only returned by <a href="https://corefork.telegram.org/api/bots/webapps#inline-button-mini-apps">inline button mini apps</a>, <a href="https://corefork.telegram.org/api/bots/webapps#menu-button-mini-apps">menu button mini apps</a>, <a href="https://corefork.telegram.org/api/bots/webapps#attachment-menu-mini-apps">attachment menu mini apps</a>).
     ///</summary>
     public long? QueryId { get; set; }
@@ -35,6 +41,7 @@ public sealed class TWebViewResultUrl : IWebViewResult
     public void ComputeFlag()
     {
         if (Fullsize) { Flags[1] = true; }
+        if (Fullscreen) { Flags[2] = true; }
         if (/*QueryId != 0 &&*/ QueryId.HasValue) { Flags[0] = true; }
 
     }
@@ -52,6 +59,7 @@ public sealed class TWebViewResultUrl : IWebViewResult
     {
         Flags = reader.ReadBitArray();
         if (Flags[1]) { Fullsize = true; }
+        if (Flags[2]) { Fullscreen = true; }
         if (Flags[0]) { QueryId = reader.ReadInt64(); }
         Url = reader.ReadString();
     }

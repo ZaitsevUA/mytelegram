@@ -16,6 +16,10 @@ namespace MyTelegram.Schema.Stats;
 public sealed class RequestGetBroadcastRevenueWithdrawalUrl : IRequest<MyTelegram.Schema.Stats.IBroadcastRevenueWithdrawalUrl>
 {
     public uint ConstructorId => 0x9df4faad;
+    ///<summary>
+    /// Get ad revenue withdrawal URL for the specified channel or bot
+    /// See <a href="https://corefork.telegram.org/type/InputPeer" />
+    ///</summary>
     public MyTelegram.Schema.IInputPeer Peer { get; set; }
 
     ///<summary>

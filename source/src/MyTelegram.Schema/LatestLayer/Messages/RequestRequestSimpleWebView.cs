@@ -39,6 +39,12 @@ public sealed class RequestRequestSimpleWebView : IRequest<MyTelegram.Schema.IWe
     public bool Compact { get; set; }
 
     ///<summary>
+    /// &nbsp;
+    /// See <a href="https://corefork.telegram.org/type/true" />
+    ///</summary>
+    public bool Fullscreen { get; set; }
+
+    ///<summary>
     /// Bot that owns the mini app
     /// See <a href="https://corefork.telegram.org/type/InputUser" />
     ///</summary>
@@ -70,6 +76,7 @@ public sealed class RequestRequestSimpleWebView : IRequest<MyTelegram.Schema.IWe
         if (FromSwitchWebview) { Flags[1] = true; }
         if (FromSideMenu) { Flags[2] = true; }
         if (Compact) { Flags[7] = true; }
+        if (Fullscreen) { Flags[8] = true; }
         if (Url != null) { Flags[3] = true; }
         if (StartParam != null) { Flags[4] = true; }
         if (ThemeParams != null) { Flags[0] = true; }
@@ -94,6 +101,7 @@ public sealed class RequestRequestSimpleWebView : IRequest<MyTelegram.Schema.IWe
         if (Flags[1]) { FromSwitchWebview = true; }
         if (Flags[2]) { FromSideMenu = true; }
         if (Flags[7]) { Compact = true; }
+        if (Flags[8]) { Fullscreen = true; }
         Bot = reader.Read<MyTelegram.Schema.IInputUser>();
         if (Flags[3]) { Url = reader.ReadString(); }
         if (Flags[4]) { StartParam = reader.ReadString(); }

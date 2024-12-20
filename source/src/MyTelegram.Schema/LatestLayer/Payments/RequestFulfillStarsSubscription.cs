@@ -4,13 +4,22 @@
 namespace MyTelegram.Schema.Payments;
 
 ///<summary>
+/// Re-join a private channel associated to an active <a href="https://corefork.telegram.org/api/invites#paid-invite-links">Telegram Star subscription »</a>.
 /// See <a href="https://corefork.telegram.org/method/payments.fulfillStarsSubscription" />
 ///</summary>
 [TlObject(0xcc5bebb3)]
 public sealed class RequestFulfillStarsSubscription : IRequest<IBool>
 {
     public uint ConstructorId => 0xcc5bebb3;
+    ///<summary>
+    /// Always pass <a href="https://corefork.telegram.org/constructor/inputPeerSelf">inputPeerSelf</a>.
+    /// See <a href="https://corefork.telegram.org/type/InputPeer" />
+    ///</summary>
     public MyTelegram.Schema.IInputPeer Peer { get; set; }
+
+    ///<summary>
+    /// ID of the subscription.
+    ///</summary>
     public string SubscriptionId { get; set; }
 
     public void ComputeFlag()

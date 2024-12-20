@@ -4,15 +4,33 @@
 namespace MyTelegram.Schema.Payments;
 
 ///<summary>
+/// Activate or deactivate a <a href="https://corefork.telegram.org/api/invites#paid-invite-links">Telegram Star subscription »</a>.
 /// See <a href="https://corefork.telegram.org/method/payments.changeStarsSubscription" />
 ///</summary>
 [TlObject(0xc7770878)]
 public sealed class RequestChangeStarsSubscription : IRequest<IBool>
 {
     public uint ConstructorId => 0xc7770878;
+    ///<summary>
+    /// Flags, see <a href="https://corefork.telegram.org/mtproto/TL-combinators#conditional-fields">TL conditional fields</a>
+    ///</summary>
     public BitArray Flags { get; set; } = new BitArray(32);
+
+    ///<summary>
+    /// Always pass <a href="https://corefork.telegram.org/constructor/inputPeerSelf">inputPeerSelf</a>.
+    /// See <a href="https://corefork.telegram.org/type/InputPeer" />
+    ///</summary>
     public MyTelegram.Schema.IInputPeer Peer { get; set; }
+
+    ///<summary>
+    /// ID of the subscription.
+    ///</summary>
     public string SubscriptionId { get; set; }
+
+    ///<summary>
+    /// Whether to cancel or reactivate the subscription.
+    /// See <a href="https://corefork.telegram.org/type/Bool" />
+    ///</summary>
     public bool? Canceled { get; set; }
 
     public void ComputeFlag()

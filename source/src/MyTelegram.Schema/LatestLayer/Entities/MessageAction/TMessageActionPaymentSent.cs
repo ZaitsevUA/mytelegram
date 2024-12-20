@@ -7,10 +7,10 @@ namespace MyTelegram.Schema;
 /// A payment was sent
 /// See <a href="https://corefork.telegram.org/constructor/messageActionPaymentSent" />
 ///</summary>
-[TlObject(0x96163f56)]
+[TlObject(0xc624b16e)]
 public sealed class TMessageActionPaymentSent : IMessageAction
 {
-    public uint ConstructorId => 0x96163f56;
+    public uint ConstructorId => 0xc624b16e;
     ///<summary>
     /// Flags, see <a href="https://corefork.telegram.org/mtproto/TL-combinators#conditional-fields">TL conditional fields</a>
     ///</summary>
@@ -43,11 +43,17 @@ public sealed class TMessageActionPaymentSent : IMessageAction
     ///</summary>
     public string? InvoiceSlug { get; set; }
 
+    ///<summary>
+    /// &nbsp;
+    ///</summary>
+    public int? SubscriptionUntilDate { get; set; }
+
     public void ComputeFlag()
     {
         if (RecurringInit) { Flags[2] = true; }
         if (RecurringUsed) { Flags[3] = true; }
         if (InvoiceSlug != null) { Flags[0] = true; }
+        if (/*SubscriptionUntilDate != 0 && */SubscriptionUntilDate.HasValue) { Flags[4] = true; }
     }
 
     public void Serialize(IBufferWriter<byte> writer)
@@ -58,6 +64,7 @@ public sealed class TMessageActionPaymentSent : IMessageAction
         writer.Write(Currency);
         writer.Write(TotalAmount);
         if (Flags[0]) { writer.Write(InvoiceSlug); }
+        if (Flags[4]) { writer.Write(SubscriptionUntilDate.Value); }
     }
 
     public void Deserialize(ref SequenceReader<byte> reader)
@@ -68,5 +75,6 @@ public sealed class TMessageActionPaymentSent : IMessageAction
         Currency = reader.ReadString();
         TotalAmount = reader.ReadInt64();
         if (Flags[0]) { InvoiceSlug = reader.ReadString(); }
+        if (Flags[4]) { SubscriptionUntilDate = reader.ReadInt32(); }
     }
 }

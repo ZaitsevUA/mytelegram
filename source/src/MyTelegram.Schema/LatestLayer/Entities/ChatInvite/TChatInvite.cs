@@ -63,6 +63,11 @@ public sealed class TChatInvite : IChatInvite
     /// See <a href="https://corefork.telegram.org/type/true" />
     ///</summary>
     public bool Fake { get; set; }
+
+    ///<summary>
+    /// If set, indicates that the user has already paid for the associated <a href="https://corefork.telegram.org/api/stars#star-subscriptions">Telegram Star subscriptions »</a> and it hasn't expired yet, so they may re-join the channel using <a href="https://corefork.telegram.org/method/messages.importChatInvite">messages.importChatInvite</a> without repeating the payment.
+    /// See <a href="https://corefork.telegram.org/type/true" />
+    ///</summary>
     public bool CanRefulfillSubscription { get; set; }
 
     ///<summary>
@@ -95,7 +100,16 @@ public sealed class TChatInvite : IChatInvite
     /// <a href="https://corefork.telegram.org/api/colors">Profile color palette ID</a>
     ///</summary>
     public int Color { get; set; }
+
+    ///<summary>
+    /// For <a href="https://corefork.telegram.org/api/stars#star-subscriptions">Telegram Star subscriptions »</a>, contains the pricing of the subscription the user must activate to join the private channel.
+    /// See <a href="https://corefork.telegram.org/type/StarsSubscriptionPricing" />
+    ///</summary>
     public MyTelegram.Schema.IStarsSubscriptionPricing? SubscriptionPricing { get; set; }
+
+    ///<summary>
+    /// For <a href="https://corefork.telegram.org/api/stars#star-subscriptions">Telegram Star subscriptions »</a>, the ID of the payment form for the subscription.
+    ///</summary>
     public long? SubscriptionFormId { get; set; }
 
     public void ComputeFlag()

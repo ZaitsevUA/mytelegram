@@ -73,12 +73,21 @@ public sealed class TChatInviteExported : IExportedChatInvite
     /// Number of users that have already used this link to join
     ///</summary>
     public int? Requested { get; set; }
+
+    ///<summary>
+    /// For <a href="https://corefork.telegram.org/api/stars#star-subscriptions">Telegram Star subscriptions »</a>, contains the number of chat members which have already joined the chat using the link, but have already left due to expiration of their subscription.
+    ///</summary>
     public int? SubscriptionExpired { get; set; }
 
     ///<summary>
     /// Custom description for the invite link, visible only to admins
     ///</summary>
     public string? Title { get; set; }
+
+    ///<summary>
+    /// For <a href="https://corefork.telegram.org/api/stars#star-subscriptions">Telegram Star subscriptions »</a>, contains the pricing of the subscription the user must activate to join the private channel.
+    /// See <a href="https://corefork.telegram.org/type/StarsSubscriptionPricing" />
+    ///</summary>
     public MyTelegram.Schema.IStarsSubscriptionPricing? SubscriptionPricing { get; set; }
 
     public void ComputeFlag()

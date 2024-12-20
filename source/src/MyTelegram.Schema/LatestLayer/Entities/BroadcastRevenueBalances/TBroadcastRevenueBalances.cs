@@ -11,7 +11,15 @@ namespace MyTelegram.Schema;
 public sealed class TBroadcastRevenueBalances : IBroadcastRevenueBalances
 {
     public uint ConstructorId => 0xc3ff71e7;
+    ///<summary>
+    /// Flags, see <a href="https://corefork.telegram.org/mtproto/TL-combinators#conditional-fields">TL conditional fields</a>
+    ///</summary>
     public BitArray Flags { get; set; } = new BitArray(32);
+
+    ///<summary>
+    /// If set, the available balance can be <a href="https://corefork.telegram.org/api/revenue#withdrawing-revenue">withdrawn »</a>.
+    /// See <a href="https://corefork.telegram.org/type/true" />
+    ///</summary>
     public bool WithdrawalEnabled { get; set; }
 
     ///<summary>

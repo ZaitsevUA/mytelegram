@@ -158,6 +158,11 @@ public sealed class TChannel : MyTelegram.Schema.IChat, ILayeredChannel
     /// See <a href="https://corefork.telegram.org/type/true" />
     ///</summary>
     public bool StoriesUnavailable { get; set; }
+
+    ///<summary>
+    /// If set, messages sent by admins to this channel will link to the admin's profile (just like with groups).
+    /// See <a href="https://corefork.telegram.org/type/true" />
+    ///</summary>
     public bool SignatureProfiles { get; set; }
 
     ///<summary>
@@ -251,6 +256,10 @@ public sealed class TChannel : MyTelegram.Schema.IChat, ILayeredChannel
     /// <a href="https://corefork.telegram.org/api/boost">Boost level</a>. <br>Changes to this flag should invalidate the local <a href="https://corefork.telegram.org/constructor/channelFull">channelFull</a> cache for this channel/supergroup ID, see <a href="https://corefork.telegram.org/api/peers#full-info-database">here »</a> for more info.
     ///</summary>
     public int? Level { get; set; }
+
+    ///<summary>
+    /// Expiration date of the <a href="https://corefork.telegram.org/api/stars#star-subscriptions">Telegram Star subscription »</a> the current user has bought to gain access to this channel.
+    ///</summary>
     public int? SubscriptionUntilDate { get; set; }
 
     public void ComputeFlag()

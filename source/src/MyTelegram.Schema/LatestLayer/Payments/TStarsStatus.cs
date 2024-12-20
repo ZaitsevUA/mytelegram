@@ -4,13 +4,13 @@
 namespace MyTelegram.Schema.Payments;
 
 ///<summary>
-/// Info about the current <a href="https://corefork.telegram.org/api/stars#balance-and-transaction-history">Telegram Star balance and transaction history »</a>.
+/// Info about the current <a href="https://corefork.telegram.org/api/stars#balance-and-transaction-history">Telegram Star subscriptions, balance and transaction history »</a>.
 /// See <a href="https://corefork.telegram.org/constructor/payments.starsStatus" />
 ///</summary>
-[TlObject(0xbbfa316c)]
+[TlObject(0x6c9ce8ed)]
 public sealed class TStarsStatus : IStarsStatus
 {
-    public uint ConstructorId => 0xbbfa316c;
+    public uint ConstructorId => 0x6c9ce8ed;
     ///<summary>
     /// Flags, see <a href="https://corefork.telegram.org/mtproto/TL-combinators#conditional-fields">TL conditional fields</a>
     ///</summary>
@@ -18,10 +18,23 @@ public sealed class TStarsStatus : IStarsStatus
 
     ///<summary>
     /// Current Telegram Star balance.
+    /// See <a href="https://corefork.telegram.org/type/StarsAmount" />
     ///</summary>
-    public long Balance { get; set; }
+    public MyTelegram.Schema.IStarsAmount Balance { get; set; }
+
+    ///<summary>
+    /// Info about current Telegram Star subscriptions, only returned when invoking <a href="https://corefork.telegram.org/method/payments.getStarsTransactions">payments.getStarsTransactions</a> and <a href="https://corefork.telegram.org/method/payments.getStarsSubscriptions">payments.getStarsSubscriptions</a>.
+    ///</summary>
     public TVector<MyTelegram.Schema.IStarsSubscription>? Subscriptions { get; set; }
+
+    ///<summary>
+    /// Offset for pagination of subscriptions: only usable and returned when invoking <a href="https://corefork.telegram.org/method/payments.getStarsSubscriptions">payments.getStarsSubscriptions</a>.
+    ///</summary>
     public string? SubscriptionsNextOffset { get; set; }
+
+    ///<summary>
+    /// The number of Telegram Stars the user should buy to be able to extend expired subscriptions soon (i.e. the current balance is not enough to extend all expired subscriptions).
+    ///</summary>
     public long? SubscriptionsMissingBalance { get; set; }
 
     ///<summary>
@@ -72,7 +85,7 @@ public sealed class TStarsStatus : IStarsStatus
     public void Deserialize(ref SequenceReader<byte> reader)
     {
         Flags = reader.ReadBitArray();
-        Balance = reader.ReadInt64();
+        Balance = reader.Read<MyTelegram.Schema.IStarsAmount>();
         if (Flags[1]) { Subscriptions = reader.Read<TVector<MyTelegram.Schema.IStarsSubscription>>(); }
         if (Flags[2]) { SubscriptionsNextOffset = reader.ReadString(); }
         if (Flags[4]) { SubscriptionsMissingBalance = reader.ReadInt64(); }

@@ -37,6 +37,10 @@ public sealed class TGiveawayInfoResults : IGiveawayInfo
     /// If we're one of the winners of this giveaway, contains the <a href="https://corefork.telegram.org/api/links#premium-giftcode-links">Premium gift code</a>, see <a href="https://corefork.telegram.org/api/giveaways">here »</a> for more info on the full giveaway flow.
     ///</summary>
     public string? GiftCodeSlug { get; set; }
+
+    ///<summary>
+    /// If we're one of the winners of this <a href="https://corefork.telegram.org/api/giveaways#star-giveaways">Telegram Star giveaway</a>, the number <a href="https://corefork.telegram.org/api/stars">Telegram Stars</a> we won.
+    ///</summary>
     public long? StarsPrize { get; set; }
 
     ///<summary>

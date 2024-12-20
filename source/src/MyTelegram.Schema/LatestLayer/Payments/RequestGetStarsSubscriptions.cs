@@ -4,15 +4,33 @@
 namespace MyTelegram.Schema.Payments;
 
 ///<summary>
+/// Obtain a list of active, expired or cancelled <a href="https://corefork.telegram.org/api/invites#paid-invite-links">Telegram Star subscriptions »</a>.
 /// See <a href="https://corefork.telegram.org/method/payments.getStarsSubscriptions" />
 ///</summary>
 [TlObject(0x32512c5)]
 public sealed class RequestGetStarsSubscriptions : IRequest<MyTelegram.Schema.Payments.IStarsStatus>
 {
     public uint ConstructorId => 0x32512c5;
+    ///<summary>
+    /// Flags, see <a href="https://corefork.telegram.org/mtproto/TL-combinators#conditional-fields">TL conditional fields</a>
+    ///</summary>
     public BitArray Flags { get; set; } = new BitArray(32);
+
+    ///<summary>
+    /// Whether to return only subscriptions expired due to an excessively low Telegram Star balance.
+    /// See <a href="https://corefork.telegram.org/type/true" />
+    ///</summary>
     public bool MissingBalance { get; set; }
+
+    ///<summary>
+    /// Always pass <a href="https://corefork.telegram.org/constructor/inputPeerSelf">inputPeerSelf</a>.
+    /// See <a href="https://corefork.telegram.org/type/InputPeer" />
+    ///</summary>
     public MyTelegram.Schema.IInputPeer Peer { get; set; }
+
+    ///<summary>
+    /// Offset for pagination, taken from <a href="https://corefork.telegram.org/constructor/payments.starsStatus">payments.starsStatus</a>.<code>subscriptions_next_offset</code>.
+    ///</summary>
     public string Offset { get; set; }
 
     public void ComputeFlag()

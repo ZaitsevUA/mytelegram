@@ -12,29 +12,43 @@ namespace MyTelegram.Schema.Contacts;
 /// 400 USERNAME_NOT_OCCUPIED The provided username is not occupied.
 /// See <a href="https://corefork.telegram.org/method/contacts.resolveUsername" />
 ///</summary>
-[TlObject(0xf93ccba3)]
+[TlObject(0x725afbbc)]
 public sealed class RequestResolveUsername : IRequest<MyTelegram.Schema.Contacts.IResolvedPeer>
 {
-    public uint ConstructorId => 0xf93ccba3;
+    public uint ConstructorId => 0x725afbbc;
+    ///<summary>
+    /// Flags, see <a href="https://corefork.telegram.org/mtproto/TL-combinators#conditional-fields">TL conditional fields</a>
+    ///</summary>
+    public BitArray Flags { get; set; } = new BitArray(32);
+
     ///<summary>
     /// @username to resolve
     ///</summary>
     public string Username { get; set; }
 
+    ///<summary>
+    /// &nbsp;
+    ///</summary>
+    public string? Referer { get; set; }
+
     public void ComputeFlag()
     {
-
+        if (Referer != null) { Flags[0] = true; }
     }
 
     public void Serialize(IBufferWriter<byte> writer)
     {
         ComputeFlag();
         writer.Write(ConstructorId);
+        writer.Write(Flags);
         writer.Write(Username);
+        if (Flags[0]) { writer.Write(Referer); }
     }
 
     public void Deserialize(ref SequenceReader<byte> reader)
     {
+        Flags = reader.ReadBitArray();
         Username = reader.ReadString();
+        if (Flags[0]) { Referer = reader.ReadString(); }
     }
 }

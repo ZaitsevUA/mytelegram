@@ -4,6 +4,7 @@
 namespace MyTelegram.Schema;
 
 ///<summary>
+/// Represents a <a href="https://corefork.telegram.org/api/reactions#paid-reactions">paid Telegram Star reaction »</a>.
 /// See <a href="https://corefork.telegram.org/constructor/reactionPaid" />
 ///</summary>
 [TlObject(0x523da4eb)]

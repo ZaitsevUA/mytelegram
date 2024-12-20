@@ -43,6 +43,10 @@ public sealed class TMessageReactions : IMessageReactions
     /// List of recent peers and their reactions
     ///</summary>
     public TVector<MyTelegram.Schema.IMessagePeerReaction>? RecentReactions { get; set; }
+
+    ///<summary>
+    /// <a href="https://corefork.telegram.org/api/reactions#paid-reactions">Paid Telegram Star reactions leaderboard »</a> for this message.
+    ///</summary>
     public TVector<MyTelegram.Schema.IMessageReactor>? TopReactors { get; set; }
 
     public void ComputeFlag()

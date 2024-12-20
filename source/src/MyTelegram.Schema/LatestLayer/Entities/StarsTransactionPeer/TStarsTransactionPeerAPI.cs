@@ -4,6 +4,7 @@
 namespace MyTelegram.Schema;
 
 ///<summary>
+/// Describes a <a href="https://corefork.telegram.org/api/stars">Telegram Star</a> transaction used to pay for paid API usage, such as <a href="https://corefork.telegram.org/bots/faq#how-can-i-message-all-of-my-bot-39s-subscribers-at-once">paid bot broadcasts</a>.
 /// See <a href="https://corefork.telegram.org/constructor/starsTransactionPeerAPI" />
 ///</summary>
 [TlObject(0xf9677aad)]

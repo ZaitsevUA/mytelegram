@@ -45,6 +45,12 @@ public sealed class RequestRequestWebView : IRequest<MyTelegram.Schema.IWebViewR
     public bool Compact { get; set; }
 
     ///<summary>
+    /// &nbsp;
+    /// See <a href="https://corefork.telegram.org/type/true" />
+    ///</summary>
+    public bool Fullscreen { get; set; }
+
+    ///<summary>
     /// Dialog where the web app is being opened, and where the resulting message will be sent (see the <a href="https://corefork.telegram.org/api/bots/webapps">docs for more info »</a>).
     /// See <a href="https://corefork.telegram.org/type/InputPeer" />
     ///</summary>
@@ -94,6 +100,7 @@ public sealed class RequestRequestWebView : IRequest<MyTelegram.Schema.IWebViewR
         if (FromBotMenu) { Flags[4] = true; }
         if (Silent) { Flags[5] = true; }
         if (Compact) { Flags[7] = true; }
+        if (Fullscreen) { Flags[8] = true; }
         if (Url != null) { Flags[1] = true; }
         if (StartParam != null) { Flags[3] = true; }
         if (ThemeParams != null) { Flags[2] = true; }
@@ -122,6 +129,7 @@ public sealed class RequestRequestWebView : IRequest<MyTelegram.Schema.IWebViewR
         if (Flags[4]) { FromBotMenu = true; }
         if (Flags[5]) { Silent = true; }
         if (Flags[7]) { Compact = true; }
+        if (Flags[8]) { Fullscreen = true; }
         Peer = reader.Read<MyTelegram.Schema.IInputPeer>();
         Bot = reader.Read<MyTelegram.Schema.IInputUser>();
         if (Flags[1]) { Url = reader.ReadString(); }

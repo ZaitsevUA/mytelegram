@@ -63,6 +63,11 @@ public sealed class TMessageActionGiftCode : IMessageAction
     /// If <code>crypto_currency</code> is set, contains the paid amount, in the smallest units of the cryptocurrency.
     ///</summary>
     public long? CryptoAmount { get; set; }
+
+    ///<summary>
+    /// Message attached with the gift
+    /// See <a href="https://corefork.telegram.org/type/TextWithEntities" />
+    ///</summary>
     public MyTelegram.Schema.ITextWithEntities? Message { get; set; }
 
     public void ComputeFlag()

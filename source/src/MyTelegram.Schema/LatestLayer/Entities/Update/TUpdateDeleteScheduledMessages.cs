@@ -4,13 +4,16 @@
 namespace MyTelegram.Schema;
 
 ///<summary>
-/// Some <a href="https://corefork.telegram.org/api/scheduled-messages">scheduled messages</a> were deleted from the schedule queue of a chat
+/// Some <a href="https://corefork.telegram.org/api/scheduled-messages">scheduled messages</a> were deleted (or sent) from the schedule queue of a chat
 /// See <a href="https://corefork.telegram.org/constructor/updateDeleteScheduledMessages" />
 ///</summary>
 [TlObject(0xf2a71983)]
 public sealed class TUpdateDeleteScheduledMessages : IUpdate
 {
     public uint ConstructorId => 0xf2a71983;
+    ///<summary>
+    /// Flags, see <a href="https://corefork.telegram.org/mtproto/TL-combinators#conditional-fields">TL conditional fields</a>
+    ///</summary>
     public BitArray Flags { get; set; } = new BitArray(32);
 
     ///<summary>
@@ -23,6 +26,10 @@ public sealed class TUpdateDeleteScheduledMessages : IUpdate
     /// Deleted scheduled messages
     ///</summary>
     public TVector<int> Messages { get; set; }
+
+    ///<summary>
+    /// If set, this update indicates that some scheduled messages were sent (not simply deleted from the schedule queue).  <br>In this case, the <code>messages</code> field will contain the scheduled message IDs for the sent messages (initially returned in <a href="https://corefork.telegram.org/constructor/updateNewScheduledMessage">updateNewScheduledMessage</a>), and <code>sent_messages</code> will contain the real message IDs for the sent messages.
+    ///</summary>
     public TVector<int>? SentMessages { get; set; }
 
     public void ComputeFlag()

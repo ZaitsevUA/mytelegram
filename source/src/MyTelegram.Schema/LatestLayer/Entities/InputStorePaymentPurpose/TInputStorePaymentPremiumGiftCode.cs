@@ -36,6 +36,11 @@ public sealed class TInputStorePaymentPremiumGiftCode : IInputStorePaymentPurpos
     /// Total price in the smallest units of the currency (integer, not float/double). For example, for a price of <code>US$ 1.45</code> pass <code>amount = 145</code>. See the exp parameter in <a href="https://corefork.telegram.org/bots/payments/currencies.json">currencies.json</a>, it shows the number of digits past the decimal point for each currency (2 for the majority of currencies).
     ///</summary>
     public long Amount { get; set; }
+
+    ///<summary>
+    /// Message attached with the gift
+    /// See <a href="https://corefork.telegram.org/type/TextWithEntities" />
+    ///</summary>
     public MyTelegram.Schema.ITextWithEntities? Message { get; set; }
 
     public void ComputeFlag()

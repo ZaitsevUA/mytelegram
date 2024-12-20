@@ -58,6 +58,10 @@ public sealed class TDocumentAttributeVideo : IDocumentAttribute
     /// Floating point UNIX timestamp in seconds, indicating the frame of the video that should be used as static preview and thumbnail.
     ///</summary>
     public double? VideoStartTs { get; set; }
+
+    ///<summary>
+    /// Codec used for the video, i.e. "h264", "h265", or "av1"
+    ///</summary>
     public string? VideoCodec { get; set; }
 
     public void ComputeFlag()

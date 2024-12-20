@@ -25,6 +25,11 @@ public sealed class RequestGetBroadcastRevenueStats : IRequest<MyTelegram.Schema
     /// See <a href="https://corefork.telegram.org/type/true" />
     ///</summary>
     public bool Dark { get; set; }
+
+    ///<summary>
+    /// Get ad revenue stats for the specified channel or bot
+    /// See <a href="https://corefork.telegram.org/type/InputPeer" />
+    ///</summary>
     public MyTelegram.Schema.IInputPeer Peer { get; set; }
 
     public void ComputeFlag()

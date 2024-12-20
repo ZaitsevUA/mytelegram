@@ -58,6 +58,11 @@ public sealed class TSponsoredMessage : ISponsoredMessage
     /// See <a href="https://corefork.telegram.org/type/Photo" />
     ///</summary>
     public MyTelegram.Schema.IPhoto? Photo { get; set; }
+
+    ///<summary>
+    /// If set, contains some media.
+    /// See <a href="https://corefork.telegram.org/type/MessageMedia" />
+    ///</summary>
     public MyTelegram.Schema.IMessageMedia? Media { get; set; }
 
     ///<summary>

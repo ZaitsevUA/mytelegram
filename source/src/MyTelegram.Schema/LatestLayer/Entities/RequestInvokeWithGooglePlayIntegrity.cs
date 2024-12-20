@@ -4,6 +4,7 @@
 namespace MyTelegram.Schema;
 
 ///<summary>
+/// Official clients only, invoke with Google Play Integrity token.
 /// See <a href="https://corefork.telegram.org/method/invokeWithGooglePlayIntegrity" />
 ///</summary>
 [TlObject(0x1df92984)]
@@ -11,17 +12,17 @@ public sealed class RequestInvokeWithGooglePlayIntegrity : IRequest<IObject>, IH
 {
     public uint ConstructorId => 0x1df92984;
     ///<summary>
-    /// &nbsp;
+    /// Nonce.
     ///</summary>
     public string Nonce { get; set; }
 
     ///<summary>
-    /// &nbsp;
+    /// Token.
     ///</summary>
     public string Token { get; set; }
 
     ///<summary>
-    /// &nbsp;
+    /// Query.
     ///</summary>
     public IObject Query { get; set; }
 

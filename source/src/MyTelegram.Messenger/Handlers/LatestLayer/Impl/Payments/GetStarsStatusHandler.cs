@@ -15,7 +15,7 @@ internal sealed class GetStarsStatusHandler : RpcResultObjectHandler<MyTelegram.
     {
         return Task.FromResult<MyTelegram.Schema.Payments.IStarsStatus>(new TStarsStatus
         {
-            Balance = 0,
+            Balance = new TStarsAmount(),
             Chats = [],
             History = [],
             Users = []

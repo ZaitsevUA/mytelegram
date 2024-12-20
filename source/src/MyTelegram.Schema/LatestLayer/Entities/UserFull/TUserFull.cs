@@ -7,10 +7,10 @@ namespace MyTelegram.Schema;
 /// Extended user infoWhen updating the <a href="https://corefork.telegram.org/api/peers">local peer database »</a>, all fields from the newly received constructor take priority over the old constructor cached locally (including by removing fields that aren't set in the new constructor).
 /// See <a href="https://corefork.telegram.org/constructor/userFull" />
 ///</summary>
-[TlObject(0x1f58e369)]
+[TlObject(0x979d2376)]
 public sealed class TUserFull : IUserFull
 {
-    public uint ConstructorId => 0x1f58e369;
+    public uint ConstructorId => 0x979d2376;
     ///<summary>
     /// Flags, see <a href="https://corefork.telegram.org/mtproto/TL-combinators#conditional-fields">TL conditional fields</a>
     ///</summary>
@@ -104,7 +104,18 @@ public sealed class TUserFull : IUserFull
     /// See <a href="https://corefork.telegram.org/type/true" />
     ///</summary>
     public bool SponsoredEnabled { get; set; }
+
+    ///<summary>
+    /// If set, this user can view <a href="https://corefork.telegram.org/api/revenue#revenue-statistics">ad revenue statistics »</a> for this bot.
+    /// See <a href="https://corefork.telegram.org/type/true" />
+    ///</summary>
     public bool CanViewRevenue { get; set; }
+
+    ///<summary>
+    /// &nbsp;
+    /// See <a href="https://corefork.telegram.org/type/true" />
+    ///</summary>
+    public bool BotCanManageEmojiStatus { get; set; }
 
     ///<summary>
     /// User ID
@@ -256,7 +267,17 @@ public sealed class TUserFull : IUserFull
     /// ID of the latest message of the associated personal <a href="https://corefork.telegram.org/api/channel">channel »</a>, that should be previewed in the <a href="https://corefork.telegram.org/api/profile#personal-channel">profile page</a>.
     ///</summary>
     public int? PersonalChannelMessage { get; set; }
+
+    ///<summary>
+    /// Number of <a href="https://corefork.telegram.org/api/gifts">gifts</a> the user has chosen to display on their profile
+    ///</summary>
     public int? StargiftsCount { get; set; }
+
+    ///<summary>
+    /// &nbsp;
+    /// See <a href="https://corefork.telegram.org/type/StarRefProgram" />
+    ///</summary>
+    public MyTelegram.Schema.IStarRefProgram? StarrefProgram { get; set; }
 
     public void ComputeFlag()
     {
@@ -275,6 +296,7 @@ public sealed class TUserFull : IUserFull
         if (ReadDatesPrivate) { Flags[30] = true; }
         if (SponsoredEnabled) { Flags2[7] = true; }
         if (CanViewRevenue) { Flags2[9] = true; }
+        if (BotCanManageEmojiStatus) { Flags2[10] = true; }
         if (About != null) { Flags[1] = true; }
         if (PersonalPhoto != null) { Flags[21] = true; }
         if (ProfilePhoto != null) { Flags[2] = true; }
@@ -299,6 +321,7 @@ public sealed class TUserFull : IUserFull
         if (/*PersonalChannelId != 0 &&*/ PersonalChannelId.HasValue) { Flags2[6] = true; }
         if (/*PersonalChannelMessage != 0 && */PersonalChannelMessage.HasValue) { Flags2[6] = true; }
         if (/*StargiftsCount != 0 && */StargiftsCount.HasValue) { Flags2[8] = true; }
+        if (StarrefProgram != null) { Flags2[11] = true; }
     }
 
     public void Serialize(IBufferWriter<byte> writer)
@@ -335,6 +358,7 @@ public sealed class TUserFull : IUserFull
         if (Flags2[6]) { writer.Write(PersonalChannelId.Value); }
         if (Flags2[6]) { writer.Write(PersonalChannelMessage.Value); }
         if (Flags2[8]) { writer.Write(StargiftsCount.Value); }
+        if (Flags2[11]) { writer.Write(StarrefProgram); }
     }
 
     public void Deserialize(ref SequenceReader<byte> reader)
@@ -356,6 +380,7 @@ public sealed class TUserFull : IUserFull
         Flags2 = reader.ReadBitArray();
         if (Flags2[7]) { SponsoredEnabled = true; }
         if (Flags2[9]) { CanViewRevenue = true; }
+        if (Flags2[10]) { BotCanManageEmojiStatus = true; }
         Id = reader.ReadInt64();
         if (Flags[1]) { About = reader.ReadString(); }
         Settings = reader.Read<MyTelegram.Schema.IPeerSettings>();
@@ -384,5 +409,6 @@ public sealed class TUserFull : IUserFull
         if (Flags2[6]) { PersonalChannelId = reader.ReadInt64(); }
         if (Flags2[6]) { PersonalChannelMessage = reader.ReadInt32(); }
         if (Flags2[8]) { StargiftsCount = reader.ReadInt32(); }
+        if (Flags2[11]) { StarrefProgram = reader.Read<MyTelegram.Schema.IStarRefProgram>(); }
     }
 }

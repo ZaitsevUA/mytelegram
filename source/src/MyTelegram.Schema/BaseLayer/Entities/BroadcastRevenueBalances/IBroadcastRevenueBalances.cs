@@ -9,7 +9,14 @@ namespace MyTelegram.Schema;
 [JsonDerivedType(typeof(TBroadcastRevenueBalances), nameof(TBroadcastRevenueBalances))]
 public interface IBroadcastRevenueBalances : IObject
 {
+    ///<summary>
+    /// Flags, see <a href="https://corefork.telegram.org/mtproto/TL-combinators#conditional-fields">TL conditional fields</a>
+    ///</summary>
     BitArray Flags { get; set; }
+
+    ///<summary>
+    /// If set, the available balance can be <a href="https://corefork.telegram.org/api/revenue#withdrawing-revenue">withdrawn »</a>.
+    ///</summary>
     bool WithdrawalEnabled { get; set; }
 
     ///<summary>

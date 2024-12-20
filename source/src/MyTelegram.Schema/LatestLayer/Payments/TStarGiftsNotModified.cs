@@ -4,6 +4,7 @@
 namespace MyTelegram.Schema.Payments;
 
 ///<summary>
+/// The list of available <a href="https://corefork.telegram.org/api/gifts">gifts »</a> hasn't changed.
 /// See <a href="https://corefork.telegram.org/constructor/payments.starGiftsNotModified" />
 ///</summary>
 [TlObject(0xa388a368)]

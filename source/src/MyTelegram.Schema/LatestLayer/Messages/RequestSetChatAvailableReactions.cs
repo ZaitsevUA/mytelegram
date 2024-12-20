@@ -34,9 +34,14 @@ public sealed class RequestSetChatAvailableReactions : IRequest<MyTelegram.Schem
     public MyTelegram.Schema.IChatReactions AvailableReactions { get; set; }
 
     ///<summary>
-    /// This flag may be used to impose a custom limit of unique reactions (i.e. a customizable version of <a href="https://corefork.telegram.org/api/config#reactions-uniq-max">appConfig.reactions_uniq_max</a>); this field and the other info set by the method will then be available to users in <a href="https://corefork.telegram.org/constructor/channelFull">channelFull</a> and <a href="https://corefork.telegram.org/constructor/chatFull">chatFull</a>.
+    /// This flag may be used to impose a custom limit of unique reactions (i.e. a customizable version of <a href="https://corefork.telegram.org/api/config#reactions-uniq-max">appConfig.reactions_uniq_max</a>); this field and the other info set by the method will then be available to users in <a href="https://corefork.telegram.org/constructor/channelFull">channelFull</a> and <a href="https://corefork.telegram.org/constructor/chatFull">chatFull</a>. <br>If this flag is not set, the previously configured <code>reactions_limit</code> will not be altered.
     ///</summary>
     public int? ReactionsLimit { get; set; }
+
+    ///<summary>
+    /// If this flag is set and a <a href="https://corefork.telegram.org/type/Bool">Bool</a> is passed, the method will enable or disable <a href="https://corefork.telegram.org/api/reactions#paid-reactions">paid message reactions »</a>. If this flag is not set, the previously stored setting will not be changed.
+    /// See <a href="https://corefork.telegram.org/type/Bool" />
+    ///</summary>
     public bool? PaidEnabled { get; set; }
 
     public void ComputeFlag()

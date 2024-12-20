@@ -7,10 +7,10 @@ namespace MyTelegram.Schema;
 /// Invoice
 /// See <a href="https://corefork.telegram.org/constructor/invoice" />
 ///</summary>
-[TlObject(0x5db95a15)]
+[TlObject(0x49ee584)]
 public sealed class TInvoice : IInvoice
 {
-    public uint ConstructorId => 0x5db95a15;
+    public uint ConstructorId => 0x49ee584;
     ///<summary>
     /// Flags, see <a href="https://corefork.telegram.org/mtproto/TL-combinators#conditional-fields">TL conditional fields</a>
     ///</summary>
@@ -95,6 +95,11 @@ public sealed class TInvoice : IInvoice
     ///</summary>
     public string? TermsUrl { get; set; }
 
+    ///<summary>
+    /// &nbsp;
+    ///</summary>
+    public int? SubscriptionPeriod { get; set; }
+
     public void ComputeFlag()
     {
         if (Test) { Flags[0] = true; }
@@ -109,6 +114,7 @@ public sealed class TInvoice : IInvoice
         if (/*MaxTipAmount != 0 &&*/ MaxTipAmount.HasValue) { Flags[8] = true; }
         if (SuggestedTipAmounts?.Count > 0) { Flags[8] = true; }
         if (TermsUrl != null) { Flags[10] = true; }
+        if (/*SubscriptionPeriod != 0 && */SubscriptionPeriod.HasValue) { Flags[11] = true; }
     }
 
     public void Serialize(IBufferWriter<byte> writer)
@@ -121,6 +127,7 @@ public sealed class TInvoice : IInvoice
         if (Flags[8]) { writer.Write(MaxTipAmount.Value); }
         if (Flags[8]) { writer.Write(SuggestedTipAmounts); }
         if (Flags[10]) { writer.Write(TermsUrl); }
+        if (Flags[11]) { writer.Write(SubscriptionPeriod.Value); }
     }
 
     public void Deserialize(ref SequenceReader<byte> reader)
@@ -140,5 +147,6 @@ public sealed class TInvoice : IInvoice
         if (Flags[8]) { MaxTipAmount = reader.ReadInt64(); }
         if (Flags[8]) { SuggestedTipAmounts = reader.Read<TVector<long>>(); }
         if (Flags[10]) { TermsUrl = reader.ReadString(); }
+        if (Flags[11]) { SubscriptionPeriod = reader.ReadInt32(); }
     }
 }

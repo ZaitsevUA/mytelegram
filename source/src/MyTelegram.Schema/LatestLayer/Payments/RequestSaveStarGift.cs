@@ -4,15 +4,33 @@
 namespace MyTelegram.Schema.Payments;
 
 ///<summary>
+/// Display or remove a <a href="https://corefork.telegram.org/api/gifts">received gift »</a> from our profile.
 /// See <a href="https://corefork.telegram.org/method/payments.saveStarGift" />
 ///</summary>
 [TlObject(0x87acf08e)]
 public sealed class RequestSaveStarGift : IRequest<IBool>
 {
     public uint ConstructorId => 0x87acf08e;
+    ///<summary>
+    /// Flags, see <a href="https://corefork.telegram.org/mtproto/TL-combinators#conditional-fields">TL conditional fields</a>
+    ///</summary>
     public BitArray Flags { get; set; } = new BitArray(32);
+
+    ///<summary>
+    /// If set, hides the gift from our profile.
+    /// See <a href="https://corefork.telegram.org/type/true" />
+    ///</summary>
     public bool Unsave { get; set; }
+
+    ///<summary>
+    /// ID of the user that sent us the gift.
+    /// See <a href="https://corefork.telegram.org/type/InputUser" />
+    ///</summary>
     public MyTelegram.Schema.IInputUser UserId { get; set; }
+
+    ///<summary>
+    /// The ID of the <a href="https://corefork.telegram.org/constructor/messageService">messageService</a> with the <a href="https://corefork.telegram.org/constructor/messageActionStarGift">messageActionStarGift</a>.
+    ///</summary>
     public int MsgId { get; set; }
 
     public void ComputeFlag()

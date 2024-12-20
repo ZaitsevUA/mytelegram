@@ -30,6 +30,11 @@ public sealed class RequestGetChatInviteImporters : IRequest<MyTelegram.Schema.M
     /// See <a href="https://corefork.telegram.org/type/true" />
     ///</summary>
     public bool Requested { get; set; }
+
+    ///<summary>
+    /// Set this flag if the link is a <a href="https://corefork.telegram.org/api/stars#star-subscriptions">Telegram Star subscription link »</a> and only members with already expired subscription must be returned.
+    /// See <a href="https://corefork.telegram.org/type/true" />
+    ///</summary>
     public bool SubscriptionExpired { get; set; }
 
     ///<summary>

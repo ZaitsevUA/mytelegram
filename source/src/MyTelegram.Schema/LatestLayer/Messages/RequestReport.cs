@@ -26,6 +26,10 @@ public sealed class RequestReport : IRequest<MyTelegram.Schema.IReportResult>
     /// IDs of messages to report
     ///</summary>
     public TVector<int> Id { get; set; }
+
+    ///<summary>
+    /// Menu option, intially empty
+    ///</summary>
     public byte[] Option { get; set; }
 
     ///<summary>

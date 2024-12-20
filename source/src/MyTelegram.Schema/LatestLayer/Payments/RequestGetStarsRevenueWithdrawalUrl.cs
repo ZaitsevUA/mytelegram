@@ -4,7 +4,7 @@
 namespace MyTelegram.Schema.Payments;
 
 ///<summary>
-/// Withdraw funds from a channel or bot's <a href="https://corefork.telegram.org/api/stars#withdrawing-revenue">star balance »</a>.
+/// Withdraw funds from a channel or bot's <a href="https://corefork.telegram.org/api/stars#withdrawing-stars">star balance »</a>.
 /// <para>Possible errors</para>
 /// Code Type Description
 /// 400 PASSWORD_HASH_INVALID The provided password hash is invalid.

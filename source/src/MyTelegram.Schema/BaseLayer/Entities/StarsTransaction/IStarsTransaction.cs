@@ -33,6 +33,10 @@ public interface IStarsTransaction : IObject
     /// This transaction was a gift from the user in <code>peer.peer</code>.
     ///</summary>
     bool Gift { get; set; }
+
+    ///<summary>
+    /// This transaction is a <a href="https://corefork.telegram.org/api/reactions#paid-reactions">paid reaction »</a>.
+    ///</summary>
     bool Reaction { get; set; }
 
     ///<summary>
@@ -42,8 +46,9 @@ public interface IStarsTransaction : IObject
 
     ///<summary>
     /// Amount of Stars (negative for outgoing transactions).
+    /// See <a href="https://corefork.telegram.org/type/StarsAmount" />
     ///</summary>
-    long Stars { get; set; }
+    MyTelegram.Schema.IStarsAmount Stars { get; set; }
 
     ///<summary>
     /// Date of the transaction (unixtime).
@@ -97,8 +102,42 @@ public interface IStarsTransaction : IObject
     /// See <a href="https://corefork.telegram.org/type/MessageMedia" />
     ///</summary>
     TVector<MyTelegram.Schema.IMessageMedia>? ExtendedMedia { get; set; }
+
+    ///<summary>
+    /// The number of seconds between consecutive Telegram Star debiting for <a href="https://corefork.telegram.org/api/stars#star-subscriptions">Telegram Star subscriptions »</a>.
+    ///</summary>
     int? SubscriptionPeriod { get; set; }
+
+    ///<summary>
+    /// ID of the message containing the <a href="https://corefork.telegram.org/constructor/messageMediaGiveaway">messageMediaGiveaway</a>, for incoming <a href="https://corefork.telegram.org/api/giveaways#star-giveaways">star giveaway prizes</a>.
+    ///</summary>
     int? GiveawayPostId { get; set; }
+
+    ///<summary>
+    /// This transaction indicates a purchase or a sale (conversion back to Stars) of a <a href="https://corefork.telegram.org/api/stars">gift »</a>.
+    /// See <a href="https://corefork.telegram.org/type/StarGift" />
+    ///</summary>
     MyTelegram.Schema.IStarGift? Stargift { get; set; }
+
+    ///<summary>
+    /// This transaction is payment for <a href="https://corefork.telegram.org/bots/faq#how-can-i-message-all-of-my-bot-39s-subscribers-at-once">paid bot broadcasts</a>.  <br>Paid broadcasts are only allowed if the <code>allow_paid_floodskip</code> parameter of <a href="https://corefork.telegram.org/method/messages.sendMessage">messages.sendMessage</a> and other message sending methods is set while trying to broadcast more than 30 messages per second to bot users. <br>The integer value returned by this flag indicates the number of billed API calls.
+    ///</summary>
     int? FloodskipNumber { get; set; }
+
+    ///<summary>
+    /// &nbsp;
+    ///</summary>
+    int? StarrefCommissionPermille { get; set; }
+
+    ///<summary>
+    /// &nbsp;
+    /// See <a href="https://corefork.telegram.org/type/Peer" />
+    ///</summary>
+    MyTelegram.Schema.IPeer? StarrefPeer { get; set; }
+
+    ///<summary>
+    /// &nbsp;
+    /// See <a href="https://corefork.telegram.org/type/StarsAmount" />
+    ///</summary>
+    MyTelegram.Schema.IStarsAmount? StarrefAmount { get; set; }
 }

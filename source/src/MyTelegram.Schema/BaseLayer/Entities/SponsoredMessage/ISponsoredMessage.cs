@@ -55,6 +55,11 @@ public interface ISponsoredMessage : IObject
     /// See <a href="https://corefork.telegram.org/type/Photo" />
     ///</summary>
     MyTelegram.Schema.IPhoto? Photo { get; set; }
+
+    ///<summary>
+    /// If set, contains some media.
+    /// See <a href="https://corefork.telegram.org/type/MessageMedia" />
+    ///</summary>
     MyTelegram.Schema.IMessageMedia? Media { get; set; }
 
     ///<summary>

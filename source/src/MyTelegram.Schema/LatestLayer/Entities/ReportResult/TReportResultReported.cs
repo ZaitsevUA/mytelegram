@@ -4,6 +4,7 @@
 namespace MyTelegram.Schema;
 
 ///<summary>
+/// The report was sent successfully, no further actions are required.
 /// See <a href="https://corefork.telegram.org/constructor/reportResultReported" />
 ///</summary>
 [TlObject(0x8db33c4b)]

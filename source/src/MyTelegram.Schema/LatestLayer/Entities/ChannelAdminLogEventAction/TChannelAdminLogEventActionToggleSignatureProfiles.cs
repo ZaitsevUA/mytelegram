@@ -4,12 +4,17 @@
 namespace MyTelegram.Schema;
 
 ///<summary>
+/// Channel signature profiles were enabled/disabled.
 /// See <a href="https://corefork.telegram.org/constructor/channelAdminLogEventActionToggleSignatureProfiles" />
 ///</summary>
 [TlObject(0x60a79c79)]
 public sealed class TChannelAdminLogEventActionToggleSignatureProfiles : IChannelAdminLogEventAction
 {
     public uint ConstructorId => 0x60a79c79;
+    ///<summary>
+    /// New value
+    /// See <a href="https://corefork.telegram.org/type/Bool" />
+    ///</summary>
     public bool NewValue { get; set; }
 
     public void ComputeFlag()
