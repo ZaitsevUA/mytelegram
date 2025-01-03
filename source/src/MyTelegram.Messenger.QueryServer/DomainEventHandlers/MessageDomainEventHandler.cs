@@ -234,16 +234,34 @@ public partial class MessageDomainEventHandler(
         }
     }
 
-    private Task HandleForwardMessageAsync(ReceiveInboxMessageCompletedSagaEvent aggregateEvent)
+    private async Task HandleForwardMessageAsync(ReceiveInboxMessageCompletedSagaEvent aggregateEvent)
     {
         var item = aggregateEvent.MessageItem;
 
         var updates = updatesLayeredService.Converter.ToInboxForwardMessageUpdates(aggregateEvent);
-        var layeredData = updatesLayeredService.GetLayeredData(c => c.ToInboxForwardMessageUpdates(aggregateEvent));
-        return PushUpdatesToPeerAsync(item.OwnerPeer,
+        if (aggregateEvent.MessageItem.FwdHeader?.FromId.PeerType == PeerType.Channel)
+        {
+            if (updates is TUpdates tUpdates)
+            {
+                var channelId = aggregateEvent.MessageItem.FwdHeader.FromId.PeerId;
+                var channelReadModel = await channelAppService.GetAsync(channelId);
+                var photoReadModel = channelReadModel.PhotoId.HasValue
+                    ? await photoAppService.GetAsync(channelReadModel.PhotoId.Value)
+                    : null;
+
+                var channel = chatLayeredService.Converter.ToChannel(
+                    0,
+                    channelReadModel,
+                    photoReadModel,
+                    null,
+                    false);
+                tUpdates.Chats.Add(channel);
+            }
+        }
+
+        await PushUpdatesToPeerAsync(item.OwnerPeer,
             updates,
-            pts: item.Pts,
-            layeredData: layeredData);
+            pts: item.Pts);
     }
 
     private async Task HandleInviteToChannelAsync(SendOutboxMessageCompletedSagaEvent aggregateEvent)
