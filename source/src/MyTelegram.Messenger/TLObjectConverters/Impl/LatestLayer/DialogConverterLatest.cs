@@ -89,17 +89,6 @@ public class DialogConverterLatest(
     public IPeerDialogs ToPeerDialogs(GetDialogOutput output)
     {
         var dialogs = ToDialogs(output);
-        //             var pts = output.ChannelList?.FirstOrDefault()?.Pts ?? 0;
-        //             if (pts == 0)
-        //             {
-        // pts=output.DialogList.
-        //             }
-
-        //var pts = output.DialogList.ElementAtOrDefault(0)?.Pts ?? 0;
-        //if (pts == 0)
-        //{
-        //    pts = output.MessageList.Any() ? output.MessageList.Max(p => p.Pts) : 0;
-        //}
 
         var pts = output.PtsReadModel?.Pts ?? 0;
         if (output.CachedPts > pts)
@@ -146,7 +135,6 @@ public class DialogConverterLatest(
     {
         var tDialog = ObjectMapper.Map<IDialogReadModel, TDialog>(dialogReadModel);
         tDialog.NotifySettings = GetPeerNotifySettings(dialogReadModel.NotifySettings);
-        // Console.WriteLine($"Request layer:{GetLayer()}");
         if (dialogReadModel.ReadOutboxMaxId == 0 && dialogReadModel.ReadInboxMaxId != 0)
         {
             tDialog.ReadInboxMaxId = dialogReadModel.ReadInboxMaxId;
@@ -170,7 +158,6 @@ public class DialogConverterLatest(
                     tDialog.UnreadCount = 0;
                 }
             }
-            // Console.WriteLine($"{dialogReadModel.ToPeerId} Unread count:{tDialog.UnreadCount}");
         }
         else
         {

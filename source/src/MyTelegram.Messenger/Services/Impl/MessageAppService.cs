@@ -239,7 +239,7 @@ public class MessageAppService(
 
     public async Task SendMessageAsync(List<SendMessageInput> inputs)
     {
-        if (!inputs.Any())
+        if (inputs.Count == 0)
         {
             throw new ArgumentException();
         }

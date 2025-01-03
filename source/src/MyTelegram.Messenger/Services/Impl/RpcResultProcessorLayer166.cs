@@ -56,31 +56,16 @@ public class RpcResultProcessorLayer166(
             output.ChannelMemberList);
         chatList.AddRange(channelList);
 
-        var offsetId = messageList.Any() ? messageList.Max(p => p.Id) : 0;
+        var offsetId = messageList.Count > 0 ? messageList.Max(p => p.Id) : 0;
         if (output.OffsetInfo?.LoadType == LoadType.Backward)
         {
-            offsetId = messageList.Any() ? messageList.Min(p => p.Id) : 0;
+            offsetId = messageList.Count > 0 ? messageList.Min(p => p.Id) : 0;
         }
 
         if (output.MessageList.Count > 0 && output.MessageList.All(p => p.ToPeerType == PeerType.Channel) &&
             !output.IsSearchGlobal)
         {
-            //var messageIdList=messageList.Select()
-            //var offsetId = output.HasMoreData && messageList.Any() ? messageList.Min(p => p.Id) : 0;
-            //if(messageList.Count==output.l)
-            // Console.WriteLine($"offsetId={offsetId}");
             var channelPts = output.ChannelList.FirstOrDefault()?.Pts ?? output.Pts;
-            //var channelPts = output.MessageBoxList.Any() ? output.MessageBoxList.Min(p => p.Pts) : output.Pts;
-
-            //return new TChannelMessages
-            //{
-            //    Chats = new TVector<IChat>(chatList),
-            //    Messages = new TVector<IMessage>(messageList),
-            //    Users = new TVector<IUser>(userList),
-            //    Pts = channelPts,
-            //    Count = messageList.Count,
-            //    OffsetIdOffset = offsetId
-            //};
 
             return ToChannelMessages(chatList,
                 messageList,

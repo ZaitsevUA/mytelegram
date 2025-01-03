@@ -7,13 +7,13 @@ public class GetCommonChatChannelIdsQueryHandler
         CancellationToken cancellationToken)
     {
         var joinedChannelIds = await store.FindAsync(p => p.UserId == query.SelfUserId, p => p.ChannelId, cancellationToken: cancellationToken);
-        if (joinedChannelIds.Any())
+        if (joinedChannelIds.Count > 0)
         {
             // Exclude broadcast channel ids
             var superGroupIds = await channelStore.FindAsync(p => joinedChannelIds.Contains(p.ChannelId) && !p.Broadcast,
                 p => p.ChannelId, cancellationToken: cancellationToken);
 
-            if (!superGroupIds.Any())
+            if (superGroupIds.Count == 0)
             {
                 return [];
             }

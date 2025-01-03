@@ -24,7 +24,7 @@ public class GetPinnedMessageListQueryHandler(IQueryOnlyReadModelStore<MessageRe
             p => p.BatchId,
             limit: query.Limit, cancellationToken: cancellationToken);
 
-        if (!batchIds.Any())
+        if (batchIds.Count == 0)
         {
             return [];
         }

@@ -65,7 +65,7 @@ internal sealed class DeleteMessagesHandler(
                       await queryProcessor.ProcessAsync(
                           new GetCommentsMessageIdListQuery(channelReadModel.ChannelId, ids));
 
-                    if (repliesMessageIds.Any())
+                    if (repliesMessageIds.Count > 0)
                     {
                         newTopMessageIdForDiscussionGroup =
                           await queryProcessor.ProcessAsync(new GetTopMessageIdQuery(channelReadModel.LinkedChatId.Value,

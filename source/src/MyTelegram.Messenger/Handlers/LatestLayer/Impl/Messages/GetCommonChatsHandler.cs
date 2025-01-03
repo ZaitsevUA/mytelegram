@@ -33,7 +33,7 @@ internal sealed class GetCommonChatsHandler(
             await queryProcessor.ProcessAsync(new GetCommonChatChannelIdsQuery(input.UserId, peer.PeerId, obj.MaxId,
                 limit));
 
-        if (commonChannelIds.Any())
+        if (commonChannelIds.Count > 0)
         {
             var channelReadModels =
                 await queryProcessor.ProcessAsync(new GetChannelByChannelIdListQuery(commonChannelIds.ToList()));
@@ -43,7 +43,7 @@ internal sealed class GetCommonChatsHandler(
 
             return new TChats
             {
-                Chats = new TVector<IChat>(chats)
+                Chats = [.. chats]
             };
         }
 

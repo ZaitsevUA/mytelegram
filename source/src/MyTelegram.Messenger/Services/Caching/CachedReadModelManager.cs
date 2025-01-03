@@ -22,7 +22,7 @@ public abstract class CachedReadModelManager<TReadModelInterface, TReadModel>(
             .GetInterfaces()
             .Where(IsReadModelFor)
             .ToList();
-        if (!iAmReadModelForInterfaceTypes.Any())
+        if (iAmReadModelForInterfaceTypes.Count == 0)
         {
             throw new ArgumentException(
                 $"Read model type '{StaticReadModelType.PrettyPrint()}' does not implement any '{typeof(IAmReadModelFor<,,>).PrettyPrint()}'");
@@ -54,7 +54,7 @@ public abstract class CachedReadModelManager<TReadModelInterface, TReadModel>(
             .Where(e => AggregateEventTypes.Contains(e.EventType))
             .ToList();
 
-        if (!relevantDomainEvents.Any())
+        if (relevantDomainEvents.Count == 0)
         {
             return;
         }

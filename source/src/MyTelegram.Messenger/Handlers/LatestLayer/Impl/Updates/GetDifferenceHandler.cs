@@ -51,7 +51,6 @@ internal sealed class GetDifferenceHandler : RpcResultObjectHandler<MyTelegram.S
     protected override async Task<MyTelegram.Schema.Updates.IDifference> HandleCoreAsync(IRequestInput input,
         MyTelegram.Schema.Updates.RequestGetDifference obj)
     {
-        //_logger.LogInformation("Get difference:{UserId},reqMsgId={ReqMsgId},obj={@RequestData}", input.UserId, input.ReqMsgId, obj);
         var userId = input.UserId;
         if (userId == 0)
         {
@@ -77,18 +76,8 @@ internal sealed class GetDifferenceHandler : RpcResultObjectHandler<MyTelegram.S
 
         var globalSeqNo = ptsForAuthKeyIdReadModel?.GlobalSeqNo ?? 0;
         IReadOnlyCollection<IUpdatesReadModel> userUpdates = [];
-        //IReadOnlyCollection<IUpdatesReadModel> userUpdates = await _queryProcessor.ProcessAsync(new GetUpdatesByGlobalSeqNoQuery(input.UserId, globalSeqNo));
-
         var joinedChannelIdList = await _queryProcessor
             .ProcessAsync(new GetChannelIdListByMemberUserIdQuery(input.UserId));
-
-        //if (!joinedChannelIdList.Any() && !userUpdates.Any())
-        //{
-        //    if ((obj.Pts != 0 && obj.Pts == ptsForAuthKeyId) || diff == 0)
-        //    {
-        //        return new TDifferenceEmpty { Date = CurrentDate, Seq = 0 };
-        //    }
-        //}
 
         var limit = obj.PtsTotalLimit ?? MyTelegramServerDomainConsts.DefaultPtsTotalLimit;
         limit = Math.Min(limit, MyTelegramServerDomainConsts.DefaultPtsTotalLimit);
@@ -112,7 +101,6 @@ internal sealed class GetDifferenceHandler : RpcResultObjectHandler<MyTelegram.S
             channelUpdatesReadModels = tempChannelReadModels;
         }
 
-        // Console.WriteLine($"### {input.UserId} ChannelGlobalSeqNo:{globalSeqNo} count={channelUpdatesReadModels.Count}");
         var users = updatesReadModels.SelectMany(p => p.Users ?? new List<long>(0)).ToList();
         var chats = updatesReadModels.SelectMany(p => p.Chats ?? new List<long>(0)).ToList();
         users.AddRange(channelUpdatesReadModels.SelectMany(p => p.Users ?? new List<long>(0)).ToList());
@@ -124,24 +112,21 @@ internal sealed class GetDifferenceHandler : RpcResultObjectHandler<MyTelegram.S
                 obj.Pts,
                 limit, messageIds, users, chats));
 
-        //var channelMessages=await _messageAppService.GetChannelDifferenceAsync(new GetDifferenceInput(input.UserId,))
-
         var allUpdateList = updatesReadModels.Where(p => p.UpdatesType == UpdatesType.Updates)
             .SelectMany(p => p.Updates ?? new List<IUpdate>()).ToList();
         allUpdateList.AddRange(channelUpdatesReadModels.Where(p => p.UpdatesType == UpdatesType.Updates).SelectMany(p => p.Updates ?? []));
         allUpdateList.AddRange(userUpdates.SelectMany(p => p.Updates ?? []));
-        //var hasEncryptedMessage = false;// updatesReadModels.Any(p => p.UpdatesType == UpdatesType.NewEncryptedMessages);
 
         IReadOnlyCollection<IEncryptedMessageReadModel> encryptedMessages = [];
 
         var maxPts = 0;
 
-        if (updatesReadModels.Any() || channelUpdatesReadModels.Any() || userUpdates.Any())
+        if (updatesReadModels.Count > 0 || channelUpdatesReadModels.Count > 0 || userUpdates.Count > 0)
         {
-            maxPts = updatesReadModels.Any() ? updatesReadModels.Max(p => p.Pts) : obj.Pts;
+            maxPts = updatesReadModels.Count > 0 ? updatesReadModels.Max(p => p.Pts) : obj.Pts;
             var channelMaxGlobalSeqNo =
                 channelUpdatesReadModels.Count > 0 ? channelUpdatesReadModels.Max(p => p.GlobalSeqNo) : 0; //updatesReadModels.Max(p => p.GlobalSeqNo);
-            var userGlobalSeqNo = userUpdates.Any() ? userUpdates.Max(p => p.GlobalSeqNo) : 0;
+            var userGlobalSeqNo = userUpdates.Count > 0 ? userUpdates.Max(p => p.GlobalSeqNo) : 0;
 
             var maxGlobalSeqNo = Math.Max(channelMaxGlobalSeqNo, userGlobalSeqNo);
 
@@ -151,11 +136,9 @@ internal sealed class GetDifferenceHandler : RpcResultObjectHandler<MyTelegram.S
                 new Peer(PeerType.User, input.UserId),
                 true
                 );
-            //Console.WriteLine($"[{input.UserId}]Add channelMaxGlobalSeqNo to cache:{channelMaxGlobalSeqNo}");
         }
         dto.MessageList = dto.MessageList.OrderBy(p => p.MessageId).ToList();
-        var r = _layeredService.GetConverter(input.Layer).ToDifference(dto, ptsReadModel, cachedPts, limit, allUpdateList, new List<IChat>(), encryptedMessages);
-        //_logger.LogInformation("GetDifference:{UserId},updates count={Count},channelUpdates count={ChannelUpdatesCount},Data={@Data},channelUpdates count={ChannelUpdatesCount}", input.UserId, updatesReadModels.Count, channelUpdatesReadModels.Count, r, channelUpdatesReadModels.Count);
-        return r;
+
+        return _layeredService.GetConverter(input.Layer).ToDifference(dto, ptsReadModel, cachedPts, limit, allUpdateList, new List<IChat>(), encryptedMessages);
     }
 }

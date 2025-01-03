@@ -83,7 +83,7 @@ internal sealed class GetChannelDifferenceHandler(
 
             var maxPts = 0;
 
-            if (updatesReadModels.Any())
+            if (updatesReadModels.Count > 0)
             {
                 maxPts = updatesReadModels.Max(p => p.Pts);
                 var channelMaxGlobalSeqNo = updatesReadModels.Max(p => p.GlobalSeqNo);

@@ -34,7 +34,7 @@ public abstract class ReadModelWithCacheAppService<TReadModel>(IReadModelCacheHe
             }
         }
 
-        if (idsNotExistInCache.Any())
+        if (idsNotExistInCache.Count > 0)
         {
             var dbReadModels = await GetReadModelListAsync(idsNotExistInCache.ToList());
             //readModels.AddRange(dbReadModels);

@@ -94,17 +94,8 @@ internal sealed class SendCodeHandler(
                 }
             }
 
-            //if (countryCodeItem!.Prefixes?.Any() ?? false)
-            //{
-            //    var isValidPhoneNumber =
-            //        countryCodeItem.Prefixes.Any(p => phoneNumberWithoutCountryCode.StartsWith(p));
-            //    if (!isValidPhoneNumber)
-            //    {
-            //        RpcErrors.RpcErrors400.PhoneNumberInvalid.ThrowRpcError();
-            //    }
-            //}
             var phoneNumberLength = phoneNumberWithoutCountryCode.Length;
-            if (countryCodeItem!.PhoneNumberLengths?.Any() ?? false)
+            if (countryCodeItem!.PhoneNumberLengths?.Count > 0)
             {
                 var isValidPhoneNumber = countryCodeItem.PhoneNumberLengths.Any(p => p == phoneNumberLength);
                 if (!isValidPhoneNumber)

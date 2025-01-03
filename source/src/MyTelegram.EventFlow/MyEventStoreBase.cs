@@ -32,9 +32,9 @@ public class MyEventStoreBase(
             throw new ArgumentNullException(nameof(sourceId));
         }
 
-        if (uncommittedDomainEvents == null || !uncommittedDomainEvents.Any())
+        if (uncommittedDomainEvents == null || uncommittedDomainEvents.Count == 0)
         {
-            return Array.Empty<IDomainEvent<TAggregate, TIdentity>>();
+            return [];
         }
 
         var aggregateType = typeof(TAggregate);
@@ -138,7 +138,7 @@ public class MyEventStoreBase(
             .Select(e => eventJsonSerializer.Deserialize<TAggregate, TIdentity>(id, e))
             .ToList();
 
-        if (!domainEvents.Any())
+        if (domainEvents.Count == 0)
         {
             return domainEvents;
         }

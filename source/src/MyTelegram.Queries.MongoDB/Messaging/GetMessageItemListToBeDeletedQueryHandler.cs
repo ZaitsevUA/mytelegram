@@ -18,7 +18,7 @@ public class GetMessageItemListToBeDeletedQueryHandler(IQueryOnlyReadModelStore<
                     p => p.OwnerPeerId == query.OwnerPeerId && query.MessageIds.Contains(p.MessageId),
                     p => p.BatchId, cancellationToken: cancellationToken));
 
-        if (!batchIds.Any())
+        if (batchIds.Count == 0)
         {
             return [];
         }

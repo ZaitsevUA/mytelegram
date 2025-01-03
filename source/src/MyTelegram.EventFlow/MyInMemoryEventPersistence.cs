@@ -22,9 +22,9 @@ public class MyInMemoryEventPersistence(ILogger<MyInMemoryEventPersistence> logg
         IReadOnlyCollection<SerializedEvent> serializedEvents,
         CancellationToken cancellationToken)
     {
-        if (!serializedEvents.Any())
+        if (serializedEvents.Count == 0)
         {
-            return new List<ICommittedDomainEvent>();
+            return [];
         }
 
         using (await _asyncLock.WaitAsync(cancellationToken).ConfigureAwait(false))
@@ -112,7 +112,7 @@ public class MyInMemoryEventPersistence(ILogger<MyInMemoryEventPersistence> logg
             .Take(pageSize)
             .ToList();
 
-        var nextPosition = committedDomainEvents.Any()
+        var nextPosition = committedDomainEvents.Count > 0
             ? committedDomainEvents.Max(e => e.GlobalSequenceNumber) + 1
             : startPosition;
 

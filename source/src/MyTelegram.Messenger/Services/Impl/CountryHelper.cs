@@ -23,7 +23,7 @@ public class CountryHelper : ICountryHelper, ISingletonDependency
 
     public IReadOnlyCollection<CountryItem> GetAllCountryList()
     {
-        if (_allCountries.Any())
+        if (_allCountries.Count > 0)
         {
             return _allCountries;
         }
@@ -35,7 +35,7 @@ public class CountryHelper : ICountryHelper, ISingletonDependency
 
     public void InitAllCountries()
     {
-        if (!_allCountries.Any())
+        if (_allCountries.Count == 0)
         {
             var jsonOptions = new JsonSerializerOptions
             {

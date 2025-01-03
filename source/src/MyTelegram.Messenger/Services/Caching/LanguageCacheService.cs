@@ -75,7 +75,7 @@ public class LanguageCacheService(IQueryProcessor queryProcessor, ILogger<Langua
 
     public async Task<IReadOnlyCollection<ILanguageReadModel>> GetAllLanguagesAsync(string languagePack)
     {
-        if (!_languageReadModels.Any())
+        if (_languageReadModels.Count == 0)
         {
             await LoadAllLanguagesAsync();
         }
@@ -91,7 +91,7 @@ public class LanguageCacheService(IQueryProcessor queryProcessor, ILogger<Langua
     public async Task<IReadOnlyCollection<LanguageTextItem>> GetLanguageTextAsync(string languageCode,
          string languagePack)
     {
-        if (!_languageTexts.Any())
+        if (_languageTexts.Count == 0)
         {
             await LoadAllLanguageTextAsync();
         }

@@ -7,7 +7,7 @@ public class SmsSenderFactory(ILogger<SmsSenderFactory> logger, IEnumerable<ISms
 
     public ISmsSender Create(string phoneNumber)
     {
-        if (!_enabledSmsSenderList.Any())
+        if (_enabledSmsSenderList.Count == 0)
         {
             logger.LogWarning("All SMS sender disabled, SMS will not be sent");
             return nullSmsSender;

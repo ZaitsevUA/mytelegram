@@ -71,7 +71,7 @@ internal sealed class DeleteHistoryHandler : RpcResultObjectHandler<RequestDelet
                 default).ConfigureAwait(false)).ToList();
         // keep first message(create channel message)
         messageIds.Remove(1);
-        if (messageIds.Any())
+        if (messageIds.Count > 0)
         {
             var newTopMessageId =
                 await _queryProcessor.ProcessAsync(new GetTopMessageIdQuery(channelId,

@@ -124,21 +124,21 @@ internal sealed class GetParticipantsHandler(
             var creatorId = channelReadModel.CreatorId;
             if (channelReadModel.Broadcast || (channelReadModel.HasLink && input.UserId != creatorId))
             {
-                if (chatAdminReadModels?.Any() ?? false)
+                if (chatAdminReadModels?.Count > 0)
                 {
                     var newAdminList = chatAdminReadModels.ToList();
                     newAdminList.RemoveAll(p => p.UserId == creatorId);
                     chatAdminReadModels = newAdminList;
                 }
 
-                if (channelMemberReadModels.Any())
+                if (channelMemberReadModels.Count > 0)
                 {
                     var newChannelMemberReadModels = channelMemberReadModels.ToList();
                     newChannelMemberReadModels.RemoveAll(p => p.UserId == creatorId);
                     channelMemberReadModels = newChannelMemberReadModels;
                 }
 
-                if (users.Any())
+                if (users.Count > 0)
                 {
                     var newUsers = users.ToList();
                     newUsers.RemoveAll(p => p.Id == creatorId);
@@ -146,7 +146,7 @@ internal sealed class GetParticipantsHandler(
                 }
             }
 
-            if ((!chatAdminReadModels?.Any() ?? false) && !channelMemberReadModels.Any())
+            if ((chatAdminReadModels == null || chatAdminReadModels.Count == 0) && channelMemberReadModels.Count == 0)
             {
                 return new TChannelParticipants
                 {

@@ -32,7 +32,7 @@ internal sealed class UnpinAllMessagesHandler(ICommandBus commandBus, IPeerHelpe
 
         var messageItems = await queryProcessor.ProcessAsync(new GetSimpleMessageListQuery(ownerPeerId, peer, null, true, true, MyTelegramServerDomainConsts.UnPinAllMessagesDefaultPageSize));
 
-        if (!messageItems.Any())
+        if (messageItems.Count == 0)
         {
             return new TAffectedHistory
             {
