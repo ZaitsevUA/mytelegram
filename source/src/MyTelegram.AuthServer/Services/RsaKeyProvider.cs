@@ -1,6 +1,8 @@
 ﻿namespace MyTelegram.AuthServer.Services;
 
-public class RsaKeyProvider(IOptions<MyTelegramAuthServerOptions> options) : IRsaKeyProvider, ISingletonDependency
+public class RsaKeyProvider(IOptions<MyTelegramAuthServerOptions> options)
+    : IRsaKeyProvider,
+        ISingletonDependency
 {
     private string? _privateKey;
 
@@ -13,7 +15,10 @@ public class RsaKeyProvider(IOptions<MyTelegramAuthServerOptions> options) : IRs
 
         if (!File.Exists(options.Value.PrivateKeyFilePath))
         {
-            throw new FileNotFoundException("Private key not exists", options.Value.PrivateKeyFilePath);
+            throw new FileNotFoundException(
+                "Private key not exists",
+                options.Value.PrivateKeyFilePath
+            );
         }
 
         _privateKey = File.ReadAllText(options.Value.PrivateKeyFilePath);

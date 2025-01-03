@@ -6,8 +6,8 @@ public class Step3Helper(
     IMtpHelper mtpHelper,
     ILogger<Step3Helper> logger,
     IAuthKeyIdHelper authKeyIdHelper,
-    ICacheManager<AuthCacheItem> cacheManager)
-    : Step1To3Helper, IStep3Helper, ISingletonDependency
+    ICacheManager<AuthCacheItem> cacheManager
+) : Step1To3Helper, IStep3Helper, ISingletonDependency
 {
     public async Task<Step3Output> SetClientDhParamsAnswerAsync(RequestSetClientDHParams req)
     {
@@ -16,7 +16,8 @@ public class Step3Helper(
         if (cachedAuthKey?.A == null)
         {
             throw new InvalidOperationException(
-                $"Cannot find cached auth key info, nonce: {req.Nonce.ToHexString()}");
+                $"Cannot find cached auth key info, nonce: {req.Nonce.ToHexString()}"
+            );
         }
 
         if (cachedAuthKey.NewNonce == null)
@@ -26,35 +27,43 @@ public class Step3Helper(
 
         CheckRequestData(cachedAuthKey.Nonce, req.Nonce, "Nonce");
         CheckRequestData(cachedAuthKey.ServerNonce, req.ServerNonce, "ServerNonce");
-        var tempAesKeyData = mtpHelper.CalcTempAesKeyData(cachedAuthKey.NewNonce, cachedAuthKey.ServerNonce);
+        var tempAesKeyData = mtpHelper.CalcTempAesKeyData(
+            cachedAuthKey.NewNonce,
+            cachedAuthKey.ServerNonce
+        );
         var dhInnerData = DeserializeRequest(req, tempAesKeyData);
         CheckRequestData(cachedAuthKey.Nonce, dhInnerData.Nonce, "Nonce");
         CheckRequestData(cachedAuthKey.ServerNonce, dhInnerData.ServerNonce, "ServerNonce");
         var a = cachedAuthKey.A;
         var gb = dhInnerData.GB;
 
-        var authKeyBytes = BigInteger.ModPow(
-                gb.ToBigEndianBigInteger(),
-                a.ToBigEndianBigInteger(),
-                AuthConsts.DhPrime)
+        var authKeyBytes = BigInteger
+            .ModPow(gb.ToBigEndianBigInteger(), a.ToBigEndianBigInteger(), AuthConsts.DhPrime)
             .ToByteArray(true, true)
             .ToBytes256();
 
-        var dto = new Step3Output(authKeyIdHelper.GetAuthKeyId(authKeyBytes),
+        var dto = new Step3Output(
+            authKeyIdHelper.GetAuthKeyId(authKeyBytes),
             authKeyBytes,
             mtpHelper.ComputeSalt(cachedAuthKey.NewNonce, dhInnerData.ServerNonce),
             cachedAuthKey.IsPermanent,
             CreateDhGenOkAnswer(req, cachedAuthKey.NewNonce, authKeyBytes),
             cachedAuthKey.DcId
-            );
+        );
 
         return dto;
     }
 
-    private TClientDHInnerData DeserializeRequest(RequestSetClientDHParams serverDhParams,
-        AesKeyData aesKeyData)
+    private TClientDHInnerData DeserializeRequest(
+        RequestSetClientDHParams serverDhParams,
+        AesKeyData aesKeyData
+    )
     {
-        var answerWithHash = aesHelper.DecryptIge(serverDhParams.EncryptedData, aesKeyData.Key, aesKeyData.Iv);
+        var answerWithHash = aesHelper.DecryptIge(
+            serverDhParams.EncryptedData,
+            aesKeyData.Key,
+            aesKeyData.Iv
+        );
         var hash = answerWithHash[..20];
         var answer = answerWithHash[20..];
         var reader = new SequenceReader<byte>(new ReadOnlySequence<byte>(answer));
@@ -64,18 +73,25 @@ public class Step3Helper(
         var calcHash = hashHelper.Sha1(data);
         if (!hash.SequenceEqual(calcHash))
         {
-            logger.LogWarning("Answer sha1 hash mismatch, client hash: {RequestHash}, server calculated hash: {ServerCalculatedHash}", hash.ToHexString(), calcHash.ToHexString());
+            logger.LogWarning(
+                "Answer sha1 hash mismatch, client hash: {RequestHash}, server calculated hash: {ServerCalculatedHash}",
+                hash.ToHexString(),
+                calcHash.ToHexString()
+            );
 
             throw new ArgumentException(
-                $"Answer sha1 hash mismatch, client hash: {hash.ToHexString()}, server calculated hash: {calcHash.ToHexString()}");
+                $"Answer sha1 hash mismatch, client hash: {hash.ToHexString()}, server calculated hash: {calcHash.ToHexString()}"
+            );
         }
 
         return obj;
     }
 
-    private TDhGenOk CreateDhGenOkAnswer(RequestSetClientDHParams req,
+    private TDhGenOk CreateDhGenOkAnswer(
+        RequestSetClientDHParams req,
         byte[] newNonce,
-        byte[] authKey)
+        byte[] authKey
+    )
     {
         var newNonceHash1 = CreateNewNonceHash(newNonce, authKey, 1);
 
@@ -99,8 +115,7 @@ public class Step3Helper(
     //    };
     //}
 
-    private byte[] CreateNewNonceHash(byte[] newNonce,
-        byte[] authKey, byte n)
+    private byte[] CreateNewNonceHash(byte[] newNonce, byte[] authKey, byte n)
     {
         // https://core.telegram.org/mtproto/auth_key#9-server-responds-in-one-of-three-ways
         // new_nonce_hash1, new_nonce_hash2, and new_nonce_hash3 are obtained as the 128 lower - order bits of SHA1 of

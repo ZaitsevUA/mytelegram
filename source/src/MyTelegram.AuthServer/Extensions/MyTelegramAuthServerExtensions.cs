@@ -9,10 +9,7 @@ public static class MyTelegramAuthServerExtensions
 
         services.AddMyTelegramCoreServices();
         services.AddMyTelegramHandlerServices();
-        services.AddSystemTextJson(options =>
-        {
-            options.TypeInfoResolverChain.Add(MyJsonSerializeContext.Default);
-        });
+        services.AddSystemTextJson(options => { options.TypeInfoResolverChain.Add(MyJsonSerializeContext.Default); });
 
         return services;
     }

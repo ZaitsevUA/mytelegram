@@ -1,10 +1,13 @@
-﻿namespace MyTelegram.GatewayServer.EventHandlers;
+﻿using UnencryptedMessageResponse = MyTelegram.Core.UnencryptedMessageResponse;
+
+namespace MyTelegram.GatewayServer.EventHandlers;
 
 public class UnencryptedMessageResponseEventHandler(IClientDataSender clientDataSender)
-    : IEventHandler<MyTelegram.Core.UnencryptedMessageResponse>, ITransientDependency
+    : IEventHandler<UnencryptedMessageResponse>, ITransientDependency
 {
-    public Task HandleEventAsync(MyTelegram.Core.UnencryptedMessageResponse eventData)
+    public Task HandleEventAsync(UnencryptedMessageResponse eventData)
     {
-        return clientDataSender.SendAsync(new MyTelegram.MTProto.UnencryptedMessageResponse(eventData.AuthKeyId, eventData.Data, eventData.ConnectionId, eventData.ReqMsgId));
+        return clientDataSender.SendAsync(new MTProto.UnencryptedMessageResponse(eventData.AuthKeyId, eventData.Data,
+            eventData.ConnectionId, eventData.ReqMsgId));
     }
 }

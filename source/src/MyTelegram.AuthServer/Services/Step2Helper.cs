@@ -7,8 +7,8 @@ public class Step2Helper(
     IMtpHelper mtpHelper,
     IMyRsaHelper myRsaHelper,
     ICacheManager<AuthCacheItem> cacheManager,
-    IRsaKeyProvider rsaKeyProvider)
-    : Step1To3Helper, IStep2Helper, ISingletonDependency
+    IRsaKeyProvider rsaKeyProvider
+) : Step1To3Helper, IStep2Helper, ISingletonDependency
 {
     public async Task<Step2Output> GetServerDhParamsAsync(RequestReqDHParams req)
     {
@@ -17,7 +17,8 @@ public class Step2Helper(
         if (cachedAuthKey == null)
         {
             throw new InvalidOperationException(
-                $"GetServerDhParamsAsync: can not find cached auth key info, nonce={req.Nonce.ToHexString()}");
+                $"GetServerDhParamsAsync: can not find cached auth key info, nonce={req.Nonce.ToHexString()}"
+            );
         }
 
         #region check request
@@ -52,8 +53,8 @@ public class Step2Helper(
                 dcId = pqInnerDataTempDc.Dc;
                 break;
 
-                //default:
-                //    throw new ArgumentOutOfRangeException(nameof(tInnerData));
+            //default:
+            //    throw new ArgumentOutOfRangeException(nameof(tInnerData));
         }
 
         var dh2048P = AuthConsts.Dh2048P;
@@ -86,8 +87,10 @@ public class Step2Helper(
         return new Step2Output(tInnerData.NewNonce, serverDhParams);
     }
 
-    private IPQInnerData DeserializeRequestTpqInnerData(RequestReqDHParams reqDhParams,
-        string privateKey)
+    private IPQInnerData DeserializeRequestTpqInnerData(
+        RequestReqDHParams reqDhParams,
+        string privateKey
+    )
     {
         // It needs to be converted into a 256-byte array.
         // sometimes the auth key data length is only 255, and 0 needs to be added to the first position.
@@ -113,11 +116,14 @@ public class Step2Helper(
         var calculatedHash = hashHelper.Sha1(realInnerData.ToArray());
         if (!shaHash.SequenceEqual(calculatedHash))
         {
-            logger.LogWarning("PQInnerData hash mismatch, client sha1 hash: {RequestHash}, server calculated sha1 hash: {ServerCalculatedHash}", shaHash.ToArray().ToHexString(), calculatedHash.ToArray().ToHexString());
+            logger.LogWarning(
+                "PQInnerData hash mismatch, client sha1 hash: {RequestHash}, server calculated sha1 hash: {ServerCalculatedHash}",
+                shaHash.ToArray().ToHexString(),
+                calculatedHash.ToArray().ToHexString()
+            );
         }
 
         return tPqInnerData;
-
     }
 
     private (byte[] a, byte[] ga) GenerateAAndGa()
@@ -153,9 +159,11 @@ public class Step2Helper(
         var calculatedHash = hashHelper.Sha256(tempKey, dataWithPadding);
         if (!hash.SequenceEqual(calculatedHash))
         {
-            logger.LogWarning("PQInnerData hash mismatch, client sha1 hash: {RequestHash}, server calculated sha1 hash: {ServerCalculatedHash}",
+            logger.LogWarning(
+                "PQInnerData hash mismatch, client sha1 hash: {RequestHash}, server calculated sha1 hash: {ServerCalculatedHash}",
                 hash.ToHexString(),
-                calculatedHash.ToHexString());
+                calculatedHash.ToHexString()
+            );
 
             throw new ArgumentException("PQInnerData hash mismatch");
         }
@@ -165,16 +173,25 @@ public class Step2Helper(
         return tPqInnerData;
     }
 
-    private TServerDHParamsOk SerializeResponse(IPQInnerData pqInnerData,
-        TServerDHInnerData dhInnerData)
+    private TServerDHParamsOk SerializeResponse(
+        IPQInnerData pqInnerData,
+        TServerDHInnerData dhInnerData
+    )
     {
-        return SerializeResponse(pqInnerData.Nonce, pqInnerData.NewNonce, pqInnerData.ServerNonce, dhInnerData);
+        return SerializeResponse(
+            pqInnerData.Nonce,
+            pqInnerData.NewNonce,
+            pqInnerData.ServerNonce,
+            dhInnerData
+        );
     }
 
-    private TServerDHParamsOk SerializeResponse(byte[] nonce,
+    private TServerDHParamsOk SerializeResponse(
+        byte[] nonce,
         byte[] newNonce,
         byte[] serverNonce,
-        TServerDHInnerData dhInnerData)
+        TServerDHInnerData dhInnerData
+    )
     {
         var buffer = dhInnerData.ToBytes();
         var sha1Hash = hashHelper.Sha1(buffer);
@@ -186,7 +203,11 @@ public class Step2Helper(
             sha1Hash.CopyTo(answerWithHashSpan);
             buffer.CopyTo(answerWithHashSpan.Slice(sha1Hash.Length));
             var aesKeyData = mtpHelper.CalcTempAesKeyData(newNonce, serverNonce);
-            var encryptedAnswer = aesHelper.EncryptIge(answerWithHashSpan, aesKeyData.Key, aesKeyData.Iv);
+            var encryptedAnswer = aesHelper.EncryptIge(
+                answerWithHashSpan,
+                aesKeyData.Key,
+                aesKeyData.Iv
+            );
             return new TServerDHParamsOk
             {
                 EncryptedAnswer = encryptedAnswer,
@@ -200,8 +221,7 @@ public class Step2Helper(
         }
     }
 
-    private byte[] Xor(ReadOnlySpan<byte> src,
-        ReadOnlySpan<byte> dest)
+    private byte[] Xor(ReadOnlySpan<byte> src, ReadOnlySpan<byte> dest)
     {
         var bytes = new byte[src.Length];
         for (var i = 0; i < src.Length; i++)

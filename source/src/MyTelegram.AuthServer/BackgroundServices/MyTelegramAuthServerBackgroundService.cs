@@ -2,8 +2,8 @@
 
 public class MyTelegramAuthServerBackgroundService(
     ILogger<MyTelegramAuthServerBackgroundService> logger,
-    IHandlerHelper handlerHelper)
-    : BackgroundService
+    IHandlerHelper handlerHelper
+) : BackgroundService
 {
     protected override Task ExecuteAsync(CancellationToken stoppingToken)
     {

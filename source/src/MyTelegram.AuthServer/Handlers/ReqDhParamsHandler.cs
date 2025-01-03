@@ -1,16 +1,20 @@
 ﻿namespace MyTelegram.AuthServer.Handlers;
 
-public class ReqDhParamsHandler(
-    IStep2Helper step2ServerHelper,
-    ILogger<ReqDhParamsHandler> logger)
+public class ReqDhParamsHandler(IStep2Helper step2ServerHelper, ILogger<ReqDhParamsHandler> logger)
     : BaseObjectHandler<RequestReqDHParams, IServerDHParams>,
         IReqDhParamsHandler
 {
-    protected override async Task<IServerDHParams> HandleCoreAsync(IRequestInput input,
-        RequestReqDHParams obj)
+    protected override async Task<IServerDHParams> HandleCoreAsync(
+        IRequestInput input,
+        RequestReqDHParams obj
+    )
     {
         var dto = await step2ServerHelper.GetServerDhParamsAsync(obj);
-        logger.LogDebug("[Step2] ServerDHParams created, connectionId: {ConnectionId}, reqMsgId: {ReqMsgId}", input.ConnectionId, input.ReqMsgId);
+        logger.LogDebug(
+            "[Step2] ServerDHParams created, connectionId: {ConnectionId}, reqMsgId: {ReqMsgId}",
+            input.ConnectionId,
+            input.ReqMsgId
+        );
 
         return dto.ServerDhParams;
     }

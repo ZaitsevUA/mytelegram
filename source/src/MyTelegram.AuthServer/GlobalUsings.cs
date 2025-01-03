@@ -1,4 +1,7 @@
-﻿global using Microsoft.Extensions.Configuration;
+﻿global using System.Buffers;
+global using System.Numerics;
+global using System.Security.Cryptography;
+global using Microsoft.Extensions.Configuration;
 global using Microsoft.Extensions.DependencyInjection;
 global using Microsoft.Extensions.Hosting;
 global using Microsoft.Extensions.Logging;
@@ -20,6 +23,3 @@ global using MyTelegram.Services.NativeAot;
 global using MyTelegram.Services.Services;
 global using Serilog;
 global using Serilog.Sinks.SystemConsole.Themes;
-global using System.Buffers;
-global using System.Numerics;
-global using System.Security.Cryptography;
