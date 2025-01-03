@@ -163,11 +163,12 @@ public class ForwardMessageSaga : MyInMemoryAggregateSaga<ForwardMessageSaga, Fo
             Silent: aggregateEvent.OriginalMessageItem.Silent
         );
 
+        var reqMsgId = _state.ForwardFromLinkedChannel ? 0 : _state.RequestInfo.ReqMsgId;
         var command = new StartSendMessageCommand(TempId.New, aggregateEvent.RequestInfo with
-        {
-            RequestId = Guid.NewGuid(),
-            ReqMsgId = 0
-        },
+            {
+                RequestId = Guid.NewGuid(),
+                ReqMsgId = reqMsgId
+            },
             [new SendMessageItem(messageItem)]);
 
         Publish(command);
