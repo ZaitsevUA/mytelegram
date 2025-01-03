@@ -25,6 +25,16 @@ internal sealed class GetSendAsHandler(
     protected override async Task<MyTelegram.Schema.Channels.ISendAsPeers> HandleCoreAsync(IRequestInput input,
         MyTelegram.Schema.Channels.RequestGetSendAs obj)
     {
+        if (obj.Peer is TInputPeerEmpty)
+        {
+            return new TSendAsPeers
+            {
+                Chats = [],
+                Peers = [],
+                Users = []
+            };
+        }
+
         if (obj.Peer is TInputPeerChannel inputPeerChannel)
         {
             await accessHashHelper.CheckAccessHashAsync(inputPeerChannel.ChannelId, inputPeerChannel.AccessHash);
