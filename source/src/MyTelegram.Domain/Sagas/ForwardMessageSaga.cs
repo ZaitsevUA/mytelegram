@@ -159,7 +159,7 @@ public class ForwardMessageSaga : MyInMemoryAggregateSaga<ForwardMessageSaga, Fo
             PostMessageId: postMessageId,
             Post: _state.Post,
             SendAs: sendAs,
-            Pinned: true,
+            Pinned: _state.ForwardFromLinkedChannel,
             Silent: aggregateEvent.OriginalMessageItem.Silent
         );
 
