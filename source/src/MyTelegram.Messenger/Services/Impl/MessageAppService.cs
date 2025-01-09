@@ -381,8 +381,12 @@ public class MessageAppService(
         IReadOnlyCollection<long>? chats = null)
     {
         var messageList = await queryProcessor.ProcessAsync(query);
-
+        var chatOrChannelPeers = chats?.Count > 0 ? chats.Select(peerHelper.GetPeer).ToList() : new List<Peer>(0);
+        var userIdList = messageList.Where(p => p.ToPeerType == PeerType.User).Select(p => p.ToPeerId).ToList();
+        var chatIdList = messageList.Where(p => p.ToPeerType == PeerType.Chat).Select(p => p.ToPeerId).ToList();
+        var channelIdList = messageList.Where(p => p.ToPeerType == PeerType.Channel).Select(p => p.ToPeerId).ToList();
         var extraChatUserIdList = new List<long>();
+
         if (users?.Count > 0)
         {
             extraChatUserIdList.AddRange(users);
@@ -419,14 +423,13 @@ public class MessageAppService(
                     break;
             }
 
+            var fwd = messageReadModel.FwdHeader;
+            AddPeerIdIfNeed(fwd?.FromId, userIdList, channelIdList);
+            AddPeerIdIfNeed(fwd?.SavedFromId, userIdList, channelIdList);
+            AddPeerIdIfNeed(fwd?.SavedFromPeer, userIdList, channelIdList);
+
             extraChatUserIdList.Add(messageReadModel.SenderPeerId);
         }
-
-        var chatOrChannelPeers = chats?.Count > 0 ? chats.Select(peerHelper.GetPeer).ToList() : new List<Peer>(0);
-
-        var userIdList = messageList.Where(p => p.ToPeerType == PeerType.User).Select(p => p.ToPeerId).ToList();
-        var chatIdList = messageList.Where(p => p.ToPeerType == PeerType.Chat).Select(p => p.ToPeerId).ToList();
-        var channelIdList = messageList.Where(p => p.ToPeerType == PeerType.Channel).Select(p => p.ToPeerId).ToList();
 
         userIdList.Add(query.SelfUserId);
         userIdList.AddRange(extraChatUserIdList);
@@ -514,5 +517,18 @@ public class MessageAppService(
             query.Limit,
             query.Offset
         );
+    }
+
+    private void AddPeerIdIfNeed(Peer? peer, List<long> userIds, List<long> channelIds)
+    {
+        switch (peer?.PeerType)
+        {
+            case PeerType.Channel:
+                channelIds.Add(peer.PeerId);
+                break;
+            case PeerType.User:
+                userIds.Add(peer.PeerId);
+                break;
+        }
     }
 }
